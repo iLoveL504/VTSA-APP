@@ -9,8 +9,7 @@
     "lint": "eslint .",
     "preview": "vite preview",
       "prebuild": "npm run lint",
-    "serve": "vite preview --port 4173 --host",
-    "postinstall": "cd ../client && npm install && npm run build"
+    "serve": "vite preview --port 4173 --host"
   },
   "dependencies": {
     "@emotion/react": "^11.14.0",
