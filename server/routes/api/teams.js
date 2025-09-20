@@ -7,7 +7,7 @@ import {
         getTeamDesignation, 
         forecastTeam, 
         getTeamsWithNoProject,
-        getNotAssingedPE,
+        getNotAssignedPE,
         assignTeam
     } from '../../controllers/teamsController.js'
 
@@ -27,7 +27,7 @@ router.route('/no-project')
     .get(getTeamsWithNoProject)
 
 router.route('/not-assigned-PE')
-    .get(getNotAssingedPE)
+    .get(getNotAssignedPE)
 
 router.route('/assign')
     .post(assignTeam)

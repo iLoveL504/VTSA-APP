@@ -7,7 +7,7 @@ import useAxiosFetch from "../../hooks/useAxiosFetch";
 
 const TestChart = ({ id }) => {
     const [view, setView] = useState(ViewMode.Day);
-    const [projInfo, projFetchError, projIsLoading] = useAxiosFetch(`http://localhost:4000/projects/${id}`);
+    const {data: projInfo, fetchError: projFetchError, isLoading: projIsLoading} = useAxiosFetch(`http://localhost:4000/projects/${id}`);
     const [hasError, setHasError] = useState(false);
 
     useEffect(() => {
