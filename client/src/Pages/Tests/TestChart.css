@@ -1,0 +1,41 @@
+/* Container styling */
+.gantt-container {
+  background-color: #f8fafc;
+  border-radius: 12px;
+  padding: 16px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+/* Button container */
+.btn-container {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+  justify-content: flex-start;
+  align-items: center;
+}
+
+/* Individual buttons */
+.btn-container button {
+  background-color: #e2e8f0;
+  border: none;
+  border-radius: 8px;
+  padding: 6px 12px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s ease, transform 0.1s ease;
+}
+
+/* Hover effect */
+.btn-container button:hover {
+  background-color: #cbd5e1;
+  transform: translateY(-1px);
+}
+
+/* Active state */
+.btn-container button:active {
+  background-color: #94a3b8;
+  transform: translateY(0);
+  color: white;
+}
