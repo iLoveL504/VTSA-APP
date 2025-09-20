@@ -1,17 +1,25 @@
-import fsPromise from "fs/promises"
-import path from 'node:path'
-import { format } from "date-fns"
+import fs from "fs/promises";
+import path from 'path';
+import { format } from "date-fns";
+import { fileURLToPath } from 'url';
 
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
-const rootdir = path.dirname(process.argv[1])
-const date = format(new Date(),'MM/dd/yyyy hh:mm:ss aaaa')
+const logFilePath = path.join(__dirname, 'logs', 'EventLogs.txt');
+
 export const logDate = async (req, res, next) => {
-    const eventLog = `${date}\t${req.method}\t${req.url} \n`
-    await fsPromise.appendFile(path.join(rootdir, 'logs', 'EventLogs.txt'), eventLog,() => {
-        if (err) throw err
-    })
-    
+    try {
+        // ensure logs folder exists
+        await fs.mkdir(path.dirname(logFilePath), { recursive: true });
 
-    next()
-}
+        const date = format(new Date(), 'MM/dd/yyyy hh:mm:ss aaaa');
+        const eventLog = `${date}\t${req.method}\t${req.url}\n`;
 
+        await fs.appendFile(logFilePath, eventLog);
+    } catch (err) {
+        console.error('🔥 Logging Error:', err);
+    }
+
+    next();
+};
