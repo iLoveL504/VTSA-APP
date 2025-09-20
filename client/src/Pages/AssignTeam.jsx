@@ -12,8 +12,8 @@ const AssignTeam = () => {
   const { projId } = useParams();
   const projects = useStoreState(state => state.projects);
   const foundProject = projects.find(p => p.id === Number(projId));
-  const [availableTeams, availableFetchError, availableIsLoading] = useAxiosFetch(`${backendURL}/teams/no-project`);
-  const [availablePE, availablePEFetchError, availablePEIsLoading] = useAxiosFetch(`${backendURL}/teams/not-assigned-PE`);
+  const {data: availableTeams, fetchError: availableFetchError, isLoading: availableIsLoading} = useAxiosFetch(`${backendURL}/teams/no-project`);
+  const {data: availablePE, fetchError: availablePEFetchError, isLoading: availablePEIsLoading} = useAxiosFetch(`${backendURL}/teams/not-assigned-PE`);
   const [selectedTeam, setSelectedTeam] = useState(null);
   const [selectedPE, setSelectedPE] = useState(null);
   const [error, setError] = useState('');
