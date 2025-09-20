@@ -1,62 +1,19 @@
-import mysql from 'mysql2/promise'
-import dotenv from 'dotenv'
-dotenv.config()
-
+import mysql from 'mysql2/promise';
+import dotenv from 'dotenv';
+dotenv.config();
 
 const pool = mysql.createPool({
   host: process.env.MYSQL_HOST,
   user: process.env.MYSQL_USER,
   password: process.env.MYSQL_PASSWORD,
   database: process.env.MYSQL_DATABASE,
-  port: process.env.DB_PORT,
+  port: Number(process.env.DB_PORT), // <-- fix
   waitForConnections: true,
   connectionLimit: 10,
   queueLimit: 0,
   ...(process.env.NODE_ENV === "production"
-    ? { ssl: { rejectUnauthorized: false } }
+    ? { ssl: { rejectUnauthorized: false } } // SSL required on Railway
     : {}),
 });
 
-export { pool }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+export { pool };
