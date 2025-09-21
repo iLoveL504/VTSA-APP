@@ -24,7 +24,7 @@ import NotLoggedIn from './Pages/NotLoggedIn.jsx'
 import { useSocket } from './hooks/useSocket.js'
 
 function App() {
-  const backendURL = import.meta.env.VITE_BACKEND_URL || "http://localhost:4000";
+  const backendURL = 'https://vtsa-app-production.up.railway.app' || "http://localhost:4000";
   console.log('https://vtsa-app-production.up.railway.app')
 const { data: empData } =
   useAxiosFetch(`${backendURL}/employees`);
