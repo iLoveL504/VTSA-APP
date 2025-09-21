@@ -1,5 +1,5 @@
 import dotenvFlow from "dotenv-flow";
-console.log(process.env.VITE_BAKCEND_URL)
+console.log('backend url', process.env.VITE_BACKEND_URL)
 if (process.env.NODE_ENV !== "production") {
   dotenvFlow.config();
 }
