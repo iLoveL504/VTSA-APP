@@ -24,6 +24,7 @@ import NotLoggedIn from './Pages/NotLoggedIn.jsx'
 import { useSocket } from './hooks/useSocket.js'
 
 function App() {
+  console.log('backendurl', import.meta.env.VITE_BACKEND_URL)
   const backendURL = import.meta.env.VITE_BACKEND_URL || 'https://vtsa-app-production.up.railway.app';
   console.log('https://vtsa-app-production.up.railway.app')
 const { data: empData } =
