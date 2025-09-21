@@ -2,6 +2,15 @@ import mysql from 'mysql2/promise';
 import dotenv from 'dotenv';
 dotenv.config();
 
+console.log("DB CONNECTION CONFIG:", {
+  host: process.env.MYSQL_HOST,
+  port: process.env.DB_PORT,
+  user: process.env.MYSQL_USER,
+  database: process.env.MYSQL_DATABASE,
+  hasPassword: !!process.env.MYSQL_PASSWORD,
+  nodeEnv: process.env.NODE_ENV,
+});
+
 const pool = mysql.createPool({
   host: process.env.MYSQL_HOST,
   user: process.env.MYSQL_USER,
@@ -15,5 +24,15 @@ const pool = mysql.createPool({
     ? { ssl: { rejectUnauthorized: false } } // SSL required on Railway
     : {}),
 });
+
+(async () => {
+  try {
+    const conn = await pool.getConnection();
+    console.log("✅ MySQL connected successfully!");
+    conn.release();
+  } catch (err) {
+    console.error("❌ MySQL connection failed:", err.message);
+  }
+})();
 
 export { pool };
