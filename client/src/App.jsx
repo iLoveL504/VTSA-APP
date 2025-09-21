@@ -25,7 +25,7 @@ import { useSocket } from './hooks/useSocket.js'
 
 function App() {
   const backendURL = import.meta.env.VITE_BACKEND_URL || "http://localhost:4000";
-  console.log(import.meta.env.VITE_BACKEND_URL)
+  console.log('https://vtsa-app-production.up.railway.app')
 const { data: empData } =
   useAxiosFetch(`${backendURL}/employees`);
 
