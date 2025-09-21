@@ -1,5 +1,7 @@
 import dotenvFlow from "dotenv-flow";
-dotenvFlow.config();
+if (process.env.NODE_ENV !== "production") {
+  dotenvFlow.config();
+}
 import express from 'express';
 import { logDate } from './middleware/logEvents.js';
 import cors from 'cors';
