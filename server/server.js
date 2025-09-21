@@ -1,4 +1,5 @@
 import dotenvFlow from "dotenv-flow";
+console.log(process.env.NODE_ENV)
 if (process.env.NODE_ENV !== "production") {
   dotenvFlow.config();
 }
