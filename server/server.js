@@ -3,6 +3,9 @@ console.log('backend url', process.env.VITE_BACKEND_URL)
 console.log('some token', process.env.ACCESS_TOKEN_SECRET)
 if (process.env.NODE_ENV !== "production") {
   dotenvFlow.config();
+  console.log('this is after config')
+  console.log('some token', process.env.ACCESS_TOKEN_SECRET)
+  console.log('backend url', process.env.VITE_BACKEND_URL)
 }
 import express from 'express';
 import { logDate } from './middleware/logEvents.js';
