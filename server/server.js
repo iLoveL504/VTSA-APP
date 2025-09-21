@@ -1,4 +1,5 @@
 import dotenvFlow from "dotenv-flow";
+console.log(process.env, `\n *****************************************************************************************************`)
 console.log('backend url', process.env.VITE_BACKEND_URL)
 console.log('some token', process.env.ACCESS_TOKEN_SECRET)
 if (process.env.NODE_ENV !== "production") {
