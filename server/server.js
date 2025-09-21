@@ -16,7 +16,12 @@ import { fileURLToPath } from 'url';
 
 const app = express();
 const server = http.createServer(app);
-
+console.log("ENV CHECK:", {
+  MYSQL_HOST: process.env.MYSQL_HOST,
+  DB_PORT: process.env.DB_PORT,
+  MYSQL_USER: process.env.MYSQL_USER,
+  MYSQL_DATABASE: process.env.MYSQL_DATABASE,
+});
 // Socket.io configuration
 const io = new Server(server, {
   cors: {
