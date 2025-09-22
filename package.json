@@ -23,10 +23,10 @@
   "nodemon": "^3.1.10"
 },
   "scripts": {
-    "start": "node server/server.js",
+    "start": "cross-env NODE_ENV=production node server/server.js",
     "postinstall": "cd client && npm install",
     "build": "cd client && npm run build",
-    "dev": "nodemon server/server.js"
+    "dev": "cross-env NODE_ENV=development nodemon server/server.js"
   },
   "author": "",
   "license": "ISC",

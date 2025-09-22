@@ -1,0 +1,8 @@
+{
+  "watch": ["server"],
+  "ext": "js,json",
+  "ignore": ["client/*", "node_modules/*"],
+  "execMap": {
+    "js": "node --experimental-json-modules"
+  }
+}

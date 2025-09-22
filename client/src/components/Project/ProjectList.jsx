@@ -4,9 +4,10 @@ import useAxiosFetch from '../../hooks/useAxiosFetch'
 import { Grid } from 'ldrs/react'
 
 const ProjectList = ({projects}) => {
+  const backendURL = import.meta.env.VITE_BACKENDURL || 'http://localhost:4000'
   const empId = sessionStorage.getItem('id')
   console.log(projects)
-  const {data: designatedProject, isLoading: designatedIsLoading} = useAxiosFetch(`http://localhost:4000/employees/${empId}/designated-project`)
+  const {data: designatedProject, isLoading: designatedIsLoading} = useAxiosFetch(`${backendURL}/employees/${empId}/designated-project`)
   const [lowRole, setLowRole] = useState(true)
   console.log(lowRole)
   useEffect(() => {

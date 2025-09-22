@@ -85,7 +85,11 @@ useEffect(() => {
 }, [projData])
 
 useEffect(() => {
-  if (notifData) setNotifications(notifData)
+  if (notifData) {
+    setNotifications(notifData)
+    console.log('notifications')
+    console.log(notifData)
+  }
 }, [notifData])
 
   return (

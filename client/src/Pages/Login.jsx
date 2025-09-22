@@ -8,6 +8,7 @@ import {Axios} from '../api/axios'
 import { useNavigate } from 'react-router-dom'
 import { useStoreActions } from 'easy-peasy';
 import { jwtDecode } from "jwt-decode";
+import logo from "../assets/images/vtsa.png"
 
 const Login = () => {
     const setAuthUser = useStoreActions((actions) => actions.setUser)
@@ -97,7 +98,7 @@ const Login = () => {
       <ToastContainer />
       <div className="login-card">
         <div className="login-header">
-          <h1>Welcome Back</h1>
+          <h1><span style={{'display': 'inline-block', 'width': '3rem', 'height': 'auto'}}><img src={logo} alt="" style={{'width': '100%', 'height': '100%'}}/></span>VTSA Monitor</h1>
           <p>Please enter your credentials to login</p>
         </div>
 
