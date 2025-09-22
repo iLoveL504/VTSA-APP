@@ -6,8 +6,9 @@ import ProjectTasks from '../../outComponent/GANTT_CHART/GanttData';
 import useAxiosFetch from "../../hooks/useAxiosFetch";
 
 const TestChart = ({ id }) => {
+    const backendURL = import.meta.env.VITE_BACKEND_URL || 'http://localhost:4000'
     const [view, setView] = useState(ViewMode.Day);
-    const {data: projInfo, fetchError: projFetchError, isLoading: projIsLoading} = useAxiosFetch(`http://localhost:4000/projects/${id}`);
+    const {data: projInfo, fetchError: projFetchError, isLoading: projIsLoading} = useAxiosFetch(`${backendURL}/projects/${id}`);
     const [hasError, setHasError] = useState(false);
 
     useEffect(() => {

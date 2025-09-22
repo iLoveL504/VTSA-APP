@@ -75,6 +75,7 @@ const reverseTaskMap = {
 };
 
 const useFindProjectTask = (id) => {
+    const backendURL = import.meta.env.VITE_BACKEND_URL || 'http://localhost:4000'
     const dateNow = useStoreState(state => state.date)
 
     const [tasksFetchError, setTasksFetchError] = useState(null)
@@ -82,7 +83,7 @@ const useFindProjectTask = (id) => {
     const [currentTask, setCurrentTask] = useState({})
     const [allTaskDates, setAllTaskDates] = useState([])
 
-    const {data: fetchedData, fetchError: fetchError, isLoading: isLoading} = useAxiosFetch(`http://localhost:4000/projects/schedule/${id}`)
+    const {data: fetchedData, fetchError: fetchError, isLoading: isLoading} = useAxiosFetch(`${backendURL}/projects/schedule/${id}`)
 
     useEffect(() => {
         if (!isLoading) {
