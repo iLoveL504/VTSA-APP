@@ -1,9 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { Grid } from 'ldrs/react'
 import { useNavigate } from 'react-router-dom'
+import '../../css/DailyTasks.css'
+
 
 const DailyTasks = ({ allTaskDates, tasksIsLoading }) => {
     const navigate = useNavigate()
+    const [role] = useState(() => sessionStorage.getItem('roles'));
+
     const handleReportClick = () => {
         navigate(`report`)
     }
@@ -11,18 +15,10 @@ const DailyTasks = ({ allTaskDates, tasksIsLoading }) => {
 
     useEffect(() => {
         if (allTaskDates && Array.isArray(allTaskDates)) {
-            setTaskList(allTaskDates);
+
+            setTaskList(allTaskDates.filter(t => Number(t.id) >= 500));
         }
     }, [allTaskDates]);
-
-    const handleTaskToggle = (index) => {
-        const updatedTasks = [...taskList];
-        updatedTasks[index] = {
-            ...updatedTasks[index],
-            done: updatedTasks[index].done === 1 ? 0 : 1
-        };
-        setTaskList(updatedTasks);
-    };
 
     const formatDate = (dateString) => {
         const date = new Date(dateString);
@@ -44,6 +40,19 @@ const DailyTasks = ({ allTaskDates, tasksIsLoading }) => {
     const completedTasks = taskList.filter(task => task.done === 1).length;
     const totalTasks = taskList.length;
     const progressPercentage = totalTasks > 0 ? (completedTasks / totalTasks) * 100 : 0;
+
+    const handleTaskToggle = (index) => {
+        const updatedTasks = [...taskList];
+        updatedTasks[index] = {
+            ...updatedTasks[index],
+            done: updatedTasks[index].done === 1 ? 0 : 1
+        };
+        setTaskList(updatedTasks);
+    };
+
+    useEffect(() => {
+        console.log(`${Math.trunc(progressPercentage)}%`)
+    }, [progressPercentage])
 
     if (tasksIsLoading) {
         return (
@@ -72,6 +81,7 @@ const DailyTasks = ({ allTaskDates, tasksIsLoading }) => {
             </div>
 
             <div className="tasks-container">
+                {console.log(taskList)}
                 {taskList.length > 0 ? (
                     <div className="tasks-list-scrollable">
                         <div className="tasks-list">
@@ -90,15 +100,15 @@ const DailyTasks = ({ allTaskDates, tasksIsLoading }) => {
                                         </div>
                                         
                                         <div className="task-content">
-                                            <div className="task-name">{task.name}</div>
+                                            <div className="task-name">{task.text}</div>
                                             <div className="task-dates">
                                                 <span className="date-item">
                                                     <i className="fas fa-calendar-start"></i>
-                                                    {formatDate(task.date)}
+                                                    {formatDate(task.start)}
                                                 </span>
                                                 <span className="date-item">
                                                     <i className="fas fa-calendar-end"></i>
-                                                    {formatDate(task.end_date)}
+                                                    {formatDate(task.end)}
                                                 </span>
                                             </div>
                                         </div>
@@ -131,7 +141,11 @@ const DailyTasks = ({ allTaskDates, tasksIsLoading }) => {
             </div>
 
             {/* Floating Daily Report Button */}
-            <button className="floating-report-btn" onClick={handleReportClick} style={{display: sessionStorage.getItem('roles') === 'Foreman' ? 'block' : 'none'}}>
+            <button 
+                className="floating-report-btn" 
+                onClick={handleReportClick} 
+                style={{ display: role === 'Foreman' ? 'block' : 'none' }}
+                >
                 <i className="fas fa-file-alt"></i>
                 Make Daily Report
             </button>

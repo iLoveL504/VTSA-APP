@@ -83,8 +83,13 @@ export const assignTeam = async (req, res) => {
 
     try {
         const results = await teams.assignTeam(pe.employee_id, foreman.employee_id, memberIds, projId)
-        res.status(200).json(results)
+        res.status(200).json({
+            success: true,
+            message: "Schedule saved successfully!",
+            results
+        });
     } catch (error) {
+        console.log(error)
         res.status(500).json({ error: error.message });
     }
 }

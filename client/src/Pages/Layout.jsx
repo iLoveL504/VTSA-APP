@@ -7,7 +7,7 @@ import { useNavigate } from 'react-router-dom'
 const Layout = () => {
     const navigate = useNavigate()
     const isLoggedIn = sessionStorage.getItem("isLoggedIn") === "true" ? true : false 
-    console.log(isLoggedIn)
+    //console.log(isLoggedIn)
     const [menuToggle, invertMenuToggle] = useToggle()
     if(!isLoggedIn) return (
       <>

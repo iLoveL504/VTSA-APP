@@ -2,8 +2,10 @@ import React from 'react'
 import { Outlet, Link, Routes, Route, useNavigate } from 'react-router-dom';
 import { useStoreState } from 'easy-peasy'
 import ProjectList from '../../components/Project/ProjectList'
+import '../../css/Projects.css'
 
-const Projects = () => {
+const Projects = ({updateIsLoading}) => {
+
   const navigate = useNavigate()
 
   const handleCreateClick = () => {
@@ -26,7 +28,7 @@ const Projects = () => {
       </div>
 
       <div>
-          <ProjectList projects={projects}/>
+          <ProjectList projects={projects} updateIsLoading={updateIsLoading}/>
       </div>
     </div>
   )

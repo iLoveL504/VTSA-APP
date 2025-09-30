@@ -113,30 +113,38 @@ class TeamModel {
             SELECT * FROM employees
             WHERE job = 'Project Engineer'
             AND employee_id NOT IN (
-                SELECT project_engineer_id FROM teams WHERE project_engineer_id IS NOT NULL
+            SELECT project_engineer_id FROM teams WHERE project_engineer_id IS NOT NULL
             )
         `);
         return result;
     }
 
-    static async assignTeam(pe, foreman, members, projId) {
-        await pool.query(`
-            UPDATE teams SET project_engineer_id = ? WHERE foreman_id = ?;
-            UPDATE teams SET project_id = ? WHERE foreman_id = ?;
-        `, [pe, foreman, projId, foreman]);
+static async assignTeam(pe, foreman, members, projId) {
+    await pool.query(
+        `UPDATE teams SET project_engineer_id = ? WHERE foreman_id = ?`,
+        [pe, foreman]
+    );
 
-        const [foreman_team_id] = await pool.query(`
-            SELECT team_id FROM teams WHERE foreman_id = ?
-        `, [foreman]);
+    await pool.query(
+        `UPDATE teams SET project_id = ? WHERE foreman_id = ?`,
+        [projId, foreman]
+    );
 
-        const fId = foreman_team_id[0]['team_id'];
+    const [foreman_team_id] = await pool.query(
+        `SELECT team_id FROM teams WHERE foreman_id = ?`,
+        [foreman]
+    );
 
-        await pool.query(`
-            INSERT INTO team_members (foreman_id, emp_id) VALUES(?, ?)
-        `, [fId, pe]);
+    const fId = foreman_team_id[0]['team_id'];
 
-        console.log('should be ok');
-    }
+    await pool.query(
+        `INSERT INTO team_members (foreman_id, emp_id) VALUES(?, ?)`,
+        [fId, pe]
+    );
+
+    console.log('should be ok');
+}
+
 }
 
 export { TeamModel }

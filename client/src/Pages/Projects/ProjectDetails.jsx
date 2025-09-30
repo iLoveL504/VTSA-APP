@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { Grid } from 'ldrs/react'
 import 'ldrs/react/Grid.css'
 import { useNavigate, useParams } from 'react-router-dom' 
@@ -6,26 +6,91 @@ import { Axios } from '../../api/axios.js'
 import "wx-react-gantt/dist/gantt.css";
 import "../../gantt-custom.css"
 
+// Modal Component
+const ScheduleModal = ({ isOpen, onClose, onChoice }) => {
+  if (!isOpen) return null;
+
+  return (
+    <div className="modal-overlay" onClick={onClose}>
+      <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+        <div className="modal-header">
+          <h3>Create Project Schedule</h3>
+          <button className="modal-close" onClick={onClose}>
+            <i className="fas fa-times"></i>
+          </button>
+        </div>
+        
+        <div className="modal-body">
+          <p>How would you like to create the schedule?</p>
+          
+          <div className="schedule-options">
+            <div className="schedule-option" onClick={() => onChoice('default')}>
+              <div className="option-icon">
+                <i className="fas fa-bolt"></i>
+              </div>
+              <div className="option-content">
+                <h4>Use Default Schedule</h4>
+                <p>Quick setup with pre-defined tasks and timelines</p>
+              </div>
+            </div>
+            
+            <div className="schedule-option" onClick={() => onChoice('custom')}>
+              <div className="option-icon">
+                <i className="fas fa-sliders-h"></i>
+              </div>
+              <div className="option-content">
+                <h4>Customize Schedule</h4>
+                <p>Create a tailored schedule with custom tasks and timelines</p>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <div className="modal-footer">
+          <button className="btn-secondary" onClick={onClose}>
+            Cancel
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
 
 const ProjectDetails = ({
-    currentTask, proj, setFormData, setIsLoading, formData, teamInfo, isLoading, teamIsLoading, tasksIsLoading,
+    currentTask, currentParentTask, projectExists, proj, setFormData, setIsLoading, formData, teamInfo, isLoading, teamIsLoading, tasksIsLoading,
     saveStatus, handleSave, isEditing, errors, handleInputChange, handleNumberInputChange, handleBlur, handleSubmit,
-    tasksFetchError, values, setIsEditing, handleCancel, findReverseTaskName
+    values, setIsEditing, handleCancel
 }) => {
+    console.log(projectExists)
     const {projId} = useParams()
+    const [showScheduleModal, setShowScheduleModal] = useState(false)
+    
     const handleTaskComplete =  (task) => async () => {
+        try {
+            const payload = {
+                id: Number(projId),
+                task: task
+           }
 
-        const t = task.split('_date')[0]
-        const task_done = t + '_done'
-        console.log(task_done)
-        const payload = {
-            task: task_done
-        }
-        await Axios.put(`/projects/schedule/${projId}`, payload)
-        window.location.reload()
+            await Axios.put(`/projects/schedule/${projId}`, payload)
+            window.location.reload()
+        } catch (e) {
+            console.log(e)
+        } 
+        // const t = task.split('_date')[0]
+        // const task_done = t + '_done'
+        // console.log(task_done)
+        // const payload = {
+        //     id: Number(projId),
+        //     task: task_done
+        // }
+        // await Axios.put(`/projects/schedule/${projId}`, payload)
+
+
     }
 
     const navigate = useNavigate()
+    
     useEffect(() => {
         if (proj !== undefined) {
             console.log(proj)
@@ -34,9 +99,22 @@ const ProjectDetails = ({
         }
     }, [proj, formData, teamInfo])
 
-    
+    const handleCreateSchedule = () => {
+        setShowScheduleModal(true)
+    }
 
-    if (isLoading || teamIsLoading || tasksIsLoading) {
+    const handleScheduleChoice = (choice) => {
+        setShowScheduleModal(false)
+        if (choice === 'default') {
+            // Navigate to default schedule creation
+            navigate(`schedule`) // or your default schedule route
+        } else {
+            // Navigate to custom schedule creation
+            navigate(`/projects/${projId}/custom`) // or your custom schedule route
+        }
+    }
+
+    if (isLoading || teamIsLoading || tasksIsLoading || projectExists === 'loading') {
         return (
                 <div className="Loading">
                     <p>Data is Loading...</p>
@@ -47,6 +125,13 @@ const ProjectDetails = ({
 
     return (
         <div className="Content ProjectDetails">
+            {/* Schedule Modal */}
+            <ScheduleModal 
+                isOpen={showScheduleModal}
+                onClose={() => setShowScheduleModal(false)}
+                onChoice={handleScheduleChoice}
+            />
+            
             <div className="action-buttons">
                     {!isEditing ? (
                         <button onClick={() => setIsEditing(true)}>Edit</button>
@@ -61,35 +146,108 @@ const ProjectDetails = ({
             </div>
             {saveStatus === 'success' && <div className="status success">Project updated successfully!</div>}
                 {saveStatus === 'error' && <div className="status error">Error updating project</div>}
-                <div className="form-section current-task-section">
-                    <h3>Current Task</h3>
-                    {currentTask && !tasksFetchError ? (
-                        <div className="current-task-card">
-                            <div className="task-name">{currentTask.name} 
-                                <button className={`complete-btn ${currentTask.done === 1  ? 'completed': ''}`} 
-                                style={{
-                                    display: Object.keys(currentTask).length === 0 ? 'none' : 'block'
-                                }} onClick={handleTaskComplete(findReverseTaskName(currentTask.name))}>
-                                    <i className="fas fa-check"></i>
-                                    Mark Complete
-                                </button>
+                            <ScheduleModal 
+                isOpen={showScheduleModal}
+                onClose={() => setShowScheduleModal(false)}
+                onChoice={handleScheduleChoice}
+            />
+            
+                <div className="task-overview-section">
+                <h3>Task Overview</h3>
+                <div className="task-cards-container">
+                    {
+                        projectExists ? (
+                            <>
+                                <div className="task-card current-task-card">
+                                <div className="task-card-header">
+                                    <h4>Current Task</h4>
+                                    <span className="priority-badge">ACTIVE</span>
+                                </div>
+                                {currentTask && Object.keys(currentTask).length > 0 ? (
+                                    <div className="task-card-content">
+                                        <div className="task-name">
+                                            {currentTask.task_name}
+                                            <button 
+                                                className={`complete-btn ${currentTask.task_done === 1 ? 'completed' : ''}`}
+                                                onClick={handleTaskComplete(currentTask.task_name)}
+                                            >
+                                                <i className="fas fa-check"></i>
+                                                {currentTask.task_done === 1 ? 'Completed' : 'Mark Complete'}
+                                            </button>
+                                        </div>
+                                        <div className="task-dates">
+                                            <div className="task-date">
+                                                <i className="fas fa-play-circle"></i>
+                                                Start: {new Date(currentTask.task_start).toLocaleDateString("en-GB")}
+                                            </div>
+                                            <div className="task-date">
+                                                <i className="fas fa-flag-checkered"></i>
+                                                End: {new Date(currentTask.task_end).toLocaleDateString("en-GB")}
+                                            </div>
+                                            <div className="task-duration">
+                                                <i className="fas fa-clock"></i>
+                                                Duration: {currentTask.task_duration} days
+                                            </div>
+                                        </div>
+                                        <div className="task-progress">
+                                  
+                                            <span>Progress Contribution: {currentTask.task_percent}%</span>
+                                        </div>
+                                    </div>
+                                ) : (
+                                    <div className="task-empty-state">
+                                        <i className="fas fa-check-circle"></i>
+                                        <div className="empty-message">No current tasks scheduled</div>
+                                        <div className="empty-submessage">All tasks are completed or not scheduled yet</div>
+                                    </div>
+                                )}
                             </div>
-                            <div className="task-date">
-                                Scheduled: {currentTask.date}
+
+                            {/* Parent Task Card */}
+                            <div className="task-card parent-task-card">
+                                <div className="task-card-header">
+                                    <h4>Parent Project</h4>
+                                    <span className="project-badge">OVERVIEW</span>
+                                </div>
+                                {currentParentTask && Object.keys(currentParentTask).length > 0 ? (
+                                    <div className="task-card-content">
+                                        <div className="task-name">{currentParentTask.task_name}</div>
+                                        <div className="task-dates">
+                                            <div className="task-date">
+                                                <i className="fas fa-play-circle"></i>
+                                                Start: {new Date(currentParentTask.task_start).toLocaleDateString("en-GB")}
+                                            </div>
+                                            <div className="task-date">
+                                                <i className="fas fa-flag-checkered"></i>
+                                                End: {new Date(currentParentTask.task_end).toLocaleDateString("en-GB")}
+                                            </div>
+                                            <div className="task-duration">
+                                                <i className="fas fa-clock"></i>
+                                                Duration: {currentParentTask.task_duration} days
+                                            </div>
+                                        </div>
+                                        <div className="task-progress">
+                                     
+                                            <span>{((currentParentTask.task_done || 0) * 100).toFixed(0)}% Complete</span>
+                                        </div>
+                                    </div>
+                                ) : (
+                                    <div className="task-empty-state">
+                                        <i className="fas fa-project-diagram"></i>
+                                        <div className="empty-message">No parent project</div>
+                                        <div className="empty-submessage">This task is standalone</div>
+                                    </div>
+                                )}
                             </div>
-                            <div className="task-date">
-                                End: {currentTask.end_date}
-                                {console.log(Object.keys(currentTask).length)}
-                            </div>
-                            
-                        </div>
-                    ) : (
-                        <div className="current-task-card">
-                            <div className="task-name">No current tasks scheduled</div>
-                            <div className="task-date">All tasks are completed or not scheduled yet</div>
-                        </div>
-                    )}
+                            </>
+                        ) : (
+                                <div className='no-schedule-card'>
+                                    <button onClick={handleCreateSchedule}>Create Schedule</button>
+                                </div>
+                            )
+                    }
                 </div>
+            </div>
 
                 <div className="project-form">
                     <div className="form-section">

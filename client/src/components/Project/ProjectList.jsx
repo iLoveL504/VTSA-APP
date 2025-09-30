@@ -3,10 +3,11 @@ import Project from './Project'
 import useAxiosFetch from '../../hooks/useAxiosFetch'
 import { Grid } from 'ldrs/react'
 
-const ProjectList = ({projects}) => {
+const ProjectList = ({updateIsLoading}) => {
+
   const backendURL = import.meta.env.VITE_BACKENDURL || 'http://localhost:4000'
   const empId = sessionStorage.getItem('id')
-  console.log(projects)
+  const {data: projects, isLoading: projectsIsLoading} = useAxiosFetch(`${backendURL}/projects`)
   const {data: designatedProject, isLoading: designatedIsLoading} = useAxiosFetch(`${backendURL}/employees/${empId}/designated-project`)
   const [lowRole, setLowRole] = useState(true)
   console.log(lowRole)
@@ -17,9 +18,11 @@ const ProjectList = ({projects}) => {
       }
   }, [])
 
+  console.log(updateIsLoading)
+  console.log(designatedIsLoading)
+  console.log(projectsIsLoading)
 
-
-    if (designatedIsLoading) {
+    if (designatedIsLoading || projectsIsLoading || updateIsLoading) {
         return (
                 <div className="Loading">
                     <p>Data is Loading...</p>

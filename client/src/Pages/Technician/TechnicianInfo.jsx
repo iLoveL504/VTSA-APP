@@ -8,6 +8,7 @@ import Snackbar from '@mui/material/Snackbar';
 import Button from '@mui/material/Button';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faCircleCheck } from '@fortawesome/free-solid-svg-icons';
+import '../../css/TechnicianInfo.css'
 
 const TechnicianInfo = () => {
     const backendURL = import.meta.env.VITE_BACKEND_URL || "http://localhost:4000";

@@ -1,9 +1,11 @@
 
 class ProjectTasks{
   
-  constructor(date) {
+  constructor(date, projSchedule = null) {
     this.today = date
+    this.projSchedule = projSchedule
     this.offset = (days) => new Date(this.today.getFullYear(), this.today.getMonth(), this.today.getDate() + days);
+
     this.tasks = [
     {
       id: 500,

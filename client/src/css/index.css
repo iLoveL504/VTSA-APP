@@ -1,0 +1,1975 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Source+Sans+3:ital,wght@0,200..900;1,200..900&display=swap');
+@import url("https://cdn.syncfusion.com/ej2/bootstrap5.css");
+@import 'https://unpkg.com/@univerjs/preset-sheets-core/lib/index.css';
+@import url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css');
+
+*{
+  margin: 0;
+  padding: 0; 
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Montserrat', sans-serif;
+  background-color: #ffffff;
+  color: #333;
+}
+
+button{
+  background-color: #315a95;
+  color: white;
+  padding: 0.75rem 1.5rem;
+  border: none;
+  border-radius: 4px;
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.Loading{
+  margin: auto;
+  display: flex;
+  flex-direction: column;
+  width: 150px;
+  align-items: center;
+}
+
+nav{
+  background-color: rgb(49, 90, 149);
+  height: 10vh;
+  display: flex;
+  align-items: center;
+  position: fixed; /* Set the navbar to fixed position */
+  top: 0;
+  width: 100%; /* Full width */
+  z-index: 3000; /* Ensure the navbar is above other content */
+}
+
+nav div{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+nav .Menu-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  height: 10vh;
+  min-width: 60px;
+  transition: 0.3 background-color;
+}
+
+nav .Menu-icon:hover {
+  background-color: rgb(50, 90, 150);
+}
+
+nav .Profile-Icon {
+  /* margin-left: auto; */
+  padding-right: 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;  
+  color: aliceblue
+}
+nav .Notification-Icon {
+  margin-left: auto;
+  gap: 10px;
+  min-height: 60px;
+  min-width: 60px;
+  color: aliceblue;
+  cursor: pointer;
+  position: relative; 
+}
+
+nav .Notifications {
+  position: absolute;
+  user-select: none;
+  top: 8px;
+  right: 10px;
+  width: 20px;
+  height: 20px;
+  background-color: red;
+  border-radius: 50%;
+  font-family: sans-serif;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.8rem; 
+} 
+
+.noNotifs{
+  color: black
+}
+
+/* Notification Icon Styles (keep your existing styles) */
+.Notification-Icon {
+  margin-left: auto;
+  gap: 10px;
+  min-height: 60px;
+  min-width: 60px;
+  color: aliceblue;
+  cursor: pointer;
+  position: relative; 
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Notification List Styles - Modified to work with your structure */
+.NotificationList {
+  position: absolute;
+  top: 100%; /* Position below the navbar */
+  right: 0;
+  width: 350px;
+  max-height: 500px;
+  overflow-y: auto;
+  background-color: white;
+  border-radius: 0 0 8px 8px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+  z-index: 1000;
+}
+
+.NotificationList.Hidden {
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(-10px);
+  max-height: 0;
+}
+
+/* Notification Item Styles */
+.NotificationList ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.NotificationList li {
+  padding: 1rem;
+  border-bottom: 1px solid #f0f0f0;
+  transition: background-color 0.2s ease;
+}
+
+.NotificationList li:hover {
+  background-color: #f8fafc;
+}
+
+.NotificationList h4 {
+  color: #2c3e50;
+  font-size: 0.95rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+
+.NotificationList p {
+  color: #555;
+  font-size: 0.9rem;
+  line-height: 1.4;
+  margin: 0;
+}
+
+/* Notification Badge */
+.Notifications {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  width: 20px;
+  height: 20px;
+  background-color: red;
+  border-radius: 50%;
+  font-family: sans-serif;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.8rem;
+  color: white;
+}
+
+/* Make sure the bell icon is properly positioned */
+.BellIcon {
+  position: relative;
+}
+
+
+.Main-Content {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start; 
+  height: calc(100vh - 10vh);
+  margin-top: 10vh;   
+  overflow:hidden;
+}
+
+.Main-Content section {
+  flex: 1;
+  background: #f9f9f9;
+  height: 100%;
+  overflow-y: auto;
+  width: 100%;   /* ✅ always take full width */
+}
+
+
+.Menu.Hidden ~ section {
+  margin-left: 0;
+}
+
+.Menu {
+  background-color: rgb(35, 70, 120);
+  height: 100%;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  color: aliceblue;
+  min-width: 150px;
+  width: 220px; /* gives it a predictable size */
+  position: fixed;
+  transition: 0.3s transform;
+  z-index: 2000;
+}
+
+.Menu.Hidden {
+  transform: translateX(-100%); /* slide out */
+}
+
+.Menu ul {
+  list-style: none;
+  margin: 0px;
+  width: 100%;
+  transition: 0.5s background-color;
+}
+
+.Menu ul a {
+  text-decoration: none;
+  color: aliceblue;
+  padding: 0.5rem;
+}
+
+.Menu ul li {
+  display: flex;
+  align-items: center;
+  padding: .5rem;
+  border-radius: 0.5rem;
+  font-size: 0.8rem;
+  gap: 0.5em;
+  cursor: pointer;
+  transition: 0.3s background-color;
+  height: 50px;
+
+}
+
+.Menu li:hover {
+  background-color: rgb(50, 90, 150);
+}
+
+
+.menuOn {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 1500;
+}
+
+
+.Menu .Logout{
+  margin-top: auto;
+  padding: 1rem;
+  text-align: center;
+  color: white;
+  cursor: pointer;
+  transition: 0.2s background-color;
+  width: 100%;
+  align-items: center;
+}
+
+.Menu .Logout:hover {
+  background-color: rgb(200, 50, 50);
+}
+
+/*Dashboard styling*/
+.Content {
+  padding: 20px;
+  gap: 20px;
+  background-color: #ffffff;
+  min-height: 90vh;
+}
+
+/* Dashboard Styles */
+
+
+/* Technician Component */
+.Content.TechnicianMenu {
+  padding: 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+}
+
+.Content.TechnicianMenu form {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+  align-items: flex-end;
+}
+
+.Content.TechnicianMenu form label {
+  display: block;
+  font-weight: 500;
+  margin-bottom: 0.5rem;
+  color: #2c3e50;
+  font-size: 0.9rem;
+}
+
+.Content.TechnicianMenu input[type="text"] {
+  padding: 0.75rem;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-family: 'Montserrat', sans-serif;
+  min-width: 300px;
+  transition: border 0.3s ease;
+}
+
+.Content.TechnicianMenu input[type="text"]:focus {
+  outline: none;
+  border-color: #315a95;
+  box-shadow: 0 0 0 2px rgba(49, 90, 149, 0.2);
+}
+
+.Content.TechnicianMenu .Filter {
+  background-color: #315a95;
+  color: white;
+  padding: 0.75rem 1.5rem;
+  border: none;
+  border-radius: 4px;
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.Content.TechnicianMenu .Filter:hover {
+  background-color: #26467c;
+}
+
+/* Labels Header */
+.TechnicianMenu .Labels {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr;
+  padding: 1rem;
+  background-color: #315a95;
+  color: white;
+  font-weight: 500;
+  border-radius: 4px;
+  margin-bottom: 0.5rem;
+}
+
+/* Employee List Container */
+.TechnicianMenu .EmployeeList {
+  background: white;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+/* Employee Component */
+.employee {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr;
+  align-items: center;
+  padding: 1.25rem;
+  transition: all 0.3s ease;
+  border-bottom: 1px solid #eee;
+  cursor: pointer;
+}
+
+.employee:hover {
+  background-color: #f8f9fa;
+  transform: translateX(5px);
+}
+
+.employee p {
+  margin: 0;
+  color: #333;
+}
+
+/* Status Badge */
+.Status {
+  display: inline-block;
+  padding: 0.35rem 0.75rem;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-align: center;
+  width: fit-content;
+}
+
+.Status.Active {
+  background-color: #e6f7ee;
+  color: #28a745;
+}
+
+.Status.Inactive {
+  background-color: #fce8e8;
+  color: #dc3545;
+}
+
+/* Loading State */
+.LoadingState {
+  display: flex;
+  justify-content: center;
+  padding: 2rem;
+}
+
+/* Technician Info Page Styles */
+
+
+/* Projects Component (Project Menu) */
+
+
+
+
+/* Loading animation */
+.loading-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 400px;
+}
+
+
+/* Project List Component */
+
+
+
+
+
+.Content.ScheduleProject {
+  padding: 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+}
+
+.Content.Content.ScheduleProject button:disabled{
+  opacity: 0.6;
+  cursor: not-allowed
+}
+
+.QAQCChecklist {
+  padding: 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+  background: #f8fafc;
+}
+
+.checklist-header {
+  background: linear-gradient(135deg, #315a95 0%, #1e3a5f 100%);
+  color: white;
+  padding: 1.5rem;
+  border-radius: 12px;
+  margin-bottom: 2rem;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+}
+
+.checklist-header h1 {
+  margin: 0 0 0.5rem 0;
+  font-weight: 600;
+}
+
+.control-number {
+  opacity: 0.9;
+  font-size: 0.9rem;
+}
+
+.form-section.basic-info {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 1rem;
+  background: white;
+  padding: 1.5rem;
+  border-radius: 12px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+  margin-bottom: 2rem;
+}
+
+.form-row {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.form-row label {
+  font-weight: 600;
+  color: #2d3748;
+  font-size: 0.95rem;
+}
+
+.form-row input {
+  padding: 0.75rem;
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+  font-family: 'Montserrat', sans-serif;
+}
+
+.checklist-section {
+  background: white;
+  padding: 1.5rem;
+  border-radius: 12px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+  margin-bottom: 2rem;
+}
+
+.checklist-section h3 {
+  color: #315a95;
+  margin: 0 0 1rem 0;
+  padding-bottom: 0.5rem;
+  border-bottom: 2px solid #e2e8f0;
+}
+
+.items-table {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.table-header, .table-row {
+  display: grid;
+  grid-template-columns: 3fr 1fr 2fr;
+  gap: 1rem;
+  padding: 0.75rem;
+  align-items: center;
+}
+
+.table-header {
+  background-color: #315a95;
+  color: white;
+  border-radius: 6px;
+  font-weight: 600;
+}
+
+.table-row {
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.table-row:last-child {
+  border-bottom: none;
+}
+
+.col-description {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.item-number {
+  font-weight: 600;
+  min-width: 25px;
+}
+
+.col-accepted select, .col-remarks input {
+  width: 100%;
+  padding: 0.5rem;
+  border: 1px solid #e2e8f0;
+  border-radius: 4px;
+  font-family: 'Montserrat', sans-serif;
+}
+
+.comments-section {
+  background: white;
+  padding: 1.5rem;
+  border-radius: 12px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+  margin-bottom: 2rem;
+}
+
+.comments-section label {
+  font-weight: 600;
+  color: #2d3748;
+  margin-bottom: 0.5rem;
+  display: block;
+}
+
+.comments-section textarea {
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+  font-family: 'Montserrat', sans-serif;
+  resize: vertical;
+}
+
+.signatures-section {
+  background: white;
+  padding: 1.5rem;
+  border-radius: 12px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+  margin-bottom: 2rem;
+}
+
+.signature-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1.5rem;
+}
+
+.signature-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.signature-field label {
+  font-weight: 600;
+  color: #2d3748;
+}
+
+.signature-field input {
+  padding: 0.75rem;
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+  font-family: 'Montserrat', sans-serif;
+}
+
+.signature-field .date {
+  font-size: 0.85rem;
+  color: #718096;
+}
+
+.form-actions {
+  display: flex;
+  gap: 1rem;
+  justify-content: flex-end;
+}
+
+.submit-btn, .print-btn {
+  background-color: #315a95;
+  color: white;
+  padding: 0.75rem 1.5rem;
+  border: none;
+  border-radius: 6px;
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.print-btn {
+  background-color: #718096;
+}
+
+.submit-btn:hover {
+  background-color: #26467c;
+}
+
+.print-btn:hover {
+  background-color: #4a5568;
+}
+
+.ProjectProgress .progress-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.ProjectProgress .tabs {
+    display: flex;
+    gap: 10px;
+}
+
+.ProjectProgress .tabs button {
+    padding: 8px 16px;
+    border: 1px solid #ccc;
+    background: #0f67af;
+    cursor: pointer;
+    border-radius: 4px;
+}
+
+.ProjectProgress .tabs button.active {
+    background: #54b0d2;
+    color: white;
+    border-color: #54b0d2;
+}
+
+.progress-content {
+    margin-top: 20px;
+    width: 100%;
+}
+
+.accomplishment-report, .daily-tasks {
+    padding: 20px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    background: #f9f9f9;
+}
+
+
+/* Add these styles to your existing CSS */
+
+
+
+.Chat {
+  padding: 0;
+  height: calc(100vh - 60px);
+  background-color: #f5f5f5;
+}
+
+.chat-container {
+  display: flex;
+  height: 100%;
+  background: white;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+/* Sidebar Styles */
+.chat-sidebar {
+  width: 280px;
+  border-right: 1px solid #e0e0e0;
+  display: flex;
+  flex-direction: column;
+}
+
+.sidebar-header {
+  padding: 16px;
+  border-bottom: 1px solid #e0e0e0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.sidebar-header h3 {
+  margin: 0;
+  font-size: 18px;
+  color: #333;
+}
+
+.new-chat-btn {
+  background: #2d7ff9;
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 32px;
+  height: 32px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.chat-channels {
+  flex: 1;
+  overflow-y: auto;
+  padding: 8px 0;
+}
+
+.channel-section {
+  margin-top: 16px;
+}
+
+.section-title {
+  display: block;
+  padding: 8px 16px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #666;
+  text-transform: uppercase;
+}
+
+.channel-item {
+  display: flex;
+  align-items: center;
+  padding: 10px 16px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.channel-item:hover {
+  background-color: #f5f5f5;
+}
+
+.channel-item.active {
+  background-color: #e9f2ff;
+}
+
+.channel-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  background-color: #2d7ff9;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 12px;
+}
+
+.channel-avatar {
+  position: relative;
+  margin-right: 12px;
+}
+
+.channel-avatar img {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+}
+
+.status-indicator {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  border: 2px solid white;
+}
+
+.status-indicator.online {
+  background-color: #4caf50;
+}
+
+.status-indicator.offline {
+  background-color: #9e9e9e;
+}
+
+.status-indicator.large {
+  width: 14px;
+  height: 14px;
+}
+
+.channel-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.channel-name {
+  font-weight: 500;
+  color: #333;
+}
+
+.channel-role {
+  font-size: 12px;
+  color: #666;
+}
+
+.channel-last-msg {
+  font-size: 12px;
+  color: #666;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 150px;
+}
+
+.unread-count {
+  background-color: #2d7ff9;
+  color: white;
+  font-size: 12px;
+  font-weight: 600;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Main Chat Area */
+.chat-main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  border-right: 1px solid #e0e0e0;
+}
+
+.chat-header {
+  padding: 12px 16px;
+  border-bottom: 1px solid #e0e0e0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.header-info h3 {
+  margin: 0;
+  font-size: 16px;
+  color: #333;
+}
+
+.participants-count {
+  font-size: 12px;
+  color: #666;
+}
+
+.header-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.header-btn {
+  background: none;
+  border: none;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: #666;
+}
+
+.header-btn:hover {
+  background-color: #f5f5f5;
+  color: #333;
+}
+
+.messages-container {
+  flex: 1;
+  padding: 16px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  background-color: #fafafa;
+}
+
+.message {
+  display: flex;
+  flex-direction: column;
+  max-width: 70%;
+}
+
+.my-message {
+  align-self: flex-end;
+}
+
+.other-message {
+  align-self: flex-start;
+}
+
+.message-sender {
+  font-size: 12px;
+  font-weight: 500;
+  color: #333;
+  margin-bottom: 4px;
+  margin-left: 8px;
+}
+
+.message-content {
+  padding: 8px 12px;
+  border-radius: 8px;
+  position: relative;
+}
+
+.my-message .message-content {
+  background-color: #2d7ff9;
+  color: white;
+  border-top-right-radius: 0;
+}
+
+.other-message .message-content {
+  background-color: white;
+  color: #333;
+  border: 1px solid #e0e0e0;
+  border-top-left-radius: 0;
+}
+
+.message-text {
+  margin-bottom: 4px;
+  line-height: 1.4;
+}
+
+.message-time {
+  font-size: 10px;
+  opacity: 0.8;
+  text-align: right;
+}
+
+.other-message .message-time {
+  text-align: left;
+}
+
+.message-input-container {
+  padding: 16px;
+  border-top: 1px solid #e0e0e0;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.input-actions {
+  display: flex;
+  gap: 4px;
+}
+
+.action-btn {
+  background: none;
+  border: none;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: #666;
+}
+
+.action-btn:hover {
+  background-color: #f5f5f5;
+  color: #333;
+}
+
+.message-input-wrapper {
+  flex: 1;
+}
+
+.message-input-wrapper textarea {
+  width: 100%;
+  border: 1px solid #e0e0e0;
+  border-radius: 20px;
+  padding: 10px 16px;
+  resize: none;
+  font-family: inherit;
+  font-size: 14px;
+  outline: none;
+  max-height: 120px;
+}
+
+.message-input-wrapper textarea:focus {
+  border-color: #2d7ff9;
+}
+
+.send-button {
+  background-color: #2d7ff9;
+  color: white;
+  border: none;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.send-button:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+
+/* Chat Details */
+.chat-details {
+  width: 280px;
+  padding: 16px;
+  overflow-y: auto;
+}
+
+.details-header {
+  margin-bottom: 16px;
+}
+
+.details-header h4 {
+  margin: 0;
+  font-size: 16px;
+  color: #333;
+}
+
+.detail-section {
+  margin-bottom: 24px;
+}
+
+.detail-section h5 {
+  margin: 0 0 12px 0;
+  font-size: 14px;
+  color: #666;
+  font-weight: 600;
+}
+
+.participant-item {
+  display: flex;
+  align-items: center;
+  padding: 8px 0;
+}
+
+.participant-avatar {
+  position: relative;
+  margin-right: 12px;
+}
+
+.participant-avatar img {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+}
+
+.participant-info {
+  flex: 1;
+}
+
+.participant-name {
+  display: block;
+  font-weight: 500;
+  color: #333;
+}
+
+.participant-role {
+  font-size: 12px;
+  color: #666;
+}
+
+.participant-actions {
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+
+.participant-item:hover .participant-actions {
+  opacity: 1;
+}
+
+.file-item {
+  display: flex;
+  align-items: center;
+  padding: 8px 0;
+}
+
+.file-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 6px;
+  background-color: #f5f5f5;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 12px;
+  color: #f44336;
+}
+
+.file-info {
+  flex: 1;
+}
+
+.file-name {
+  display: block;
+  font-weight: 500;
+  color: #333;
+  font-size: 14px;
+}
+
+.file-details {
+  font-size: 12px;
+  color: #666;
+}
+
+.user-profile {
+  text-align: center;
+  margin-bottom: 24px;
+}
+
+.profile-avatar {
+  position: relative;
+  display: inline-block;
+  margin-bottom: 12px;
+}
+
+.profile-avatar img {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+}
+
+.user-profile h4 {
+  margin: 0 0 4px 0;
+  font-size: 18px;
+  color: #333;
+}
+
+.user-profile p {
+  margin: 0;
+  color: #666;
+  font-size: 14px;
+}
+
+.contact-item {
+  display: flex;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.contact-item i {
+  width: 24px;
+  color: #666;
+  margin-right: 12px;
+}
+
+.contact-item span {
+  font-size: 14px;
+  color: #333;
+}
+
+.no-files {
+  font-size: 14px;
+  color: #666;
+  font-style: italic;
+  margin: 0;
+}
+
+/* When gantt-readonly class is present, disable interaction */
+.gantt-readonly svg,
+.gantt-readonly .bar,
+.gantt-readonly .handle,
+.gantt-readonly .bar-label,
+.gantt-readonly .arrow,
+.gantt-readonly .bar-wrapper,
+.gantt-readonly .bar-progress {
+  pointer-events: none !important;
+  cursor: default !important;
+  user-select: none;
+}
+
+.gantt-readonly .bar-wrapper:hover {
+  filter: none;
+  cursor: default;
+}
+
+/* KickOffChecklist Form - Modern Styling */
+.checklist-form {
+  padding: 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+  background: #ffffff;
+  min-height: 90vh;
+}
+
+.checklist-form h1 {
+  color: #315a95;
+  margin-bottom: 2rem;
+  font-weight: 700;
+  font-size: 2.2rem;
+  text-align: center;
+  position: relative;
+  padding-bottom: 1rem;
+  font-family: 'Montserrat', sans-serif;
+}
+
+.checklist-form h1::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 80px;
+  height: 4px;
+  background: linear-gradient(90deg, #315a95, #4a7cc2);
+  border-radius: 2px;
+}
+
+.checklist-form h3 {
+  color: #315a95;
+  font-size: 1.3rem;
+  font-weight: 600;
+  margin: 2rem 0 1rem 0;
+  padding-bottom: 0.5rem;
+  border-bottom: 2px solid #e2e8f0;
+  font-family: 'Montserrat', sans-serif;
+}
+
+.checklist-form h3:first-of-type {
+  margin-top: 0;
+}
+
+/* Section Styling */
+.checklist-form .section {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 1.5rem;
+  padding: 1.5rem;
+  background: #f8fafc;
+  border-radius: 12px;
+  border: 1px solid #e2e8f0;
+  margin-bottom: 1.5rem;
+  animation: fadeInUp 0.4s ease;
+}
+
+/* Label Styling */
+.checklist-form label {
+  font-weight: 600;
+  color: #2d3748;
+  font-size: 0.9rem;
+  margin-bottom: 0.5rem;
+  font-family: 'Montserrat', sans-serif;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+/* Input Styling */
+.checklist-form input[type="text"],
+.checklist-form input[type="tel"],
+.checklist-form input[type="date"] {
+  padding: 1rem 1.25rem;
+  border: 2px solid #e2e8f0;
+  border-radius: 12px;
+  font-family: 'Source Sans 3', sans-serif;
+  font-size: 1rem;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  background: white;
+  color: #2d3748;
+  width: 100%;
+}
+
+.checklist-form input:focus {
+  outline: none;
+  border-color: #315a95;
+  box-shadow: 0 0 0 3px rgba(49, 90, 149, 0.15);
+  transform: translateY(-1px);
+}
+
+.checklist-form input:hover {
+  border-color: #cbd5e0;
+}
+
+.checklist-form input::placeholder {
+  color: #a0aec0;
+  font-size: 0.9rem;
+}
+
+/* Textarea Styling */
+.checklist-form textarea {
+  padding: 1rem 1.25rem;
+  border: 2px solid #e2e8f0;
+  border-radius: 12px;
+  font-family: 'Source Sans 3', sans-serif;
+  font-size: 1rem;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  background: white;
+  color: #2d3748;
+  resize: vertical;
+  min-height: 100px;
+  line-height: 1.5;
+  width: 100%;
+  grid-column: 1 / -1;
+}
+
+.checklist-form textarea:focus {
+  outline: none;
+  border-color: #315a95;
+  box-shadow: 0 0 0 3px rgba(49, 90, 149, 0.15);
+  transform: translateY(-1px);
+}
+
+.checklist-form textarea:hover {
+  border-color: #cbd5e0;
+}
+
+.checklist-form textarea::placeholder {
+  color: #a0aec0;
+  font-size: 0.9rem;
+}
+
+/* Checkbox Styling */
+.checklist-form .checklist {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.checklist-form .checklist label {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem 1rem;
+  background: white;
+  border-radius: 8px;
+  border: 2px solid #e2e8f0;
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.checklist-form .checklist label:hover {
+  border-color: #315a95;
+  transform: translateY(-1px);
+}
+
+.checklist-form .checklist input[type="checkbox"] {
+  width: 20px;
+  height: 20px;
+  border: 2px solid #cbd5e0;
+  border-radius: 4px;
+  appearance: none;
+  background: white;
+  cursor: pointer;
+  position: relative;
+  transition: all 0.3s ease;
+}
+
+.checklist-form .checklist input[type="checkbox"]:checked {
+  background: #315a95;
+  border-color: #315a95;
+}
+
+.checklist-form .checklist input[type="checkbox"]:checked::after {
+  content: '✓';
+  position: absolute;
+  color: white;
+  font-size: 14px;
+  font-weight: bold;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+/* Submit Button Styling */
+.checklist-form .submit-btn {
+  grid-column: 1 / -1;
+  background: linear-gradient(135deg, #315a95 0%, #4a7cc2 100%);
+  color: white;
+  padding: 1.25rem 2rem;
+  border: none;
+  border-radius: 12px;
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 600;
+  font-size: 1.1rem;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  margin-top: 2rem;
+  text-transform: none;
+  letter-spacing: 0.5px;
+  position: relative;
+  overflow: hidden;
+  width: 200px;
+  justify-self: center;
+}
+
+.checklist-form .submit-btn::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  transition: left 0.5s ease;
+}
+
+.checklist-form .submit-btn:hover::before {
+  left: 100%;
+}
+
+.checklist-form .submit-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(49, 90, 149, 0.3);
+}
+
+.checklist-form .submit-btn:active {
+  transform: translateY(0);
+}
+
+/* Full-width inputs for better layout */
+.checklist-form input[type="text"]:not(.checklist-form .checklist input),
+.checklist-form input[type="tel"],
+.checklist-form input[type="date"] {
+  grid-column: 1 / -1;
+}
+
+/* Specific styling for signatures section */
+.checklist-form .section:last-of-type {
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+}
+
+/* Focus states for accessibility */
+.checklist-form input:focus-visible,
+.checklist-form textarea:focus-visible {
+  outline: 2px solid #315a95;
+  outline-offset: 2px;
+}
+
+/* Animations */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Staggered animation for sections */
+.checklist-form .section:nth-child(1) { animation-delay: 0.1s; }
+.checklist-form .section:nth-child(2) { animation-delay: 0.2s; }
+.checklist-form .section:nth-child(3) { animation-delay: 0.3s; }
+.checklist-form .section:nth-child(4) { animation-delay: 0.4s; }
+.checklist-form .section:nth-child(5) { animation-delay: 0.5s; }
+.checklist-form .section:nth-child(6) { animation-delay: 0.6s; }
+.checklist-form .section:nth-child(7) { animation-delay: 0.7s; }
+
+/* Custom scrollbar */
+.checklist-form {
+  scrollbar-width: thin;
+  scrollbar-color: #cbd5e0 #f8fafc;
+}
+
+.checklist-form::-webkit-scrollbar {
+  width: 6px;
+}
+
+.checklist-form::-webkit-scrollbar-track {
+  background: #f8fafc;
+  border-radius: 3px;
+}
+
+.checklist-form::-webkit-scrollbar-thumb {
+  background: #cbd5e0;
+  border-radius: 3px;
+}
+
+.checklist-form::-webkit-scrollbar-thumb:hover {
+  background: #a0aec0;
+}
+
+/* Number input styling */
+.checklist-form input[type="number"] {
+  appearance: textfield;
+}
+
+.checklist-form input[type="number"]::-webkit-outer-spin-button,
+.checklist-form input[type="number"]::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.checklist-form textarea::-webkit-resizer {
+  border-width: 8px;
+  border-style: solid;
+  border-color: transparent #cbd5e0 #cbd5e0 transparent;
+}
+
+.checklist-form textarea::-webkit-resizer:hover {
+  border-color: transparent #315a95 #315a95 transparent;
+}
+
+/* ===== IMPROVED MEDIA QUERIES ===== */
+
+/* Small phones (up to 480px) */
+@media (max-width: 480px) {
+  /* General Layout */
+  .Main-Content {
+    height: calc(100vh - 8vh);
+    margin-top: 8vh;
+  }
+
+  nav {
+    height: 8vh;
+    padding: 0 10px;
+  }
+
+  nav .Menu-icon {
+    height: 8vh;
+    min-width: 50px;
+  }
+
+  nav .Profile-Icon {
+    padding-right: 10px;
+    font-size: 0.9rem;
+  }
+
+  nav .Notification-Icon {
+    min-height: 50px;
+    min-width: 50px;
+  }
+
+  .Notifications {
+    top: 5px;
+    right: 5px;
+    width: 18px;
+    height: 18px;
+    font-size: 0.7rem;
+  }
+
+  /* Menu */
+  .Menu {
+    width: 100%;
+    max-width: 280px;
+  }
+
+  .Menu ul li {
+    height: 45px;
+    font-size: 0.9rem;
+    padding: 0.75rem;
+  }
+
+  /* Content Areas */
+  .Content {
+    padding: 15px;
+  }
+
+  .Content.TechnicianMenu,
+  .Content.ScheduleProject,
+  .QAQCChecklist,
+  .checklist-form {
+    padding: 1rem;
+  }
+
+  /* Forms */
+  .Content.TechnicianMenu form {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.75rem;
+  }
+
+  .Content.TechnicianMenu input[type="text"] {
+    min-width: 100%;
+  }
+
+  .TechnicianMenu .Labels,
+  .employee {
+    grid-template-columns: 1fr;
+    gap: 0.5rem;
+    padding: 0.75rem;
+  }
+
+  .employee {
+    padding: 1rem;
+  }
+
+  /* Checklist Forms */
+  .checklist-form h1 {
+    font-size: 1.5rem;
+    margin-bottom: 1rem;
+  }
+
+  .checklist-form .section {
+    grid-template-columns: 1fr;
+    padding: 1rem;
+    gap: 1rem;
+  }
+
+  .checklist-form input[type="text"],
+  .checklist-form input[type="tel"],
+  .checklist-form input[type="date"],
+  .checklist-form textarea {
+    padding: 0.875rem 1rem;
+    font-size: 16px; /* Prevents zoom on iOS */
+  }
+
+  .checklist-form .submit-btn {
+    width: 100%;
+    max-width: none;
+    padding: 1rem 1.5rem;
+  }
+
+  /* Tables */
+  .table-header,
+  .table-row {
+    grid-template-columns: 1fr;
+    gap: 0.5rem;
+    padding: 0.75rem;
+  }
+
+  .col-description {
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+
+  /* Project Progress */
+  .ProjectProgress .progress-header {
+    flex-direction: column;
+    gap: 1rem;
+    align-items: flex-start;
+  }
+
+  .ProjectProgress .tabs {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .ProjectProgress .tabs button {
+    flex: 1;
+    text-align: center;
+    padding: 0.75rem 0.5rem;
+    font-size: 0.8rem;
+  }
+
+  /* Report Forms */
+  .report-form {
+    padding: 15px;
+  }
+
+  .form-row {
+    flex-direction: column;
+    gap: 0;
+  }
+
+  .form-group {
+    min-width: 100%;
+    margin-bottom: 1rem;
+  }
+
+  .resource-item {
+    padding: 1rem;
+  }
+
+  /* Chat */
+  .chat-container {
+    flex-direction: column;
+    height: 100%;
+  }
+
+  .chat-sidebar {
+    width: 100%;
+    height: 200px;
+    border-right: none;
+    border-bottom: 1px solid #e0e0e0;
+  }
+
+  .chat-main {
+    flex: 1;
+    border-right: none;
+  }
+
+  .message {
+    max-width: 85%;
+  }
+
+  .message-input-container {
+    padding: 12px;
+  }
+
+  .message-input-wrapper textarea {
+    font-size: 16px; /* Prevents zoom on iOS */
+  }
+
+  /* Buttons */
+  button {
+    padding: 0.875rem 1.25rem;
+    font-size: 0.9rem;
+    width: 100%;
+    justify-content: center;
+  }
+
+  .form-actions {
+    flex-direction: column;
+  }
+
+  .submit-btn, .print-btn {
+    width: 100%;
+    margin-bottom: 0.5rem;
+  }
+
+  .Loading {
+    width: 120px;
+  }
+
+  .loading-container {
+    min-height: 300px;
+  }
+}
+
+/* Medium phones (481px to 767px) */
+@media (min-width: 481px) and (max-width: 767px) {
+  .Main-Content {
+    height: calc(100vh - 9vh);
+    margin-top: 9vh;
+  }
+
+  nav {
+    height: 9vh;
+    padding: 0 15px;
+  }
+
+  .Content {
+    padding: 20px;
+  }
+
+  .checklist-form .section {
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  }
+
+  .TechnicianMenu .Labels,
+  .employee {
+    grid-template-columns: 2fr 1fr;
+    gap: 1rem;
+  }
+
+  .chat-sidebar {
+    width: 200px;
+  }
+
+  .message {
+    max-width: 75%;
+  }
+
+  button {
+    padding: 0.875rem 1.5rem;
+  }
+}
+
+/* Tablets (768px to 1024px) */
+@media (min-width: 768px) and (max-width: 1024px) {
+  .Menu {
+    width: 200px;
+  }
+
+  .checklist-form .section {
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  }
+
+  .chat-sidebar {
+    width: 250px;
+  }
+
+  .chat-details {
+    width: 250px;
+  }
+}
+
+/* Chat Responsive Design */
+@media (max-width: 992px) {
+  .chat-details {
+    display: none;
+  }
+}
+
+@media (max-width: 768px) {
+  .chat-sidebar {
+    width: 70px;
+  }
+  
+  .channel-info, .section-title, .unread-count {
+    display: none;
+  }
+  
+  .channel-item {
+    justify-content: center;
+    padding: 12px 8px;
+  }
+  
+  .channel-icon {
+    margin-right: 0;
+  }
+  
+  .channel-avatar {
+    margin-right: 0;
+  }
+}
+
+/* ===== TOUCH DEVICE OPTIMIZATIONS ===== */
+@media (hover: none) and (pointer: coarse) {
+  /* Improve touch targets */
+  .Menu ul li,
+  button,
+  .action-btn,
+  .header-btn,
+  .channel-item {
+    min-height: 44px;
+    min-width: 44px;
+  }
+
+  /* Remove hover effects for touch devices */
+  .Menu li:hover {
+    background-color: inherit;
+  }
+
+  button:hover {
+    transform: none;
+  }
+
+  .employee:hover {
+    transform: none;
+    background-color: #f8f9fa;
+  }
+
+  /* Improve scrolling on iOS */
+  .Main-Content section {
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .messages-container {
+    -webkit-overflow-scrolling: touch;
+  }
+}
+
+/* ===== ORIENTATION SPECIFIC STYLES ===== */
+@media (max-width: 767px) and (orientation: landscape) {
+  .Main-Content {
+    height: calc(100vh - 8vh);
+  }
+
+  nav {
+    height: 8vh;
+  }
+
+  .chat-sidebar {
+    height: 150px;
+  }
+
+  .checklist-form {
+    padding: 1rem;
+  }
+}
+
+/* ===== FIX FOR IOS FORM ZOOM ===== */
+@media (max-width: 767px) {
+  input[type="text"],
+  input[type="tel"],
+  input[type="date"],
+  input[type="number"],
+  textarea,
+  select {
+    font-size: 16px !important; /* Prevents automatic zoom on iOS */
+  }
+}
+
+/* ===== IMPROVE NOTIFICATION DISPLAY ON MOBILE ===== */
+@media (max-width: 767px) {
+  .NotificationList {
+    width: 300px;
+    right: -10px;
+    max-height: 400px;
+  }
+
+  .NotificationList li {
+    padding: 0.875rem;
+  }
+}
+
+/* ===== REDUCED MOTION ===== */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+
+  button,
+  .Menu li,
+  .employee {
+    transition: none;
+  }
+}
+
+/* ===== ACCESSIBILITY IMPROVEMENTS ===== */
+@media (prefers-reduced-transparency: reduce) {
+  .menuOn {
+    background-color: rgba(0, 0, 0, 0.8);
+  }
+}

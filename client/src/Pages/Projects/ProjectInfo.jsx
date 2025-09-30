@@ -5,13 +5,14 @@ import useAxiosFetch from '../../hooks/useAxiosFetch'
 import 'ldrs/react/Grid.css'
 import { Axios } from '../../api/axios.js'
 import useFormValidate from '../../hooks/useFormValidate'
-import useFindProjectTask from '../../utils/FindProjectTask.js'
+import useFindProjectTask from '../../hooks/useFindProjectTask.js'
 import "wx-react-gantt/dist/gantt.css";
 import "../../gantt-custom.css"
 import ProjectDetails from './ProjectDetails.jsx'
 import ProjectProgress from './ProjectProgress.jsx'
 import ScheduleProject from './ScheduleProject.jsx'
-
+import '../../css/ProjectPage.css'
+import tasks from '../../data/TasksData'
 
 const ProjectInfo = () => {
     const backendURL = import.meta.env.VITE_BACKEND_URL || "http://localhost:4000";
@@ -23,11 +24,10 @@ const ProjectInfo = () => {
     const [isLoading, setIsLoading] = useState(true)
     const [isEditing, setIsEditing] = useState(false)
     const [formData, setFormData] = useState({})
-    const [currentTask, tasksFetchError, tasksIsLoading, allTaskDates, findReverseTaskName] = useFindProjectTask(projId)
+    const {currentTask, currentParentTask, isLoading: currentIsLoading, fetchError: tasksFetchError, projectExists} = useFindProjectTask(projId)
     const isProjectsReady = Array.isArray(projects) && projects.length > 0;
     const fetchUrl = proj && isProjectsReady ? `${backendURL}/teams/${proj.id}` : null;
     const {data: teamInfo} = useAxiosFetch(fetchUrl);
-    console.log(allTaskDates)
      const validate = (values) => {
         let errors = {}
 
@@ -109,7 +109,6 @@ const ProjectInfo = () => {
                 <h2>{values.lift_name}</h2>
                 <div className="action-buttons">
                     <button onClick={() => setActivePage('details')}>Details</button>
-                    <button onClick={schedOnClick}>Schedule</button>
                     <button onClick={progressOnClick}>Progress</button>
 
                 </div>
@@ -118,13 +117,17 @@ const ProjectInfo = () => {
                 activePage === 'details' && 
                 <ProjectDetails 
                     currentTask={currentTask}
+                    currentParentTask={currentParentTask}
+                    currentIsLoading={currentIsLoading}
+                    tasksFetchError={tasksFetchError}
+                    projectExists={projectExists}
                     proj={proj}
                     setFormData={setFormData}
                     setIsLoading={setIsLoading}
                     formData={formData}
                     teamInfo={teamInfo}
                     isLoading={isLoading}
-                    tasksIsLoading={tasksIsLoading}
+                   
                     saveStatus={saveStatus}
                     handleSave={handleSave}
                     isEditing={isEditing}
@@ -133,20 +136,15 @@ const ProjectInfo = () => {
                     handleNumberInputChange={handleNumberInputChange}
                     handleBlur={handleBlur}
                     handleSubmit={handleSubmit}
-                    tasksFetchError={tasksFetchError}
+               
                     values={values}
                     setIsEditing={setIsEditing}
                     handleCancel={handleCancel}
-                    findReverseTaskName={findReverseTaskName}
                 />
             }
             {
                 activePage === 'progress' &&
-                <ProjectProgress allTaskDates={allTaskDates} tasksIsLoading={tasksIsLoading} projId={projId}/>
-            }
-            {
-                activePage === 'schedule' &&
-                <ScheduleProject projId={projId} allTaskDates={allTaskDates}/>
+                <ProjectProgress allTaskDates={tasks} projId={projId}/>
             }
         {}
             

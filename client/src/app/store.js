@@ -2,9 +2,15 @@ import { createStore, action, thunk, computed } from "easy-peasy"
 import {Axios} from '../api/axios.js'
 const d = new Date()
 const date = d.toISOString().split('T')[0]
+const addDuration = (start, days) => {
+    const date = new Date(start)
+    date.setDate(date.getDate() + days)
+    return date
+}
 
+const modifiedDate = addDuration(d, 0)
 export default createStore({
-    date: date,
+    date: modifiedDate,
     user: { username: null, roles: null },
     setUser: action((state, payload) => {
         state.user.username = payload.username

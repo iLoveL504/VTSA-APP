@@ -4,7 +4,7 @@ import Notification from './Notification'
 
 const NotificationList = () => {
     const notifications = useStoreState(state => state.notifications )
-    console.log(notifications)
+    //console.log(notifications)
     return (
         <ul>
             {

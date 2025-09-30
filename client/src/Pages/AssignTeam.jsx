@@ -4,20 +4,19 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { Axios } from '../api/axios.js';
 import useAxiosFetch from '../hooks/useAxiosFetch.js';
 import 'ldrs/react/Grid.css'
-
+import '../css/AssignTeam.css'
 
 const AssignTeam = () => {
   const navigate = useNavigate()
   const backendURL = import.meta.env.VITE_BACKEND_URL || "http://localhost:4000";
   const { projId } = useParams();
-  const projects = useStoreState(state => state.projects);
-  const foundProject = projects.find(p => p.id === Number(projId));
+  const {data: foundProject, fetchError: createdFetchError, isLoading: createdIsLoading} = useAxiosFetch(`${backendURL}/projects/${Number(projId)}`);
   const {data: availableTeams, fetchError: availableFetchError, isLoading: availableIsLoading} = useAxiosFetch(`${backendURL}/teams/no-project`);
   const {data: availablePE, fetchError: availablePEFetchError, isLoading: availablePEIsLoading} = useAxiosFetch(`${backendURL}/teams/not-assigned-PE`);
   const [selectedTeam, setSelectedTeam] = useState(null);
   const [selectedPE, setSelectedPE] = useState(null);
   const [error, setError] = useState('');
-
+  console.log(Number(projId))
   // Group team members by team
   const groupTeams = (data) => {
     const teams = {};
@@ -48,12 +47,12 @@ const AssignTeam = () => {
   const [teams, setTeams] = useState([]);
 
   useEffect(() => {
-    if (!availableIsLoading && !availablePEIsLoading) {
-      console.log(availablePE)
+    if (!availableIsLoading && !availablePEIsLoading && !createdIsLoading) {
+      console.log(foundProject)
       const groupedTeams = groupTeams(availableTeams);
       setTeams(groupedTeams);
     }
-  }, [availableTeams, availablePE, availableIsLoading, availablePEIsLoading]);
+  }, [availableTeams, availablePE, availableIsLoading, availablePEIsLoading, foundProject, createdIsLoading]);
 
   const handleTeamSelect = (team) => {
     setSelectedTeam(team);
@@ -81,11 +80,19 @@ const AssignTeam = () => {
     
     // Submit the selected team to the project
     alert(`Team ${selectedTeam.foreman_name} assigned to project ${foundProject.lift_name}`);
-    await Axios.post('/teams/assign', payload)
+    const response = await Axios.post('/teams/assign', payload)
+        if (response.data?.success) {
+            alert('Team Assigned')
+            setTimeout(() => {
+              navigate(`/projects`);
+            }, 3000);
+        } else {
+            alert("Unexpected server response. Please try again.");
+        }
     navigate('/projects')
   };
 
-  if (availableIsLoading || availablePEIsLoading) {
+  if (availableIsLoading || availablePEIsLoading || createdFetchError) {
     return (
       <div className="Content ProjectPage">
         <div className="Loading">
@@ -96,7 +103,11 @@ const AssignTeam = () => {
   }
 
   return (
+    
     <div className="Content TeamSelection">
+      {createdFetchError && (
+        <div className="error-message">Project Not Found: {createdFetchError}</div>
+      )}
       <h2>Assign Team to {foundProject.lift_name}</h2>
       <p className="instructions">
         Select a team by clicking on the foreman's name. The team members will be displayed below.

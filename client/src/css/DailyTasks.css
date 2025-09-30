@@ -1,0 +1,431 @@
+.DailyTasks {
+    padding: 2rem;
+    max-width: 1000px;
+    margin: 0 auto;
+    background: #f8fafc;
+    min-height: 80vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.tasks-container {
+    background: white;
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-height: 0; /* Important for flexbox scrolling */
+}
+
+.tasks-list-scrollable {
+    flex: 1;
+    overflow-y: auto;
+    max-height: 400px; /* Fixed height for scrolling */
+    min-height: 200px;
+}
+
+.tasks-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+/* Custom scrollbar styling */
+.tasks-list-scrollable::-webkit-scrollbar {
+    width: 8px;
+}
+
+.tasks-list-scrollable::-webkit-scrollbar-track {
+    background: #f1f5f9;
+    border-radius: 4px;
+}
+
+.tasks-list-scrollable::-webkit-scrollbar-thumb {
+    background: #cbd5e0;
+    border-radius: 4px;
+}
+
+.tasks-list-scrollable::-webkit-scrollbar-thumb:hover {
+    background: #94a3b8;
+}
+
+/* Ensure the actions stay at the bottom */
+.tasks-actions {
+    display: flex;
+    gap: 1rem;
+    justify-content: flex-end;
+    margin-top: auto;
+    padding-top: 1rem;
+}
+
+/* Task Item Styles */
+.task-item {
+  display: flex;
+  align-items: center;
+  padding: 1.25rem;
+  border: 2px solid #e2e8f0;
+  border-radius: 10px;
+  transition: all 0.3s ease;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.task-item:hover {
+  border-color: #315a95;
+  box-shadow: 0 4px 12px rgba(49, 90, 149, 0.1);
+}
+
+.task-item.completed {
+  background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
+  border-color: #bbf7d0;
+}
+
+.task-checkbox {
+  position: relative;
+  flex-shrink: 0;
+}
+
+.task-checkbox input[type="checkbox"] {
+  opacity: 0;
+  position: absolute;
+}
+
+.custom-checkbox {
+  width: 24px;
+  height: 24px;
+  border: 2px solid #cbd5e0;
+  border-radius: 6px;
+  display: block;
+  cursor: pointer;
+  position: relative;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+}
+
+.task-checkbox input[type="checkbox"]:checked + .custom-checkbox {
+  background: #315a95;
+  border-color: #315a95;
+}
+
+.task-checkbox input[type="checkbox"]:checked + .custom-checkbox::after {
+  content: '✓';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: white;
+  font-weight: bold;
+  font-size: 14px;
+}
+
+.task-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.task-name {
+  font-weight: 600;
+  color: #2d3748;
+  margin-bottom: 0.5rem;
+  font-size: 1.1rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.task-dates {
+  display: flex;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.date-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: #64748b;
+  font-size: 0.9rem;
+}
+
+.date-item i {
+  color: #94a3b8;
+  width: 16px;
+  text-align: center;
+}
+
+.task-status {
+  padding: 0.5rem 1rem;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  flex-shrink: 0;
+}
+
+.task-status.completed {
+  background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%);
+  color: #2e7d32;
+  border: 1px solid #c8e6c9;
+}
+
+.task-status.pending {
+  background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+  color: #92400e;
+  border: 1px solid #fde68a;
+}
+
+/* Progress bar styles */
+.progress-summary {
+  background: #f1f5f9;
+  padding: 1rem;
+  border-radius: 8px;
+  margin-top: 1rem;
+}
+
+.progress-text {
+  color: #64748b;
+  font-weight: 500;
+  margin-bottom: 0.5rem;
+}
+
+.progress-bar {
+  width: 100%;
+  height: 8px;
+  background: #e2e8f0;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(135deg, #315a95 0%, #4a7cc2 100%);
+  border-radius: 4px;
+  transition: width 0.3s ease;
+}
+
+/* No tasks state */
+.no-tasks {
+  text-align: center;
+  padding: 3rem;
+  color: #64748b;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.no-tasks i {
+  font-size: 3rem;
+  margin-bottom: 1rem;
+  color: #cbd5e0;
+}
+
+.no-tasks p {
+  font-size: 1.1rem;
+  font-style: italic;
+}
+
+/* Button styles */
+.btn-primary, .btn-secondary {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.5rem;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, #315a95 0%, #4a7cc2 100%);
+  color: white;
+}
+
+.btn-primary:hover {
+  background: linear-gradient(135deg, #26467c 0%, #3b6ab8 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(49, 90, 149, 0.3);
+}
+
+.btn-secondary {
+  background: white;
+  color: #64748b;
+  border: 2px solid #e2e8f0;
+}
+
+.btn-secondary:hover {
+  background: #f8fafc;
+  border-color: #cbd5e0;
+}
+
+/* Header styles */
+.tasks-header h2 {
+  color: #315a95;
+  font-weight: 700;
+  margin-bottom: 1rem;
+  font-size: 1.8rem;
+}
+
+/* Floating Daily Report Button */
+.floating-report-btn {
+    position: fixed;
+    bottom: 2rem;
+    right: 2rem;
+    background: linear-gradient(135deg, #315a95 0%, #4a7cc2 100%);
+    color: white;
+    border: none;
+    border-radius: 50px;
+    padding: 1rem 1.5rem;
+    font-weight: 600;
+    font-size: 1rem;
+    cursor: pointer;
+    box-shadow: 0 6px 20px rgba(49, 90, 149, 0.3);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    z-index: 1000;
+}
+
+.floating-report-btn:hover {
+    background: linear-gradient(135deg, #26467c 0%, #3b6ab8 100%);
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(49, 90, 149, 0.4);
+}
+
+.floating-report-btn:active {
+    transform: translateY(-1px);
+}
+
+/* Animation for floating button */
+@keyframes float {
+    0% {
+        transform: translateY(0px);
+    }
+    50% {
+        transform: translateY(-5px);
+    }
+    100% {
+        transform: translateY(0px);
+    }
+}
+
+.floating-report-btn {
+    animation: float 3s ease-in-out infinite;
+}
+
+/* Responsive design for floating button */
+@media (max-width: 768px) {
+    .floating-report-btn {
+        bottom: 1.5rem;
+        right: 1.5rem;
+        padding: 0.8rem 1.2rem;
+        font-size: 0.9rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .floating-report-btn {
+        bottom: 1rem;
+        right: 1rem;
+        padding: 0.7rem 1rem;
+        font-size: 0.8rem;
+        border-radius: 40px;
+    }
+    
+    .floating-report-btn i {
+        font-size: 0.9rem;
+    }
+}
+
+/* Ensure the button doesn't overlap with other content */
+.DailyTasks {
+    position: relative;
+    padding-bottom: 5rem; /* Add padding to prevent content from being hidden behind floating button */
+}
+
+@media (max-width: 768px) {
+    .DailyTasks {
+        padding-bottom: 4rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .DailyTasks {
+        padding-bottom: 3.5rem;
+    }
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .task-item {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+  
+  .task-checkbox {
+    align-self: flex-start;
+  }
+  
+  .task-status {
+    align-self: flex-start;
+  }
+  
+  .task-dates {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  
+  .tasks-actions {
+    flex-direction: column;
+  }
+}
+
+@media (max-width: 480px) {
+  .tasks-header h2 {
+    font-size: 1.5rem;
+  }
+  
+  .task-name {
+    font-size: 1rem;
+  }
+  
+  .btn-primary, .btn-secondary {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .DailyTasks {
+        padding: 1rem;
+    }
+    
+    .tasks-list-scrollable {
+        max-height: 300px;
+    }
+    
+    .tasks-actions {
+        flex-direction: column;
+    }
+}
+
+@media (max-width: 480px) {
+    .tasks-list-scrollable {
+        max-height: 250px;
+    }
+    
+    .btn-primary, .btn-secondary {
+        width: 100%;
+        justify-content: center;
+    }
+}

@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import { useEffect, useMemo } from 'react'
 import Layout from './Pages/Layout'
 import Dashboard from './Pages/Dashboard'
 import Technician from './Pages/Technician/Technician.jsx'
@@ -22,11 +22,16 @@ import NotificationPage from './Pages/NotificationPage.jsx'
 import Chat from './Pages/Chat.jsx'
 import NotLoggedIn from './Pages/NotLoggedIn.jsx'
 import { useSocket } from './hooks/useSocket.js'
+import Test1 from './Pages/Test.jsx'
+import KickOffChecklist from './Pages/Documents/KickOffChecklist.jsx'
+import TestJspreadsheet from './Pages/Tests/TestJspreadsheet.jsx'
+import TestChart from './Pages/Tests/TestChart.jsx'
+import useUpdateProjects from './hooks/useUpdateProjects.js'
 
 function App() {
-  console.log('backendurl', import.meta.env.VITE_BACKEND_URL )
+  //console.log('backendurl', import.meta.env.VITE_BACKEND_URL )
   const backendURL = import.meta.env.VITE_BACKEND_URL || 'https://vtsa-app-production.up.railway.app';
-  console.log('https://vtsa-app-production.up.railway.app')
+  //console.log('https://vtsa-app-production.up.railway.app')
 const { data: empData } =
   useAxiosFetch(`${backendURL}/employees`);
 
@@ -43,11 +48,24 @@ const { data: notifData } =
   const setUser = useStoreActions(actions => actions.setUser)
   const setNotifications = useStoreActions(actions => actions.setNotifications)
   const addNotificationToState = useStoreActions(actions => actions.addNotificationToState)
+  const projects = useStoreState(state => state.projects)
   const isLoggedIn = sessionStorage.getItem("isLoggedIn") === "true" ? true : false 
+
+  // array of project ids
+  const projectIDs = useMemo(() => {
+    if(projects.length != 0) {
+      let ids = projects.map(p => p.id)
+      console.log(ids)
+      return ids
+    }
+  }, [projects])
+  // hook for project status batch update
+  const [updateIsLoading] = useUpdateProjects(projectIDs)
+
   // add event listeners to socket hook
   const socket = useSocket({
     new_notification: (notification) => {
-      console.log("Received notification:", notification)
+      //console.log("Received notification:", notification)
        addNotificationToState(notification)
     }
   })
@@ -63,13 +81,13 @@ const { data: notifData } =
       });
     }
     
-    console.log(dateNow);
+    //console.log(dateNow);
   }, [setUser]);
   
   //join room useEffect
   useEffect(() => {
-    console.log('useeffect fired here')
-    console.log(socket)
+    //console.log('useeffect fired here')
+    //console.log(socket)
     if(socket && isLoggedIn === true) {
       socket.emit("join_notifications", sessionStorage.getItem("id"))
       
@@ -87,8 +105,8 @@ useEffect(() => {
 useEffect(() => {
   if (notifData) {
     setNotifications(notifData)
-    console.log('notifications')
-    console.log(notifData)
+    //console.log('notifications')
+    //console.log(notifData)
   }
 }, [notifData])
 
@@ -98,6 +116,8 @@ useEffect(() => {
         <Route path="login" element={<Login />} />
         {/* <Route path="/not-logged-in" element={<NotLoggedIn />} /> */}
         <Route element={<Layout />}>
+
+          <Route path="test" element={<Test1 />} />
           <Route path="dashboard" element={<Dashboard />} />
           
 
@@ -108,17 +128,20 @@ useEffect(() => {
           </Route>
 
           <Route path="projects">
-            <Route index element={<Projects />} />
+            <Route index element={<Projects updateIsLoading={updateIsLoading}/>} />
             
             <Route path="create" element={<CreateProject />} />
-            <Route path=":projId/schedule" element={<ScheduleProjects />} />
             <Route path=":projId" element={<ProjectInfo />} />
             <Route path=":projId/team" element={<AssignTeam />} />
             <Route path="qaqc" element={<QAQC_Checklist />} />
             <Route path=":projId/progress" element={<ProjectProgress />} />
             <Route path=":projId/report" element={<ProjectReport />} />
+            <Route path=":projId/custom" element={<Test1 />} />
+            <Route path=":projId/kickoff" element={<KickOffChecklist />} />
+            <Route path=":projId/schedule" element={<TestChart id={1} />} />
           </Route>
-          <Route path="test" element={<NotLoggedIn />} />
+          
+          <Route path="testsheet" element={<TestJspreadsheet />} />
           <Route path="PMS">
             <Route index element={<PMS />} />
             

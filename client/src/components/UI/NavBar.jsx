@@ -26,7 +26,7 @@ const NavBar = ({ invertMenuToggle }) => {
       <div onClick={() => invertNotifToggle()} className="Notification-Icon">
         <IoIosNotifications className="BellIcon" size={30} style={{ color: 'white' }}/>
         
-        {notifs !== 0 && <div className="Notifications">{notifications.length}</div>}
+        {notifs !== 0 && <div className="Notifications" style={{ display: `${notifications.length !== 0 ? '' : 'none'}` }}>{notifications.length}</div>}
         <div className={`NotificationList ${notifToggle ? ' Hidden' : ''}`}>
           <div>
             <NotificationList />

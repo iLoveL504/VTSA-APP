@@ -2,7 +2,7 @@ import { Gantt} from "wx-react-gantt";
 import "wx-react-gantt/dist/gantt.css";
 import { useRef, useEffect, useState} from "react";
 import { Willow } from "wx-react-gantt";
-import ProjectTasks from "./GanttData.jsx";
+import ProjectTasks from "./ProjectScheduleData.js";
 import { columns, links, scales, taskTypes } from "./ganttComponents.jsx";
 import useAxiosFetch from '../../hooks/useAxiosFetch.js'
 
