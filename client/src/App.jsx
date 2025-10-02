@@ -27,6 +27,8 @@ import KickOffChecklist from './Pages/Documents/KickOffChecklist.jsx'
 import TestJspreadsheet from './Pages/Tests/TestJspreadsheet.jsx'
 import TestChart from './Pages/Tests/TestChart.jsx'
 import useUpdateProjects from './hooks/useUpdateProjects.js'
+import ProjectDocuments from './Pages/Projects/ProjectDocuments.jsx'
+import DailyReportDetails from './Pages/Projects/DailyReportDetails.jsx'
 
 function App() {
   //console.log('backendurl', import.meta.env.VITE_BACKEND_URL )
@@ -139,6 +141,8 @@ useEffect(() => {
             <Route path=":projId/custom" element={<Test1 />} />
             <Route path=":projId/kickoff" element={<KickOffChecklist />} />
             <Route path=":projId/schedule" element={<TestChart id={1} />} />
+            <Route path=":projId/documents" element={<ProjectDocuments />} />
+            <Route path=":projId/daily-reports/:reportId" element={<DailyReportDetails />} />
           </Route>
           
           <Route path="testsheet" element={<TestJspreadsheet />} />

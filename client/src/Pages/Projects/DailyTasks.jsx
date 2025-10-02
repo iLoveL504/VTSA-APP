@@ -1,24 +1,26 @@
 import React, { useState, useEffect } from 'react';
 import { Grid } from 'ldrs/react'
-import { useNavigate } from 'react-router-dom'
+import useAxiosFetch from "../../hooks/useAxiosFetch.js"
+import { useNavigate, useParams } from 'react-router-dom'
 import '../../css/DailyTasks.css'
 
-
 const DailyTasks = ({ allTaskDates, tasksIsLoading }) => {
+    const backendURL = import.meta.env.VITE_BACKEND_URL || 'http://localhost:4000'
+    const {projId} = useParams()
+    console.log(projId)
     const navigate = useNavigate()
     const [role] = useState(() => sessionStorage.getItem('roles'));
-
+    const {data: fetchedData, fetchError: fetchError, isLoading: isLoading} = useAxiosFetch(`${backendURL}/projects/schedule/${projId}`)
     const handleReportClick = () => {
         navigate(`report`)
     }
     const [taskList, setTaskList] = useState([]);
 
     useEffect(() => {
-        if (allTaskDates && Array.isArray(allTaskDates)) {
-
-            setTaskList(allTaskDates.filter(t => Number(t.id) >= 500));
+        if (fetchedData && Array.isArray(fetchedData)) {
+            setTaskList(fetchedData.filter(t => Number(t.task_id) >= 500));
         }
-    }, [allTaskDates]);
+    }, [fetchedData]);
 
     const formatDate = (dateString) => {
         const date = new Date(dateString);
@@ -35,8 +37,7 @@ const DailyTasks = ({ allTaskDates, tasksIsLoading }) => {
             ? { text: 'Completed', class: 'completed' }
             : { text: 'Pending', class: 'pending' };
     };
-
-
+    console.log(taskList)
     const completedTasks = taskList.filter(task => task.done === 1).length;
     const totalTasks = taskList.length;
     const progressPercentage = totalTasks > 0 ? (completedTasks / totalTasks) * 100 : 0;
@@ -54,7 +55,7 @@ const DailyTasks = ({ allTaskDates, tasksIsLoading }) => {
         console.log(`${Math.trunc(progressPercentage)}%`)
     }, [progressPercentage])
 
-    if (tasksIsLoading) {
+    if (isLoading) {
         return (
             <div className="Loading">
                 <p>Data is Loading...</p>
@@ -81,45 +82,64 @@ const DailyTasks = ({ allTaskDates, tasksIsLoading }) => {
             </div>
 
             <div className="tasks-container">
-                {console.log(taskList)}
                 {taskList.length > 0 ? (
-                    <div className="tasks-list-scrollable">
-                        <div className="tasks-list">
-                            {taskList.map((task, index) => {
-                                const status = getStatusBadge(task.done);
-                                return (
-                                    <div key={index} className={`task-item ${task.done === 1 ? 'completed' : ''}`}>
-                                        <div className="task-checkbox">
-                                            <input
-                                                type="checkbox"
-                                                checked={task.done === 1}
-                                                onChange={() => handleTaskToggle(index)}
-                                                id={`task-${index}`}
-                                            />
-                                            <label htmlFor={`task-${index}`} className="custom-checkbox"></label>
-                                        </div>
-                                        
-                                        <div className="task-content">
-                                            <div className="task-name">{task.text}</div>
-                                            <div className="task-dates">
-                                                <span className="date-item">
+                    <div className="tasks-table-wrapper">
+                        <table className="tasks-table">
+                            <thead>
+                                <tr>
+                                    <th className="status-column">Status</th>
+                                    <th className="task-column">Task Description</th>
+                                    <th className="start-date-column">Start Date</th>
+                                    <th className="end-date-column">End Date</th>
+                                    <th className="actions-column">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {taskList.map((task, index) => {
+                                    const status = getStatusBadge(task.task_done);
+                                    return (
+                                        <tr key={index} className={`task-row ${task.task_done === 1 ? 'completed' : ''}`}>
+                                            <td className="status-cell">
+                                                <div className={`status-badge ${status.class}`}>
+                                                    {status.text}
+                                                </div>
+                                            </td>
+                                            <td className="task-cell">
+                                                <div className="task-name">{task.task_name}</div>
+                                            </td>
+                                            <td className="date-cell">
+                                                <div className="date-item">
                                                     <i className="fas fa-calendar-start"></i>
-                                                    {formatDate(task.start)}
-                                                </span>
-                                                <span className="date-item">
+                                                    {formatDate(task.task_start)}
+                                                </div>
+                                            </td>
+                                            <td className="date-cell">
+                                                <div className="date-item">
                                                     <i className="fas fa-calendar-end"></i>
-                                                    {formatDate(task.end)}
-                                                </span>
-                                            </div>
-                                        </div>
-                                        
-                                        <div className={`task-status ${status.class}`}>
-                                            {status.text}
-                                        </div>
-                                    </div>
-                                );
-                            })}
-                        </div>
+                                                    {formatDate(task.task_end)}
+                                                </div>
+                                            </td>
+                                            <td className="actions-cell">
+                                                <div className="task-checkbox">
+                                                    <input
+                                                        type="checkbox"
+                                                        checked={task.task_done === 1}
+                                                        onChange={() => handleTaskToggle(index)}
+                                                        id={`task-${index}`}
+                                                    />
+                                                    <label htmlFor={`task-${index}`} className="custom-checkbox">
+                                                        {task.task_done === 1 && '✓'}
+                                                    </label>
+                                                    <span className="checkbox-label">
+                                                        {task.task_done === 1 ? 'Mark Pending' : 'Mark Complete'}
+                                                    </span>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    );
+                                })}
+                            </tbody>
+                        </table>
                     </div>
                 ) : (
                     <div className="no-tasks">
@@ -127,28 +147,9 @@ const DailyTasks = ({ allTaskDates, tasksIsLoading }) => {
                         <p>No tasks available for this project</p>
                     </div>
                 )}
-            </div>    
+            </div>   
 
-            <div className="tasks-actions">
-                <button className="btn-primary">
-                    <i className="fas fa-plus"></i>
-                    Add New Task
-                </button>
-                <button className="btn-secondary">
-                    <i className="fas fa-save"></i>
-                    Save Changes
-                </button>
-            </div>
-
-            {/* Floating Daily Report Button */}
-            <button 
-                className="floating-report-btn" 
-                onClick={handleReportClick} 
-                style={{ display: role === 'Foreman' ? 'block' : 'none' }}
-                >
-                <i className="fas fa-file-alt"></i>
-                Make Daily Report
-            </button>
+         
         </div>
     );
 };

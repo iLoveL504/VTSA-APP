@@ -2,6 +2,92 @@
   padding:0;
 }
 
+/* Floating Daily Report Button */
+.floating-daily-report-btn {
+    position: fixed !important;
+    bottom: 2rem !important;
+    right: 2rem !important;
+    background: linear-gradient(135deg, #315a95 0%, #4a7cc2 100%) !important;
+    color: white !important;
+    border: none !important;
+    border-radius: 50px !important;
+    padding: 1rem 1.5rem !important;
+    font-weight: 600 !important;
+    font-size: 1rem !important;
+    cursor: pointer !important;
+    box-shadow: 0 6px 20px rgba(49, 90, 149, 0.3) !important;
+    /* display: flex !important; */
+    align-items: center !important;
+    gap: 0.5rem !important;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    z-index: 1000 !important;
+    text-decoration: none !important;
+}
+
+.floating-daily-report-btn:hover {
+    background: linear-gradient(135deg, #26467c 0%, #3b6ab8 100%) !important;
+    transform: translateY(-3px) !important;
+    box-shadow: 0 8px 25px rgba(49, 90, 149, 0.4) !important;
+}
+
+.floating-daily-report-btn:active {
+    transform: translateY(-1px) !important;
+}
+
+/* Animation for floating button */
+@keyframes float {
+    0% {
+        transform: translateY(0px);
+    }
+    50% {
+        transform: translateY(-5px);
+    }
+    100% {
+        transform: translateY(0px);
+    }
+}
+
+.floating-daily-report-btn {
+    animation: float 3s ease-in-out infinite;
+}
+
+/* Ensure the button doesn't overlap with other content */
+.ProjectPage {
+    position: relative;
+    padding-bottom: 5rem;
+}
+
+@media (max-width: 768px) {
+    .floating-daily-report-btn {
+        bottom: 1.5rem !important;
+        right: 1.5rem !important;
+        padding: 0.8rem 1.2rem !important;
+        font-size: 0.9rem !important;
+    }
+    
+    .ProjectPage {
+        padding-bottom: 4rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .floating-daily-report-btn {
+        bottom: 1rem !important;
+        right: 1rem !important;
+        padding: 0.7rem 1rem !important;
+        font-size: 0.8rem !important;
+        border-radius: 40px !important;
+    }
+    
+    .floating-daily-report-btn i {
+        font-size: 0.9rem !important;
+    }
+    
+    .ProjectPage {
+        padding-bottom: 3.5rem;
+    }
+}
+
 /* Project Page Styles - Modern Redesign */
 .ProjectDetails {  
   padding: 0;
@@ -265,6 +351,13 @@
 .complete-btn.completed:hover {
     background: linear-gradient(135deg, #d4edda 0%, #b8e0bb 100%);
     border-color: #b8e0bb;
+}
+
+.complete-btn:disabled {
+  background-color: #ccc; /* greyed out */
+  color: #666;
+  cursor: not-allowed;
+  opacity: 0.7;
 }
 
 @keyframes pulse {

@@ -1,0 +1,510 @@
+/* Reset and Base Styles */
+.accomplishment-report {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background: #f8fafc;
+  min-height: 100vh;
+  padding: 20px;
+}
+
+/* Control Panel */
+.control-panel {
+  background: white;
+  border-radius: 12px;
+  padding: 24px;
+  margin-bottom: 24px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  border: 1px solid #e2e8f0;
+}
+
+.panel-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+
+.contract-input-group {
+  flex: 1;
+  min-width: 300px;
+}
+
+.input-label {
+  display: block;
+  font-weight: 600;
+  color: #374151;
+  margin-bottom: 8px;
+  font-size: 14px;
+}
+
+.input-with-icon {
+  position: relative;
+  display: inline-block;
+}
+
+.currency-symbol {
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #6b7280;
+  font-weight: 600;
+}
+
+.amount-input {
+  padding: 12px 12px 12px 32px;
+  border: 2px solid #3b82f6;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 600;
+  width: 200px;
+  background: white;
+}
+
+.amount-input:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.action-buttons {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.action-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px;
+  border: none;
+  border-radius: 6px;
+  font-weight: 600;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+
+.btn-edit {
+  background: #3b82f6;
+  color: white;
+}
+
+.btn-edit:hover {
+  background: #2563eb;
+}
+
+.btn-cancel {
+  background: #ef4444;
+  color: white;
+}
+
+.btn-cancel:hover {
+  background: #dc2626;
+}
+
+.btn-charts {
+  background: #8b5cf6;
+  color: white;
+}
+
+.btn-charts:hover {
+  background: #7c3aed;
+}
+
+.btn-print {
+  background: #10b981;
+  color: white;
+}
+
+.btn-print:hover {
+  background: #059669;
+}
+
+/* Summary Cards */
+.summary-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+  margin-top: 20px;
+  padding-top: 20px;
+  border-top: 1px solid #e5e7eb;
+}
+
+.summary-card {
+  padding: 16px;
+  border-radius: 8px;
+  text-align: center;
+}
+
+.card-contract {
+  background: #dbeafe;
+  border: 1px solid #bfdbfe;
+}
+
+.card-completed {
+  background: #dcfce7;
+  border: 1px solid #bbf7d0;
+}
+
+.card-progress {
+  background: #f3e8ff;
+  border: 1px solid #e9d5ff;
+}
+
+.card-weight {
+  background: #ffedd5;
+  border: 1px solid #fed7aa;
+}
+
+.card-label {
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  margin-bottom: 4px;
+}
+
+.card-value {
+  font-size: 18px;
+  font-weight: 700;
+}
+
+/* Charts Panel */
+.charts-panel {
+  background: white;
+  border-radius: 12px;
+  padding: 24px;
+  margin-bottom: 24px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  border: 1px solid #e2e8f0;
+}
+
+.panel-title {
+  font-size: 24px;
+  font-weight: 700;
+  color: #1f2937;
+  margin-bottom: 24px;
+  text-align: center;
+}
+
+.charts-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+  gap: 24px;
+}
+
+.chart-box {
+  background: #f8fafc;
+  padding: 20px;
+  border-radius: 8px;
+  border: 1px solid #e2e8f0;
+}
+
+.chart-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: #374151;
+  margin-bottom: 16px;
+  text-align: center;
+}
+
+/* Report Container */
+.report-container {
+  background: white;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  border: 1px solid #e2e8f0;
+}
+
+/* Report Header */
+.report-header {
+  background: linear-gradient(135deg, #1e40af 0%, #1e3a8a 100%);
+  color: white;
+  padding: 24px;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+
+.header-main {
+  flex: 1;
+}
+
+.company {
+  font-size: 24px;
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+
+.report-info {
+  margin-bottom: 12px;
+}
+
+.report-name {
+  font-size: 14px;
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+
+.report-date {
+  font-size: 13px;
+  opacity: 0.9;
+}
+
+.project {
+  font-size: 16px;
+  font-weight: 500;
+  margin-bottom: 8px;
+}
+
+.project-type {
+  font-size: 14px;
+  background: rgba(255,255,255,0.2);
+  padding: 4px 12px;
+  border-radius: 20px;
+  display: inline-block;
+}
+
+.contract-display {
+  background: rgba(255,255,255,0.2);
+  padding: 12px 16px;
+  border-radius: 8px;
+  font-size: 14px;
+}
+
+/* Table Styles */
+.table-wrapper {
+  overflow-x: auto;
+}
+
+.accomplishment-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12px;
+  min-width: 1200px;
+}
+
+.accomplishment-table th {
+  background: #f1f5f9;
+  border: 1px solid #cbd5e1;
+  padding: 10px 6px;
+  font-weight: 700;
+  text-align: center;
+  white-space: nowrap;
+  position: sticky;
+  top: 0;
+}
+
+.accomplishment-table td {
+  border: 1px solid #cbd5e1;
+  padding: 8px 6px;
+  vertical-align: middle;
+}
+
+/* Column Widths */
+.col-item { width: 60px; }
+.col-desc { width: 200px; text-align: left; }
+.col-unit { width: 70px; }
+.col-amount { width: 100px; text-align: right; }
+.col-wt { width: 60px; }
+.col-prev { width: 100px; text-align: right; }
+.col-pres { width: 80px; }
+.col-date { width: 80px; }
+.col-wt-acc { width: 70px; }
+
+/* Row Styles */
+.data-row:hover {
+  background: #f0f9ff;
+}
+
+.section-row {
+  background: #dbeafe;
+  font-weight: 700;
+}
+
+.section-title {
+  font-weight: 700;
+  padding-left: 8px;
+}
+
+.indent {
+  padding-left: 24px !important;
+}
+
+.total-row {
+  background: #fef3c7;
+  font-weight: 700;
+  border-top: 2px solid #d97706;
+}
+
+/* Cell Content Styles */
+.cell-value {
+  display: block;
+  text-align: center;
+  padding: 2px 4px;
+}
+
+.cell-complete {
+  color: #065f46;
+  font-weight: 600;
+}
+
+.cell-progress {
+  color: #1d4ed8;
+}
+
+.cell-pending {
+  color: #6b7280;
+}
+
+.cell-input {
+  width: 100%;
+  padding: 4px;
+  border: 1px solid #93c5fd;
+  border-radius: 4px;
+  text-align: center;
+  font-size: 11px;
+  background: white;
+}
+
+.cell-input:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
+}
+
+.amount-contract {
+  color: #1e40af;
+  font-weight: 600;
+}
+
+.amount-completed {
+  color: #065f46;
+  font-weight: 600;
+}
+
+.percent-date {
+  color: #7e22ce;
+  font-weight: 600;
+}
+
+.percent-wt {
+  color: #c2410c;
+  font-weight: 600;
+}
+
+/* Report Footer */
+.report-footer {
+  background: #f8fafc;
+  padding: 20px 24px;
+  border-top: 1px solid #e2e8f0;
+}
+
+.footer-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+
+.signature-section {
+  flex: 1;
+}
+
+.prepared-by {
+  font-weight: 600;
+  color: #374151;
+  margin-bottom: 8px;
+  font-size: 14px;
+}
+
+.signature-name {
+  font-size: 16px;
+  font-weight: 600;
+  color: #111827;
+  margin-bottom: 4px;
+}
+
+.signature-title {
+  font-size: 14px;
+  color: #6b7280;
+}
+
+.report-meta {
+  text-align: right;
+}
+
+.generated-on {
+  font-size: 14px;
+  color: #6b7280;
+}
+
+/* Print Styles */
+@media print {
+  .no-print {
+    display: none !important;
+  }
+  
+  .accomplishment-report {
+    background: white;
+    padding: 0;
+  }
+  
+  .report-container {
+    box-shadow: none;
+    border: 1px solid #000;
+  }
+  
+  .accomplishment-table th,
+  .accomplishment-table td {
+    border-color: #000 !important;
+  }
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .accomplishment-report {
+    padding: 10px;
+  }
+  
+  .panel-header {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  .contract-input-group {
+    min-width: auto;
+  }
+  
+  .amount-input {
+    width: 100%;
+  }
+  
+  .action-buttons {
+    justify-content: center;
+  }
+  
+  .summary-cards {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  .charts-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .report-header {
+    flex-direction: column;
+    text-align: center;
+  }
+  
+  .footer-content {
+    flex-direction: column;
+    text-align: center;
+  }
+}

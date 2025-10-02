@@ -11,6 +11,7 @@ import Button from "@mui/material/Button";
 import Modal from "@mui/material/Modal";
 import "../css/Test1.css";
 import tasks from '../data/TasksData.js'
+import { useReactToPrint } from "react-to-print";
 
 const Test1 = () => {
   const testDate = "9/10/2025"
@@ -18,6 +19,7 @@ const Test1 = () => {
   const location = useLocation();
   const navigate = useNavigate()
   const itemRefs = useRef([]);
+  const contentRef = useRef()
   const [selectedTaskID, setSelectedTaskID] = useState("");
 
   // ✅ Normalize helper
@@ -217,9 +219,16 @@ const Test1 = () => {
     navigate(`/projects/${projId}/schedule`, {state: { schedule: linkedList.toArray() }})
   };
 
+  const handlePrint = useReactToPrint({
+    contentRef,
+    documentTitle: `Daily Report - ${3}`,
+  });
+
   return (
     <div className="Content SchedulePage">
-      <div className="schedule-page">
+      <button onClick={() => handlePrint()}>fsdf</button>
+      <div ref={contentRef}>
+        <div className="schedule-page">
         <h2>Customize Project Schedule</h2>
 
         {/* Controls */}
@@ -409,6 +418,8 @@ const Test1 = () => {
           {/* You can change the icon to whatever you prefer */}
         </button>
       </div>
+      </div>
+      
     </div>
   );
 };

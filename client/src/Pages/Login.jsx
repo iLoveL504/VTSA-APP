@@ -73,12 +73,13 @@ const Login = () => {
                 if(result.status === 200){
                   const token = jwtDecode(result.data.accessToken)
                   console.log(token)
-                  const { username, roles, id } = token.UserInfo
+                  const { username, roles, id, fullName } = token.UserInfo
                   sessionStorage.setItem("username", username)
                   sessionStorage.setItem("roles", roles)
                   sessionStorage.setItem("id", id)
                   sessionStorage.setItem("isLoggedIn", true)
                   sessionStorage.setItem("token", result.data.accessToken)
+                  sessionStorage.setItem("fullName", fullName)
                   //setIsLoggedIn(true)
                   console.log(roles)
                   setAuthUser({username: user, roles: result.data.roles})

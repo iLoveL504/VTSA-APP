@@ -8,8 +8,45 @@ const Dashboard = () => {
   const navigate = useNavigate();
   const projects = useStoreState(state => state.projects);
   const employees = useStoreState(state => state.employees);
-  const role = sessionStorage.getItem('roles')
-  // Sample data for demonstration
+  const role = sessionStorage.getItem('roles');
+  const userId = sessionStorage.getItem('user_id'); // Assuming user ID is stored
+
+  // Get projects assigned to the current project engineer
+  const getAssignedProjects = () => {
+    if (role !== 'Project Engineer') return [];
+    
+    // Assuming projects have an 'assignedEngineer' field or similar
+    return projects.filter(project => 
+      project.assignedEngineerId === parseInt(userId) || 
+      project.assignedEngineer === userId
+    );
+  };
+
+  const assignedProjects = getAssignedProjects();
+
+  // Project Engineer Dashboard Data
+  const [engineerDashboard] = useState({
+    assignedProjects: assignedProjects.length,
+    activeProjects: assignedProjects.filter(p => p.status === 'active').length,
+    completedProjects: assignedProjects.filter(p => p.status === 'completed').length,
+    upcomingDeadlines: assignedProjects
+      .filter(p => p.status === 'active' && p.deadline)
+      .sort((a, b) => new Date(a.deadline) - new Date(b.deadline))
+      .slice(0, 3),
+    recentProjectActivities: [
+      { id: 1, project: 'TechCorp HQ', action: 'Site inspection completed', time: '2 hours ago' },
+      { id: 2, project: 'Skyline Towers', action: 'Progress report submitted', time: '1 day ago' },
+      { id: 3, project: 'Metro Mall', action: 'Client meeting scheduled', time: '2 days ago' }
+    ],
+    projectProgress: assignedProjects.map(project => ({
+      name: project.lift_name || project.name,
+      progress: Math.floor(Math.random() * 100), // Replace with actual progress data
+      deadline: project.deadline,
+      status: project.status
+    }))
+  });
+
+  // Manager Dashboard Data (existing)
   const [dashboardData] = useState({
     ongoingProjects: projects.filter(p => p.status === 'active').length || 4,
     completedProjects: projects.filter(p => p.status === 'completed').length || 12,
@@ -31,8 +68,244 @@ const Dashboard = () => {
     navigate('/projects/create')
   }
 
-  return (
-    <div className="Content Dashboard">
+  const handleProjectClick = (projectId) => {
+    navigate(`/projects/${projectId}`);
+  };
+
+  const handleCreateReport = (projectId) => {
+    navigate(`/projects/${projectId}/daily-report`);
+  };
+
+  // Project Engineer Dashboard View
+  if (role === 'Project Engineer') {
+    return (
+      <div className="Content Dashboard">
+        <div className="dashboard-header">
+          <h1>Project Engineer Dashboard</h1>
+          <p>Welcome back! Here's an overview of your assigned projects.</p>
+        </div>
+
+        <div className="stats-grid">
+          <div className="stat-card">
+            <div className="stat-icon" style={{backgroundColor: 'rgba(49, 90, 149, 0.1)'}}>
+              <span style={{color: '#315a95'}}>📋</span>
+            </div>
+            <div className="stat-content">
+              <h3>{engineerDashboard.assignedProjects}</h3>
+              <p>Assigned Projects</p>
+            </div>
+          </div>
+
+          <div className="stat-card">
+            <div className="stat-icon" style={{backgroundColor: 'rgba(40, 167, 69, 0.1)'}}>
+              <span style={{color: '#28a745'}}>⚡</span>
+            </div>
+            <div className="stat-content">
+              <h3>{engineerDashboard.activeProjects}</h3>
+              <p>Active Projects</p>
+            </div>
+          </div>
+
+          <div className="stat-card">
+            <div className="stat-icon" style={{backgroundColor: 'rgba(255, 193, 7, 0.1)'}}>
+              <span style={{color: '#ffc107'}}>✅</span>
+            </div>
+            <div className="stat-content">
+              <h3>{engineerDashboard.completedProjects}</h3>
+              <p>Completed Projects</p>
+            </div>
+          </div>
+
+          <div className="stat-card">
+            <div className="stat-icon" style={{backgroundColor: 'rgba(220, 53, 69, 0.1)'}}>
+              <span style={{color: '#dc3545'}}>⏰</span>
+            </div>
+            <div className="stat-content">
+              <h3>{engineerDashboard.upcomingDeadlines.length}</h3>
+              <p>Upcoming Deadlines</p>
+            </div>
+          </div>
+        </div>
+
+        <div className="dashboard-content">
+          <div className="main-content">
+            {/* Assigned Projects List */}
+            <div className="content-card">
+              <div className="card-header">
+                <h3>My Assigned Projects</h3>
+                <button className="view-all-btn">View All</button>
+              </div>
+              <div className="projects-list">
+                {assignedProjects.length > 0 ? (
+                  assignedProjects.map(project => (
+                    <div key={project.id} className="project-item">
+                      <div className="project-info">
+                        <h4>{project.lift_name || project.name}</h4>
+                        <div className="project-meta">
+                          <span className={`status-badge ${project.status}`}>
+                            {project.status}
+                          </span>
+                          <span className="project-id">#{project.id}</span>
+                        </div>
+                        <p className="project-location">
+                          {project.location || 'Location not specified'}
+                        </p>
+                        {project.deadline && (
+                          <div className="project-deadline">
+                            <i className="fas fa-calendar"></i>
+                            Deadline: {new Date(project.deadline).toLocaleDateString()}
+                          </div>
+                        )}
+                      </div>
+                      <div className="project-actions">
+                        <button 
+                          className="btn-primary"
+                          onClick={() => handleProjectClick(project.id)}
+                        >
+                          <i className="fas fa-eye"></i>
+                          View Details
+                        </button>
+                        <button 
+                          className="btn-outline"
+                          onClick={() => handleCreateReport(project.id)}
+                        >
+                          <i className="fas fa-file-alt"></i>
+                          Daily Report
+                        </button>
+                      </div>
+                    </div>
+                  ))
+                ) : (
+                  <div className="empty-projects">
+                    <i className="fas fa-clipboard-list"></i>
+                    <h4>No Projects Assigned</h4>
+                    <p>You don't have any projects assigned to you yet.</p>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* Project Progress */}
+            <div className="content-card">
+              <div className="card-header">
+                <h3>Project Progress</h3>
+              </div>
+              <div className="progress-list">
+                {engineerDashboard.projectProgress.map((project, index) => (
+                  <div key={index} className="progress-item">
+                    <div className="progress-header">
+                      <span className="project-name">{project.name}</span>
+                      <span className="progress-percentage">{project.progress}%</span>
+                    </div>
+                    <div className="progress-bar">
+                      <div 
+                        className="progress-fill"
+                        style={{ width: `${project.progress}%` }}
+                      ></div>
+                    </div>
+                    <div className="progress-footer">
+                      <span className="project-status">{project.status}</span>
+                      {project.deadline && (
+                        <span className="project-deadline">
+                          Due: {new Date(project.deadline).toLocaleDateString()}
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          <div className="sidebar">
+            {/* Upcoming Deadlines */}
+            <div className="content-card">
+              <div className="card-header">
+                <h3>Upcoming Deadlines</h3>
+              </div>
+              <div className="deadlines-list">
+                {engineerDashboard.upcomingDeadlines.length > 0 ? (
+                  engineerDashboard.upcomingDeadlines.map(project => (
+                    <div key={project.id} className="deadline-item">
+                      <div className="deadline-date">
+                        <span className="date-day">
+                          {new Date(project.deadline).getDate()}
+                        </span>
+                        <span className="date-month">
+                          {new Date(project.deadline).toLocaleString('default', { month: 'short' })}
+                        </span>
+                      </div>
+                      <div className="deadline-details">
+                        <h4>{project.lift_name || project.name}</h4>
+                        <p>{project.location || 'No location specified'}</p>
+                        <span className="days-remaining">
+                          {Math.ceil((new Date(project.deadline) - new Date()) / (1000 * 60 * 60 * 24))} days left
+                        </span>
+                      </div>
+                    </div>
+                  ))
+                ) : (
+                  <div className="empty-state">
+                    <i className="fas fa-calendar-check"></i>
+                    <p>No upcoming deadlines</p>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* Recent Activities */}
+            <div className="content-card">
+              <div className="card-header">
+                <h3>Recent Activities</h3>
+              </div>
+              <div className="activity-list">
+                {engineerDashboard.recentProjectActivities.map(activity => (
+                  <div key={activity.id} className="activity-item">
+                    <div className="activity-dot"></div>
+                    <div className="activity-content">
+                      <p><strong>{activity.project}</strong> - {activity.action}</p>
+                      <span className="activity-time">{activity.time}</span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Quick Actions */}
+            <div className="content-card">
+              <div className="card-header">
+                <h3>Quick Actions</h3>
+              </div>
+              <div className="quick-actions">
+                <button className="quick-action-btn">
+                  <i className="fas fa-file-alt"></i>
+                  <span>Create Report</span>
+                </button>
+                <button className="quick-action-btn">
+                  <i className="fas fa-clipboard-check"></i>
+                  <span>Checklists</span>
+                </button>
+                <button className="quick-action-btn">
+                  <i className="fas fa-tasks"></i>
+                  <span>Task Updates</span>
+                </button>
+                <button className="quick-action-btn">
+                  <i className="fas fa-chart-line"></i>
+                  <span>Progress Tracking</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Manager Dashboard View (existing code)
+  if (role === 'manager' || role === 'Project Manager') {
+    return (
+      // ... existing manager dashboard code ...
+<div className="Content Dashboard">
       {
         role === 'manager' || role === 'Project Manager' 
         ? (
@@ -182,6 +455,22 @@ const Dashboard = () => {
           )
       }
       
+    </div>
+    );
+  }
+
+  // Default view for other roles
+  return (
+    <div className="Content Dashboard">
+      <div className="dashboard-header">
+        <h1>Dashboard</h1>
+        <p>Welcome! Your role: {role}</p>
+      </div>
+      <div className="empty-dashboard">
+        <i className="fas fa-user"></i>
+        <h3>Dashboard Access</h3>
+        <p>Your dashboard is being configured for your role.</p>
+      </div>
     </div>
   );
 };

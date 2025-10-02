@@ -63,6 +63,7 @@
   justify-content: space-between;
   align-items: center;
   margin-bottom: 1.5rem;
+  background-color: #7b1fa2;
 }
 
 .project-header h1 {
@@ -196,3 +197,4 @@
     width: 100%;
   }
 }
+

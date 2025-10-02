@@ -1,14 +1,22 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import '../../css/DailyReport.css'
+import { Axios } from '../../api/axios.js'
+import { useNavigate, useParams } from 'react-router-dom' 
 
 const ProjectReport = () => {
+  const {projId} = useParams()
   const [reportData, setReportData] = useState({
     workCompleted: "",
     workPlannedNextDay: "",
     delaysIssues: "",
     photos: [],
     remarks: "",
+    fullName: sessionStorage.getItem("fullName")
   });
+
+  useEffect(() => {
+    console.log(reportData.photos)
+  }, [reportData])
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -18,10 +26,32 @@ const ProjectReport = () => {
     }));
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    console.log("Submitting elevator project report:", reportData);
-    alert("Elevator Project Report submitted successfully!");
+  const handleSubmit = async (e) => {
+    e.preventDefault()
+    console.log(Number(projId))
+    console.log(reportData)
+    const formData = new FormData()
+    formData.append("workCompleted", reportData.workCompleted);
+    formData.append("workPlannedNextDay", reportData.workPlannedNextDay);
+    formData.append("delaysIssues", reportData.delaysIssues);
+    formData.append("remarks", reportData.remarks);
+    formData.append("fullName", reportData.fullName);
+
+    // multiple photos
+    reportData.photos.forEach((file) => {
+      formData.append("photos", file); 
+    });
+
+    try {
+      await Axios.post(`/projects/report/${projId}`, formData, {
+        headers: {
+          "Content-type": "multipart/form-data"
+        }
+      })
+    } catch (e) {
+      console.log(e)
+    }
+    
   };
 
   return (
@@ -92,10 +122,16 @@ const ProjectReport = () => {
               onChange={(e) =>
                 setReportData((prev) => ({
                   ...prev,
-                  photos: [...e.target.files],
+                  photos: [...prev.photos, ...Array.from(e.target.files)],
                 }))
               }
             />
+            <small>
+              Photos inserted:
+              {reportData.photos.map(p => {
+                return (<div>{p.name}</div>)
+              })}
+            </small>
             <small>Upload photos of work progress, issues, or completed tasks</small>
           </div>
 

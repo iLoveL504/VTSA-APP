@@ -1,5 +1,5 @@
-import { useParams } from 'react-router-dom'
-import { useState } from 'react'
+import { useParams, useNavigate } from 'react-router-dom'
+import { useState, useEffect } from 'react' // Added useEffect
 import { useStoreState } from 'easy-peasy'
 import useAxiosFetch from '../../hooks/useAxiosFetch'
 import 'ldrs/react/Grid.css'
@@ -13,8 +13,10 @@ import ProjectProgress from './ProjectProgress.jsx'
 import ScheduleProject from './ScheduleProject.jsx'
 import '../../css/ProjectPage.css'
 import tasks from '../../data/TasksData'
+import ProjectDocuments from './ProjectDocuments.jsx'
 
 const ProjectInfo = () => {
+    const navigate = useNavigate()
     const backendURL = import.meta.env.VITE_BACKEND_URL || "http://localhost:4000";
     const [activePage, setActivePage] = useState('details')
     const { projId } = useParams()
@@ -24,11 +26,21 @@ const ProjectInfo = () => {
     const [isLoading, setIsLoading] = useState(true)
     const [isEditing, setIsEditing] = useState(false)
     const [formData, setFormData] = useState({})
-    const {currentTask, currentParentTask, isLoading: currentIsLoading, fetchError: tasksFetchError, projectExists} = useFindProjectTask(projId)
+    const {currentTask, currentParentTask, isLoading: currentIsLoading, fetchError: tasksFetchError, projectExists, fetchedData} = useFindProjectTask(projId)
     const isProjectsReady = Array.isArray(projects) && projects.length > 0;
     const fetchUrl = proj && isProjectsReady ? `${backendURL}/teams/${proj.id}` : null;
     const {data: teamInfo} = useAxiosFetch(fetchUrl);
-     const validate = (values) => {
+    
+    // Get user role from session storage with debugging
+    const [role, setRole] = useState(null)
+    
+    useEffect(() => {
+        const userRole = sessionStorage.getItem('roles');
+        console.log('Current role from sessionStorage:', userRole);
+        setRole(userRole);
+    }, []);
+
+    const validate = (values) => {
         let errors = {}
 
         if(values.lift_name === '') {
@@ -55,18 +67,19 @@ const ProjectInfo = () => {
 
         return errors
     }
-        const {
-            errors,
-            handleInputChange,
-            handleNumberInputChange,
-            handleBlur,
-            handleSubmit,
-            values,
-            saveStatus,
-            setSaveStatus,
-            setValues,
-            setErrors
-         } = useFormValidate(formData, validate)
+
+    const {
+        errors,
+        handleInputChange,
+        handleNumberInputChange,
+        handleBlur,
+        handleSubmit,
+        values,
+        saveStatus,
+        setSaveStatus,
+        setValues,
+        setErrors
+    } = useFormValidate(formData, validate)
 
     const handleSave = async () => {
         try {
@@ -76,18 +89,12 @@ const ProjectInfo = () => {
             setTimeout(() => setSaveStatus(''), 2000)
             setIsEditing(false)
             window.location.reload()
-            // Optionally refresh the project data here
         } catch (error) {
             console.error('Error updating project:', error)
             setSaveStatus('error')
             setTimeout(() => setSaveStatus(''), 2000)
         }
     }
-
-    const schedOnClick = () => {
-        setActivePage('schedule')
-    }
-
 
     const handleCancel = () => {
         setValues(proj)
@@ -97,22 +104,33 @@ const ProjectInfo = () => {
     }
 
     const progressOnClick = () => {
-         setActivePage(`progress`)
+        setActivePage(`progress`)
     }
 
+    const documentsOnClick = () => {
+        setActivePage(`documents`)
+    }
 
-   
+    // Function to handle daily report button click
+    const handleDailyReportClick = () => {
+        console.log('Daily report button clicked for project:', projId);
+        // You can implement navigation logic here
+        navigate(`report`)
+    }
+
+    console.log('Rendering ProjectInfo - Role:', role, 'Should display button:', role === 'Foreman');
+
     return (
-        
         <div className="Content ProjectPage">
             <div className="project-header">
                 <h2>{values.lift_name}</h2>
                 <div className="action-buttons">
                     <button onClick={() => setActivePage('details')}>Details</button>
                     <button onClick={progressOnClick}>Progress</button>
-
+                    <button onClick={documentsOnClick}>Documents</button>
                 </div>
             </div>
+            
             {
                 activePage === 'details' && 
                 <ProjectDetails 
@@ -121,13 +139,13 @@ const ProjectInfo = () => {
                     currentIsLoading={currentIsLoading}
                     tasksFetchError={tasksFetchError}
                     projectExists={projectExists}
+                    fetchedData={fetchedData}
                     proj={proj}
                     setFormData={setFormData}
                     setIsLoading={setIsLoading}
                     formData={formData}
                     teamInfo={teamInfo}
                     isLoading={isLoading}
-                   
                     saveStatus={saveStatus}
                     handleSave={handleSave}
                     isEditing={isEditing}
@@ -136,7 +154,6 @@ const ProjectInfo = () => {
                     handleNumberInputChange={handleNumberInputChange}
                     handleBlur={handleBlur}
                     handleSubmit={handleSubmit}
-               
                     values={values}
                     setIsEditing={setIsEditing}
                     handleCancel={handleCancel}
@@ -146,11 +163,27 @@ const ProjectInfo = () => {
                 activePage === 'progress' &&
                 <ProjectProgress allTaskDates={tasks} projId={projId}/>
             }
-        {}
-            
+            {
+                activePage === 'documents' &&
+                <ProjectDocuments/>
+            }
+
+            {/* Floating Daily Report Button - Test without role restriction first */}
+            <button 
+                className="floating-daily-report-btn" 
+                onClick={handleDailyReportClick}
+                style={{ display: role === 'Project Engineer' ? 'flex' : 'none' }}
+            >
+                <i className="fas fa-file-alt"></i>
+                Make Daily Project Report
+            </button>
+
+            {/* Keep this for testing - will help see if button renders at all */}
+            {/* <div style={{ position: 'fixed', bottom: '100px', right: '20px', background: 'red', color: 'white', padding: '10px', zIndex: 1001 }}>
+                Debug: Role = {role}, Show = {role === 'Foreman' ? 'YES' : 'NO'}
+            </div> */}
         </div>
     )
 }
-
 
 export default ProjectInfo

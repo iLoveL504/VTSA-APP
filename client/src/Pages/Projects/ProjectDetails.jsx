@@ -57,7 +57,7 @@ const ScheduleModal = ({ isOpen, onClose, onChoice }) => {
 };
 
 const ProjectDetails = ({
-    currentTask, currentParentTask, projectExists, proj, setFormData, setIsLoading, formData, teamInfo, isLoading, teamIsLoading, tasksIsLoading,
+    currentTask, currentParentTask, projectExists, fetchedData, proj, setFormData, setIsLoading, formData, teamInfo, isLoading, teamIsLoading, tasksIsLoading,
     saveStatus, handleSave, isEditing, errors, handleInputChange, handleNumberInputChange, handleBlur, handleSubmit,
     values, setIsEditing, handleCancel
 }) => {
@@ -65,15 +65,31 @@ const ProjectDetails = ({
     const {projId} = useParams()
     const [showScheduleModal, setShowScheduleModal] = useState(false)
     
+    const updatePreceedingData = () => {
+
+    }
+
     const handleTaskComplete =  (task) => async () => {
         try {
-            const payload = {
-                id: Number(projId),
-                task: task
-           }
+            console.log(fetchedData)
+            console.log(task)
+            let percentCompleted = 0
+            let taskUpdates = []
+            for(const t in fetchedData) {
+                percentCompleted += fetchedData[t].task_percent
+                taskUpdates.push(fetchedData[t])
+                taskUpdates[t].task_done = 1
+                if (fetchedData[t].task_name === task.task_name) break
+            }
+            console.log(taskUpdates)
+            console.log(percentCompleted)
 
+            const payload = {
+                taskUpdates,
+                percentCompleted
+            }
             await Axios.put(`/projects/schedule/${projId}`, payload)
-            window.location.reload()
+            //window.location.reload()
         } catch (e) {
             console.log(e)
         } 
@@ -169,10 +185,12 @@ const ProjectDetails = ({
                                             {currentTask.task_name}
                                             <button 
                                                 className={`complete-btn ${currentTask.task_done === 1 ? 'completed' : ''}`}
-                                                onClick={handleTaskComplete(currentTask.task_name)}
+                                                onClick={handleTaskComplete(currentTask)}
+                                                disabled={currentTask.task_done === 1 || sessionStorage.getItem('roles') !== 'Project Engineer'} 
                                             >
                                                 <i className="fas fa-check"></i>
-                                                {currentTask.task_done === 1 ? 'Completed' : 'Mark Complete'}
+                                                {currentTask.task_done === 1 ? 'Completed' : 
+                                                sessionStorage.getItem('roles') === 'Project Engineer' ? 'Mark Complete' : 'Pending'}
                                             </button>
                                         </div>
                                         <div className="task-dates">
