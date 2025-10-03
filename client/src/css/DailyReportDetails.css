@@ -44,8 +44,8 @@
 }
 
 /* Header Styles */
-.report-header {
-  background: white;
+.dailyreport-header {
+  background: rgb(255, 255, 255);
   border-radius: 12px;
   padding: 2rem;
   margin-bottom: 2rem;

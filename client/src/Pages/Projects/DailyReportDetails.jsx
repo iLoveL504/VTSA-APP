@@ -127,7 +127,7 @@ const handlePrint = useReactToPrint({
     <div className="Content DailyReportDetails">
       {/* Header Section */}
       <div ref={contentRef}>
-        <div className="report-header">
+        <div className="dailyreport-header">
         <div className="header-actions">
           <button className="btn-back" onClick={handleBack}>
             <i className="fas fa-arrow-left"></i>

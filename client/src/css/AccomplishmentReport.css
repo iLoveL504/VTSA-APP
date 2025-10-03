@@ -308,7 +308,7 @@
 
 /* Column Widths */
 .col-item { width: 60px; }
-.col-desc { width: 200px; text-align: left; }
+.col-desc { width: 150px; text-align: left; }
 .col-unit { width: 70px; }
 .col-amount { width: 100px; text-align: right; }
 .col-wt { width: 60px; }

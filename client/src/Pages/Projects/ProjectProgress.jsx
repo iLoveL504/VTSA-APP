@@ -7,6 +7,7 @@ import DailyTasks from './DailyTasks.jsx'
 import UniverSpreadsheet from '../../spreadsheet-components/spreadsheet.jsx'
 import "wx-react-gantt/dist/gantt.css";
 import ViewSchedule from './ViewSchedule.jsx'
+import AccomplishmentReport from './AccomplishmentReport.jsx'
 
 const ProjectProgress = ({ allTaskDates, tasksIsLoading}) => {
     const { projId } = useParams()
@@ -31,6 +32,12 @@ const ProjectProgress = ({ allTaskDates, tasksIsLoading}) => {
                         Gantt Chart
                     </button>
                     <button 
+                        className={activeTab === 'accomplishment' ? 'active' : ''}
+                        onClick={() => setActiveTab('accomplishment')}
+                    >
+                        AccomplishmentReport
+                    </button>
+                    <button 
                         className={activeTab === 'tasks' ? 'active' : ''}
                         onClick={() => setActiveTab('tasks')}
                     >
@@ -42,6 +49,7 @@ const ProjectProgress = ({ allTaskDates, tasksIsLoading}) => {
             <div className="progress-content">
                 {activeTab === 'gantt' && <ViewSchedule />}
                 {activeTab === 'tasks' && <DailyTasks allTaskDates={allTaskDates} tasksIsLoading={tasksIsLoading}/>}
+                {activeTab === 'accomplishment' && <AccomplishmentReport />}
             </div>
         </div>
     )

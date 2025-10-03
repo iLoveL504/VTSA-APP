@@ -17,7 +17,7 @@ class ProjectModel {
             'select id from projects where lift_name = ?',
             [name]
         )
-        console.log('this is the result', results)
+   
         return results
     }
 
@@ -174,32 +174,28 @@ static async getProjectSchedule(id) {
     return sortedTasks;
 }
 
-    static async completeTask(task, id) {
-        if (!id || isNaN(id)) {
-            throw new Error("Invalid project ID");
+    static async completeTask(updates, percent, id) {
+        if (updates.length === 0) {
+            throw new Error("Nothing to update");
         }
+        console.log(typeof id)
+        const promises = Object.keys(updates).map(key => {
+            const { task_id } = updates[key];
+            console.log(task_id)
+            console.log(id)
+            const tableQuery = `update project_${id}_schedule set task_done = 1 where task_id = ?`
+            return pool.query(
+                tableQuery,
+                [task_id]  
+                ).catch(err => {
+                console.error(`Error updating project ${id}:`, err)
+                })
+        });
 
-        const query = `
-            UPDATE project_${id}_schedule
-            SET task_done = 1
-            WHERE task_name = ?
-        `;
-        // set current task to done
-        await pool.query(query, [task]);
-     
-        const percentQuery = `select task_percent from project_${id}_schedule where task_name = ?`
-        // get percent of task
-        const [percent] = await pool.query(percentQuery, [task]);
-        console.log(percent[0].task_percent)
-        const percentToAdd = percent[0].task_percent
-
-        const updateProgressQuery = `
-            update projects set progress = progress + ? where id = ?;
-        `
-        //add that percent to progress
-        await pool.query(updateProgressQuery, [percentToAdd, id])
-        return
+         await Promise.all(promises)
+         await pool.query(`update projects set progress = ? where id = ?`, [percent, id])
     }
+
     static async makeProjectSchedule(tasks, id) {
     try {
         // Create the table
@@ -215,9 +211,7 @@ static async getProjectSchedule(id) {
             task_done TINYINT(1) DEFAULT 0,
             task_percent int default 0
         )`;
-        console.log(tasks)
         await pool.query(createTableQuery);
-        console.log(`Table project_${id}_schedule created successfully`);
         const sortedTasks = tasks.sort((a, b) => {
         const dateDiff = new Date(a.task_start) - new Date(b.task_start);
 
@@ -252,8 +246,7 @@ static async getProjectSchedule(id) {
         
         await Promise.all(insertPromises);
         const [rsult] = await pool.query('select * from project_799_schedule')
-        console.log('-----sorted tasks------')
-        console.log(`All ${tasks.length} tasks inserted successfully`);
+    
 
         return { success: true, message: `Schedule created with ${tasks.length} tasks` };
         
@@ -266,7 +259,7 @@ static async getProjectSchedule(id) {
 
     static async updateProjectStatus(updates) {
         console.log('here in project model')
-        console.log(updates)
+      
         const promises = Object.keys(updates).map(key => {
             const { id, status } = updates[key];
             return pool.query(
@@ -281,6 +274,42 @@ static async getProjectSchedule(id) {
 
         await Promise.all(promises)
         return
+    }
+
+    static async submitProjectReport(report, files, id){
+        const {
+            workCompleted,
+            workPlannedNextDay,
+            delaysIssues,
+            remarks,
+            fullName
+        } = report
+        const [result] =  await pool.query(`
+                insert into project_daily_report (project_id, workCompleted, workPlannedNextDay, delaysIssues, remarks, author)
+                values (?, ?, ?, ?, ?, ?)
+            `, [id, workCompleted, workPlannedNextDay,delaysIssues, remarks, fullName])
+
+      
+        const reportId = result.insertId
+        for (const file of files) {
+        const filePath = "/uploads/" + file.filename;
+        await pool.query(
+            `INSERT INTO daily_report_photos (report_id, photo_url) VALUES (?, ?)`,
+            [reportId, filePath]
+        );
+        }
+        return
+    }
+
+    static async retrieveProjectReport(id) {
+        const [results] = await pool.query(`select * from project_daily_report where project_id = ?`, [id])
+        return results
+    }
+
+    static async retrieveProjectAccomplishment(id) {
+        const query = `select * from project_${id}_accomplishment`
+        const [results] = await pool.query(query)
+        return results
     }
 }
 

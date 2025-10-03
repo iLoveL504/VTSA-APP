@@ -1,5 +1,6 @@
 import { ProjectModel as projects } from '../model/ProjectModel.js'
 
+
 export const getProjects = async (req, res) => {
     const results = await projects.getAllProjects()
     res.json(results)
@@ -8,6 +9,7 @@ export const getProjects = async (req, res) => {
 export const findProject = async (req, res) => {
     console.log('i run ')
     const results = await projects?.findById(req.params.id)
+    console.log(results)
     res.json(results)
 }
 
@@ -67,18 +69,17 @@ export const getProjectSchedule = async (req, res) => {
     }
 }
 export const completeTask = async (req, res) => {
-    const { id } = req.body
-    console.log(id)
-    const { task } = req.body
-    console.log(task)
+    const { taskUpdates } = req.body
+    const { percentCompleted } = req.body
+    const { id } = req.params
     try {
-        const results = await projects.completeTask(task, Number(id))
+        const results = await projects.completeTask(taskUpdates, percentCompleted, Number(id))
         res.json(results)
     } catch (e) {
         console.error("Error updating project task:", e);
         res.status(500).json({ message: "Internal Server Error" });        
     }
-    console.log(req.body)
+
 }
 
 export const makeProjectSchedule = async (req, res) => {
@@ -106,4 +107,40 @@ export const updateProjectStatus = async (req, res) => {
         success: true,
         message: "Schedule saved successfully!",
     });
+}
+
+export const getDailyReport = async (req, res) => {
+    try {
+        const results = await projects.retrieveProjectReport(Number(req.params.id))
+        res.status(200).json(
+            results
+        );
+    } catch (e) {
+         console.log(e)
+    }
+}
+
+export const sendDailyReport = async (req, res) => {
+
+    try {
+        console.log(req.body)
+        await projects.submitProjectReport(req.body, req.files, Number(req.params.id))
+        res.status(200).json({
+            success: true,
+            message: "Report saved successfully!",
+        });
+    } catch (e) {
+        console.log(e)
+    }
+}
+
+export const getProjectAccomplishment = async (req, res) => {
+    const {id} = req.params
+    try {
+        const results =  await projects.retrieveProjectAccomplishment(Number(id))
+     
+        res.status(200).json(results);
+    } catch (e) {
+        console.log(e)
+    }
 }

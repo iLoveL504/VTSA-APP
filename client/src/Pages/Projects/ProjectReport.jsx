@@ -56,7 +56,7 @@ const ProjectReport = () => {
 
   return (
     <div className="Content ProjectReport">
-      <div className="report-header">
+      <div className="makereport-header">
         <h1>Elevator Project Daily Report</h1>
         <p>Submit work progress, issues, and additional details</p>
       </div>

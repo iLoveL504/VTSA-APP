@@ -15,6 +15,7 @@ import '../../css/ProjectPage.css'
 import tasks from '../../data/TasksData'
 import ProjectDocuments from './ProjectDocuments.jsx'
 
+
 const ProjectInfo = () => {
     const navigate = useNavigate()
     const backendURL = import.meta.env.VITE_BACKEND_URL || "http://localhost:4000";
