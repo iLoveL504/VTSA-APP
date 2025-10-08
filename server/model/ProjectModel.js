@@ -183,7 +183,7 @@ static async getProjectSchedule(id) {
             const { task_id } = updates[key];
             console.log(task_id)
             console.log(id)
-            const tableQuery = `update project_${id}_schedule set task_done = 1 where task_id = ?`
+            const tableQuery = `update project_${id}_schedule set task_done = 1, pres_acc = 100.00 where task_id = ?`
             return pool.query(
                 tableQuery,
                 [task_id]  
@@ -196,68 +196,83 @@ static async getProjectSchedule(id) {
          await pool.query(`update projects set progress = ? where id = ?`, [percent, id])
     }
 
-    static async makeProjectSchedule(tasks, id) {
-    try {
-        // Create the table
-        const createTableQuery = `CREATE TABLE IF NOT EXISTS project_${id}_schedule (
-            id INT AUTO_INCREMENT PRIMARY KEY,  -- Added for insertion order
-            task_id INT,
-            task_name VARCHAR(255),
-            task_start DATE,
-            task_end DATE,
-            task_duration INT,
-            task_type VARCHAR(255),
-            task_parent INT,
-            task_done TINYINT(1) DEFAULT 0,
-            task_percent int default 0
-        )`;
-        await pool.query(createTableQuery);
-        const sortedTasks = tasks.sort((a, b) => {
-        const dateDiff = new Date(a.task_start) - new Date(b.task_start);
+   static async makeProjectSchedule(tasks, id) {
+  try {
+    // Create the table (with new columns already included)
+    const createTableQuery = `
+      CREATE TABLE IF NOT EXISTS project_${id}_schedule (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        task_id INT,
+        task_name VARCHAR(255),
+        task_start DATE,
+        task_end DATE,
+        task_duration INT,
+        task_type VARCHAR(255),
+        task_parent INT,
+        task_done TINYINT(1) DEFAULT 0,
+        task_percent INT DEFAULT 0,
 
-        if (dateDiff !== 0) return dateDiff;
+        -- Added columns
+        section_title VARCHAR(255),
+        item_code VARCHAR(10),
+        description VARCHAR(255),
+        unit VARCHAR(50),
+        wt DECIMAL(5,2) DEFAULT 0.00,
+        pres_acc DECIMAL(5,2) DEFAULT 0.00,
+        prev_acc DECIMAL(5,2) DEFAULT 0.00,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      );
+    `;
+    await pool.query(createTableQuery);
 
-        if (a.task_type === "summary" && b.task_type !== "summary") return -1;
-        if (a.task_type !== "summary" && b.task_type === "summary") return 1;
+    // Sort tasks by start date and hierarchy
+    const sortedTasks = tasks.sort((a, b) => {
+      const dateDiff = new Date(a.task_start) - new Date(b.task_start);
+      if (dateDiff !== 0) return dateDiff;
+      if (a.task_type === "summary" && b.task_type !== "summary") return -1;
+      if (a.task_type !== "summary" && b.task_type === "summary") return 1;
+      return 0;
+    });
 
-        return 0; 
-        });
+    // Insert all tasks with additional fields
+    const insertPromises = sortedTasks.map(async (t) => {
+      const insertQuery = `
+        INSERT INTO project_${id}_schedule 
+          (task_id, task_name, task_start, task_end, task_duration, task_type, task_parent, task_percent, section_title, item_code, wt, unit, description)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      `;
 
-        // Use Promise.all() to insert all tasks concurrently
-        const insertPromises = sortedTasks.map(async (t) => {
-            const insertQuery = `INSERT INTO project_${id}_schedule 
-                (task_id, task_name, task_start, task_end, task_duration, task_type, task_parent, task_percent) 
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?)`;
-            
-            const values = [
-                t.task_id,
-                t.task_name,
-                t.task_start, // Convert to YYYY-MM-DD
-                t.task_end,   // Convert to YYYY-MM-DD
-                t.task_duration || 1,
-                t.task_type || 'task',
-                t.task_parent || null,
-                t.task_percent
-            ];
+      const values = [
+        t.task_id || t.task_id,
+        t.task_name || t.task_name,
+        t.task_start || null,
+        t.task_end || null,
+        t.task_duration || 1,
+        t.task_type || 'task',
+        t.task_parent || null,
+        t.task_percent || 0,
+        t.section_title || null,
+        t.item_code || null,
+        t.wt || 0.00,
+        t.unit || 1,
+        t.task_name
+      ];
 
-            return pool.query(insertQuery, values);
-        });
+      return pool.query(insertQuery, values);
+    });
 
-        
-        await Promise.all(insertPromises);
-        const [rsult] = await pool.query('select * from project_799_schedule')
-    
+    await Promise.all(insertPromises);
 
-        return { success: true, message: `Schedule created with ${tasks.length} tasks` };
-        
-    } catch (error) {
-        console.error('Error creating schedule:', error);
-        throw error;
-    }
-
+    return { success: true, message: `Schedule created with ${tasks.length} tasks` };
+  } catch (error) {
+    console.error('Error creating schedule:', error);
+    throw error;
+  }
 }
 
+
     static async updateProjectStatus(updates) {
+        
         console.log('here in project model')
       
         const promises = Object.keys(updates).map(key => {
@@ -311,6 +326,203 @@ static async getProjectSchedule(id) {
         const [results] = await pool.query(query)
         return results
     }
+
+  static async fillKickOffChecklist(data, projectId) {
+    const query = `
+      UPDATE kickoff_checklist
+      SET
+        project_name = ?,
+        site_address = ?,
+        project_no = ?,
+        project_date = ?,
+        client_name = ?,
+        pic_name = ?,
+        contact_no = ?,
+        elevator_type = ?,
+        finishes = ?,
+        install_method = ?,
+        design_req = ?,
+        building_status = ?,
+        project_others = ?,
+        toolbox = ?,
+        qaqc = ?,
+        drawing = ?,
+        installation_manual = ?,
+        start_date = ?,
+        project_schedule = ?,
+        completion_date = ?,
+        manpower = ?,
+        tools = ?,
+        program_others = ?,
+        lodging = ?,
+        other_req = ?
+      WHERE id = ?
+    `;
+
+    const values = [
+      data.projectName,
+      data.siteAddress,
+      data.projectNo,
+      data.date || null,
+      data.clientName,
+      data.picName,
+      data.contactNo,
+      data.projectDetails.elevatorType,
+      data.projectDetails.finishes,
+      data.projectDetails.installMethod,
+      data.projectDetails.designReq,
+      data.projectDetails.buildingStatus,
+      data.projectDetails.others,
+      data.mobilization.toolbox ? 1 : 0,
+      data.mobilization.qaqc ? 1 : 0,
+      data.mobilization.drawing ? 1 : 0,
+      data.mobilization.manual ? 1 : 0,
+      data.program.startDate || null,
+      data.program.schedule,
+      data.program.completionDate || null,
+      data.program.manpower,
+      data.program.tools,
+      data.program.others,
+      data.otherReq.lodging,
+      data.otherReq.others,
+      projectId
+    ];
+
+    const [result] = await pool.query(query, values);
+
+    // Optional: if no row was updated, insert new one
+    if (result.affectedRows === 0) {
+      await pool.query(
+        `INSERT INTO kickoff_checklist (
+          project_name, site_address, project_no, project_date,
+          client_name, pic_name, contact_no,
+          elevator_type, finishes, install_method, design_req, building_status, project_others,
+          toolbox, qaqc, drawing, installation_manual,
+          start_date, project_schedule, completion_date,
+          manpower, tools, program_others,
+          lodging, other_req,
+          project_id
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+        values
+      );
+    }
+  }
+
+  static async getKickOffChecklist(id) {
+    const [rows] = await pool.query(
+      `SELECT * FROM kickoff_checklist WHERE id = ? LIMIT 1`,
+      [id]
+    );
+
+    console.log(rows)
+    if (rows.length === 0) {
+        await pool.query('insert into kickoff_checklist (id, project_name) values (?, ?)', [id, ''])
+        const here = await pool.query(`SELECT * FROM kickoff_checklist WHERE id = ? LIMIT 1`, [id])
+        return here
+    }
+    return rows
+  }
+
+  static async getPTNCChecklist (id) {
+      const [rows] = await pool.query(
+      "SELECT * FROM qaqc_checklist WHERE project_id = ?",
+      [id]
+    );
+
+    if (rows.length > 0) {
+      return rows[0] // ✅ checklist found
+    }
+
+    // ❌ no checklist found → create a new blank one
+    const blankChecklist = {
+      project_id: id,
+      project_name: "",
+      order_number: "",
+      location: "",
+      lift_type: "",
+      foreman: "",
+      general_comments: "",
+      foreman_signature: "",
+      inspector_signature: "",
+      qaqc_signature: "",
+      date: new Date(),
+      items_json: JSON.stringify(Array(74).fill({ accepted: "", remarks: "" }))
+    };
+
+    await pool.query(
+      `INSERT INTO qaqc_checklist 
+        (project_id, project_name, order_number, location, lift_type, foreman, general_comments,
+         foreman_signature, inspector_signature, qaqc_signature, date, items_json)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+      [
+        blankChecklist.project_id,
+        blankChecklist.project_name,
+        blankChecklist.order_number,
+        blankChecklist.location,
+        blankChecklist.lift_type,
+        blankChecklist.foreman,
+        blankChecklist.general_comments,
+        blankChecklist.foreman_signature,
+        blankChecklist.inspector_signature,
+        blankChecklist.qaqc_signature,
+        blankChecklist.date,
+        blankChecklist.items_json
+      ]
+    );
+
+    return blankChecklist
+  }
+
+  static async fillPTNCChecklist (id, data) {
+      const {
+        project_name,
+        order_number,
+        location,
+        lift_type,
+        foreman,
+        general_comments,
+        foreman_signature,
+        inspector_signature,
+        qaqc_signature,
+        date,
+        items
+      } = data
+
+          const [result] = await pool.query(
+      `UPDATE qaqc_checklist SET
+        project_name = ?,
+        order_number = ?,
+        location = ?,
+        lift_type = ?,
+        foreman = ?,
+        general_comments = ?,
+        foreman_signature = ?,
+        inspector_signature = ?,
+        qaqc_signature = ?,
+        date = ?,
+        items_json = ?
+      WHERE project_id = ?`,
+      [
+        project_name,
+        order_number,
+        location,
+        lift_type,
+        foreman,
+        general_comments,
+        foreman_signature,
+        inspector_signature,
+        qaqc_signature,
+        date,
+        JSON.stringify(items),
+        id
+      ]
+    );
+
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ message: "Checklist not found" });
+    }
+
+  }
 }
 
 export { ProjectModel }

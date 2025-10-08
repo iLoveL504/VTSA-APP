@@ -19,16 +19,21 @@ const useUpdateProjects = (projectIDs) => {
     const [updateIsLoading, setUpdateIsLoading] = useState(true)
     useEffect(() => {
         const fetchData = async () => {
+            console.log(projectIDs)
             if(projectIDs) {
-                console.log()
+          
                 let payload = {}
                 try{
                     for (let i = 0; i < projectIDs.length; i++){
+                        console.log(projectIDs[i])
+                        //schedule/${projectIDs[i]}
                         const response = await Axios.get(`${backendURL}/projects/schedule/${projectIDs[i]}`)
+                        console.log(response)
                         const foundParentTask = response.data.find(t => t.task_type === 'summary' && new Date(dateNow) > new Date(t.task_start) && new Date(dateNow) < new Date(t.task_end))
                         console.log(`project ${projectIDs[i]} is in ${foundParentTask.task_name} phase`)
-                        console.log(i)
+                        console.log(foundParentTask)
                         payload[`project${projectIDs[i]}`] = {'id': projectIDs[i], 'status': summaryMap[foundParentTask.task_name]}
+                        console.log('hi')
                     } 
                     const response = await Axios.put(`${backendURL}/projects/update-status`, payload)
                     if (response.data.success === true){
@@ -37,6 +42,7 @@ const useUpdateProjects = (projectIDs) => {
                     }
                     
                 } catch (e) {
+                        setUpdateIsLoading(false)
                         console.log('error', e)
                 }
 

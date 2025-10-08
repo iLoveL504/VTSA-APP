@@ -11,7 +11,11 @@ import {
     updateProjectStatus,
     sendDailyReport,
     getDailyReport,
-    getProjectAccomplishment 
+    getProjectAccomplishment,
+    fillKickOffChecklist,
+    getKickOffChecklist,
+    getPTNCChecklist, 
+    fillPTNCChecklist 
 } from "../../controllers/projectController.js"
 const router = express.Router()
 import multer from 'multer'
@@ -41,6 +45,14 @@ router.route('/schedule/:id')
     .get(getProjectSchedule)
     .post(makeProjectSchedule)
     .put(completeTask)
+
+router.route('/kickoff/:id')
+    .put(fillKickOffChecklist)
+    .get(getKickOffChecklist)
+
+router.route('/checklist-ptnc/:id')
+    .get(getPTNCChecklist)
+    .put(fillPTNCChecklist)
 
 router.route('/accomplishment/:id')
     .get(getProjectAccomplishment)

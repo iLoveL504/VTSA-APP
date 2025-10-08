@@ -1,6 +1,10 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { Axios } from '../../api/axios'
+import { useParams } from 'react-router-dom'
 
 export default function KickOffChecklist() {
+  const backendURL = import.meta.env.VITE_BACKENDURL || 'http://localhost:4000'
+  const {projId} = useParams()
   const [formData, setFormData] = useState({
     projectName: "",
     siteAddress: "",
@@ -38,6 +42,58 @@ export default function KickOffChecklist() {
     signatures: ["", "", ""]
   });
 
+  useEffect(() => {
+    const fetchChecklist = async () => {
+      try {
+        const res = await Axios.get(`${backendURL}/projects/kickoff/${projId}`);
+        if (res.data.success && res.data.data) {
+          console.log(res)
+          const d = res.data.data;
+          setFormData({
+            projectName: d.project_name || "",
+            siteAddress: d.site_address || "",
+            projectNo: d.project_no || "",
+            date: d.project_date ? d.project_date.split("T")[0] : "",
+            clientName: d.client_name || "",
+            picName: d.pic_name || "",
+            contactNo: d.contact_no || "",
+            projectDetails: {
+              elevatorType: d.elevator_type || "",
+              finishes: d.finishes || "",
+              installMethod: d.install_method || "",
+              designReq: d.design_req || "",
+              buildingStatus: d.building_status || "",
+              others: d.project_others || ""
+            },
+            mobilization: {
+              toolbox: !!d.toolbox,
+              qaqc: !!d.qaqc,
+              drawing: !!d.drawing,
+              manual: !!d.installation_manual
+            },
+            program: {
+              startDate: d.start_date ? d.start_date.split("T")[0] : "",
+              schedule: d.project_schedule || "",
+              completionDate: d.completion_date ? d.completion_date.split("T")[0] : "",
+              manpower: d.manpower || "",
+              tools: d.tools || "",
+              others: d.program_others || ""
+            },
+            otherReq: {
+              lodging: d.lodging || "",
+              others: d.other_req || ""
+            },
+            signatures: ["", "", ""] // not stored yet
+          });
+        }
+      } catch (err) {
+        console.error("Error loading checklist:", err);
+      }
+    };
+
+    fetchChecklist();
+  }, [projId, backendURL]);
+
   const handleChange = (e, section, field, index = null) => {
     const { name, value, type, checked } = e.target;
 
@@ -61,10 +117,16 @@ export default function KickOffChecklist() {
     }
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("Form submitted:", formData);
-    alert("Form submitted! Check console for data.");
+    try {
+      const res = await Axios.put(`${backendURL}/projects/kickoff/${projId}`, formData);
+      console.log("Saved:", res.data);
+      alert("Form saved successfully!");
+    } catch (err) {
+      console.error("Error saving form:", err);
+      alert("Failed to save form.");
+    }
   };
 
   return (

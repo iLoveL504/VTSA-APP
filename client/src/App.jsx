@@ -15,7 +15,7 @@ import CreateProject from './Pages/Projects/CreateProject'
 import { Routes, Route, Navigate } from 'react-router-dom';
 import useAxiosFetch from './hooks/useAxiosFetch'
 import AssignTeam from './Pages/AssignTeam.jsx'
-import QAQC_Checklist from './Pages/Documents/QAQC_Checklist.jsx'
+import QAQC_Checklist from './Pages/Documents/PTNCQAQC_Checklist.jsx'
 import { useStoreState, useStoreActions } from 'easy-peasy'
 import ScheduleProjects from './Pages/Projects/ScheduleProject.jsx'
 import NotificationPage from './Pages/NotificationPage.jsx'
@@ -29,6 +29,9 @@ import TestChart from './Pages/Tests/TestChart.jsx'
 import useUpdateProjects from './hooks/useUpdateProjects.js'
 import ProjectDocuments from './Pages/Projects/ProjectDocuments.jsx'
 import DailyReportDetails from './Pages/Projects/DailyReportDetails.jsx'
+import HandOverChecklist from './Pages/Documents/HandOverChecklist.jsx'
+import PreInspection_Checklist from './Pages/Documents/PreInspection.jsx'
+import SchneiderServiceReport from './Pages/Documents/SchneiderServiceReport.jsx'
 
 function App() {
   //console.log('backendurl', import.meta.env.VITE_BACKEND_URL )
@@ -135,13 +138,16 @@ useEffect(() => {
             <Route path="create" element={<CreateProject />} />
             <Route path=":projId" element={<ProjectInfo />} />
             <Route path=":projId/team" element={<AssignTeam />} />
-            <Route path="qaqc" element={<QAQC_Checklist />} />
+            <Route path=":projId/qaqc" element={<QAQC_Checklist />} />
             <Route path=":projId/progress" element={<ProjectProgress />} />
             <Route path=":projId/report" element={<ProjectReport />} />
             <Route path=":projId/custom" element={<Test1 />} />
             <Route path=":projId/kickoff" element={<KickOffChecklist />} />
+            <Route path=":projId/handover-checklist" element={<HandOverChecklist />} />
+            <Route path=":projId/preinspection-checklist" element={<PreInspection_Checklist />} />
+            <Route path=":projId/schneider_service_report" element={<SchneiderServiceReport />} />
             <Route path=":projId/schedule" element={<TestChart id={1} />} />
-            <Route path=":projId/documents" element={<ProjectDocuments />} />
+            <Route path=":projId/documents" element={<ProjectDocuments />} /> 
             <Route path=":projId/daily-reports/:reportId" element={<DailyReportDetails />} />
           </Route>
           

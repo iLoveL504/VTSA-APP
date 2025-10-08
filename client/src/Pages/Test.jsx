@@ -14,7 +14,7 @@ import tasks from '../data/TasksData.js'
 import { useReactToPrint } from "react-to-print";
 
 const Test1 = () => {
-  const testDate = "9/10/2025"
+  const testDate = "5/27/2025"
   const {projId} = useParams()
   const location = useLocation();
   const navigate = useNavigate()
@@ -115,7 +115,10 @@ const Test1 = () => {
       end: null,
       duration: parseInt(newTaskDuration),
       parent: parentID,
-      percent: 0
+      percent: 0,
+      section_title: 'General',
+      wt: 0.00,
+      section_id: Math.floor(Math.random() * 900) + 100
     };
 
     // Step 4: Rebuild the linked list with the new task inserted

@@ -18,6 +18,7 @@ const useFindProjectTask = (id) => {
     useEffect(() => {
         if(fetchError) {
             setProjectExists(false)
+            setTasksIsLoading(false)
             return
         }
         if(!isLoading && fetchedData){
@@ -35,13 +36,13 @@ const useFindProjectTask = (id) => {
             const foundCurrentTask = fetchedData.find(t => t.task_type === 'task' && new Date(dateNow) > new Date(t.task_start) && new Date(dateNow) < new Date(t.task_end))
             console.log(foundCurrentTask)
             setCurrentTask(foundCurrentTask)
-
+            setTasksIsLoading(false)
             //find current percent progress
             
         }
     }, [isLoading, fetchedData])
 
-    return{currentTask, currentParentTask, isLoading, fetchError, projectExists, fetchedData}
+    return{currentTask, currentParentTask, tasksIsLoading, fetchError, projectExists, fetchedData}
 }
 
 export default useFindProjectTask

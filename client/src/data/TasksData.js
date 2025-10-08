@@ -235,6 +235,9 @@ const tasks = [
     duration: 1,
     parent: 500,
     percent_progress: 0,
+    section_title: 'General',
+    wt: 0.00,
+    item_code: 1
   },
   {
     id: 502,
@@ -245,6 +248,9 @@ const tasks = [
     duration: 2,
     parent: 500,
     percent_progress: 7,
+    section_title: 'General',
+    wt: 7.00,
+    item_code: 2
   },
   {
     id: 503,
@@ -255,6 +261,9 @@ const tasks = [
     duration: 2,
     parent: 500,
     percent_progress: 7,
+    section_title: 'General',
+    wt: 7.00,
+    item_code: 3
   },
   {
     id: 504,
@@ -265,6 +274,9 @@ const tasks = [
     duration: 2,
     parent: 500,
     percent_progress: 7,
+    section_title: 'General',
+    wt: 7.00,
+    item_code: 4
   },
   {
     id: 505,
@@ -275,6 +287,9 @@ const tasks = [
     duration: 1,
     parent: 500,
     percent_progress: 0,
+    section_title: 'General',
+    wt: 0.00,
+    item_code: 5
   },
   {
     id: 506,
@@ -285,6 +300,9 @@ const tasks = [
     duration: 2,
     parent: 500,
     percent_progress: 7,
+    section_title: 'General',
+    wt: 7.00,
+    item_code: 6
   },
   {
     id: 507,
@@ -306,6 +324,9 @@ const tasks = [
     duration: 2,
     parent: 507,
     percent_progress: 5,
+    section_title: 'Guide Rail Setting',
+    wt: 5.00,
+    item_code: 'A'
   },
   {
     id: 509,
@@ -316,6 +337,9 @@ const tasks = [
     duration: 2,
     parent: 507,
     percent_progress: 3,
+    section_title: 'Guide Rail Setting',
+    wt: 3.00,
+    item_code: 'B'
   },
   {
     id: 510,
@@ -326,6 +350,9 @@ const tasks = [
     duration: 1,
     parent: 507,
     percent_progress: 3,
+    section_title: 'Guide Rail Setting',
+    wt: 3.00,
+    item_code: 'C'
   },
   {
     id: 511,
@@ -337,6 +364,7 @@ const tasks = [
     parent: 500,
     open: false,
     percent_progress: 0,
+    
   },
   {
     id: 512,
@@ -347,6 +375,9 @@ const tasks = [
     duration: 2,
     parent: 511,
     percent_progress: 2,
+    section_title: 'Landing Door Assembly',
+    wt: 2.00,
+    item_code: 'A'
   },
   {
     id: 513,
@@ -357,6 +388,9 @@ const tasks = [
     duration: 2,
     parent: 511,
     percent_progress: 2,
+    section_title: 'Landing Door Assembly',
+    wt: 2.00,
+    item_code: 'B'
   },
   {
     id: 514,
@@ -367,6 +401,9 @@ const tasks = [
     duration: 2,
     parent: 511,
     percent_progress: 3,
+    section_title: 'Landing Door Assembly',
+    wt: 3.00,
+    item_code: 'C'
   },
   {
     id: 515,
@@ -388,6 +425,9 @@ const tasks = [
     duration: 2,
     parent: 515,
     percent_progress: 5,
+    section_title: 'M/R Equipment Setting',
+    wt: 5.00,
+    item_code: 'A'
   },
   {
     id: 517,
@@ -398,6 +438,9 @@ const tasks = [
     duration: 2,
     parent: 515,
     percent_progress: 5,
+    section_title: 'M/R Equipment Setting',
+    wt: 5.00,
+    item_code: 'B'
   },
   {
     id: 518,
@@ -408,6 +451,9 @@ const tasks = [
     duration: 2,
     parent: 515,
     percent_progress: 2,
+    section_title: 'M/R Equipment Setting',
+    wt: 2.00,
+    item_code: 'C'
   },
   {
     id: 519,
@@ -418,6 +464,9 @@ const tasks = [
     duration: 2,
     parent: 500,
     percent_progress: 3,
+    section_title: 'M/R Equipment Setting',
+    wt: 3.00,
+    item_code: 'D'
   },
   {
     id: 520,
@@ -439,6 +488,9 @@ const tasks = [
     duration: 2,
     parent: 520,
     percent_progress: 3,
+    section_title: 'Car Assembly',
+    wt: 3.00,
+    item_code: 'A'
   },
   {
     id: 522,
@@ -449,6 +501,9 @@ const tasks = [
     duration: 1,
     parent: 520,
     percent_progress: 3,
+    section_title: 'Car Assembly',
+    wt: 3.00,
+    item_code: 'B'
   },
   {
     id: 523,
@@ -459,6 +514,9 @@ const tasks = [
     duration: 2,
     parent: 500,
     percent_progress: 2,
+    section_title: 'Car Assembly',
+    wt: 2.00,
+    item_code: 'C'
   },
   {
     id: 524,
@@ -469,6 +527,9 @@ const tasks = [
     duration: 2,
     parent: 500,
     percent_progress: 2,
+    section_title: 'Car Assembly',
+    wt: 2.00,
+    item_code: 'D'
   },
   {
     id: 525,
@@ -490,6 +551,9 @@ const tasks = [
     duration: 2,
     parent: 525,
     percent_progress: 2,
+    section_title: 'Laying out of ropes',
+    wt: 2.00,
+    item_code: 'A'
   },
   {
     id: 527,
@@ -500,6 +564,9 @@ const tasks = [
     duration: 2,
     parent: 525,
     percent_progress: 3,
+    section_title: 'Compensating',
+    wt: 3.00,
+    item_code: 'B'
   },
   {
     id: 528,
@@ -510,6 +577,9 @@ const tasks = [
     duration: 1,
     parent: 525,
     percent_progress: 3,
+    section_title: 'Laying out of ropes',
+    wt: 3.00,
+    item_code: 'C'
   },
   {
     id: 529,
@@ -531,6 +601,9 @@ const tasks = [
     duration: 1,
     parent: 529,
     percent_progress: 5,
+    section_title: 'Wiring',
+    wt: 5.00,
+    item_code: 'A'
   },
   {
     id: 531,
@@ -541,6 +614,9 @@ const tasks = [
     duration: 1,
     parent: 529,
     percent_progress: 3,
+    section_title: 'Wiring',
+    wt: 3.00,
+    item_code: 'B'
   },
   {
     id: 532,
@@ -551,6 +627,9 @@ const tasks = [
     duration: 2,
     parent: 500,
     percent_progress: 3,
+    section_title: 'Wiring',
+    wt: 3.00,
+    item_code: 'C'
   },
   {
     id: 600,
@@ -571,7 +650,10 @@ const tasks = [
     end: null,
     duration: 3,
     parent: 600,
-    percent_progress: 3,  
+    percent_progress: 3, 
+    section_title: 'Testing and Commissioning (Passenger Elevator)',
+    wt: 3.00,
+    item_code: 'A'
   },
   {
     id: 602,
@@ -582,6 +664,9 @@ const tasks = [
     duration: 2,
     parent: 600,
     percent_progress: 1,
+    section_title: 'Testing and Commissioning (Passenger Elevator)',
+    wt: 1.00,
+    item_code: 'B'
   },
   {
     id: 603,
@@ -592,6 +677,9 @@ const tasks = [
     duration: 2,
     parent: 600,
     percent_progress: 2,
+    section_title: 'Testing and Commissioning (Passenger Elevator)',
+    wt: 2.00,
+    item_code: 'C'
   },
   {
     id: 604,
@@ -602,6 +690,9 @@ const tasks = [
     duration: 2,
     parent: 600,
     percent_progress: 1,
+    section_title: 'Testing and Commissioning (Passenger Elevator)',
+    wt: 1.00,
+    item_code: 'D'
   },
   {
     id: 605,
@@ -612,6 +703,9 @@ const tasks = [
     duration: 2,
     parent: 600,
     percent_progress: 1,
+    section_title: 'Testing and Commissioning (Passenger Elevator)',
+    wt: 1.00,
+    item_code: 'E'
   },
   {
     id: 606,
@@ -622,6 +716,9 @@ const tasks = [
     duration: 2,
     parent: 600,
     percent_progress: 1,
+    section_title: 'Testing and Commissioning (Passenger Elevator)',
+    wt: 1.00,
+    item_code: 'F'
   },
   {
     id: 607,
@@ -632,6 +729,9 @@ const tasks = [
     duration: 2,
     parent: 600,
     percent_progress: 1,
+    section_title: 'Testing and Commissioning (Passenger Elevator)',
+    wt: 1.00,
+    item_code: 'G'
   },
 ];
 

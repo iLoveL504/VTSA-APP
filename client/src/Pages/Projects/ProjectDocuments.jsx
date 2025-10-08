@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import '../../css/ProjectDocuments.css';
 import useAxiosFetch from "../../hooks/useAxiosFetch.js"
 import { useParams, useNavigate } from 'react-router-dom';
+import CircularProgress from '@mui/material/CircularProgress';
 
 const ProjectDocuments = () => {
     const navigate = useNavigate()
@@ -41,7 +42,8 @@ const ProjectDocuments = () => {
   const checklistDocuments = [
     {
       id: 1,
-      title: 'Pre-Installation Safety Checklist',
+      title: 'Kick-Off Meeting Agenda Checklist',
+      link: 'kickoff',
       category: 'Safety',
       lastUpdated: '2024-01-10',
       status: 'approved',
@@ -53,7 +55,8 @@ const ProjectDocuments = () => {
     },
     {
       id: 2,
-      title: 'Equipment Inspection Checklist',
+      title: 'Checklist Prior Handover',
+      link: 'handover-checklist',
       category: 'Quality',
       lastUpdated: '2024-01-12',
       status: 'pending',
@@ -65,8 +68,9 @@ const ProjectDocuments = () => {
     },
     {
       id: 3,
-      title: 'Site Safety Assessment',
-      category: 'Safety',
+      title: 'QAQC Checklist',
+      link: 'qaqc',
+      category: 'Quality',
       lastUpdated: '2024-01-08',
       status: 'approved',
       required: false,
@@ -77,8 +81,9 @@ const ProjectDocuments = () => {
     },
     {
       id: 4,
-      title: 'Quality Control Checklist',
-      category: 'Quality',
+      title: 'Pre-Inspection Checklist',
+      link: 'preinspection-checklist',
+      category: 'Prerequisite',
       lastUpdated: '2024-01-09',
       status: 'pending',
       required: true,
@@ -346,7 +351,10 @@ const handleRowClick = (reportId) => {
                 const progressPercentage = getProgressPercentage(checklist.itemsCompleted, checklist.totalItems);
                 
                 return (
-                  <div key={checklist.id} className="checklist-card">
+      
+                  <div key={checklist.id} className="checklist-card" style={{
+                    cursor: 'pointer'
+                  }} onClick={() => navigate(`${checklist.link}`)}>
                     <div className="card-header">
                       <div className="card-title-section">
                         <h3>{checklist.title}</h3>
@@ -367,20 +375,21 @@ const handleRowClick = (reportId) => {
                           <i className="fas fa-folder"></i>
                           <span>{checklist.category}</span>
                         </div>
-                        <div className="meta-item">
+                        {/* <div className="meta-item">
                           <i className="fas fa-calendar"></i>
-                          <span>Due: {new Date(checklist.dueDate).toLocaleDateString()}</span>
-                        </div>
+                          <span>Due: {new Date(checklist.dueDate).toLocaleDateString()} </span>
+                          
+                        </div> */}
                         <div className="meta-item">
                           <i className="fas fa-sync"></i>
                           <span>Updated: {new Date(checklist.lastUpdated).toLocaleDateString()}</span>
                         </div>
                       </div>
-
+                      
                       {/* Progress Bar */}
                       <div className="progress-section">
                         <div className="progress-header">
-                          <span>Completion Progress</span>
+                          <span>Completion Progress <CircularProgress size={20} sx={{ ml: 1, verticalAlign: 'middle' }} /></span>
                           <span className="progress-text">{progressPercentage}%</span>
                         </div>
                         <div className="progress-bar">

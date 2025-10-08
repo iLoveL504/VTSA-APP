@@ -113,12 +113,16 @@ const TestChart = ({ id }) => {
                     task_duration: s.duration,
                     task_type: s.type,
                     task_parent: s.parent,
-                    task_percent: s.percent_progress
+                    task_percent: s.percent_progress,
+                    section_title: s.section_title || null,
+                    item_code: s.item_code || null,
+                    wt: s.wt || null
                 }
                 values.enqueue(value)
             })
             valuesArray = values.elements
             const payload = {id: 801, tasks: valuesArray}
+            console.log(payload)
             const response = await Axios.post(`/projects/schedule/${Number(projId)}`, payload);
             if (response.data?.success) {
                 alert(response.data.message); // "Schedule saved successfully!"

@@ -129,8 +129,8 @@ const ProjectDetails = ({
             navigate(`/projects/${projId}/custom`) // or your custom schedule route
         }
     }
-
-    if (isLoading || teamIsLoading || tasksIsLoading || projectExists === 'loading') {
+//  || tasksIsLoading || projectExists === 'loading'
+    if (isLoading || teamIsLoading ) {
         return (
                 <div className="Loading">
                     <p>Data is Loading...</p>
@@ -141,6 +141,7 @@ const ProjectDetails = ({
 
     return (
         <div className="Content ProjectDetails">
+            {console.log(teamInfo)}
             {/* Schedule Modal */}
             <ScheduleModal 
                 isOpen={showScheduleModal}
@@ -186,7 +187,7 @@ const ProjectDetails = ({
                                             <button 
                                                 className={`complete-btn ${currentTask.task_done === 1 ? 'completed' : ''}`}
                                                 onClick={handleTaskComplete(currentTask)}
-                                                disabled={currentTask.task_done === 1 || sessionStorage.getItem('roles') !== 'Project Engineer'} 
+                                             disabled={currentTask.task_done === 1 || sessionStorage.getItem('roles') !== 'Project Engineer'} 
                                             >
                                                 <i className="fas fa-check"></i>
                                                 {currentTask.task_done === 1 ? 'Completed' : 
@@ -386,6 +387,8 @@ const ProjectDetails = ({
                         ) : (
                             <>
                                 <div className="form-row">
+                                    <label>Project Engineer:</label>
+                                    <span>{teamInfo.find(t => t.job === 'Project Engineer').full_name}</span>
                                     <label>Foreman:</label>
                                     <span>{teamInfo[0].Foreman}</span>
                                 </div>

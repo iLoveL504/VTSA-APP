@@ -112,6 +112,10 @@ const ProjectInfo = () => {
         setActivePage(`documents`)
     }
 
+    const pmsOnClick = () => {
+        setActivePage('pms')
+    }
+
     // Function to handle daily report button click
     const handleDailyReportClick = () => {
         console.log('Daily report button clicked for project:', projId);

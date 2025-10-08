@@ -16,16 +16,22 @@ const AccomplishmentReport = ({ id }) => {
     const [data, setData] = useState([]);
     const [guideRail, setGuideRail] = useState([]);
     const [additionalSections, setAdditionalSections] = useState([]);
-    const {data: accomplishments, isLoading: accomplishmentsIsLoading} = useAxiosFetch(`${backendURL}/projects/accomplishment/${projId}`)
+    const {data: accomplishments, isLoading: accomplishmentsIsLoading} = useAxiosFetch(`${backendURL}/projects/schedule/${projId}`)
     const [totalContractAmount, setTotalContractAmount] = useState(884000);
     
 useEffect(() => {
   if (!accomplishmentsIsLoading && accomplishments) {
     console.log(accomplishments);
-
+    const sort = accomplishments.filter(a => a.task_id >= 500)
+    
     // Group items by section_title
-    const grouped = accomplishments.reduce((acc, item) => {
+    const grouped = sort.reduce((acc, item) => {
       const section = item.section_title;
+
+      // Skip items that are summary tasks (they don't have section_title or item_code)
+      if (!section || !item.item_code) {
+        return acc;
+      }
 
       if (!acc[section]) {
         acc[section] = [];
@@ -43,13 +49,14 @@ useEffect(() => {
       return acc;
     }, {});
 
+    console.log(grouped)
     // Set data for each category
     setData(grouped["General"] || []);
-    setGuideRail(grouped["Guide Rail"] || []);
+    setGuideRail(grouped["Guide Rail Setting"] || []); // Note: changed from "Guide Rail" to "Guide Rail Setting"
 
     // Convert everything else into additionalSections
     const extraSections = Object.keys(grouped)
-      .filter(key => key !== "General" && key !== "Guide Rail")
+      .filter(key => key !== "General" && key !== "Guide Rail Setting")
       .map((title) => ({
         title,
         items: grouped[title]

@@ -1,0 +1,659 @@
+
+.checklist-container {
+  padding: 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+  background: #ffffff;
+  min-height: 90vh;
+  font-family: 'Montserrat', sans-serif;
+  animation: fadeIn 0.6s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Header Section */
+.checklist-header {
+  text-align: center;
+  margin-bottom: 3rem;
+  padding: 2.5rem;
+  background: linear-gradient(135deg, #315a95 0%, #1e3a5f 100%);
+  color: white;
+  border-radius: 20px;
+  box-shadow: 0 12px 40px rgba(49, 90, 149, 0.15);
+  position: relative;
+  overflow: hidden;
+}
+
+@keyframes checklistBackgroundFloat {
+  from { transform: translate(0, 0) rotate(0deg); }
+  to { transform: translate(-20px, -20px) rotate(360deg); }
+}
+
+.checklist-header::before {
+  animation: checklistBackgroundFloat 20s linear infinite;
+}
+
+.checklist-header h2 {
+  font-size: 2.4rem;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+  color: white;
+  position: relative;
+}
+
+.checklist-header p {
+  font-size: 1.1rem;
+  opacity: 0.9;
+  font-family: 'Source Sans 3', sans-serif;
+  margin: 0;
+  font-weight: 300;
+}
+
+/* Main Form Container */
+.checklist-form {
+  background: #f8fafc;
+  padding: 3rem;
+  border-radius: 20px;
+  box-shadow: 0 8px 40px rgba(0, 0, 0, 0.08);
+  border: 1px solid #e2e8f0;
+  position: relative;
+}
+
+/* Project Information Grid */
+.project-info-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.form-group {
+  margin-bottom: 1.5rem;
+  position: relative;
+}
+
+.form-group label {
+  display: block;
+  font-weight: 600;
+  color: #2d3748;
+  font-size: 0.95rem;
+  margin-bottom: 0.75rem;
+  font-family: 'Montserrat', sans-serif;
+  transition: color 0.3s ease;
+}
+
+.form-group input,
+.form-group textarea,
+.form-group select {
+  width: 100%;
+  padding: 1rem 1.25rem;
+  border: 2px solid #e2e8f0;
+  border-radius: 12px;
+  font-family: 'Source Sans 3', sans-serif;
+  font-size: 1rem;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  background: white;
+  color: #2d3748;
+  box-sizing: border-box;
+}
+
+.form-group input:focus,
+.form-group textarea:focus,
+.form-group select:focus {
+  outline: none;
+  border-color: #315a95;
+  box-shadow: 0 0 0 4px rgba(49, 90, 149, 0.15);
+  transform: translateY(-2px);
+}
+
+.form-group input:hover,
+.form-group textarea:hover,
+.form-group select:hover {
+  border-color: #cbd5e0;
+}
+
+.form-group textarea {
+  resize: vertical;
+  min-height: 120px;
+  line-height: 1.6;
+}
+
+/* Section Headers with Icons */
+.section-header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  color: #315a95;
+  font-size: 1.4rem;
+  font-weight: 600;
+  margin: 3rem 0 1.5rem 0;
+  padding: 1.5rem;
+  background: linear-gradient(135deg, #f8fafc 0%, #ffffff 100%);
+  border-radius: 16px;
+  border-left: 4px solid #315a95;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.05);
+}
+
+.section-header::before {
+  content: '✓';
+  background: #315a95;
+  color: white;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1rem;
+  font-weight: bold;
+}
+
+/* Checklist Sections */
+.checklist-section {
+  background: white;
+  border: 1px solid #e2e8f0;
+  border-radius: 16px;
+  margin-bottom: 2.5rem;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  overflow: hidden;
+}
+
+.checklist-section:hover {
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  transform: translateY(-4px);
+}
+
+.checklist-item {
+  padding: 1.25rem 1.5rem;
+  border-bottom: 1px solid #f1f5f9;
+  transition: all 0.3s ease;
+  display: flex;
+  justify-content: between;
+  align-items: flex-start;
+  gap: 1.5rem;
+}
+
+.checklist-item:hover {
+  background: linear-gradient(90deg, #f8fafc 0%, #ffffff 50%);
+}
+
+.checklist-item:last-child {
+  border-bottom: none;
+}
+
+.checklist-item label {
+  flex: 1;
+  font-weight: 600;
+  color: #2d3748;
+  font-size: 0.95rem;
+  line-height: 1.5;
+  margin: 0;
+  cursor: pointer;
+  transition: color 0.3s ease;
+}
+
+.checklist-item:hover label {
+  color: #315a95;
+}
+
+/* Radio Button Groups */
+.radio-group {
+  display: flex;
+  gap: 2rem;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.radio-option {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.radio-option input[type="radio"] {
+  width: 20px;
+  height: 20px;
+  accent-color: #315a95;
+  cursor: pointer;
+  transform: scale(1);
+  transition: transform 0.2s ease;
+}
+
+.radio-option input[type="radio"]:hover {
+  transform: scale(1.1);
+}
+
+.radio-option label {
+  font-weight: 500;
+  color: #64748b;
+  font-size: 0.9rem;
+  transition: color 0.3s ease;
+  margin: 0;
+}
+
+.radio-option:hover label {
+  color: #315a95;
+}
+
+.radio-option input[type="radio"]:checked + label {
+  color: #315a95;
+  font-weight: 600;
+}
+
+/* Status Indicators */
+.status-accepted .radio-option:first-child label {
+  color: #10b981;
+  font-weight: 600;
+}
+
+.status-punchlist .radio-option:last-child label {
+  color: #f59e0b;
+  font-weight: 600;
+}
+
+/* Inspectors Section */
+/* Inspectors Section - Specific Classes */
+.inspectors-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 2rem;
+  margin-top: 2rem;
+}
+
+.inspector-card {
+  background: white;
+  padding: 2rem;
+  border-radius: 16px;
+  border: 1px solid #e2e8f0;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+}
+
+.inspector-card:hover {
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  transform: translateY(-2px);
+}
+
+/* Specific inspector card types */
+.inspector-card--tncincharge {
+  border-left: 4px solid #315a95;
+}
+
+.inspector-card--tncmanager {
+  border-left: 4px solid #4a7cc2;
+}
+
+.inspector-card--projectincharge {
+  border-left: 4px solid #1e3a5f;
+}
+
+.inspector-card__title {
+  color: #315a95;
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin-bottom: 1.5rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 2px solid #e2e8f0;
+  text-transform: capitalize;
+  font-family: 'Montserrat', sans-serif;
+}
+
+.inspector-card__fields {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.inspector-card__input {
+  width: 100%;
+  padding: 1rem 1.25rem;
+  border: 2px solid #e2e8f0;
+  border-radius: 8px;
+  font-family: 'Source Sans 3', sans-serif;
+  font-size: 0.9rem;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  background: white;
+  color: #2d3748;
+  box-sizing: border-box;
+}
+
+.inspector-card__input:focus {
+  outline: none;
+  border-color: #315a95;
+  box-shadow: 0 0 0 3px rgba(49, 90, 149, 0.15);
+  transform: translateY(-1px);
+}
+
+.inspector-card__input:hover {
+  border-color: #cbd5e0;
+}
+
+/* Specific input types */
+.inspector-card__input--designation {
+  background: linear-gradient(135deg, #f8fafc 0%, #ffffff 100%);
+}
+
+.inspector-card__input--name {
+  background: linear-gradient(135deg, #f0f4f8 0%, #ffffff 100%);
+}
+
+.inspector-card__input--signature {
+  background: linear-gradient(135deg, #e3f2fd 0%, #ffffff 100%);
+  font-style: italic;
+}
+
+.inspector-card__input--date {
+  background: linear-gradient(135deg, #e8f5e8 0%, #ffffff 100%);
+  cursor: pointer;
+}
+
+/* Placeholder styling */
+.inspector-card__input::placeholder {
+  color: #a0aec0;
+  font-size: 0.85rem;
+}
+
+/* Focus states for accessibility */
+.inspector-card__input:focus-visible {
+  outline: 2px solid #315a95;
+  outline-offset: 2px;
+}
+
+/* Responsive design for inspector cards */
+@media (max-width: 768px) {
+  .inspectors-grid {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+  
+  .inspector-card {
+    padding: 1.5rem;
+  }
+  
+  .inspector-card__title {
+    font-size: 1rem;
+  }
+  
+  .inspector-card__input {
+    padding: 0.875rem 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .inspector-card {
+    padding: 1.25rem;
+  }
+  
+  .inspector-card__fields {
+    gap: 0.875rem;
+  }
+}
+
+/* Progress Indicator */
+.progress-container {
+  background: white;
+  padding: 2rem;
+  border-radius: 16px;
+  border: 1px solid #e2e8f0;
+  margin: 2rem 0;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.05);
+}
+
+.progress-header {
+  display: flex;
+  justify-content: between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.progress-bar {
+  height: 8px;
+  background: #e2e8f0;
+  border-radius: 4px;
+  overflow: hidden;
+  margin-bottom: 1rem;
+}
+
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #10b981, #34d399);
+  border-radius: 4px;
+  transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+}
+
+.progress-fill::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+  animation: shimmer 2s infinite;
+}
+
+@keyframes shimmer {
+  0% { left: -100%; }
+  100% { left: 100%; }
+}
+
+.progress-stats {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.9rem;
+  color: #64748b;
+  font-weight: 500;
+}
+
+/* Submit Section */
+.submit-section {
+  background: white;
+  padding: 2.5rem;
+  border-radius: 16px;
+  border: 1px solid #e2e8f0;
+  margin-top: 3rem;
+  text-align: center;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.05);
+}
+
+.submit-btn {
+  background: linear-gradient(135deg, #315a95 0%, #4a7cc2 100%);
+  color: white;
+  border: none;
+  padding: 1.25rem 3rem;
+  border-radius: 12px;
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 600;
+  font-size: 1.1rem;
+  cursor: pointer;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.75rem;
+  min-width: 200px;
+  justify-content: center;
+}
+
+.submit-btn::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  transition: left 0.5s ease;
+}
+
+.submit-btn:hover::before {
+  left: 100%;
+}
+
+.submit-btn:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 12px 30px rgba(49, 90, 149, 0.4);
+}
+
+.submit-btn:active {
+  transform: translateY(-1px);
+}
+
+.submit-btn:disabled {
+  background: linear-gradient(135deg, #9ca3af 0%, #d1d5db 100%);
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+/* Enhanced Focus States */
+.form-group input:focus-visible,
+.form-group textarea:focus-visible,
+.form-group select:focus-visible {
+  outline: 2px solid #315a95;
+  outline-offset: 2px;
+}
+
+/* Custom Scrollbar */
+.checklist-form::-webkit-scrollbar {
+  width: 8px;
+}
+
+.checklist-form::-webkit-scrollbar-track {
+  background: #f1f5f9;
+  border-radius: 4px;
+}
+
+.checklist-form::-webkit-scrollbar-thumb {
+  background: #cbd5e0;
+  border-radius: 4px;
+}
+
+.checklist-form::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+  .project-info-grid,
+  .inspectors-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 768px) {
+  .checklist-container {
+    padding: 1rem;
+  }
+  
+  .checklist-header {
+    padding: 2rem 1.5rem;
+    margin-bottom: 2rem;
+  }
+  
+  .checklist-header h2 {
+    font-size: 2rem;
+  }
+  
+  .checklist-form {
+    padding: 2rem 1.5rem;
+  }
+  
+  .checklist-item {
+    flex-direction: column;
+    gap: 1rem;
+    align-items: flex-start;
+  }
+  
+  .radio-group {
+    width: 100%;
+    justify-content: space-between;
+  }
+  
+  .section-header {
+    font-size: 1.2rem;
+    padding: 1.25rem;
+    margin: 2rem 0 1rem 0;
+  }
+  
+  .submit-btn {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+@media (max-width: 480px) {
+  .checklist-container {
+    padding: 0.5rem;
+  }
+  
+  .checklist-form {
+    padding: 1.5rem 1rem;
+  }
+  
+  .checklist-header h2 {
+    font-size: 1.7rem;
+  }
+  
+  .section-header {
+    flex-direction: column;
+    gap: 0.75rem;
+    text-align: center;
+  }
+  
+  .radio-group {
+    flex-direction: column;
+    gap: 1rem;
+    align-items: flex-start;
+  }
+}
+
+/* Print Styles */
+@media print {
+  .checklist-container {
+    background: white;
+    padding: 0;
+  }
+  
+  .checklist-header {
+    background: #315a95 !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+  
+  .checklist-form {
+    box-shadow: none;
+    border: none;
+    background: white;
+  }
+  
+  .submit-section {
+    display: none;
+  }
+}
+
+/* Utility Classes */
+.text-success { color: #10b981; }
+.text-warning { color: #f59e0b; }
+.text-error { color: #ef4444; }
+
+.bg-success { background: #dcfce7; }
+.bg-warning { background: #fef3c7; }
+.bg-error { background: #fee2e2; }
+
+/* Loading Animation */
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+.loading {
+  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}

@@ -23,6 +23,9 @@ const ProjectList = ({updateIsLoading}) => {
   console.log(projectsIsLoading)
 
     if (designatedIsLoading || projectsIsLoading || updateIsLoading) {
+        console.log(designatedIsLoading)
+        console.log(projectsIsLoading)
+        console.log(updateIsLoading)
         return (
                 <div className="Loading">
                     <p>Data is Loading...</p>
