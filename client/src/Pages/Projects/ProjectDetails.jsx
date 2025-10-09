@@ -57,7 +57,7 @@ const ScheduleModal = ({ isOpen, onClose, onChoice }) => {
 };
 
 const ProjectDetails = ({
-    currentTask, currentParentTask, projectExists, fetchedData, proj, setFormData, setIsLoading, formData, teamInfo, isLoading, teamIsLoading, tasksIsLoading,
+    projectCompleted, currentTask, currentParentTask, currentIsLoading, projectExists, fetchedData, proj, setFormData, setIsLoading, formData, teamInfo, projIsLoading, teamIsLoading, tasksIsLoading,
     saveStatus, handleSave, isEditing, errors, handleInputChange, handleNumberInputChange, handleBlur, handleSubmit,
     values, setIsEditing, handleCancel
 }) => {
@@ -111,9 +111,9 @@ const ProjectDetails = ({
         if (proj !== undefined) {
             console.log(proj)
             setFormData(proj)
-            setIsLoading(false)
+            // setIsLoading(false)
         }
-    }, [proj, formData, teamInfo])
+    }, [proj, formData, teamInfo, projIsLoading])
 
     const handleCreateSchedule = () => {
         setShowScheduleModal(true)
@@ -130,7 +130,9 @@ const ProjectDetails = ({
         }
     }
 //  || tasksIsLoading || projectExists === 'loading'
-    if (isLoading || teamIsLoading ) {
+// isLoading || teamIsLoading 
+    console.log(teamIsLoading || currentIsLoading)
+    if (projIsLoading) {
         return (
                 <div className="Loading">
                     <p>Data is Loading...</p>
@@ -138,7 +140,7 @@ const ProjectDetails = ({
                 </div>
         )
     }
-
+console.log(currentTask)
     return (
         <div className="Content ProjectDetails">
             {console.log(teamInfo)}
@@ -173,6 +175,9 @@ const ProjectDetails = ({
                 <h3>Task Overview</h3>
                 <div className="task-cards-container">
                     {
+                        projectCompleted ? (
+                            <div>Project Completed</div>
+                        ) :
                         projectExists ? (
                             <>
                                 <div className="task-card current-task-card">

@@ -15,6 +15,7 @@ import { router as authRouter } from './routes/auth.js';
 import { router as projectRouter } from './routes/api/projects.js';
 import { router as teamsRouter } from './routes/api/teams.js';
 import { router as notificationsRouter } from './routes/api/notifications.js';
+import { router as pmsRouter } from './routes/api/pms.js';
 import http from 'http';
 import { Server } from 'socket.io';
 import path from 'path';
@@ -50,6 +51,7 @@ app.use('/auth', authRouter);
 app.use('/projects', projectRouter);
 app.use('/teams', teamsRouter);
 app.use('/notifications', notificationsRouter);
+app.use('/pms', pmsRouter);
 
 // Serve static frontend files
 const __filename = fileURLToPath(import.meta.url);

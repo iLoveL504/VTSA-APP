@@ -276,10 +276,10 @@ static async getProjectSchedule(id) {
         console.log('here in project model')
       
         const promises = Object.keys(updates).map(key => {
-            const { id, status } = updates[key];
+            const { id, status, start_date, end_date, manufacturing_end_date } = updates[key];
             return pool.query(
-            'UPDATE projects SET status = ? WHERE id = ?',
-            [status, id]  
+            'UPDATE projects SET created_at = ?, manufacturing_end_date = ?, project_end_date = ? , status = ? WHERE id = ?',
+            [start_date, manufacturing_end_date, end_date, status, id]  
             ).then(() => {
             console.log(`Updated project ${id} -> ${status}`);
             }).catch(err => {

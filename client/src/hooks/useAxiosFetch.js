@@ -23,6 +23,7 @@ const useAxiosFetch = (dataUrl) => {
                 }
             }catch(e){
                 if(isMounted){
+                    console.log('error here')
                     setFetchError(e.message)
                     setIsLoading(false)
                     setData([])

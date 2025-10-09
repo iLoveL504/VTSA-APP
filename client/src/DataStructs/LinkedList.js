@@ -32,10 +32,19 @@ const testArray = [
 ]
 
 const addDuration = (start, days) => {
-    const date = new Date(start)
-    date.setDate(date.getDate() + days)
-    return date
-}
+  const date = new Date(start);
+  let addedDays = 0;
+
+  while (addedDays < days) {
+    date.setDate(date.getDate() + 1);
+    const day = date.getDay();
+    if (day !== 0 && day !== 6) { // skip Sunday and Saturday
+      addedDays++;
+    }
+  }
+  return date;
+};
+
 
 class Node {
     constructor(data, next = null){
@@ -123,17 +132,16 @@ class LinkedList {
                 node.data.start = current.data.end
                 node.data.end = addDuration(node.data.start, node.data.duration)
                 node.data.end = addDuration(node.data.start, node.data.duration)
-                console.log(node.data)
+      
                 if(node.data.text === 'Manufacturing and Importation Process (Passenger Elevator)'){
-                    console.log('this at least runs')
+         
                     const foundTask = this.findTask("Structural/Civil Works")
                     node.data.start = foundTask.start
                     node.data.end = foundTask.end
                 }
                 current.next = node
             }
-            
-            console.log(current)
+       
         }
 
         this.size++
@@ -280,7 +288,7 @@ class LinkedList {
             current = current.next
         }
         this.ScheduleData = data
-        console.log(this.size)
+   
 
         const mappedData = this.ScheduleData.map((t, index) => {
             return t.data
@@ -314,7 +322,7 @@ ll.insertAt( {
   }, 8)
   ll.removeAt(8)
 
-console.log(ll.findTask('Hauling Works').start) 
+
  //console.log(ll.toArray())
 
 

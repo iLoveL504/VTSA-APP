@@ -13,12 +13,13 @@ const useFindProjectTask = (id) => {
     const [currentParentTask, setCurrentParentTask] = useState(null)
     const [projectExists, setProjectExists] = useState('loading')
     const {data: fetchedData, fetchError: fetchError, isLoading: isLoading} = useAxiosFetch(`${backendURL}/projects/schedule/${id}`)
-    const [projectedProgress, setProjectedProgress] = useState(0)
+    const [projectCompleted, setProjectCompleted] = useState(false)
 
     useEffect(() => {
         if(fetchError) {
             setProjectExists(false)
             setTasksIsLoading(false)
+            console.log('no schedule')
             return
         }
         if(!isLoading && fetchedData){
@@ -28,6 +29,7 @@ const useFindProjectTask = (id) => {
 
             //find Parent task
             const foundParentTask = fetchedData.find(t => t.task_type === 'summary' && new Date(dateNow) > new Date(t.task_start) && new Date(dateNow) < new Date(t.task_end))
+            if (foundParentTask === undefined) return setProjectCompleted(true)
             if(foundParentTask.task_name === 'Structural/Civil Works'){
                 setCurrentParentTask({...foundParentTask, task_name: 'Strucutural/Civil Works and Manufacturing'})
             } else setCurrentParentTask(foundParentTask)
@@ -42,7 +44,7 @@ const useFindProjectTask = (id) => {
         }
     }, [isLoading, fetchedData])
 
-    return{currentTask, currentParentTask, tasksIsLoading, fetchError, projectExists, fetchedData}
+    return{currentTask, currentParentTask, tasksIsLoading, fetchError, projectExists, fetchedData, projectCompleted}
 }
 
 export default useFindProjectTask

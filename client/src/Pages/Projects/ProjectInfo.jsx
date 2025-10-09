@@ -14,7 +14,7 @@ import ScheduleProject from './ScheduleProject.jsx'
 import '../../css/ProjectPage.css'
 import tasks from '../../data/TasksData'
 import ProjectDocuments from './ProjectDocuments.jsx'
-
+import PMS_Entry from './PMS_Entry.jsx'
 
 const ProjectInfo = () => {
     const navigate = useNavigate()
@@ -23,14 +23,14 @@ const ProjectInfo = () => {
     const { projId } = useParams()
     const numId = Number(projId)
     const projects = useStoreState(state => state.projects)
-    const proj = projects.find(p => p.id === numId)
+    const {data: proj, isLoading: projIsLoading} = useAxiosFetch(`${backendURL}/projects/${projId}`)
     const [isLoading, setIsLoading] = useState(true)
     const [isEditing, setIsEditing] = useState(false)
     const [formData, setFormData] = useState({})
-    const {currentTask, currentParentTask, isLoading: currentIsLoading, fetchError: tasksFetchError, projectExists, fetchedData} = useFindProjectTask(projId)
+    const {currentTask, currentParentTask, isLoading: currentIsLoading, fetchError: tasksFetchError, projectExists, fetchedData, projectCompleted} = useFindProjectTask(projId)
     const isProjectsReady = Array.isArray(projects) && projects.length > 0;
     const fetchUrl = proj && isProjectsReady ? `${backendURL}/teams/${proj.id}` : null;
-    const {data: teamInfo} = useAxiosFetch(fetchUrl);
+    const {data: teamInfo, isLoading: teamIsLoading} = useAxiosFetch(fetchUrl);
     
     // Get user role from session storage with debugging
     const [role, setRole] = useState(null)
@@ -113,7 +113,7 @@ const ProjectInfo = () => {
     }
 
     const pmsOnClick = () => {
-        setActivePage('pms')
+        setActivePage('pms_entry')
     }
 
     // Function to handle daily report button click
@@ -133,12 +133,14 @@ const ProjectInfo = () => {
                     <button onClick={() => setActivePage('details')}>Details</button>
                     <button onClick={progressOnClick}>Progress</button>
                     <button onClick={documentsOnClick}>Documents</button>
+                    <button onClick={pmsOnClick}>Register to PMS</button>
                 </div>
             </div>
             
             {
                 activePage === 'details' && 
                 <ProjectDetails 
+                    projectCompleted={projectCompleted}
                     currentTask={currentTask}
                     currentParentTask={currentParentTask}
                     currentIsLoading={currentIsLoading}
@@ -147,10 +149,11 @@ const ProjectInfo = () => {
                     fetchedData={fetchedData}
                     proj={proj}
                     setFormData={setFormData}
-                    setIsLoading={setIsLoading}
+                    projIsLoading={projIsLoading}
                     formData={formData}
                     teamInfo={teamInfo}
                     isLoading={isLoading}
+                    teamIsLoading={teamIsLoading}
                     saveStatus={saveStatus}
                     handleSave={handleSave}
                     isEditing={isEditing}
@@ -171,6 +174,10 @@ const ProjectInfo = () => {
             {
                 activePage === 'documents' &&
                 <ProjectDocuments/>
+            }
+            {
+                activePage === 'pms_entry' &&
+                <PMS_Entry />
             }
 
             {/* Floating Daily Report Button - Test without role restriction first */}

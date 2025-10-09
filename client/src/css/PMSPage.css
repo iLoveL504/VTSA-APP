@@ -1,0 +1,464 @@
+/* PMSPage.css - Modern Styling */
+.PMSPage {
+  padding: 0;
+  max-width: 1400px;
+  margin: 0 auto;
+  background: #f8fafc;
+  min-height: 90vh;
+  position: relative;
+  padding-bottom: 5rem;
+}
+
+/* Loading State */
+.PMSPage .Loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 60vh;
+  gap: 1.5rem;
+}
+
+.PMSPage .Loading p {
+  color: #64748b;
+  font-size: 1.1rem;
+  font-weight: 500;
+  font-family: 'Source Sans 3', sans-serif;
+}
+
+/* Project Header */
+.PMSPage .project-header {
+  background: linear-gradient(135deg, #315a95 0%, #1e3a5f 100%);
+  color: white;
+  padding: 2rem;
+  border-radius: 0 0 20px 20px;
+  margin-bottom: 2rem;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  width: 100%;
+}
+
+.PMSPage .project-header h2 {
+  font-size: 2rem;
+  font-weight: 700;
+  margin: 0 0 0.5rem 0;
+  color: white;
+  font-family: 'Montserrat', sans-serif;
+}
+
+.PMSPage .project-header p {
+  margin: 0;
+  font-size: 1.1rem;
+  opacity: 0.9;
+  font-family: 'Source Sans 3', sans-serif;
+}
+
+.PMSPage .project-header strong {
+  color: #e2e8f0;
+}
+
+/* PMS Form */
+.PMSPage .pms-form {
+  max-width: 1200px;
+  margin: 0 auto 3rem auto;
+  padding: 0 2rem;
+}
+
+/* Form Section */
+.PMSPage .form-section {
+  background: white;
+  padding: 2rem;
+  border-radius: 16px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  border: 1px solid #e2e8f0;
+  margin-bottom: 2rem;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.PMSPage .form-section:hover {
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+  transform: translateY(-2px);
+}
+
+.PMSPage .form-section h3 {
+  color: #315a95;
+  font-size: 1.4rem;
+  font-weight: 700;
+  margin-bottom: 1.5rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 2px solid #e2e8f0;
+  font-family: 'Montserrat', sans-serif;
+}
+
+/* Form Rows */
+.PMSPage .form-row {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin-bottom: 1.5rem;
+}
+
+.PMSPage .form-row:last-child {
+  margin-bottom: 0;
+}
+
+.PMSPage .form-row label {
+  font-weight: 600;
+  color: #2d3748;
+  font-size: 0.95rem;
+  font-family: 'Montserrat', sans-serif;
+}
+
+.PMSPage .form-row input,
+.PMSPage .form-row select {
+  width: 100%;
+  padding: 1rem 1.25rem;
+  border: 2px solid #e2e8f0;
+  border-radius: 12px;
+  font-family: 'Source Sans 3', sans-serif;
+  font-size: 1rem;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  background: white;
+  color: #2d3748;
+  box-sizing: border-box;
+}
+
+.PMSPage .form-row input:focus,
+.PMSPage .form-row select:focus {
+  outline: none;
+  border-color: #315a95;
+  box-shadow: 0 0 0 4px rgba(49, 90, 149, 0.15);
+  transform: translateY(-1px);
+}
+
+.PMSPage .form-row input:hover,
+.PMSPage .form-row select:hover {
+  border-color: #cbd5e0;
+}
+
+/* Form Actions */
+.PMSPage .form-actions {
+  display: flex;
+  gap: 1rem;
+  justify-content: flex-start;
+  align-items: center;
+  padding-top: 1.5rem;
+  border-top: 1px solid #e2e8f0;
+}
+
+.PMSPage .form-actions button {
+  background: linear-gradient(135deg, #315a95 0%, #4a7cc2 100%);
+  color: white;
+  border: none;
+  padding: 1rem 2rem;
+  border-radius: 12px;
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 600;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  min-width: 150px;
+}
+
+.PMSPage .form-actions button:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(49, 90, 149, 0.3);
+  background: linear-gradient(135deg, #26467c 0%, #3b6ab8 100%);
+}
+
+.PMSPage .form-actions button:disabled {
+  background: linear-gradient(135deg, #9ca3af 0%, #d1d5db 100%);
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+.PMSPage .form-actions .btn-secondary {
+  background: linear-gradient(135deg, #64748b 0%, #94a3b8 100%);
+}
+
+.PMSPage .form-actions .btn-secondary:hover {
+  background: linear-gradient(135deg, #475569 0%, #64748b 100%);
+}
+
+/* Maintenance History Section */
+.PMSPage .maintenance-history {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 2rem 2rem;
+}
+
+.PMSPage .maintenance-history > p {
+  text-align: center;
+  color: #64748b;
+  font-size: 1.1rem;
+  padding: 2rem;
+  font-family: 'Source Sans 3', sans-serif;
+}
+
+/* History Table */
+.PMSPage .history-table {
+  background: white;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  border: 1px solid #e2e8f0;
+}
+
+.PMSPage .history-table .table-row.header {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1.5fr 2fr 1fr;
+  gap: 1rem;
+  padding: 1.5rem 2rem;
+  background: linear-gradient(135deg, #315a95 0%, #1e3a5f 100%);
+  color: white;
+  font-weight: 600;
+  font-family: 'Montserrat', sans-serif;
+}
+
+.PMSPage .history-table .table-row:not(.header) {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1.5fr 2fr 1fr;
+  gap: 1rem;
+  padding: 1.25rem 2rem;
+  border-bottom: 1px solid #e2e8f0;
+  transition: background-color 0.2s ease;
+  align-items: center;
+}
+
+.PMSPage .history-table .table-row:not(.header):hover {
+  background-color: #f8fafc;
+}
+
+.PMSPage .history-table .table-row:not(.header):last-child {
+  border-bottom: none;
+}
+
+.PMSPage .history-table .table-row:nth-child(even):not(.header) {
+  background-color: #fafbfc;
+}
+
+.PMSPage .history-table .table-row:nth-child(even):not(.header):hover {
+  background-color: #f1f5f9;
+}
+
+.PMSPage .history-table .table-cell {
+  display: flex;
+  align-items: center;
+  font-family: 'Source Sans 3', sans-serif;
+  color: #2d3748;
+  font-size: 0.95rem;
+  line-height: 1.4;
+}
+
+/* Small Button */
+.PMSPage .btn-small {
+  background: linear-gradient(135deg, #315a95 0%, #4a7cc2 100%);
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 600;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  min-width: 100px;
+}
+
+.PMSPage .btn-small:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(49, 90, 149, 0.3);
+  background: linear-gradient(135deg, #26467c 0%, #3b6ab8 100%);
+}
+
+/* Floating Button */
+.PMSPage .floating-daily-report-btn {
+  position: fixed !important;
+  bottom: 2rem !important;
+  right: 2rem !important;
+  background: linear-gradient(135deg, #315a95 0%, #4a7cc2 100%) !important;
+  color: white !important;
+  border: none !important;
+  border-radius: 50px !important;
+  padding: 1rem 1.5rem !important;
+  font-weight: 600 !important;
+  font-size: 1rem !important;
+  cursor: pointer !important;
+  box-shadow: 0 6px 20px rgba(49, 90, 149, 0.3) !important;
+  align-items: center !important;
+  gap: 0.5rem !important;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  z-index: 1000 !important;
+  text-decoration: none !important;
+  display: flex !important;
+}
+
+.PMSPage .floating-daily-report-btn:hover {
+  background: linear-gradient(135deg, #26467c 0%, #3b6ab8 100%) !important;
+  transform: translateY(-3px) !important;
+  box-shadow: 0 8px 25px rgba(49, 90, 149, 0.4) !important;
+}
+
+.PMSPage .floating-daily-report-btn:active {
+  transform: translateY(-1px) !important;
+}
+
+/* Animation for floating button */
+@keyframes PMSPage-float {
+  0% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-5px);
+  }
+  100% {
+    transform: translateY(0px);
+  }
+}
+
+.PMSPage .floating-daily-report-btn {
+  animation: PMSPage-float 3s ease-in-out infinite;
+}
+
+/* Focus States for Accessibility */
+.PMSPage .form-row input:focus-visible,
+.PMSPage .form-row select:focus-visible,
+.PMSPage .btn-small:focus-visible,
+.PMSPage .form-actions button:focus-visible {
+  outline: 2px solid #315a95;
+  outline-offset: 2px;
+}
+
+/* Responsive Design */
+@media (max-width: 1200px) {
+  .PMSPage .pms-form,
+  .PMSPage .maintenance-history {
+    padding: 0 1.5rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .PMSPage .project-header {
+    padding: 1.5rem;
+    border-radius: 0 0 16px 16px;
+  }
+  
+  .PMSPage .project-header h2 {
+    font-size: 1.7rem;
+  }
+  
+  .PMSPage .pms-form,
+  .PMSPage .maintenance-history {
+    padding: 0 1rem;
+  }
+  
+  .PMSPage .form-section {
+    padding: 1.5rem;
+  }
+  
+  .PMSPage .history-table .table-row.header,
+  .PMSPage .history-table .table-row:not(.header) {
+    grid-template-columns: 1fr;
+    gap: 0.75rem;
+    padding: 1rem;
+    text-align: center;
+  }
+  
+  .PMSPage .history-table .table-row.header .table-cell {
+    justify-content: center;
+    font-size: 0.9rem;
+  }
+  
+  .PMSPage .form-actions {
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+  
+  .PMSPage .form-actions button {
+    width: 100%;
+  }
+  
+  .PMSPage .floating-daily-report-btn {
+    bottom: 1.5rem !important;
+    right: 1.5rem !important;
+    padding: 0.8rem 1.2rem !important;
+    font-size: 0.9rem !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .PMSPage .project-header h2 {
+    font-size: 1.5rem;
+  }
+  
+  .PMSPage .form-section {
+    padding: 1.25rem;
+  }
+  
+  .PMSPage .form-row input,
+  .PMSPage .form-row select {
+    padding: 0.875rem 1rem;
+  }
+  
+  .PMSPage .floating-daily-report-btn {
+    bottom: 1rem !important;
+    right: 1rem !important;
+    padding: 0.7rem 1rem !important;
+    font-size: 0.8rem !important;
+    border-radius: 40px !important;
+  }
+  
+  .PMSPage .floating-daily-report-btn i {
+    font-size: 0.9rem !important;
+  }
+}
+
+/* Print Styles */
+@media print {
+  .PMSPage {
+    background: white;
+    padding: 0;
+  }
+  
+  .PMSPage .project-header {
+    background: #315a95 !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+  
+  .PMSPage .form-section {
+    box-shadow: none;
+    border: 1px solid #e2e8f0;
+  }
+  
+  .PMSPage .form-actions,
+  .PMSPage .floating-daily-report-btn {
+    display: none;
+  }
+  
+  .PMSPage .history-table .table-row.header {
+    background: #315a95 !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+}
+
+/* Animation for form sections */
+@keyframes PMSPage-fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.PMSPage .form-section {
+  animation: PMSPage-fadeInUp 0.4s ease;
+}
+
+/* Staggered animation */
+.PMSPage .pms-form .form-section { animation-delay: 0.1s; }
+.PMSPage .maintenance-history { animation-delay: 0.2s; }

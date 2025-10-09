@@ -26,7 +26,11 @@ const TestChart = ({ id }) => {
     const [isSaving, setIsSaving] = useState(false);
     const [displayTasks, setDisplayTasks] = useState([])
     const [isPrinting, setIsPrinting] = useState(false);
+    const [currentTaskId, setCurrentTaskId] = useState(null);
+    const [currentDate, setCurrentDate] = useState(new Date());
+    const [isAutoScrollEnabled, setIsAutoScrollEnabled] = useState(true);
     const contentRef = useRef();
+    const ganttRef = useRef();
     
     const schedule = location.state?.schedule || defaultSchedule;
 
@@ -74,11 +78,91 @@ const TestChart = ({ id }) => {
       }
     }, [projSchedIsLoading])
 
+    // Find current/ongoing tasks
+    const findCurrentTasks = useMemo(() => {
+        if (!displayTasks || displayTasks.length === 0) return [];
+
+        const now = new Date();
+        return displayTasks.filter(task => {
+            const start = new Date(task.start);
+            const end = new Date(task.end);
+            return start <= now && end >= now && task.type !== "project";
+        });
+    }, [displayTasks]);
+
+    // Find upcoming tasks (starting today or in the future)
+    const findUpcomingTasks = useMemo(() => {
+        if (!displayTasks || displayTasks.length === 0) return [];
+
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        
+        return displayTasks.filter(task => {
+            const start = new Date(task.start);
+            start.setHours(0, 0, 0, 0);
+            return start >= today && task.type !== "project";
+        }).sort((a, b) => new Date(a.start) - new Date(b.start));
+    }, [displayTasks]);
+
+    // Auto-select current task
+    useEffect(() => {
+        if (findCurrentTasks.length > 0) {
+            // Prefer tasks that are currently ongoing
+            setCurrentTaskId(findCurrentTasks[0].id);
+        } else if (findUpcomingTasks.length > 0) {
+            // Fall back to the next upcoming task
+            setCurrentTaskId(findUpcomingTasks[0].id);
+        }
+    }, [findCurrentTasks, findUpcomingTasks]);
+
+    // Scroll to current task and date
+    useEffect(() => {
+        if (isAutoScrollEnabled && currentTaskId && ganttRef.current) {
+            // This is a simplified approach - you might need to adjust based on gantt-task-react's API
+            scrollToCurrentTask();
+        }
+    }, [currentTaskId, isAutoScrollEnabled, view]);
+
+    const scrollToCurrentTask = () => {
+        if (!ganttRef.current || !currentTaskId) return;
+
+        // Find the task element in the DOM
+        const taskElement = document.querySelector(`[data-task-id="${currentTaskId}"]`);
+        if (taskElement) {
+            taskElement.scrollIntoView({ 
+                behavior: 'smooth', 
+                block: 'center',
+                inline: 'center'
+            });
+            
+            // Add highlight effect
+            taskElement.classList.add('current-task-highlight');
+            setTimeout(() => {
+                taskElement.classList.remove('current-task-highlight');
+            }, 2000);
+        }
+
+        // Also scroll to current date in the header
+        const todayHeader = document.querySelector('.gantt-table-header-cell-today');
+        if (todayHeader) {
+            todayHeader.scrollIntoView({ 
+                behavior: 'smooth', 
+                block: 'nearest',
+                inline: 'center'
+            });
+        }
+    };
+
+    const handleFocusCurrent = () => {
+        setIsAutoScrollEnabled(true);
+        scrollToCurrentTask();
+    };
+
     const tasks = useMemo(() => {
         try {
             const taskMap = projSched.map(task => {
-                //console.log(task)
                 const isParent = task.task_type === "summary";
+                const isCurrent = String(task.task_id) === currentTaskId;
 
                 const startDate = new Date(task.task_start);
                 const endDate = new Date(task.task_end);
@@ -98,9 +182,10 @@ const TestChart = ({ id }) => {
                     project: task.task_parent || undefined,
                     type: isParent ? "project" : "task",
                     styles: {
-                        progressColor: isParent ? "#1e3a8a" : "#15803d",
-                        progressSelectedColor: isParent ? "#1d4ed8" : "#166534",
-                        backgroundColor: isParent ? "#1a579eff" : "#63b6cbff",
+                        progressColor: isCurrent ? "#ff6b35" : (isParent ? "#1e3a8a" : "#15803d"),
+                        progressSelectedColor: isCurrent ? "#ff8c42" : (isParent ? "#1d4ed8" : "#166534"),
+                        backgroundColor: isCurrent ? "#fff3cd" : (isParent ? "#1a579eff" : "#63b6cbff"),
+                        backgroundSelectedColor: isCurrent ? "#ffeaa7" : undefined,
                         fontSize: isParent ? "15px" : "13px",
                         fontWeight: isParent ? "600" : "400",
                     }
@@ -114,7 +199,7 @@ const TestChart = ({ id }) => {
             setHasError(true);
             return [];
         }
-    }, [projSchedIsLoading, projSched]);
+    }, [projSchedIsLoading, projSched, currentTaskId]);
 
     useEffect(() => {
         if(!tasks) setDisplayTasks(tasks)   
@@ -130,6 +215,14 @@ const TestChart = ({ id }) => {
         setDisplayTasks(tasksToView)
     }
 
+    // Custom header with today marker
+    const CustomHeader = ({ children }) => {
+        return (
+            <div className="gantt-header-with-today">
+                {children}
+            </div>
+        );
+    };
 
     if (!tasks || tasks.length === 0) {
         return (
@@ -144,10 +237,9 @@ const TestChart = ({ id }) => {
     // Calculate column width based on print state and view mode
     const getColumnWidth = () => {
         if (isPrinting) {
-            // Smaller columns for printing to fit on page
             switch(view) {
                 case ViewMode.Day:
-                    return 20; // Much smaller for day view
+                    return 20;
                 case ViewMode.Week:
                     return 40;
                 case ViewMode.Month:
@@ -156,7 +248,6 @@ const TestChart = ({ id }) => {
                     return 20;
             }
         } else {
-            // Normal view columns
             switch(view) {
                 case ViewMode.Day:
                     return 60;
@@ -202,6 +293,8 @@ const TestChart = ({ id }) => {
                 View by Parent
               </button>
               
+              {/* Current Task Focus Button */}
+
               <FormControl className="form-control-professional" size="small">
                 <InputLabel id="parent-select-label">Parent Task</InputLabel>
                 <Select
@@ -228,6 +321,28 @@ const TestChart = ({ id }) => {
                 <i className="fas fa-print"></i> Print
               </button>
             </div>
+
+            {/* Current Task Info Panel */}
+            {(findCurrentTasks.length > 0 || findUpcomingTasks.length > 0) && (
+                <div className="current-task-panel">
+                    <div className="current-task-info">
+                        <strong>Current Focus: </strong>
+                        {findCurrentTasks.length > 0 ? (
+                            <span className="ongoing-task">
+                                {findCurrentTasks[0].name} (Ongoing)
+                            </span>
+                        ) : (
+                            <span className="upcoming-task">
+                                {findUpcomingTasks[0].name} (Upcoming)
+                            </span>
+                        )}
+                    </div>
+                    <div className="current-date">
+                        <strong>Today: </strong>
+                        {currentDate.toLocaleDateString()}
+                    </div>
+                </div>
+            )}
           </div>
             
           <div ref={contentRef}>
@@ -245,9 +360,11 @@ const TestChart = ({ id }) => {
                     }}
                   >
                     <Gantt
+                        ref={ganttRef}
                         tasks={displayTasks}
                         viewMode={view}
-                        columnWidth={getColumnWidth()} 
+                        columnWidth={getColumnWidth()}
+                        // You might need to add custom props for date highlighting based on the library's capabilities
                     />
                   </div>
                 </>

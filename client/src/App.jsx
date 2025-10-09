@@ -7,7 +7,7 @@ import Projects from './Pages/Projects/Projects'
 import ProjectInfo from './Pages/Projects/ProjectInfo.jsx'
 import ProjectProgress from './Pages/Projects/ProjectProgress.jsx'
 import ProjectReport from './Pages/Projects/ProjectReport.jsx'
-import PMS from './Pages/PMS'
+import PMS from './Pages/PMS/PMS.jsx'
 import Login from './Pages/Login'
 import Teams from './Pages/Teams'
 import BabyBook from './Pages/BabyBook'
@@ -20,7 +20,6 @@ import { useStoreState, useStoreActions } from 'easy-peasy'
 import ScheduleProjects from './Pages/Projects/ScheduleProject.jsx'
 import NotificationPage from './Pages/NotificationPage.jsx'
 import Chat from './Pages/Chat.jsx'
-import NotLoggedIn from './Pages/NotLoggedIn.jsx'
 import { useSocket } from './hooks/useSocket.js'
 import Test1 from './Pages/Test.jsx'
 import KickOffChecklist from './Pages/Documents/KickOffChecklist.jsx'
@@ -32,6 +31,7 @@ import DailyReportDetails from './Pages/Projects/DailyReportDetails.jsx'
 import HandOverChecklist from './Pages/Documents/HandOverChecklist.jsx'
 import PreInspection_Checklist from './Pages/Documents/PreInspection.jsx'
 import SchneiderServiceReport from './Pages/Documents/SchneiderServiceReport.jsx'
+import PMSPage from './Pages/PMS/PMSPage.jsx'
 
 function App() {
   //console.log('backendurl', import.meta.env.VITE_BACKEND_URL )
@@ -59,6 +59,7 @@ const { data: notifData } =
   // array of project ids
   const projectIDs = useMemo(() => {
     if(projects.length != 0) {
+      console.log(projects)
       let ids = projects.map(p => p.id)
       console.log(ids)
       return ids
@@ -148,13 +149,14 @@ useEffect(() => {
             <Route path=":projId/schneider_service_report" element={<SchneiderServiceReport />} />
             <Route path=":projId/schedule" element={<TestChart id={1} />} />
             <Route path=":projId/documents" element={<ProjectDocuments />} /> 
+            {/* <Route path=":projId/" element={<ProjectDocuments />} />  */}
             <Route path=":projId/daily-reports/:reportId" element={<DailyReportDetails />} />
           </Route>
           
           <Route path="testsheet" element={<TestJspreadsheet />} />
           <Route path="PMS">
             <Route index element={<PMS />} />
-            
+            <Route path=":projId" element={<PMSPage />} />
           </Route>
 
           <Route path="notification">
@@ -166,7 +168,7 @@ useEffect(() => {
             
           </Route>
 
-
+  
 
           <Route path="teams" element={<Teams />} />
           <Route path="baby-book" element={<BabyBook />} />

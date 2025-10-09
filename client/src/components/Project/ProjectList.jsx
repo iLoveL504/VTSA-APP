@@ -10,22 +10,19 @@ const ProjectList = ({updateIsLoading}) => {
   const {data: projects, isLoading: projectsIsLoading} = useAxiosFetch(`${backendURL}/projects`)
   const {data: designatedProject, isLoading: designatedIsLoading} = useAxiosFetch(`${backendURL}/employees/${empId}/designated-project`)
   const [lowRole, setLowRole] = useState(true)
-  console.log(lowRole)
+  console.log(projects)
   useEffect(() => {
     if (sessionStorage.getItem('roles') === 'manager' ||
       sessionStorage.getItem('roles') == 'Project Manager') {
         setLowRole(false)
       }
   }, [])
+//console.log(updateIsLoading)
 
-  console.log(updateIsLoading)
-  console.log(designatedIsLoading)
-  console.log(projectsIsLoading)
 
-    if (designatedIsLoading || projectsIsLoading || updateIsLoading) {
-        console.log(designatedIsLoading)
-        console.log(projectsIsLoading)
-        console.log(updateIsLoading)
+    if (false) {
+      console.log(projectsIsLoading)  
+console.log(designatedIsLoading)
         return (
                 <div className="Loading">
                     <p>Data is Loading...</p>

@@ -114,7 +114,7 @@ useEffect(() => {
         ...guideRail,
         ...additionalSections.flatMap(s => s.items)
         ];
-
+        
         allItems.forEach(item => {
         const calculated = calculateItem(item);
         totalWt += item.wt;
@@ -424,7 +424,7 @@ useEffect(() => {
                   </tr>
                 );
               })}
-
+              {console.log(additionalSections)}
               {/* Additional Sections */}
               {additionalSections.map((section, sIdx) => (
                 <React.Fragment key={sIdx}>
