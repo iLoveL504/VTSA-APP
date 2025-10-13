@@ -24,7 +24,7 @@ const pool = mysql.createPool({
     ? { ssl: { rejectUnauthorized: false } } // SSL required on Railway
     : {}),
 });
-
+console.log(process.env.MYSQL_HOST)
 (async () => {
   try {
     const conn = await pool.getConnection();
