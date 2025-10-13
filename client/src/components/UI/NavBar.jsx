@@ -15,7 +15,7 @@ const NavBar = ({ invertMenuToggle }) => {
   const [notifs, setNotifs] = useState([]);
   useEffect(() => {
     setNotifs(notifications)
-  }, [])
+  }, [notifications])
 
 
   return (

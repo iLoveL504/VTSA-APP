@@ -108,10 +108,10 @@ const CreateProject = () => {
   const [showConfirmation, setShowConfirmation] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [equipmentType, setEquipmentType] = useState('')
-  const handleChange = (event) => {
-    setEquipmentType(event.target.value)
-  }
+  //const [equipmentType, setEquipmentType] = useState('')
+  // const handleChange = (event) => {
+  //   setEquipmentType(event.target.value)
+  // }
   const equipmentTypes = [
     "passenger elevator",
     "residential elevator", 
@@ -152,18 +152,17 @@ const CreateProject = () => {
     handleInputChange,
     handleNumberInputChange,
     handleBlur,
-    handleSubmit,
   } = useFormValidate(initialState, validate);
 
-  const handleSelectChange = (event) => {
-    const { name, value } = event.target;
-    handleInputChange({
-      target: {
-        name,
-        value
-      }
-    });
-  };
+  // const handleSelectChange = (event) => {
+  //   const { name, value } = event.target;
+  //   handleInputChange({
+  //     target: {
+  //       name,
+  //       value
+  //     }
+  //   });
+  // };
 
   const handleFormSubmit = (e) => {
     e.preventDefault();

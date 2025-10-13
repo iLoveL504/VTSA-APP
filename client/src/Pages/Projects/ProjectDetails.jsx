@@ -57,17 +57,13 @@ const ScheduleModal = ({ isOpen, onClose, onChoice }) => {
 };
 
 const ProjectDetails = ({
-    projectCompleted, currentTask, currentParentTask, currentIsLoading, projectExists, fetchedData, proj, setFormData, setIsLoading, formData, teamInfo, projIsLoading, teamIsLoading, tasksIsLoading,
+    projectCompleted, currentTask, currentParentTask, currentIsLoading, projectExists, fetchedData, proj, setFormData, formData, teamInfo, projIsLoading, teamIsLoading,
     saveStatus, handleSave, isEditing, errors, handleInputChange, handleNumberInputChange, handleBlur, handleSubmit,
     values, setIsEditing, handleCancel
 }) => {
     console.log(projectExists)
     const {projId} = useParams()
     const [showScheduleModal, setShowScheduleModal] = useState(false)
-    
-    const updatePreceedingData = () => {
-
-    }
 
     const handleTaskComplete =  (task) => async () => {
         try {
@@ -113,7 +109,7 @@ const ProjectDetails = ({
             setFormData(proj)
             // setIsLoading(false)
         }
-    }, [proj, formData, teamInfo, projIsLoading])
+    }, [proj, formData, teamInfo, projIsLoading, setFormData])
 
     const handleCreateSchedule = () => {
         setShowScheduleModal(true)

@@ -24,7 +24,6 @@ const ProjectInfo = () => {
     const numId = Number(projId)
     const projects = useStoreState(state => state.projects)
     const {data: proj, isLoading: projIsLoading} = useAxiosFetch(`${backendURL}/projects/${projId}`)
-    const [isLoading, setIsLoading] = useState(true)
     const [isEditing, setIsEditing] = useState(false)
     const [formData, setFormData] = useState({})
     const {currentTask, currentParentTask, isLoading: currentIsLoading, fetchError: tasksFetchError, projectExists, fetchedData, projectCompleted} = useFindProjectTask(projId)
@@ -37,7 +36,7 @@ const ProjectInfo = () => {
     
     useEffect(() => {
         const userRole = sessionStorage.getItem('roles');
-        console.log('Current role from sessionStorage:', userRole);
+        //console.log('Current role from sessionStorage:', userRole);
         setRole(userRole);
     }, []);
 
@@ -118,12 +117,12 @@ const ProjectInfo = () => {
 
     // Function to handle daily report button click
     const handleDailyReportClick = () => {
-        console.log('Daily report button clicked for project:', projId);
+        //console.log('Daily report button clicked for project:', projId);
         // You can implement navigation logic here
         navigate(`report`)
     }
 
-    console.log('Rendering ProjectInfo - Role:', role, 'Should display button:', role === 'Foreman');
+    //console.log('Rendering ProjectInfo - Role:', role, 'Should display button:', role === 'Foreman');
 
     return (
         <div className="Content ProjectPage">
@@ -152,7 +151,6 @@ const ProjectInfo = () => {
                     projIsLoading={projIsLoading}
                     formData={formData}
                     teamInfo={teamInfo}
-                    isLoading={isLoading}
                     teamIsLoading={teamIsLoading}
                     saveStatus={saveStatus}
                     handleSave={handleSave}

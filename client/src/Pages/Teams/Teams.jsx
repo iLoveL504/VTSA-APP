@@ -1,0 +1,80 @@
+import React, { useMemo, useState } from 'react'
+import useAxiosFetch from "../../hooks/useAxiosFetch";
+import '../../css/TeamsPage.css'
+import InstallationTeams from './InstallationTeams';
+import ProjectAssignment from './ProjectAssignment';
+
+const Teams = () => {
+  const backendURL = import.meta.env.VITE_BACKENDURL || 'http://localhost:4000'
+  const { data: teamData, isLoading: teamIsLoading, error } = useAxiosFetch(`${backendURL}/teams`)
+  const [activePage, setActivePage] = useState('installation')
+
+  const teamsByGroup = useMemo(() => {
+    if (teamData && !teamIsLoading) {
+      return teamData.reduce((acc, entry) => {
+        const key = entry.team_id;
+        if (!acc[key]) {
+          acc[key] = [];
+        }
+        acc[key].push(entry);
+        return acc;
+      }, {});
+    }
+    return {};
+  }, [teamData, teamIsLoading]);
+
+  const installationOnClick = () => {
+    setActivePage('installation');
+  };
+
+  const otherTeamsOnClick = () => {
+    setActivePage('other');
+  };
+
+  return (
+    <div className='Content TeamsPage'>
+      {/* Header matching ProjectInfo layout */}
+      <div className="project-header">
+        <div className="project-header-content">
+          <h2>Teams Management</h2>
+          <div className="action-buttons">
+            <button 
+              onClick={installationOnClick}
+              className={activePage === 'installation' ? 'active' : ''}
+            >
+              Installation Teams
+            </button>
+            <button 
+              onClick={otherTeamsOnClick}
+              className={activePage === 'other' ? 'active' : ''}
+            >
+              Other Teams
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* Main content area */}
+      <div className="teams-content">
+        {activePage === 'installation' && (
+          <InstallationTeams 
+            teamsByGroup={teamsByGroup}
+            isLoading={teamIsLoading}
+            error={error}
+          />
+        )}
+        
+        {activePage === 'other' && (
+          <ProjectAssignment 
+            teamsByGroup={teamsByGroup}
+          />
+        )}
+        {/* <div>
+          Some side content right here
+        </div> */}
+      </div>
+    </div>
+  )
+}
+
+export default Teams

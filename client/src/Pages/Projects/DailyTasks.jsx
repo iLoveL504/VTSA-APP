@@ -1,19 +1,18 @@
 import React, { useState, useEffect } from 'react';
 import { Grid } from 'ldrs/react'
 import useAxiosFetch from "../../hooks/useAxiosFetch.js"
-import { useNavigate, useParams } from 'react-router-dom'
+import {  useParams } from 'react-router-dom'
 import '../../css/DailyTasks.css'
 
-const DailyTasks = ({ allTaskDates, tasksIsLoading }) => {
+const DailyTasks = () => {
     const backendURL = import.meta.env.VITE_BACKEND_URL || 'http://localhost:4000'
     const {projId} = useParams()
     console.log(projId)
-    const navigate = useNavigate()
-    const [role] = useState(() => sessionStorage.getItem('roles'));
-    const {data: fetchedData, fetchError: fetchError, isLoading: isLoading} = useAxiosFetch(`${backendURL}/projects/schedule/${projId}`)
-    const handleReportClick = () => {
-        navigate(`report`)
-    }
+
+    const {data: fetchedData, isLoading: isLoading} = useAxiosFetch(`${backendURL}/projects/schedule/${projId}`)
+    // const handleReportClick = () => {
+    //     navigate(`report`)
+    // }
     const [taskList, setTaskList] = useState([]);
 
     useEffect(() => {

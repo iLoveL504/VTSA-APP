@@ -12,7 +12,6 @@ class ProjectModel {
     }
 
     static async findByName(name){
-        console.log(name)
         const [results] = await pool.query(
             'select id from projects where lift_name = ?',
             [name]
@@ -29,7 +28,7 @@ class ProjectModel {
     }
 
     static async createProject(project){
-        console.log('hits')
+      
         const {
             liftName,
             description,
@@ -82,7 +81,7 @@ class ProjectModel {
                 equipmentType
             ]
         );
-        console.log("Insert results:", results);
+
         return results
     }
 
@@ -134,7 +133,7 @@ class ProjectModel {
 static async getProjectSchedule(id) {
     const query = `SELECT * FROM project_${id}_schedule`;
     const [results] = await pool.query(query);
-    
+    if (!results) return
     const sortedTasks = results.sort((a, b) => {
         // First, sort by start date as the primary criteria
         const dateDiff = new Date(a.task_start) - new Date(b.task_start);
@@ -178,11 +177,10 @@ static async getProjectSchedule(id) {
         if (updates.length === 0) {
             throw new Error("Nothing to update");
         }
-        console.log(typeof id)
+   
         const promises = Object.keys(updates).map(key => {
             const { task_id } = updates[key];
-            console.log(task_id)
-            console.log(id)
+      
             const tableQuery = `update project_${id}_schedule set task_done = 1, pres_acc = 100.00 where task_id = ?`
             return pool.query(
                 tableQuery,
@@ -262,7 +260,7 @@ static async getProjectSchedule(id) {
     });
 
     await Promise.all(insertPromises);
-
+    await pool.query(`update projects set schedule_created = 1 where id = ?`, [id])
     return { success: true, message: `Schedule created with ${tasks.length} tasks` };
   } catch (error) {
     console.error('Error creating schedule:', error);
@@ -273,15 +271,15 @@ static async getProjectSchedule(id) {
 
     static async updateProjectStatus(updates) {
         
-        console.log('here in project model')
+   
       
         const promises = Object.keys(updates).map(key => {
-            const { id, status, start_date, end_date, manufacturing_end_date } = updates[key];
+            const { id, status, start_date, end_date, manufacturing_end_date, tnc_start_date, installation_start_date } = updates[key];
             return pool.query(
-            'UPDATE projects SET created_at = ?, manufacturing_end_date = ?, project_end_date = ? , status = ? WHERE id = ?',
-            [start_date, manufacturing_end_date, end_date, status, id]  
+            'UPDATE projects SET created_at = ?, manufacturing_end_date = ?, project_end_date = ? , status = ?, tnc_start_date = ?, installation_start_date = ? WHERE id = ?',
+            [start_date, manufacturing_end_date, end_date, status, tnc_start_date, installation_start_date, id]  
             ).then(() => {
-            console.log(`Updated project ${id} -> ${status}`);
+
             }).catch(err => {
             console.error(`Error updating project ${id}:`, err);
             });

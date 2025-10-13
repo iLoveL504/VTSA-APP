@@ -16,7 +16,7 @@ const PMSPage = () => {
   });
 
   // 🔹 Mock maintenance records (replace later with backend data)
-  const [maintenanceHistory, setMaintenanceHistory] = useState([
+  const [maintenanceHistory] = useState([
     {
       id: 1,
       service_date: '2025-09-20',

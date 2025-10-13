@@ -1,7 +1,7 @@
 import { createStore, action, thunk, computed } from "easy-peasy"
 import {Axios} from '../api/axios.js'
 const d = new Date()
-const date = d.toISOString().split('T')[0]
+// const date = d.toISOString().split('T')[0]
 const addDuration = (start, days) => {
     const date = new Date(start)
     date.setDate(date.getDate() + days)
@@ -24,6 +24,18 @@ export default createStore({
     setEmployees: action((state, payload) => {
         state.employees = payload
         state.searchResults = payload
+    }),
+    forecastData: [],
+    setForecastData: action((state, payload) => {
+        state.forecastData = payload
+    }),
+    teamsNoProject: [],
+    setTeamNoProject: action((state, payload) => {
+        state.teamsNoProject = payload
+    }),
+    tentativeProjectTeams: [],
+    setTentativeProjectTeams: action((state, payload) => {
+        state.tentativeProjectTeams = payload
     }),
     notifications: [],
     setNotifications: action((state, payload) => {

@@ -9,7 +9,7 @@ import ProjectProgress from './Pages/Projects/ProjectProgress.jsx'
 import ProjectReport from './Pages/Projects/ProjectReport.jsx'
 import PMS from './Pages/PMS/PMS.jsx'
 import Login from './Pages/Login'
-import Teams from './Pages/Teams'
+import Teams from './Pages/Teams/Teams.jsx'
 import BabyBook from './Pages/BabyBook'
 import CreateProject from './Pages/Projects/CreateProject'
 import { Routes, Route, Navigate } from 'react-router-dom';
@@ -17,10 +17,8 @@ import useAxiosFetch from './hooks/useAxiosFetch'
 import AssignTeam from './Pages/AssignTeam.jsx'
 import QAQC_Checklist from './Pages/Documents/PTNCQAQC_Checklist.jsx'
 import { useStoreState, useStoreActions } from 'easy-peasy'
-import ScheduleProjects from './Pages/Projects/ScheduleProject.jsx'
 import NotificationPage from './Pages/NotificationPage.jsx'
 import Chat from './Pages/Chat.jsx'
-import { useSocket } from './hooks/useSocket.js'
 import Test1 from './Pages/Test.jsx'
 import KickOffChecklist from './Pages/Documents/KickOffChecklist.jsx'
 import TestJspreadsheet from './Pages/Tests/TestJspreadsheet.jsx'
@@ -46,22 +44,19 @@ const { data: projData } =
 const { data: notifData } =
   useAxiosFetch(`${backendURL}/notifications/${sessionStorage.getItem('id')}`);
 
-  const dateNow = useStoreState(state => state.date)
   //const isLoggedIn = useStoreState(state => state.isLoggedIn)
   const setEmployees = useStoreActions(actions => actions.setEmployees)
   const setProjects = useStoreActions(actions => actions.setProjects)
   const setUser = useStoreActions(actions => actions.setUser)
   const setNotifications = useStoreActions(actions => actions.setNotifications)
-  const addNotificationToState = useStoreActions(actions => actions.addNotificationToState)
   const projects = useStoreState(state => state.projects)
-  const isLoggedIn = sessionStorage.getItem("isLoggedIn") === "true" ? true : false 
 
   // array of project ids
   const projectIDs = useMemo(() => {
     if(projects.length != 0) {
-      console.log(projects)
-      let ids = projects.map(p => p.id)
-      console.log(ids)
+   
+      let ids = projects.filter(p => {if(p.schedule_created === 1) return p.id})
+    
       return ids
     }
   }, [projects])
@@ -69,12 +64,7 @@ const { data: notifData } =
   const [updateIsLoading] = useUpdateProjects(projectIDs)
 
   // add event listeners to socket hook
-  const socket = useSocket({
-    new_notification: (notification) => {
-      //console.log("Received notification:", notification)
-       addNotificationToState(notification)
-    }
-  })
+
 
   useEffect(() => {
     // Handle login state and user data
@@ -91,22 +81,20 @@ const { data: notifData } =
   }, [setUser]);
   
   //join room useEffect
-  useEffect(() => {
-    //console.log('useeffect fired here')
-    //console.log(socket)
-    if(socket && isLoggedIn === true) {
-      socket.emit("join_notifications", sessionStorage.getItem("id"))
+  // useEffect(() => {
+  //   if(socket && isLoggedIn === true) {
+  //     socket.emit("join_notifications", sessionStorage.getItem("id"))
       
-    }
-  }, [socket, isLoggedIn])
+  //   }
+  // }, [socket, isLoggedIn])
 
 useEffect(() => {
   if (empData) setEmployees(empData)
-}, [empData])
+}, [empData, setEmployees])
 
 useEffect(() => {
   if (projData) setProjects(projData)
-}, [projData])
+}, [projData, setProjects])
 
 useEffect(() => {
   if (notifData) {
@@ -114,7 +102,7 @@ useEffect(() => {
     //console.log('notifications')
     //console.log(notifData)
   }
-}, [notifData])
+}, [notifData, setNotifications])
 
   return (
       <Routes>

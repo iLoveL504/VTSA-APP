@@ -116,6 +116,7 @@ const tasks = [
     open: true,
     percent_progress: 0,
   },
+  
   {
     id: 104,
     text: "Submission of PO to Factory",
@@ -278,6 +279,7 @@ const tasks = [
     wt: 7.00,
     item_code: 4
   },
+  
   {
     id: 505,
     text: "Marking and Boring of Holes",

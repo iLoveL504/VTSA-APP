@@ -146,7 +146,7 @@ useEffect(() => {
   };
 
   fetchChecklist();
-}, [projId]);
+}, [projId, backendURL]);
 
 
   const handleInputChange = (e) => {

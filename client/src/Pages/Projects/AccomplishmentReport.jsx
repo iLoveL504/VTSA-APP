@@ -6,7 +6,7 @@ import { useReactToPrint } from "react-to-print";
 import useAxiosFetch from '../../hooks/useAxiosFetch'
 import { useParams } from 'react-router-dom'
 
-const AccomplishmentReport = ({ id }) => {
+const AccomplishmentReport = () => {
     const { projId } = useParams()
     const backendURL = import.meta.env.VITE_BACKENDURL || 'http://localhost:4000'
     const [editMode, setEditMode] = useState(false);
@@ -67,7 +67,7 @@ useEffect(() => {
 }, [accomplishmentsIsLoading, accomplishments]);
 
 
-    const [projectInfo, setProjectInfo] = useState({
+    const [projectInfo] = useState({
         company: 'VTSA INTERNATIONAL INC.',
         reportDate: 'June 24, 2025',
         projectName: 'Project Proxima',
@@ -171,7 +171,7 @@ useEffect(() => {
 
     const getChartData = () => {
         const allItems = [
-        ...data.map((item, i) => ({ ...item, name: `${item.id}. ${item.desc}` })),
+        ...data.map((item) => ({ ...item, name: `${item.id}. ${item.desc}` })),
         ...guideRail.map(item => ({ ...item, name: `7${item.id}. ${item.desc}` })),
         ];
 

@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import { useStoreState } from 'easy-peasy';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Axios } from '../api/axios.js';
 import useAxiosFetch from '../hooks/useAxiosFetch.js';

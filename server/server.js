@@ -1,8 +1,9 @@
 import dotenvFlow from "dotenv-flow";
+dotenvFlow.config();
 console.log('backend url', process.env.VITE_BACKEND_URL)
 console.log('some token', process.env.ACCESS_TOKEN_SECRET)
 if (process.env.NODE_ENV !== "production") {
-  dotenvFlow.config();
+  
   console.log('this is after config')
   console.log('some token', process.env.ACCESS_TOKEN_SECRET)
 }
@@ -20,7 +21,7 @@ import http from 'http';
 import { Server } from 'socket.io';
 import path from 'path';
 import { fileURLToPath } from 'url';
-
+import forecastMenNameSpace from "./sockets/forecastMenNameSpace.js";
 
 const app = express();
 const server = http.createServer(app);
@@ -39,6 +40,8 @@ const io = new Server(server, {
   transports: ['websocket', 'polling']
 });
 export { io };
+console.log("Socket.io allowed origins:", process.env.CORS_ORIGIN);
+
 
 // Middleware
 app.use(cors(corsOptions));
@@ -73,14 +76,7 @@ app.use((err, req, res, next) => {
 });
 
 // Socket.io connection handling
-io.on('connection', (socket) => {
-  console.log(`User connected: ${socket.id}`);
-
-  socket.on('chat message', (msg) => io.emit('chat message', msg));
-  socket.on('join_notifications', (employeeId) => socket.join(`notifications_${employeeId}`));
-  socket.on('receive_messages', (msg) => console.log(msg));
-  socket.on('disconnect', () => console.log('User disconnected:', socket.id));
-});
+forecastMenNameSpace(io.of("/forecast"))
 
 // Start server
 const PORT = process.env.PORT || 4000;

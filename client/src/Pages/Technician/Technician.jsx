@@ -21,11 +21,11 @@ const Technician = () => {
     const sortedSearch = useStoreState((state) => state.sortResults)
     useEffect(() => {
         setSearchResults(employees)
-    }, [])
+    }, [employees, setSearchResults])
 
     useEffect(() => {
         setSearchResults(sortedSearch)
-    }, [searchEmployee])
+    }, [searchEmployee, setSearchResults, sortedSearch])
 
     
     return (

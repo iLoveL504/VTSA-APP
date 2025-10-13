@@ -3,36 +3,28 @@ import { Gantt, ViewMode } from "gantt-task-react";
 import "gantt-task-react/dist/index.css";
 import "../Tests/TestChart.css";
 import useAxiosFetch from "../../hooks/useAxiosFetch";
-import { useLocation, useParams } from "react-router-dom";
-import { Axios } from '../../api/axios';
-import Queue from '../../DataStructs/Queue'
+import { useParams } from "react-router-dom";
 import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
-import FormHelperText from '@mui/material/FormHelperText';
 import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
-import defaultSchedule from "../../data/TasksData.js";
+
 import { useReactToPrint } from "react-to-print";
 
-const TestChart = ({ id }) => {
-    const location = useLocation();
+const TestChart = () => {
     const { projId } = useParams()
     const [view, setView] = useState(ViewMode.Day);
     const backendURL = import.meta.env.VITE_BACKEND_URL || 'http://localhost:4000';
-    const { data: projSched, fetchError: projFetchError, isLoading: projSchedIsLoading } = useAxiosFetch(`${backendURL}/projects/schedule/${projId}`);
-    const [hasError, setHasError] = useState(false);
-    const [isEditable, setIsEditable] = useState(false);
-    const [showConfirmModal, setShowConfirmModal] = useState(false);
-    const [isSaving, setIsSaving] = useState(false);
+    const { data: projSched, isLoading: projSchedIsLoading } = useAxiosFetch(`${backendURL}/projects/schedule/${projId}`);
     const [displayTasks, setDisplayTasks] = useState([])
     const [isPrinting, setIsPrinting] = useState(false);
     const [currentTaskId, setCurrentTaskId] = useState(null);
-    const [currentDate, setCurrentDate] = useState(new Date());
-    const [isAutoScrollEnabled, setIsAutoScrollEnabled] = useState(true);
+    const currentDate = new Date()
+    const [isAutoScrollEnabled] = useState(true);
     const contentRef = useRef();
     const ganttRef = useRef();
     
-    const schedule = location.state?.schedule || defaultSchedule;
+    //const schedule = location.state?.schedule || defaultSchedule;
 
     const [age, setAge] = React.useState('');
 
@@ -76,7 +68,7 @@ const TestChart = ({ id }) => {
       if(projSched && !projSchedIsLoading) {
         console.log(projSched)
       }
-    }, [projSchedIsLoading])
+    }, [projSchedIsLoading, projSched])
 
     // Find current/ongoing tasks
     const findCurrentTasks = useMemo(() => {
@@ -104,26 +96,7 @@ const TestChart = ({ id }) => {
         }).sort((a, b) => new Date(a.start) - new Date(b.start));
     }, [displayTasks]);
 
-    // Auto-select current task
-    useEffect(() => {
-        if (findCurrentTasks.length > 0) {
-            // Prefer tasks that are currently ongoing
-            setCurrentTaskId(findCurrentTasks[0].id);
-        } else if (findUpcomingTasks.length > 0) {
-            // Fall back to the next upcoming task
-            setCurrentTaskId(findUpcomingTasks[0].id);
-        }
-    }, [findCurrentTasks, findUpcomingTasks]);
-
-    // Scroll to current task and date
-    useEffect(() => {
-        if (isAutoScrollEnabled && currentTaskId && ganttRef.current) {
-            // This is a simplified approach - you might need to adjust based on gantt-task-react's API
-            scrollToCurrentTask();
-        }
-    }, [currentTaskId, isAutoScrollEnabled, view]);
-
-    const scrollToCurrentTask = () => {
+  const scrollToCurrentTask = () => {
         if (!ganttRef.current || !currentTaskId) return;
 
         // Find the task element in the DOM
@@ -153,10 +126,31 @@ const TestChart = ({ id }) => {
         }
     };
 
-    const handleFocusCurrent = () => {
-        setIsAutoScrollEnabled(true);
-        scrollToCurrentTask();
-    };
+    // Auto-select current task
+    useEffect(() => {
+        if (findCurrentTasks.length > 0) {
+            // Prefer tasks that are currently ongoing
+            setCurrentTaskId(findCurrentTasks[0].id);
+        } else if (findUpcomingTasks.length > 0) {
+            // Fall back to the next upcoming task
+            setCurrentTaskId(findUpcomingTasks[0].id);
+        }
+    }, [findCurrentTasks, findUpcomingTasks]);
+
+    // Scroll to current task and date
+    useEffect(() => {
+        if (isAutoScrollEnabled && currentTaskId && ganttRef.current) {
+            // This is a simplified approach - you might need to adjust based on gantt-task-react's API
+            scrollToCurrentTask();
+        }
+    }, [currentTaskId, isAutoScrollEnabled, view, scrollToCurrentTask]);
+
+  
+
+    // const handleFocusCurrent = () => {
+    //     setIsAutoScrollEnabled(true);
+    //     scrollToCurrentTask();
+    // };
 
     const tasks = useMemo(() => {
         try {
@@ -196,10 +190,10 @@ const TestChart = ({ id }) => {
             return taskMap
         } catch (error) {
             console.error("Error processing tasks:", error);
-            setHasError(true);
+     
             return [];
         }
-    }, [projSchedIsLoading, projSched, currentTaskId]);
+    }, [projSched, currentTaskId]);
 
     useEffect(() => {
         if(!tasks) setDisplayTasks(tasks)   
@@ -262,7 +256,7 @@ const TestChart = ({ id }) => {
     };
 
     return (
-        <div className={`gantt-container ${!isEditable ? "gantt-readonly" : ""}`}>
+        <div className={`gantt-container gantt-readonly`}>
           <div className="btn-container">
             <div className="view-controls">
               <button 

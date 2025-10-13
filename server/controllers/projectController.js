@@ -7,7 +7,7 @@ export const getProjects = async (req, res) => {
 }
 
 export const findProject = async (req, res) => {
-    console.log('i run ')
+  
     const results = await projects?.findById(req.params.id)
     //console.log(results)
     res.json(results)
@@ -16,7 +16,6 @@ export const findProject = async (req, res) => {
 export const createProject = async (req, res) => {
     try {
     await projects.createProject(req.body)
-    console.log('projec')
 
     const [projectId] = await projects.findByName(req.body.liftName)
     if (!projectId) return res.status(404).json({"message": "not found"})
@@ -61,7 +60,7 @@ export const getProjectSchedule = async (req, res) => {
     try {
         const results = await projects.getProjectSchedule(Number(id))
          if (results.length === 0) return res.status(404).json({message: "not found", scheduleExists: false})
-        console.log('project schedule')
+     
         res.json(results)
     } catch (e) {
         console.error("Error making project schedule:", e);
@@ -84,7 +83,7 @@ export const completeTask = async (req, res) => {
 
 export const makeProjectSchedule = async (req, res) => {
     const {id} = req.params
-    console.log('lalabas dto')
+   
     try {
         const results = await projects.makeProjectSchedule(req.body.tasks, id)
         
@@ -101,8 +100,7 @@ export const makeProjectSchedule = async (req, res) => {
 }
 
 export const updateProjectStatus = async (req, res) => {
-    console.log('update project status')
-    console.log(req.body)
+   
     await projects.updateProjectStatus(req.body)
     // console.log(results)
     res.status(200).json({
@@ -125,7 +123,7 @@ export const getDailyReport = async (req, res) => {
 export const sendDailyReport = async (req, res) => {
 
     try {
-        console.log(req.body)
+   
         await projects.submitProjectReport(req.body, req.files, Number(req.params.id))
         res.status(200).json({
             success: true,
@@ -164,7 +162,7 @@ export const fillKickOffChecklist = async (req, res) => {
 
 export const getKickOffChecklist = async (req, res) => {
   const { id } = req.params; // project_id
-    console.log(id)
+
   try {
     const rows = await projects.getKickOffChecklist(Number(id))
     res.status(200).json({

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import '../../css/DailyReport.css'
 import { Axios } from '../../api/axios.js'
-import { useNavigate, useParams } from 'react-router-dom' 
+import { useParams } from 'react-router-dom' 
 
 const ProjectReport = () => {
   const {projId} = useParams()

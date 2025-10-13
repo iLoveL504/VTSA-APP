@@ -82,7 +82,7 @@ const PreInspection_Checklist = () => {
       }
     };
     fetchChecklist();
-  }, [projId]);
+  }, [projId, backendURL, initialMeasurements.length]);
 
   const handleFieldChange = (e) => {
     const { name, value } = e.target;

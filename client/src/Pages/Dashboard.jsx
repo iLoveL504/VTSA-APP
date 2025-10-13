@@ -1,17 +1,22 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useStoreState } from 'easy-peasy';
 import MyGanttComponent from "../outComponent/GANTT_CHART/GanttChart.jsx";
 import '../css/Dashboard.css'
-
+import { useSharedSocket } from '../Context/SocketContext.js';
 
 const Dashboard = () => {
   const navigate = useNavigate();
   const projects = useStoreState(state => state.projects);
   const employees = useStoreState(state => state.employees);
+  const test = useStoreState(state => state.test);
   const role = sessionStorage.getItem('roles');
   const userId = sessionStorage.getItem('user_id'); // Assuming user ID is stored
-
+  const forecastSocket = useSharedSocket()
+ 
+  useEffect(() => {
+    console.log(test)
+  }, [test])
   // Get projects assigned to the current project engineer
   const getAssignedProjects = () => {
     if (role !== 'Project Engineer') return [];
@@ -313,7 +318,19 @@ const Dashboard = () => {
         <>
           <div className="dashboard-header">
         <h1>Dashboard</h1>
+
         <p>Welcome back! Here's what's happening today.</p>
+         <button onClick={() => {
+          forecastSocket.emit("test_db_update", 'jii')
+        }}>
+            Test Emit
+        </button>
+        <ul>
+          {test.map(t => (
+            <li>{t.name}</li>
+          ))}
+        </ul>
+         
       </div>
 
       <div className="stats-grid">

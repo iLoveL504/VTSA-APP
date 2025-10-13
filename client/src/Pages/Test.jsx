@@ -1,5 +1,5 @@
 import React, { useState, useMemo, useRef, useEffect } from "react";
-import { useNavigate, useLocation, useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import LinkedList from "../DataStructs/LinkedList.js";
 import Box from "@mui/material/Box";
 import InputLabel from "@mui/material/InputLabel";
@@ -14,13 +14,14 @@ import tasks from '../data/TasksData.js'
 import { useReactToPrint } from "react-to-print";
 
 const Test1 = () => {
-  const testDate = "4/23/2025"
+  const testDate = "6/23/2025"
   const {projId} = useParams()
-  const location = useLocation();
+  //const location = useLocation();
   const navigate = useNavigate()
   const itemRefs = useRef([]);
   const contentRef = useRef()
   const [selectedTaskID, setSelectedTaskID] = useState("");
+  const [isCalendarDays, setIsCalendarDays] = useState(false)
 
   // ✅ Normalize helper
   const normalizeDate = (date) => {
@@ -30,12 +31,15 @@ const Test1 = () => {
   };
 
   const [linkedList, setLinkedList] = useState(() => {
-    const ll = new LinkedList(testDate);
+    console.log(tasks)
+    const ll = new LinkedList(testDate, false);
     tasks.forEach((t) => {
       if (t.start) t.start = normalizeDate(t.start);
       if (t.end) t.end = normalizeDate(t.end);
       ll.insertLast(t);
     });
+
+    console.log(ll.toArray())
     return ll;
   });
   
@@ -51,10 +55,10 @@ const Test1 = () => {
     let result = new Date(startDate);
     result.setDate(result.getDate() + numberofDays);
     result = normalizeDate(result); // strip time
-    console.log(result);
+
   };
 
-  const taskOnClick = (index, t) => {
+  const taskOnClick = (t) => {
     setSelectedTaskID(t.id);
   };
 
@@ -80,6 +84,18 @@ const Test1 = () => {
     return listArray.findIndex(task => task.id === taskId);
   };
 
+    const handleScheduleChange = (e) => {
+    console.log('hi')
+    setIsCalendarDays(e.target.value)
+  };
+
+  useEffect(() => {
+    const newLL = new LinkedList(testDate, isCalendarDays); 
+    listArray.forEach(task => newLL.insertLast(task));
+    setLinkedList(newLL);
+    console.log(isCalendarDays)
+  }, [isCalendarDays, listArray]);
+
   const handleAddTask = (position) => {
     if (!selectedTaskID) {
       alert("Please select a task first");
@@ -101,14 +117,16 @@ const Test1 = () => {
     // Step 1: Create a temporary linked list from current data
     const tempLL = new LinkedList(testDate);
     listArray.forEach((task) => tempLL.insertLast(task));
-
+    
     // Step 2: Generate a new unique ID for this parent
-    const parentID = listArray[selectedIndex].parent || 500;
+    const parentID = listArray[selectedIndex].parent === 0 ? listArray[selectedIndex].id
+     : listArray[selectedIndex].type ===  'summary' ? listArray[selectedIndex].id 
+     : listArray[selectedIndex].parent;
     const newID = tempLL.generateNewID(parentID);
 
     // Step 3: Build the new task (normalized start)
     const newTask = {
-      id: newID,
+      id: newID + 1000,
       text: newTaskText,
       type: "task",
       start: normalizeDate(new Date()), // ✅ always midnight
@@ -217,9 +235,8 @@ const Test1 = () => {
   };
 
   const handleNavigate = () => {
-    console.log(linkedList.toArray())
-    console.log(location)
-    navigate(`/projects/${projId}/schedule`, {state: { schedule: linkedList.toArray() }})
+
+    navigate(`/projects/${projId}/schedule`, {state: { schedule: linkedList.toArray(), toggle: isCalendarDays }})
   };
 
   const handlePrint = useReactToPrint({
@@ -270,6 +287,22 @@ const Test1 = () => {
 
         {/* Action Controls */}
         <div className="schedule-actions">
+          <FormControl className="form-control-professional" size="small">
+            <InputLabel id="parent-select-label">Parent Task</InputLabel>
+            <Select
+              labelId="parent-select-label"
+              id="parent-select"
+              value={isCalendarDays}
+              label="Parent Task"
+              onChange={handleScheduleChange}
+            >
+              <MenuItem value="">
+                <em>None</em>
+              </MenuItem>
+              <MenuItem value={false}>Private</MenuItem>
+              <MenuItem value={true}>Government</MenuItem>
+            </Select>
+          </FormControl>
           <button 
             className="action-btn before-btn"
             onClick={() => handleAddTask("before")}
@@ -311,7 +344,7 @@ const Test1 = () => {
         <div className="schedule-tasks-grid">
           {listArray.map((t, index) => (
             <div
-              onClick={() => taskOnClick(index, t)}
+              onClick={() => taskOnClick(t)}
               key={index}
               className="task-card"
               ref={(el) => (itemRefs.current[index] = {el, t})}

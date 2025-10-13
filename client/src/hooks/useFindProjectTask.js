@@ -1,13 +1,11 @@
 import { useEffect, useState } from "react"
 import useAxiosFetch from "./useAxiosFetch.js"
 import { useStoreState } from "easy-peasy"
-import { taskMap, reverseTaskMap } from '../data/TasksData.js'
 
 const useFindProjectTask = (id) => {
     const backendURL = import.meta.env.VITE_BACKEND_URL || 'http://localhost:4000'
     const dateNow = useStoreState(state => state.date)
 
-    const [tasksFetchError, setTasksFetchError] = useState(null)
     const [tasksIsLoading, setTasksIsLoading] = useState(true)
     const [currentTask, setCurrentTask] = useState(null)
     const [currentParentTask, setCurrentParentTask] = useState(null)
@@ -42,7 +40,7 @@ const useFindProjectTask = (id) => {
             //find current percent progress
             
         }
-    }, [isLoading, fetchedData])
+    }, [isLoading, fetchedData, dateNow, fetchError])
 
     return{currentTask, currentParentTask, tasksIsLoading, fetchError, projectExists, fetchedData, projectCompleted}
 }

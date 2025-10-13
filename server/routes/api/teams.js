@@ -21,7 +21,7 @@ router.route('/team-designation/:id')
     .get(getTeamDesignation)
 
 router.route('/forecast-team')
-    .post(forecastTeam)
+    .get(forecastTeam)
 
 router.route('/no-project')
     .get(getTeamsWithNoProject)

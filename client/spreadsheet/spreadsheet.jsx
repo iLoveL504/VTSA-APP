@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import './Spreadsheet.css';
 
 const Spreadsheet = ({ rows = 10, cols = 5 }) => {

@@ -15,7 +15,7 @@ const DailyReportDetails = () => {
   const [error, setError] = useState(null);
 
   // Fetch the specific daily report
-  const { data: reportData, fetchError, isLoading: fetchLoading } = useAxiosFetch(
+  const { data: reportData, fetchError } = useAxiosFetch(
     `${backendURL}/projects/report/${projId}`
   );
 
@@ -30,7 +30,7 @@ const DailyReportDetails = () => {
       setError(fetchError);
       setIsLoading(false);
     }
-  }, [reportData, fetchError]);
+  }, [reportData, fetchError, reportId]);
 
   const handleBack = () => {
     navigate(-1); // Go back to previous page
@@ -46,9 +46,6 @@ const DailyReportDetails = () => {
     // You can generate a PDF or download existing file
   };
 
-  const test = () => {
-    console.log(contentRef.current)
-  }
 
 const handlePrint = useReactToPrint({
   contentRef,

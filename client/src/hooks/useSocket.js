@@ -1,35 +1,41 @@
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { io } from 'socket.io-client'
 
-export const useSocket = (eventHandlers = {}) => {
+export const useSocket = (namespace = "/", eventHandlers = {}) => {
   const socketRef = useRef(null)
+  const [socket, setSocket] = useState(null)
 
-  
   useEffect(() => {
-    if (!socketRef.current) {
-      const socketURL = import.meta.env.VITE_BACKEND_URL
-      console.log('connecting to', socketURL)
-      const token = localStorage.getItem('token')
+    const socketURL = import.meta.env.VITE_BACKEND_URL + namespace
+    console.log('connecting to namespace', namespace)
+    const token = localStorage.getItem('token')
 
-      socketRef.current = io(socketURL, {
-        auth: { token },
-        transports: ['websocket', 'polling'], 
-        reconnection: true,        
-      })
-    }
+    const newSocket = io(socketURL, {
+      auth: { token },
+      transports: ['websocket', 'polling'],
+      reconnection: true,
+    })
+
+    socketRef.current = newSocket
+
+    newSocket.on('connect', () => {
+      console.log('✅ Socket connected:', newSocket.id)
+      setSocket(newSocket)
+    })
+
+    newSocket.on('connect_error', (err) => {
+      console.error('❌ Socket connection error:', err)
+    })
 
     return () => {
-      if (socketRef.current) {
-        socketRef.current.disconnect()
-        socketRef.current = null
-      }
+      newSocket.disconnect()
+      socketRef.current = null
+      setSocket(null)
     }
-  }, [])
+  }, [namespace])
 
   useEffect(() => {
-    const socket = socketRef.current
     if (!socket) return
-
     Object.entries(eventHandlers).forEach(([event, handler]) => {
       socket.on(event, handler)
     })
@@ -39,7 +45,7 @@ export const useSocket = (eventHandlers = {}) => {
         socket.off(event, handler)
       })
     }
-  }, [eventHandlers])
+  }, [socket, eventHandlers])
 
-  return socketRef.current
+  return socket
 }

@@ -37,6 +37,7 @@ export const exportToExcel = (workbook) => {
             rowHasData = true;
           }
         } catch (error) {
+          console.log(error)
           rowData.push('');
         }
       }
@@ -101,6 +102,7 @@ export const saveToLocalStorage = (workbook) => {
         const description = worksheet.getRange(row, 1).getValue();
         hasData = description && description.toString().trim() !== '';
       } catch (error) {
+        console.log(error)
         hasData = false;
       }
       
@@ -114,6 +116,7 @@ export const saveToLocalStorage = (workbook) => {
           const cellValue = worksheet.getRange(row, col).getValue();
           rowData[col] = cellValue !== null && cellValue !== undefined ? cellValue : '';
         } catch (error) {
+          console.log(error)
           rowData[col] = '';
         }
       });
@@ -247,6 +250,7 @@ function getCellValueSafe(worksheet, row, col) {
     const value = worksheet.getRange(row, col).getValue();
     return value !== null && value !== undefined ? value : '';
   } catch (error) {
+    console.log(error)
     return '';
   }
 }
@@ -271,6 +275,7 @@ export const getWorksheetData = (worksheet, maxRows = 100) => {
           rowHasData = true;
         }
       } catch (error) {
+        console.log(error)
         rowData.push('');
       }
     }

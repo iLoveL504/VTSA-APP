@@ -1,5 +1,6 @@
 import React, {useState} from 'react'
 import '../../css/HandOverChecklist.css'
+import { Axios } from '../../api/axios.js';
 
 const HandOverChecklist = () => {
   const [formData, setFormData] = useState({
@@ -103,7 +104,7 @@ const HandOverChecklist = () => {
     e.preventDefault();
     console.log("Form Data:", formData);
     try {
-      await axios.post("/api/checklist-prior-handover", formData);
+      await Axios.post("/api/checklist-prior-handover", formData);
       alert("Form submitted successfully!");
     } catch (error) {
       console.error(error);

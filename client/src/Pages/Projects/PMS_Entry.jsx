@@ -7,7 +7,6 @@ const PMS_Entry = () => {
   const backendURL = import.meta.env.VITE_BACKENDURL || "http://localhost:4000";
 
   const [contractType, setContractType] = useState("");
-  const [handoverDate, setHandoverDate] = useState("");
   const [saving, setSaving] = useState(false);
   const [statusMsg, setStatusMsg] = useState("");
 

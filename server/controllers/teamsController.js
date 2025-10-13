@@ -25,7 +25,7 @@ export const getTeamDesignation = async (req, res) => {
     try {
         const { id } = req.params;
         const results = await teams.getTeamDesignation(Number(id))
-        console.log(id)
+     
         res.status(200).json(results)
     } catch (error) {
         res.status(500).json({ error: error.message });
@@ -34,9 +34,9 @@ export const getTeamDesignation = async (req, res) => {
 
 export const forecastTeam = async (req, res) => {
     try {
-        console.log('hi')
+  
         const { manufacturing_end_date } = req.body;
-        console.log(manufacturing_end_date)
+    
         const results = await teams.forecastTeam(manufacturing_end_date)
         res.status(200).json(results)
     } catch (error) {
@@ -62,7 +62,7 @@ export const getNotAssignedPE = async (req, res) => {
 }
 
 export const assignTeam = async (req, res) => {
-    console.log(req.body)
+    
     const {
         projId,
         ProjectEngineer,
@@ -81,7 +81,7 @@ export const assignTeam = async (req, res) => {
     // console.log(pe.employee_id)
 
     try {
-        console.log(foreman)
+    
         const results = await teams.assignTeam(pe.employee_id, foreman.employee_id, memberIds, projId)
         res.status(200).json({
             success: true,

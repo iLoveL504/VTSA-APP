@@ -1,35 +1,35 @@
-import React, { useEffect, useState } from 'react'
+import React from 'react'
 import Project from './Project'
 import useAxiosFetch from '../../hooks/useAxiosFetch'
 import { Grid } from 'ldrs/react'
 
-const ProjectList = ({updateIsLoading}) => {
+const ProjectList = () => {
 
   const backendURL = import.meta.env.VITE_BACKENDURL || 'http://localhost:4000'
   const empId = sessionStorage.getItem('id')
-  const {data: projects, isLoading: projectsIsLoading} = useAxiosFetch(`${backendURL}/projects`)
-  const {data: designatedProject, isLoading: designatedIsLoading} = useAxiosFetch(`${backendURL}/employees/${empId}/designated-project`)
-  const [lowRole, setLowRole] = useState(true)
-  console.log(projects)
-  useEffect(() => {
-    if (sessionStorage.getItem('roles') === 'manager' ||
-      sessionStorage.getItem('roles') == 'Project Manager') {
-        setLowRole(false)
-      }
-  }, [])
+  const {data: projects} = useAxiosFetch(`${backendURL}/projects`)
+  const {data: designatedProject} = useAxiosFetch(`${backendURL}/employees/${empId}/designated-project`)
+  // const [lowRole, setLowRole] = useState(true)
+  // console.log(projects)
+  // useEffect(() => {
+  //   if (sessionStorage.getItem('roles') === 'manager' ||
+  //     sessionStorage.getItem('roles') == 'Project Manager') {
+  //       setLowRole(false)
+  //     }
+  // }, [])
 //console.log(updateIsLoading)
 
 
-    if (false) {
-      console.log(projectsIsLoading)  
-console.log(designatedIsLoading)
-        return (
-                <div className="Loading">
-                    <p>Data is Loading...</p>
-                    <Grid size="60" speed="1.5" color="rgba(84, 176, 210, 1)" />
-                </div>
-        )
-    }
+//     if (false) {
+//       console.log(projectsIsLoading)  
+// console.log(designatedIsLoading)
+//         return (
+//                 <div className="Loading">
+//                     <p>Data is Loading...</p>
+//                     <Grid size="60" speed="1.5" color="rgba(84, 176, 210, 1)" />
+//                 </div>
+//         )
+//     }
 
   return (
     <div className='ProjectList'>  

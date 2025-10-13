@@ -3,15 +3,14 @@ import { pool } from '../config/database.js'
 class TeamModel {
     static async getAllTeams() {
         const [results] = await pool.query(`
-            SELECT t.project_engineer_id, CONCAT(pe.first_name, ' ', pe.last_name) AS Project_Engineer,
-                   t.Foreman, f.employee_id AS foreman_id, CONCAT(e.first_name, ' ', e.last_name) AS full_name,
-                   e.employee_id, e.job, t.project_id, p.lift_name, p.created_at, p.manufacturing_end_date
-            FROM teams t
-            LEFT JOIN employees f ON f.employee_id = t.foreman_id
-            LEFT JOIN team_members tm ON tm.foreman_id = t.team_id
-            LEFT JOIN employees e ON e.employee_id = tm.emp_id
-            LEFT JOIN projects p ON p.id = t.project_id
-            LEFT JOIN employees pe ON pe.employee_id = t.project_engineer_id
+            select pm.id, pm.project_engineer_id, pe.username as \`pe_username\`, pm.tnc_tech_id as 'tnc_id', tnc.username as \`tnc_username\`, pm.team_id, t.Foreman, t.foreman_id, tm.emp_id, e.username as \`e_username\`, e.job , p.id as \`project_id\`, p.lift_name, p.status, p.installation_start_date as \`operations_start_date\`, p.project_end_date
+            from project_manpower pm 
+            left join employees pe on pm.project_engineer_id = pe.employee_id
+            left join employees tnc on pm.tnc_tech_id = tnc.employee_id
+            left join teams t on pm.team_id = t.team_id
+            left join projects p on pm.project_id = p.id
+            left join team_members tm on t.team_id = tm.foreman_id
+            left join employees e on e.employee_id = tm.emp_id;
         `);
         return results;
     }
@@ -83,29 +82,20 @@ class TeamModel {
 
     static async forecastTeam(date) {
         const [results] = await pool.query(`
-            SELECT t.team_id, t.Foreman, f.employee_id AS foreman_id,
-                   CONCAT(e.first_name, ' ', e.last_name) AS full_name,
-                   e.employee_id, e.job, t.project_id, p.lift_name, p.created_at, p.manufacturing_end_date
-            FROM teams t
-            JOIN employees f ON f.employee_id = t.foreman_id
-            JOIN team_members tm ON tm.foreman_id = t.team_id
-            JOIN employees e ON e.employee_id = tm.emp_id
-            JOIN projects p ON p.id = t.project_id
-            WHERE project_end_date < ?`,
+            select pm.id, pm.project_engineer_id, pe.username as 'pe_username', pm.tnc_tech_id as 'tnc_id', tnc.username as 'tnc_username', pm.team_id, t.Foreman, t.foreman_id, tm.emp_id, e.username as 'e_username', e.job , p.id as 'project_id', p.lift_name, p.status, p.manufacturing_end_date as 'operations_start_date', p.project_end_date
+            from project_manpower pm 
+            left join employees pe on pm.project_engineer_id = pe.employee_id
+            left join employees tnc on pm.tnc_tech_id = tnc.employee_id
+            left join teams t on pm.team_id = t.team_id
+            left join projects p on pm.project_id = p.id
+            left join team_members tm on t.team_id = tm.foreman_id
+            left join employees e on e.employee_id = tm.emp_id
+            where p.project_end_date < ?`,
             [date]
         );
 
-        const employees = await Promise.all(
-            results.map(async (e) => {
-                const [emp] = await pool.query(
-                    `SELECT * FROM employees WHERE employee_id = ?`,
-                    [e.employee_id]
-                );
-                return emp[0];
-            })
-        );
 
-        return employees;
+        return results;
     }
 
     static async getNotAssignedPE() {
