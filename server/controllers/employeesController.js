@@ -22,9 +22,9 @@ export const updateEmployee = async (req, res) => {
 }
 export const getDesignatedProject = async (req, res) => {
     const { id } = req.params
-    console.log('joo')
+    const { role } = req.query
     try{
-        const results = await users.getDesignatedProject(Number(id))
+        const results = await users.getDesignatedProject(Number(id), role)
         console.log(results)
         if (results.length === 0) return res.status(404).json({"message": "not found"})
         res.status(200).json(results)

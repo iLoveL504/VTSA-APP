@@ -54,6 +54,7 @@ export const getTeamsWithNoProject = async (req, res) => {
 }
 export const getNotAssignedPE = async (req, res) => {
     try {
+        console.log('hii')
         const results = await teams.getNotAssignedPE()
         res.status(200).json(results)
     } catch (error) {

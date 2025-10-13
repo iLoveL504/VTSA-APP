@@ -15,8 +15,8 @@ return (
       user === "Project Manager" ? <AdminMenu /> :
       user === "Project Engineer" ? <ProjectEngineerMenu /> :
       user === "Foreman" ? <ForemanMenu /> :
-      user === "Technician" ? <InstallerMenu /> :
-      user === "PMS Manager" ? <PMSCoordinatorMenu /> :
+      user === "Installer" || user === "Skilled Installer" ? <InstallerMenu /> :
+      user === "PMS Coordinator" ? <PMSCoordinatorMenu /> :
       user === "PMS Technician" ? <PMSTechnicianMenu /> :
       <AdminMenu/>
     }

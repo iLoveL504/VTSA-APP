@@ -3,14 +3,14 @@ import { useSharedSocket } from '../../Context/SocketContext.js';
 import { useStoreState } from 'easy-peasy';
 import '../../css/ProjectAssignment.css';
 
-const ProjectAssignment = ({teamsByGroup}) => {
+const ProjectAssignment = () => {
     const forecastSocket = useSharedSocket()
     const forecastData = useStoreState(state => state.forecastData)
     const teamsNoProject = useStoreState(state => state.teamsNoProject)
     const tentativeProjectTeams = useStoreState(state => state.tentativeProjectTeams)
     const [selectedProject, setSelectedProject] = useState({})
     const [activeRoleTab, setActiveRoleTab] = useState('all')
-
+    console.log(import.meta.env.VITE_BECKEND_URL)
 // Filter personnel based on active tab
     const filteredPersonnel = teamsNoProject.concat(forecastData).filter(person => {
     if (activeRoleTab === 'all') return true
@@ -53,7 +53,7 @@ const ProjectAssignment = ({teamsByGroup}) => {
         console.log(teamsNoProject.concat(forecastData))
         forecastSocket.emit('forecast_team', selectedProject.installation_start_date.split("T")[0])
         
-    }, [selectedProject, teamsByGroup, forecastData, forecastSocket, teamsNoProject])
+    }, [selectedProject, forecastSocket])
 
     const projectOnClick = (project) => {
     

@@ -1,14 +1,20 @@
 import React from 'react'
 import Project from './Project'
 import useAxiosFetch from '../../hooks/useAxiosFetch'
+
 import { Grid } from 'ldrs/react'
 
 const ProjectList = () => {
 
   const backendURL = import.meta.env.VITE_BACKEND_URL || 'http://localhost:4000'
   const empId = sessionStorage.getItem('id')
+  const role = sessionStorage.getItem('roles')
+  const filter = {
+    role
+  }
+  console.log(filter)
   const {data: projects} = useAxiosFetch(`${backendURL}/api/projects`)
-  const {data: designatedProject} = useAxiosFetch(`${backendURL}/api/employees/${empId}/designated-project`)
+  const {data: designatedProject} = useAxiosFetch(`${backendURL}/api/employees/${empId}/designated-project`, filter)
   // const [lowRole, setLowRole] = useState(true)
   // console.log(projects)
   // useEffect(() => {

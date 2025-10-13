@@ -1,7 +1,7 @@
 import {useState, useEffect} from 'react'
 import axios from 'axios'
 
-const useAxiosFetch = (dataUrl) => {
+const useAxiosFetch = (dataUrl, params = {}) => {
     const [data, setData] = useState([])
     const [fetchError, setFetchError] = useState(null)
     const [isLoading, setIsLoading] = useState(true)
@@ -15,7 +15,8 @@ const useAxiosFetch = (dataUrl) => {
             setIsLoading(true)
             try{
                 const response = await axios.get(dataUrl,{
-                    signal: controller.signal
+                    signal: controller.signal,
+                    params
                 })
                 if(isMounted){
                     setData(response.data)

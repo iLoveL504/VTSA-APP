@@ -3,7 +3,6 @@ import { useNavigate } from 'react-router-dom';
 import { useStoreState } from 'easy-peasy';
 import MyGanttComponent from "../outComponent/GANTT_CHART/GanttChart.jsx";
 import '../css/Dashboard.css'
-import { useSharedSocket } from '../Context/SocketContext.js';
 
 const Dashboard = () => {
   const navigate = useNavigate();
@@ -11,7 +10,6 @@ const Dashboard = () => {
   const employees = useStoreState(state => state.employees);
   const role = sessionStorage.getItem('roles');
   const userId = sessionStorage.getItem('user_id'); // Assuming user ID is stored
-  const forecastSocket = useSharedSocket()
  
 
   // Get projects assigned to the current project engineer
@@ -317,11 +315,6 @@ const Dashboard = () => {
         <h1>Dashboard</h1>
 
         <p>Welcome back! Here's what's happening today.</p>
-         <button onClick={() => {
-          forecastSocket.emit("test_db_update", 'jii')
-        }}>
-            Test Emit
-        </button>
 
          
       </div>

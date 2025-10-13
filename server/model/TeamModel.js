@@ -100,12 +100,20 @@ class TeamModel {
 
     static async getNotAssignedPE() {
         const [result] = await pool.query(`
-            SELECT * FROM employees
-            WHERE job = 'Project Engineer'
-            AND employee_id NOT IN (
-            SELECT project_engineer_id FROM teams WHERE project_engineer_id IS NOT NULL
-            )
+	select * from employees where employee_id in (
+			select  pm.project_engineer_id
+            from project_manpower pm 
+            left join employees pe on pm.project_engineer_id = pe.employee_id
+            left join employees tnc on pm.tnc_tech_id = tnc.employee_id
+            left join teams t on pm.team_id = t.team_id
+            left join projects p on pm.project_id = p.id
+            left join team_members tm on t.team_id = tm.foreman_id
+            left join employees e on e.employee_id = tm.emp_id where p.project_end_date < curdate()
+    ) and job = 'Project Engineer';
         `);
+
+
+        console.log(result)
         return result;
     }
 
