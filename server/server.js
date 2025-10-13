@@ -1,5 +1,5 @@
 import dotenvFlow from "dotenv-flow";
-dotenvFlow.config();
+dotenvFlow.config({ debug: true });
 console.log('backend url', process.env.VITE_BACKEND_URL)
 console.log('some token', process.env.ACCESS_TOKEN_SECRET)
 if (process.env.NODE_ENV !== "production") {
@@ -41,7 +41,7 @@ const io = new Server(server, {
 });
 export { io };
 console.log("Socket.io allowed origins:", process.env.CORS_ORIGIN);
-
+console.log('db host', process.env.MYSQL_HOST)
 
 // Middleware
 app.use(cors(corsOptions));
