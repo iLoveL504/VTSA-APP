@@ -9,14 +9,11 @@ const Dashboard = () => {
   const navigate = useNavigate();
   const projects = useStoreState(state => state.projects);
   const employees = useStoreState(state => state.employees);
-  const test = useStoreState(state => state.test);
   const role = sessionStorage.getItem('roles');
   const userId = sessionStorage.getItem('user_id'); // Assuming user ID is stored
   const forecastSocket = useSharedSocket()
  
-  useEffect(() => {
-    console.log(test)
-  }, [test])
+
   // Get projects assigned to the current project engineer
   const getAssignedProjects = () => {
     if (role !== 'Project Engineer') return [];
@@ -325,11 +322,7 @@ const Dashboard = () => {
         }}>
             Test Emit
         </button>
-        <ul>
-          {test.map(t => (
-            <li>{t.name}</li>
-          ))}
-        </ul>
+
          
       </div>
 

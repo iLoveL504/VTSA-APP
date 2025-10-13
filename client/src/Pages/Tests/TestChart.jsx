@@ -138,7 +138,7 @@ const getTaskBarStyle = (task) => {
             valuesArray = values.elements
             const payload = {id: 801, tasks: valuesArray}
             console.log(payload)
-            const response = await Axios.post(`/projects/schedule/${Number(projId)}`, payload);
+            const response = await Axios.post(`/api/projects/schedule/${Number(projId)}`, payload);
             if (response.data?.success) {
                 alert(response.data.message); // "Schedule saved successfully!"
             } else {

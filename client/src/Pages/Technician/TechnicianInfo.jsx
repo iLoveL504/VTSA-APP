@@ -21,7 +21,7 @@ const TechnicianInfo = () => {
     const [saveStatus, setSaveStatus] = useState('')
     const [formData, setFormData] = useState({})
     const [empInfo, setEmpInfo] = useState({})
-    const {data: teamInfo, isLoading: teamIsLoading} = useAxiosFetch(`${backendURL}/teams/team-designation/${empId}`) 
+    const {data: teamInfo, isLoading: teamIsLoading} = useAxiosFetch(`${backendURL}/api/teams/team-designation/${empId}`) 
     const teamDesignation = teamInfo[0]
 
     useEffect(() => {
@@ -69,7 +69,7 @@ const TechnicianInfo = () => {
 
     const handleSave = async () => {
         try{
-            await Axios.put(`/employees/${empId}`, formData)
+            await Axios.put(`/api/employees/${empId}`, formData)
             setSaveStatus('success')
             setIsEditing(false)
             handleClick()

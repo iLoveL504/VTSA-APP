@@ -51,7 +51,7 @@ const PreInspection_Checklist = () => {
     const fetchChecklist = async () => {
       try {
         const { data } = await Axios.get(
-          `${backendURL}/projects/checklist-preinspection/${projId}`
+          `/api/projects/checklist-preinspection/${projId}`
         );
         setChecklistData(
           data.items_json
@@ -122,7 +122,7 @@ const PreInspection_Checklist = () => {
     e.preventDefault();
     try {
       await Axios.put(
-        `${backendURL}/projects/checklist-preinspection/${projId}`,
+        `/api/projects/checklist-preinspection/${projId}`,
         { items_json: JSON.stringify(checklistData) }
       );
       alert("Pre-Inspection Checklist saved successfully!");

@@ -26,7 +26,7 @@ const useUpdateProjects = (projectIDs) => {
                         //console.log(projectIDs[i])
                         //schedule/${projectIDs[i]}
                         //console.log(projectIDs[i].id)
-                        const response = await Axios.get(`${backendURL}/projects/schedule/${projectIDs[i].id}`)
+                        const response = await Axios.get(`/api/projects/schedule/${projectIDs[i].id}`)
                      
                         if(!response) return
                         //console.log(response)
@@ -52,7 +52,7 @@ const useUpdateProjects = (projectIDs) => {
                     } 
                     // console.log('hihidsafidsahfi')
                     // console.log(payload )
-                    const response = await Axios.put(`${backendURL}/projects/update-status`, payload)
+                    const response = await Axios.put(`/api/projects/update-status`, payload)
                     if (response.data.success === true){
                         // console.log('hi')
                         setUpdateIsLoading(false)

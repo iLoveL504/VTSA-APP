@@ -43,7 +43,7 @@ const ProjectReport = () => {
     });
 
     try {
-      await Axios.post(`/projects/report/${projId}`, formData, {
+      await Axios.post(`/api/projects/report/${projId}`, formData, {
         headers: {
           "Content-type": "multipart/form-data"
         }

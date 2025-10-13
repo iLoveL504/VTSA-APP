@@ -41,7 +41,7 @@ const PMSPage = () => {
   ]);
 
   // fetch project info
-  const { data: project, isLoading } = useAxiosFetch(`${backendURL}/projects/${projId}`);
+  const { data: project, isLoading } = useAxiosFetch(`${backendURL}/api/projects/${projId}`);
 
   useEffect(() => {
     if (project) {
@@ -61,7 +61,7 @@ const PMSPage = () => {
     e.preventDefault();
     setSaving(true);
     try {
-      await Axios.put(`${backendURL}/projects/${projId}`, formData);
+      await Axios.put(`/api/projects/${projId}`, formData);
       alert('PMS information updated successfully!');
       navigate('/pms');
     } catch (err) {

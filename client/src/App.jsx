@@ -36,13 +36,13 @@ function App() {
   const backendURL = import.meta.env.VITE_BACKEND_URL || 'https://vtsa-app-production.up.railway.app';
   //console.log('https://vtsa-app-production.up.railway.app')
 const { data: empData } =
-  useAxiosFetch(`${backendURL}/employees`);
+  useAxiosFetch(`${backendURL}/api/employees`);
 
 const { data: projData } =
-  useAxiosFetch(`${backendURL}/projects`);
+  useAxiosFetch(`${backendURL}/api/projects`);
 
 const { data: notifData } =
-  useAxiosFetch(`${backendURL}/notifications/${sessionStorage.getItem('id')}`);
+  useAxiosFetch(`${backendURL}/api/notifications/${sessionStorage.getItem('id')}`);
 
   //const isLoggedIn = useStoreState(state => state.isLoggedIn)
   const setEmployees = useStoreActions(actions => actions.setEmployees)

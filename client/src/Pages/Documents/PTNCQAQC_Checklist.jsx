@@ -116,7 +116,7 @@ const QAQC_Checklist = () => {
 useEffect(() => {
   const fetchChecklist = async () => {
     try {
-      const response = await Axios.get(`${backendURL}/projects/checklist-ptnc/${projId}`);
+      const response = await Axios.get(`/api/projects/checklist-ptnc/${projId}`);
       const fetched = response.data.data; // ✅ correct level
 
       console.log("Fetched checklist:", fetched);
@@ -175,7 +175,7 @@ useEffect(() => {
         items: checklistData.items
       };
       console.log(payload)
-      await Axios.put(`${backendURL}/projects/checklist-ptnc/${projId}`, payload);
+      await Axios.put(`/api/projects/checklist-ptnc/${projId}`, payload);
       alert('Checklist saved successfully!');
     } catch (error) {
       console.error('Error saving checklist:', error);

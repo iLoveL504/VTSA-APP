@@ -45,7 +45,7 @@ export default function KickOffChecklist() {
   useEffect(() => {
     const fetchChecklist = async () => {
       try {
-        const res = await Axios.get(`${backendURL}/projects/kickoff/${projId}`);
+        const res = await Axios.get(`/api/projects/kickoff/${projId}`);
         if (res.data.success && res.data.data) {
           console.log(res)
           const d = res.data.data;
@@ -120,7 +120,7 @@ export default function KickOffChecklist() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const res = await Axios.put(`${backendURL}/projects/kickoff/${projId}`, formData);
+      const res = await Axios.put(`/api/projects/kickoff/${projId}`, formData);
       console.log("Saved:", res.data);
       alert("Form saved successfully!");
     } catch (err) {

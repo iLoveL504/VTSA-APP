@@ -49,12 +49,12 @@ app.use(express.json());
 app.use(logDate);
 
 // API routes
-app.use('/employees', employeeRouter);
-app.use('/auth', authRouter);
-app.use('/projects', projectRouter);
-app.use('/teams', teamsRouter);
-app.use('/notifications', notificationsRouter);
-app.use('/pms', pmsRouter);
+app.use('/api/employees', employeeRouter);
+app.use('/api/auth', authRouter);
+app.use('/api/projects', projectRouter);
+app.use('/api/teams', teamsRouter);
+app.use('/api/notifications', notificationsRouter);
+app.use('/api/pms', pmsRouter);
 
 // Serve static frontend files
 const __filename = fileURLToPath(import.meta.url);
@@ -75,9 +75,10 @@ app.use((err, req, res, next) => {
   res.status(500).json({ message: "Internal Server Error" });
 });
 
-// Socket.io connection handling
+// Socket.io connection handling 
 forecastMenNameSpace(io.of("/forecast"))
-
+console.log('hih')
 // Start server
 const PORT = process.env.PORT || 4000;
+
 server.listen(PORT, () => console.log(`Server running on port ${PORT}`));

@@ -6,7 +6,7 @@ import ProjectAssignment from './ProjectAssignment';
 
 const Teams = () => {
   const backendURL = import.meta.env.VITE_BACKENDURL || 'http://localhost:4000'
-  const { data: teamData, isLoading: teamIsLoading, error } = useAxiosFetch(`${backendURL}/teams`)
+  const { data: teamData, isLoading: teamIsLoading, error } = useAxiosFetch(`${backendURL}/api/teams`)
   const [activePage, setActivePage] = useState('installation')
 
   const teamsByGroup = useMemo(() => {

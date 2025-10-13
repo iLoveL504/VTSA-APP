@@ -16,7 +16,7 @@ const DailyReportDetails = () => {
 
   // Fetch the specific daily report
   const { data: reportData, fetchError } = useAxiosFetch(
-    `${backendURL}/projects/report/${projId}`
+    `${backendURL}/api/projects/report/${projId}`
   );
 
   useEffect(() => {

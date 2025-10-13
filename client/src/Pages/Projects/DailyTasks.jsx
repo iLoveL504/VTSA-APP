@@ -9,7 +9,7 @@ const DailyTasks = () => {
     const {projId} = useParams()
     console.log(projId)
 
-    const {data: fetchedData, isLoading: isLoading} = useAxiosFetch(`${backendURL}/projects/schedule/${projId}`)
+    const {data: fetchedData, isLoading: isLoading} = useAxiosFetch(`${backendURL}/api/projects/schedule/${projId}`)
     // const handleReportClick = () => {
     //     navigate(`report`)
     // }

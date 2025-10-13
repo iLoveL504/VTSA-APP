@@ -7,8 +7,8 @@ const ProjectList = () => {
 
   const backendURL = import.meta.env.VITE_BACKENDURL || 'http://localhost:4000'
   const empId = sessionStorage.getItem('id')
-  const {data: projects} = useAxiosFetch(`${backendURL}/projects`)
-  const {data: designatedProject} = useAxiosFetch(`${backendURL}/employees/${empId}/designated-project`)
+  const {data: projects} = useAxiosFetch(`${backendURL}/api/projects`)
+  const {data: designatedProject} = useAxiosFetch(`${backendURL}/api/employees/${empId}/designated-project`)
   // const [lowRole, setLowRole] = useState(true)
   // console.log(projects)
   // useEffect(() => {

@@ -16,7 +16,7 @@ const AccomplishmentReport = () => {
     const [data, setData] = useState([]);
     const [guideRail, setGuideRail] = useState([]);
     const [additionalSections, setAdditionalSections] = useState([]);
-    const {data: accomplishments, isLoading: accomplishmentsIsLoading} = useAxiosFetch(`${backendURL}/projects/schedule/${projId}`)
+    const {data: accomplishments, isLoading: accomplishmentsIsLoading} = useAxiosFetch(`${backendURL}/api/projects/schedule/${projId}`)
     const [totalContractAmount, setTotalContractAmount] = useState(884000);
     
 useEffect(() => {

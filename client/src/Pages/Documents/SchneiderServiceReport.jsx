@@ -4,7 +4,7 @@ import { useParams } from "react-router-dom";
 import '../../css/SchneiderServiceReport.css'
 
 const SchneiderServiceReport = () => {
-  const backendURL = import.meta.env.VITE_BACKENDURL || "http://localhost:4000";
+ // const backendURL = import.meta.env.VITE_BACKENDURL || "http://localhost:4000";
   const { projId } = useParams();
   const [saving, setSaving] = useState(false);
 
@@ -133,7 +133,7 @@ const SchneiderServiceReport = () => {
     e.preventDefault();
     setSaving(true);
     try {
-      await Axios.post(`${backendURL}/projects/checklist-schneider/${projId}`, {
+      await Axios.post(`/api/projects/checklist-schneider/${projId}`, {
         items_json: JSON.stringify(form),
       });
       alert("Service report submitted successfully.");

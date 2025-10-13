@@ -79,7 +79,7 @@ const AssignTeam = () => {
     
     // Submit the selected team to the project
     alert(`Team ${selectedTeam.foreman_name} assigned to project ${foundProject.lift_name}`);
-    const response = await Axios.post('/teams/assign', payload)
+    const response = await Axios.post('/api/teams/assign', payload)
         if (response.data?.success) {
             alert('Team Assigned')
             setTimeout(() => {

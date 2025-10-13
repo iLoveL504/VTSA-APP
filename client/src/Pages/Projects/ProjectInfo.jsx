@@ -23,12 +23,12 @@ const ProjectInfo = () => {
     const { projId } = useParams()
     const numId = Number(projId)
     const projects = useStoreState(state => state.projects)
-    const {data: proj, isLoading: projIsLoading} = useAxiosFetch(`${backendURL}/projects/${projId}`)
+    const {data: proj, isLoading: projIsLoading} = useAxiosFetch(`${backendURL}/api/projects/${projId}`)
     const [isEditing, setIsEditing] = useState(false)
     const [formData, setFormData] = useState({})
     const {currentTask, currentParentTask, isLoading: currentIsLoading, fetchError: tasksFetchError, projectExists, fetchedData, projectCompleted} = useFindProjectTask(projId)
     const isProjectsReady = Array.isArray(projects) && projects.length > 0;
-    const fetchUrl = proj && isProjectsReady ? `${backendURL}/teams/${proj.id}` : null;
+    const fetchUrl = proj && isProjectsReady ? `${backendURL}/api/teams/${proj.id}` : null;
     const {data: teamInfo, isLoading: teamIsLoading} = useAxiosFetch(fetchUrl);
     
     // Get user role from session storage with debugging
@@ -84,7 +84,7 @@ const ProjectInfo = () => {
     const handleSave = async () => {
         try {
             setSaveStatus('saving')
-            await Axios.put(`/projects/${numId}`, values)
+            await Axios.put(`/api/projects/${numId}`, values)
             setSaveStatus('success')
             setTimeout(() => setSaveStatus(''), 2000)
             setIsEditing(false)

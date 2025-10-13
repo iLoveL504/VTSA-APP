@@ -12,7 +12,7 @@ const ScheduleProjects = ({projId, allTaskDates}) => {
   const handleClick = async () => {
     console.log(payload)
     window.location.reload()
-    await Axios.post(`/projects/schedule/${projId}`, payload)
+    await Axios.post(`/api/projects/schedule/${projId}`, payload)
   }
 
   return (

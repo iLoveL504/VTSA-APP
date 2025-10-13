@@ -189,7 +189,7 @@ const CreateProject = () => {
 
     try {
       console.log(payload);
-      const response = await Axios.post("/projects", payload);
+      const response = await Axios.post("/api/projects", payload);
         if (response.data?.success) {
             setShowSuccess(true);
             setIsSubmitting(false);

@@ -10,7 +10,7 @@ const useFindProjectTask = (id) => {
     const [currentTask, setCurrentTask] = useState(null)
     const [currentParentTask, setCurrentParentTask] = useState(null)
     const [projectExists, setProjectExists] = useState('loading')
-    const {data: fetchedData, fetchError: fetchError, isLoading: isLoading} = useAxiosFetch(`${backendURL}/projects/schedule/${id}`)
+    const {data: fetchedData, fetchError: fetchError, isLoading: isLoading} = useAxiosFetch(`${backendURL}/api/projects/schedule/${id}`)
     const [projectCompleted, setProjectCompleted] = useState(false)
 
     useEffect(() => {

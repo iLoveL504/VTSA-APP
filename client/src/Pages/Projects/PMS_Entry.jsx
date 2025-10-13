@@ -4,7 +4,7 @@ import { Axios } from "../../api/axios";
 
 const PMS_Entry = () => {
   const { projId } = useParams();
-  const backendURL = import.meta.env.VITE_BACKENDURL || "http://localhost:4000";
+  //const backendURL = import.meta.env.VITE_BACKENDURL || "http://localhost:4000";
 
   const [contractType, setContractType] = useState("");
   const [saving, setSaving] = useState(false);
@@ -25,7 +25,7 @@ const PMS_Entry = () => {
         contract_type: contractType,
       };
       console.log(payload)
-      const response =  await Axios.put(`${backendURL}/pms/${projId}`, payload);
+      const response =  await Axios.put(`/api/pms/${projId}`, payload);
       console.log(response)
       setStatusMsg("Preventive Maintenance Service entry saved successfully!");
     } catch (err) {

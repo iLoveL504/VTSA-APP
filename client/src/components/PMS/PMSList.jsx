@@ -9,7 +9,7 @@ const PMSList = ({ updateIsLoading }) => {
   const navigate = useNavigate();
 
   const { data: pmsProjects, isLoading } = useAxiosFetch(
-    `${backendURL}/projects` // ← backend route should return projects where contract_type IS NOT NULL
+    `${backendURL}/api/projects` // ← backend route should return projects where contract_type IS NOT NULL
   );
 
   if (isLoading || updateIsLoading) {

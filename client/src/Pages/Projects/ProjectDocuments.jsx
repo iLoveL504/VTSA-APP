@@ -13,7 +13,7 @@ const ProjectDocuments = () => {
   const [selectedDate, setSelectedDate] = useState('');
   
   // Fetch actual daily reports data from API
-  const {data: reportsData, fetchError: fetchReportError, isLoading: reportsIsLoading} = useAxiosFetch(`${backendURL}/projects/report/${projId}`) // Adjust endpoint as needed
+  const {data: reportsData, fetchError: fetchReportError, isLoading: reportsIsLoading} = useAxiosFetch(`${backendURL}/api/projects/report/${projId}`) // Adjust endpoint as needed
   
   // Use actual data from API or fallback to mock data
   const dailyReports = reportsData || [

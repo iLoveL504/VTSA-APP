@@ -1,7 +1,8 @@
 import { createStore, action, thunk, computed } from "easy-peasy"
 import {Axios} from '../api/axios.js'
+
 const d = new Date()
-// const date = d.toISOString().split('T')[0]
+
 const addDuration = (start, days) => {
     const date = new Date(start)
     date.setDate(date.getDate() + days)
@@ -9,6 +10,7 @@ const addDuration = (start, days) => {
 }
 
 const modifiedDate = addDuration(d, 0)
+
 export default createStore({
     date: modifiedDate,
     user: { username: null, roles: null },
@@ -22,8 +24,8 @@ export default createStore({
     }),
     employees: [],
     setEmployees: action((state, payload) => {
-        state.employees = payload
-        state.searchResults = payload
+        state.employees = Array.isArray(payload) ? payload : []
+        state.searchResults = Array.isArray(payload) ? payload : []
     }),
     forecastData: [],
     setForecastData: action((state, payload) => {
@@ -42,7 +44,7 @@ export default createStore({
         state.notifications = payload
     }),
     addNotificationToState: action((state, payload) => {
-    state.notifications.push(payload)
+        state.notifications.push(payload)
     }),
     isLoading: false,
     setIsLoading: action((state, payload) => {
@@ -56,34 +58,43 @@ export default createStore({
     setSearchEmployee: action((state, payload) => {
         state.searchEmployee = payload
     }),
+    // FIXED: Add array validation to computed property
     sortResults: computed((state) => {
-        const sortedSearch = state.employees.filter(employee => (employee.first_name.toLowerCase())
-            .includes(state.searchEmployee.toLowerCase()) || (employee.last_name.toLowerCase())
-            .includes(state.searchEmployee.toLowerCase()))
+        if (!Array.isArray(state.employees)) {
+            return []
+        }
+        const sortedSearch = state.employees.filter(employee => 
+            (employee.first_name?.toLowerCase() || '').includes(state.searchEmployee.toLowerCase()) || 
+            (employee.last_name?.toLowerCase() || '').includes(state.searchEmployee.toLowerCase())
+        )
         return sortedSearch
     }),
     searchSetEmployee: thunk((actions, payload, helpers) => {
         const { getState } = helpers;
         const state = getState()
         const id = Number(payload)
+        // Add array check
+        if (!Array.isArray(state.employees)) return null
         const emp = state.employees.find(e => e.employee_id === id);
         return emp
     }),
     projects: [],
     setProjects: action((state, payload) => {
-        state.projects = payload
+        state.projects = Array.isArray(payload) ? payload : []
     }),
     searchSetProject: thunk((_, payload, helpers) => {
         const { getState } = helpers;
         const state = getState()
         const pId = Number(payload)
         
+        // Add array check
+        if (!Array.isArray(state.projects)) return null
         const proj = state.projects.find(p => p.id === pId);
         console.log(proj)
         return proj
     }),
     addNotification: thunk(async () => {
-        await Axios.post('/notifications', {notification: 'created'})
-        await Axios.post('/notifications/distribute', {jobs: 'manager'})
+        await Axios.post('/api/notifications', {notification: 'created'}) // Fixed endpoint
+        await Axios.post('/api/notifications/distribute', {jobs: 'manager'}) // Fixed endpoint
     })
 })

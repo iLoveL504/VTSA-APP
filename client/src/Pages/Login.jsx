@@ -62,7 +62,7 @@ const Login = () => {
         } 
             try{
               console.log('firing')
-                const result = await Axios.post("/auth",
+                const result = await Axios.post("/api/auth",
                     JSON.stringify({ user, pwd }),
                     {
                         headers: { 'Content-Type': 'application/json'},

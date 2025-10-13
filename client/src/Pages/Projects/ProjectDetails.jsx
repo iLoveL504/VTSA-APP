@@ -64,7 +64,6 @@ const ProjectDetails = ({
     console.log(projectExists)
     const {projId} = useParams()
     const [showScheduleModal, setShowScheduleModal] = useState(false)
-
     const handleTaskComplete =  (task) => async () => {
         try {
             console.log(fetchedData)
@@ -84,7 +83,7 @@ const ProjectDetails = ({
                 taskUpdates,
                 percentCompleted
             }
-            await Axios.put(`/projects/schedule/${projId}`, payload)
+            await Axios.put(`/api/projects/schedule/${projId}`, payload)
             //window.location.reload()
         } catch (e) {
             console.log(e)
