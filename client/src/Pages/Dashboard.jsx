@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useStoreState } from 'easy-peasy';
 import MyGanttComponent from "../outComponent/GANTT_CHART/GanttChart.jsx";
