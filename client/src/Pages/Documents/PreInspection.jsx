@@ -4,7 +4,7 @@ import { useParams } from "react-router-dom";
 import '../../css/PreInspection_Checklist.css'
 
 const PreInspection_Checklist = () => {
-  const backendURL = import.meta.env.VITE_BACKENDURL || "http://localhost:4000";
+  const backendURL = import.meta.env.VITE_BACKEND_URL || "http://localhost:4000";
   const { projId } = useParams();
 
   const [loading, setLoading] = useState(true);

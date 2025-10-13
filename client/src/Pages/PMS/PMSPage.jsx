@@ -6,7 +6,7 @@ import { Grid } from 'ldrs/react';
 import '../../css/PMSPage.css';
 
 const PMSPage = () => {
-  const backendURL = import.meta.env.VITE_BACKENDURL || 'http://localhost:4000';
+  const backendURL = import.meta.env.VITE_BACKEND_URL || 'http://localhost:4000';
   const { projId } = useParams();
   const navigate = useNavigate();
   const [saving, setSaving] = useState(false);

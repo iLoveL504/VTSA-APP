@@ -3,7 +3,7 @@ import { Axios } from '../../api/axios'
 import { useParams } from 'react-router-dom';
 
 const QAQC_Checklist = () => {
-  const backendURL = import.meta.env.VITE_BACKENDURL || 'http://localhost:4000'
+  const backendURL = import.meta.env.VITE_BACKEND_URL || 'http://localhost:4000'
   const {projId} = useParams()
   console.log(projId)
     const [loading, setLoading] = useState(true);

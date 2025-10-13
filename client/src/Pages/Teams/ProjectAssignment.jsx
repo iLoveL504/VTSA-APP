@@ -47,8 +47,9 @@ const ProjectAssignment = ({teamsByGroup}) => {
         }, [forecastData, teamsNoProject, tentativeProjectTeams])
 
     useEffect(() => {
-        if (!selectedProject.installation_start_date) return 
+        if (!forecastSocket || !selectedProject.installation_start_date) return 
         console.log(selectedProject.id)
+
         console.log(teamsNoProject.concat(forecastData))
         forecastSocket.emit('forecast_team', selectedProject.installation_start_date.split("T")[0])
         

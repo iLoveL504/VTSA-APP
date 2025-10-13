@@ -5,7 +5,7 @@ import useAxiosFetch from '../../hooks/useAxiosFetch';
 import '../../css/PMSMenu.css'; // same table layout
 
 const PMSList = ({ updateIsLoading }) => {
-  const backendURL = import.meta.env.VITE_BACKENDURL || 'http://localhost:4000';
+  const backendURL = import.meta.env.VITE_BACKEND_URL || 'http://localhost:4000';
   const navigate = useNavigate();
 
   const { data: pmsProjects, isLoading } = useAxiosFetch(

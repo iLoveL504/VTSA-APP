@@ -8,7 +8,7 @@ import { useParams } from 'react-router-dom'
 
 const AccomplishmentReport = () => {
     const { projId } = useParams()
-    const backendURL = import.meta.env.VITE_BACKENDURL || 'http://localhost:4000'
+    const backendURL = import.meta.env.VITE_BACKEND_URL || 'http://localhost:4000'
     const [editMode, setEditMode] = useState(false);
     const [showCharts, setShowCharts] = useState(false);
 
