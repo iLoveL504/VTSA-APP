@@ -10,7 +10,18 @@ export const SocketProvider = ({ children }) => {
   const forecastSocket = useSocket("/forecast", {
     forecast_done: (data) => setForecastData(data.map(d => ({ ...d, group: 'forecasted' }))),
     no_project_done: (data) => setTeamNoProject(data.map(d => ({ ...d, group: 'no-project' }))),
-    tentative_projects_done: (data) => setTentativeProjectTeams(data),
+    tentative_projects_done: (data) => {
+        console.log(data)
+        setTentativeProjectTeams(data)
+    },
+    insert_member_done: () => {
+        console.log('done inserting')
+        //some emit callback here forecastSocket.emit('whatever')
+    },
+    save_done: () => {
+        console.log('done saving')
+        //some emit callback here forecastSocket.emit('whatever')
+    }
   })
 
   return (

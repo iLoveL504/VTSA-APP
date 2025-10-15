@@ -643,3 +643,29 @@
 .MuiMenuItem-root.Mui-selected:hover {
   background-color: #25467a !important;
 }
+
+.searchable-dropdown {
+  animation: none !important;
+}
+
+.searchable-dropdown input {
+  animation: none !important;
+}
+
+.dropdown-options {
+  animation: none !important;
+}
+
+/* Specifically target the dropdown container to remove staggered animations */
+.Content.CreateProject form .searchable-dropdown {
+  animation: none !important;
+}
+
+/* Remove the fadeInUp animation for dropdowns */
+.Content.CreateProject form .searchable-dropdown,
+.Content.CreateProject form .searchable-dropdown input,
+.Content.CreateProject form .searchable-dropdown .dropdown-options {
+  animation: none !important;
+  transform: none !important;
+  opacity: 1 !important;
+}

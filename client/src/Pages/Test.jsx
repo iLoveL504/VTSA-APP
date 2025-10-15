@@ -89,12 +89,16 @@ const Test1 = () => {
     setIsCalendarDays(e.target.value)
   };
 
-  useEffect(() => {
-    const newLL = new LinkedList(testDate, isCalendarDays); 
-    listArray.forEach(task => newLL.insertLast(task));
-    setLinkedList(newLL);
-    console.log(isCalendarDays)
-  }, [isCalendarDays, listArray]);
+// 💡 Only rebuild linked list when schedule type changes
+useEffect(() => {
+  setLinkedList((prevLL) => {
+    const currentTasks = prevLL.toArray();
+    const newLL = new LinkedList(testDate, isCalendarDays);
+    currentTasks.forEach(task => newLL.insertLast(task));
+    return newLL;
+  });
+}, [isCalendarDays]);
+
 
   const handleAddTask = (position) => {
     if (!selectedTaskID) {

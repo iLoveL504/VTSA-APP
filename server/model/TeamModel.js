@@ -44,19 +44,20 @@ class TeamModel {
     }
 
     static async getTeamPerId(id) {
+        console.log('sfad',id)
         if (id === undefined || id === null) {
             throw new Error('ID parameter is required');
         }
 
         const [results] = await pool.query(
-            `SELECT t.team_id, t.Foreman, f.employee_id AS foreman_id,
-                    CONCAT(e.first_name, ' ', e.last_name) AS full_name,
-                    e.employee_id, e.job, t.project_id, p.lift_name, p.created_at, p.manufacturing_end_date
-             FROM teams t
-             LEFT JOIN employees f ON f.employee_id = t.foreman_id
-             LEFT JOIN team_members tm ON tm.foreman_id = t.team_id
-             LEFT JOIN employees e ON e.employee_id = tm.emp_id
-             LEFT JOIN projects p ON p.id = t.project_id
+            `select pm.id, pm.project_engineer_id, pe.username as \`pe_username\`, pm.tnc_tech_id as 'tnc_id', tnc.username as \`tnc_username\`, pm.team_id, t.Foreman, t.foreman_id, tm.emp_id, e.username as \`e_username\`, e.job , p.id as \`project_id\`, p.lift_name, p.status, p.installation_start_date as \`operations_start_date\`, p.project_end_date
+            from project_manpower pm 
+            left join employees pe on pm.project_engineer_id = pe.employee_id
+            left join employees tnc on pm.tnc_tech_id = tnc.employee_id
+            left join teams t on pm.team_id = t.team_id
+            left join projects p on pm.project_id = p.id
+            left join team_members tm on t.team_id = tm.foreman_id
+            left join employees e on e.employee_id = tm.emp_id
              WHERE p.id = ?`,
             [id]
         );
@@ -117,30 +118,9 @@ class TeamModel {
         return result;
     }
 
-static async assignTeam(pe, foreman, members, projId) {
-    await pool.query(
-        `UPDATE teams SET project_engineer_id = ? WHERE foreman_id = ?`,
-        [pe, foreman]
-    );
-
-    await pool.query(
-        `UPDATE teams SET project_id = ? WHERE foreman_id = ?`,
-        [projId, foreman]
-    );
-
-    const [foreman_team_id] = await pool.query(
-        `SELECT team_id FROM teams WHERE foreman_id = ?`,
-        [foreman]
-    );
-
-    const fId = foreman_team_id[0]['team_id'];
-
-    await pool.query(
-        `INSERT INTO team_members (foreman_id, emp_id) VALUES(?, ?)`,
-        [fId, pe]
-    );
-
-    console.log('should be ok');
+static async assignTeam(projId, pe) {
+    await pool.query(`update project_manpower set project_engineer_id = ? where project_id = ?`, [pe, projId])
+    return
 }
 
 }

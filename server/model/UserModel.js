@@ -33,8 +33,8 @@ class UserModel {
                             : role === 'Foreman' ? 't.foreman_id' 
                                 : 'tm.emp_id'
         // Get team info
-        const filterQuery = `
-            select pm.id, pm.project_engineer_id, pe.username as 'pe_username', pm.tnc_tech_id as 'tnc_id', tnc.username as 'tnc_username', pm.team_id, t.Foreman, t.foreman_id, tm.emp_id, e.username as 'e_username', e.job , p.id as 'project_id', p.lift_name, p.status, p.manufacturing_end_date as 'operations_start_date', p.project_end_date
+        const filterQuery = role !== 'Project Engineer' ? `
+            select p.id as 'project_id'
             from project_manpower pm 
             left join employees pe on pm.project_engineer_id = pe.employee_id
             left join employees tnc on pm.tnc_tech_id = tnc.employee_id
@@ -42,22 +42,29 @@ class UserModel {
             left join projects p on pm.project_id = p.id
             left join team_members tm on t.team_id = tm.foreman_id
             left join employees e on e.employee_id = tm.emp_id where ${filter} = ?
-        `
+        ` : `select project_id from project_manpower where project_engineer_id = ?`
 
         const [result] = await pool.query(
             filterQuery
         , [id]);
         if (!result.length) return result;
-
-        const projectId = result[0].project_id;
-
+        const ids = result.map(r => r.project_id)
+        const projectId = [...new Set(ids)]
+         
         // Get project info
-        const [project] = await pool.query(
-            `SELECT * FROM projects WHERE id = ?`,
-            [projectId]
-        );
 
-        return project;
+        const projectsPromises = projectId.map(p => {
+            return pool.query(`SELECT * FROM projects WHERE id = ?`, [p])
+        })
+
+        const projectResults = await Promise.all(projectsPromises);
+
+        // Extract only the rows from each query result
+        const projects = projectResults.map(([rows]) => rows[0]);
+
+        console.log(projects);
+
+        return projects;
     }
 }
 

@@ -21,7 +21,9 @@ const Project = ({project}) => {
   return (
     <div className='ProjectInfo' onClick={handleClick}>
       {project.lift_name}
+      <p>{project.client}</p>
       <p>{new Date(project.created_at).toLocaleDateString("en-GB")}</p>
+      <p>{new Date(project.project_end_date).toLocaleDateString("en-GB")}</p>
         <Box sx={{ width: '100%' }}>
           <p>{project.progress}%</p>
           <LinearProgress variant="determinate" value={project.progress} />          

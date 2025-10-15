@@ -1,10 +1,11 @@
     import React, { useState, useMemo } from 'react';
-    import { useLocation, useParams } from "react-router-dom";
+    import { useLocation, useParams, useNavigate } from "react-router-dom";
 
     import Queue from '../../DataStructs/Queue'
     import { Axios } from '../../api/axios';
 
     const CustomGanttChart = () => {
+        const navigate = useNavigate()
     const {projId} = useParams()
     const location = useLocation()
     console.log(location.state)
@@ -141,6 +142,7 @@ const getTaskBarStyle = (task) => {
             const response = await Axios.post(`/api/projects/schedule/${Number(projId)}`, payload);
             if (response.data?.success) {
                 alert(response.data.message); // "Schedule saved successfully!"
+                navigate(`projects/${projId}`)
             } else {
                 alert("Unexpected server response. Please try again.");
             }

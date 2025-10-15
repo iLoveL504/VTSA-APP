@@ -1,23 +1,26 @@
-import { useMemo, useState } from "react";
+import { useMemo, useState, useEffect } from "react";
 import { Axios } from "../../api/axios.js";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import useFormValidate from "../../hooks/useFormValidate";
 import InputLabel from "@mui/material/InputLabel";
 import MenuItem from "@mui/material/MenuItem";
 import FormHelperText from "@mui/material/FormHelperText";
 import FormControl from "@mui/material/FormControl";
 import Select from "@mui/material/Select";
+import philippines from 'philippines'
 import '../../css/CreateProject.css'
 
   const validate = (values) => {
-  
+
     let errors = {};
 
     // Project & General Information
     if (!values.clientName) errors.clientName = "Client name is required";
     if (!values.liftName) errors.liftName = "Lift name is required";
     if (!values.description) errors.description = "Description is required";
-    if (!values.address) errors.address = "Address is required";
+    if (!values.region) errors.region = "Region is required";
+    if (!values.province) errors.province = "Province is required";
+    if (!values.city) errors.city = "City is required";
     // if (!values.equipmentType) errors.equipmentType = "Equipment type is required";
 
     // Essential Lift Specifications
@@ -103,15 +106,20 @@ const SuccessMessage = ({ isOpen, projectName, onClose }) => {
 };
 
 const CreateProject = () => {
-
   const navigate = useNavigate();
+  const {projId} = useParams()
+
   const [showConfirmation, setShowConfirmation] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  //const [equipmentType, setEquipmentType] = useState('')
-  // const handleChange = (event) => {
-  //   setEquipmentType(event.target.value)
-  // }
+  
+  // State for location dropdowns
+  const [selectedRegion, setSelectedRegion] = useState("");
+  const [selectedProvince, setSelectedProvince] = useState("");
+  const [setSelectedCity] = useState("");
+  const [filteredProvinces, setFilteredProvinces] = useState([]);
+  const [filteredCities, setFilteredCities] = useState([]);
+
   const equipmentTypes = [
     "passenger elevator",
     "residential elevator", 
@@ -129,6 +137,9 @@ const CreateProject = () => {
     description: "",
     address: "",
     equipmentType: "",
+    region: "",
+    province: "",
+    city: "",
     cap: "",
     drive: "",
     doorOperator: "",
@@ -151,8 +162,131 @@ const CreateProject = () => {
     errors,
     handleInputChange,
     handleNumberInputChange,
-    handleBlur,
+    handleBlur
   } = useFormValidate(initialState, validate);
+
+  // Filter provinces based on selected region
+useEffect(() => {
+  if (selectedRegion) {
+    const region = philippines.regions.find(r => r.name === selectedRegion);
+    if (region) {
+      const provs = philippines.provinces.filter(p => p.region === region.key);
+
+      setFilteredProvinces(provs);
+    }
+  } else {
+    setFilteredProvinces([]);
+  }
+}, [selectedRegion]);
+
+
+  // Filter cities based on selected province
+useEffect(() => {
+  if (selectedProvince) {
+    const prov = philippines.provinces.find(p => p.name === selectedProvince);
+    if (prov) {
+      const cits = philippines.cities.filter(c => c.province=== prov.key);
+      setFilteredCities(cits);
+    }
+  } else {
+    setFilteredCities([]);
+  }
+}, [selectedProvince]);
+
+
+  const handleRegionChange = (event) => {
+    const value = event.target.value;
+    setSelectedRegion(value);
+    handleInputChange({ target: { name: 'region', value } });
+
+  };
+
+  const handleProvinceChange = (event) => {
+    const value = event.target.value;
+    setSelectedProvince(value);
+   handleInputChange({ target: { name: 'province', value } });
+
+  };
+
+  const handleCityChange = (event) => {
+    const value = event.target.value;
+    setSelectedCity(value);
+    handleInputChange({ target: { name: 'city', value } });
+
+  };
+
+  // Custom dropdown component for large datasets
+  const SearchableDropdown = ({ 
+    id, 
+    name, 
+    value, 
+    onChange, 
+    options, 
+    placeholder, 
+    error 
+  }) => {
+    const [searchTerm, setSearchTerm] = useState("");
+    const [isOpen, setIsOpen] = useState(false);
+
+    const filteredOptions = options.filter(option =>
+      option.name.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+
+    const handleSelect = (optionValue) => {
+      onChange({ target: { name, value: optionValue } });
+      setSearchTerm("");
+      setIsOpen(false);
+    };
+
+    return (
+      <div className="searchable-dropdown">
+        <input
+          type="text"
+          id={id}
+          name={name}
+          value={isOpen ? searchTerm : value}
+          onChange={(e) => {
+            if (isOpen) {
+              setSearchTerm(e.target.value);
+            } else {
+              onChange(e);
+            }
+          }}
+          onFocus={() => {
+            setIsOpen(true);
+            setSearchTerm("");
+          }}
+          onBlur={() => setTimeout(() => setIsOpen(false), 200)}
+          placeholder={placeholder}
+          className={error ? "error" : ""}
+        />
+        
+        {isOpen && (
+          <div className="dropdown-options">
+            {filteredOptions.slice(0, 5).map((option) => (
+              <div
+                key={option.name}
+                className="dropdown-option"
+                onMouseDown={() => handleSelect(option.name)}
+              >
+                {option.name}
+              </div>
+            ))}
+            {filteredOptions.length > 5 && (
+              <div className="dropdown-more">
+                + {filteredOptions.length - 5} more results...
+              </div>
+            )}
+            {filteredOptions.length === 0 && (
+              <div className="dropdown-no-results">No results found</div>
+            )}
+          </div>
+        )}
+        
+        {error && <p className="error">{error}</p>}
+      </div>
+    );
+  };
 
   // const handleSelectChange = (event) => {
   //   const { name, value } = event.target;
@@ -201,8 +335,7 @@ const CreateProject = () => {
         } else {
             alert("Unexpected server response. Please try again.");
         }
-      
-      // Show success message instead of immediately redirecting
+
 
       
     } catch (err) {
@@ -217,7 +350,7 @@ const CreateProject = () => {
 
   const handleSuccessClose = () => {
     setShowSuccess(false);
-    navigate("/projects/44/team");
+    navigate(`/projects/${projId}/team`);
   };
 
   return (
@@ -272,19 +405,50 @@ const CreateProject = () => {
               {errors.description && <p className="error">{errors.description}</p>}
             </div>
 
-            <div>
-              <label htmlFor="address">Address</label>
-              <textarea
-                id="address"
-                name="address"
-                value={values.address}
-                onChange={handleInputChange}
-                onBlur={handleBlur}
-                placeholder="Enter project address"
-                rows="2"
-              />
-              {errors.address && <p className="error">{errors.address}</p>}
-            </div>
+       {/* Location Dropdowns */}
+          <div>
+            <label htmlFor="region">Region</label>
+            <SearchableDropdown
+              id="region"
+              name="region"
+              value={values.region}
+              onChange={handleRegionChange}
+              options={philippines.regions}
+              placeholder="Select region"
+              error={errors.region}
+            />
+          </div>
+
+          <div>
+            <label htmlFor="province">Province</label>
+            <SearchableDropdown
+              id="province"
+              name="province"
+              value={values.province}
+              onChange={handleProvinceChange}
+              options={filteredProvinces}
+              placeholder={selectedRegion ? "Select province" : "Select region first"}
+              error={errors.province}
+              disabled={!selectedRegion}
+            />
+          </div>
+
+          <div>
+            <label htmlFor="city">City/Municipality</label>
+            <SearchableDropdown
+              id="city"
+              name="city"
+              value={values.city}
+              onChange={handleCityChange}
+              options={filteredCities}
+              placeholder={selectedProvince ? "Select city" : "Select province first"}
+              error={errors.city}
+              disabled={!selectedProvince}
+            />
+          </div>
+
+     
+       
              <div className="form-control-professional">
               <label htmlFor="equipmentType">Equipment Type</label>
               <select

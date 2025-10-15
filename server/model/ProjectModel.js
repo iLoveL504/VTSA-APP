@@ -49,15 +49,18 @@ class ProjectModel {
             pitDepth,
             clientName,
             address,
-            equipmentType
+            equipmentType,
+            region,
+            province,
+            city
         } = project;
 
         const [results] = await pool.query(
             `INSERT INTO projects 
                 (lift_name, description, cap, drive, door_operator, speed,
                  control, stops, serving_floor, travel, power_supply, shaft, shaft_size, 
-                 car_size, door_size, overhead_height, pit_depth, client, address, product_type) 
-             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+                 car_size, door_size, overhead_height, pit_depth, client, product_type, region, \`province/municipality\`, city) 
+             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
             [
                 liftName,
                 description,
@@ -77,11 +80,15 @@ class ProjectModel {
                 overheadHeight,
                 pitDepth,
                 clientName,
-                address,
-                equipmentType
+                equipmentType,
+                region,
+                province,
+                city
             ]
         );
-
+        const newProjectId = results.insertId;
+        await pool.query(`insert into project_manpower(project_id) values (?)`, [newProjectId])
+        console.log(newProjectId)
         return results
     }
 
@@ -274,10 +281,10 @@ static async getProjectSchedule(id) {
    
       
         const promises = Object.keys(updates).map(key => {
-            const { id, status, start_date, end_date, manufacturing_end_date, tnc_start_date, installation_start_date } = updates[key];
+            const { id, status, start_date, end_date, manufacturing_end_date, tnc_start_date, installation_start_date, foundCurrentTask } = updates[key];
             return pool.query(
-            'UPDATE projects SET created_at = ?, manufacturing_end_date = ?, project_end_date = ? , status = ?, tnc_start_date = ?, installation_start_date = ? WHERE id = ?',
-            [start_date, manufacturing_end_date, end_date, status, tnc_start_date, installation_start_date, id]  
+            'UPDATE projects SET created_at = ?, manufacturing_end_date = ?, project_end_date = ? , status = ?, tnc_start_date = ?, installation_start_date = ?, current_task = ? WHERE id = ?',
+            [start_date, manufacturing_end_date, end_date, status, tnc_start_date, installation_start_date, foundCurrentTask, id]  
             ).then(() => {
 
             }).catch(err => {

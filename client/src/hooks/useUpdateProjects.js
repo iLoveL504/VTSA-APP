@@ -33,21 +33,24 @@ const useUpdateProjects = (projectIDs) => {
                         const foundParentTask = response.data.find(t => t.task_type === 'summary' && new Date(dateNow) > new Date(t.task_start) && new Date(dateNow) < new Date(t.task_end))
                        // console.log(projectIDs[i])
                        // console.log(foundParentTask)
+                               
                         if(foundParentTask === undefined) continue 
                         if(foundParentTask.task_name === 'Testing and Commissioning (Passenger Elevator)') console.log(summaryMap[foundParentTask])
+                        const ct = response.data.find(t => t.task_type === 'task' && new Date(dateNow) > new Date(t.task_start) && new Date(dateNow) < new Date(t.task_end))
+                     
                        // console.log(projectIDs[i])
                         const installation_start_date = response.data.find(t => t.task_name === 'Mechanical Installation (Passenger Elevator)').task_start.split("T")[0]
                     
                         const end_date = response.data.find(t => t.task_name === 'Final Cleaning / Hand over').task_end.split("T")[0]
                         const start_date = response.data.find(t => t.task_name === 'Preliminaries').task_start.split("T")[0]
                         const tnc_start_date = response.data.find(t => t.task_name === 'Testing and Commissioning (Passenger Elevator)').task_start.split("T")[0]
-    
-
+                        const foundCurrentTask = ct.task_name
+                        console.log(foundCurrentTask)
                         const manufacturing_end_date = response.data.find(t => t.task_name === 'Manufacturing and Importation Process (Passenger Elevator)').task_end.split("T")[0]
                        //console.log(`project ${projectIDs[i]} is in ${foundParentTask} phase`)
                        
                         //console.log(start_date)
-                        payload[`project${projectIDs[i].id}`] = {'id': projectIDs[i].id, 'status': summaryMap[foundParentTask.task_name], end_date, start_date, manufacturing_end_date, tnc_start_date, installation_start_date}
+                        payload[`project${projectIDs[i].id}`] = {'id': projectIDs[i].id, 'status': summaryMap[foundParentTask.task_name], end_date, start_date, manufacturing_end_date, tnc_start_date, installation_start_date, foundCurrentTask}
                         //console.log('hi')
                     } 
                     // console.log('hihidsafidsahfi')

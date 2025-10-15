@@ -20,7 +20,6 @@ const TestChart = () => {
     const [isPrinting, setIsPrinting] = useState(false);
     const [currentTaskId, setCurrentTaskId] = useState(null);
     const currentDate = new Date()
-    const [isAutoScrollEnabled] = useState(true);
     const contentRef = useRef();
     const ganttRef = useRef();
     
@@ -96,35 +95,7 @@ const TestChart = () => {
         }).sort((a, b) => new Date(a.start) - new Date(b.start));
     }, [displayTasks]);
 
-  const scrollToCurrentTask = () => {
-        if (!ganttRef.current || !currentTaskId) return;
 
-        // Find the task element in the DOM
-        const taskElement = document.querySelector(`[data-task-id="${currentTaskId}"]`);
-        if (taskElement) {
-            taskElement.scrollIntoView({ 
-                behavior: 'smooth', 
-                block: 'center',
-                inline: 'center'
-            });
-            
-            // Add highlight effect
-            taskElement.classList.add('current-task-highlight');
-            setTimeout(() => {
-                taskElement.classList.remove('current-task-highlight');
-            }, 2000);
-        }
-
-        // Also scroll to current date in the header
-        const todayHeader = document.querySelector('.gantt-table-header-cell-today');
-        if (todayHeader) {
-            todayHeader.scrollIntoView({ 
-                behavior: 'smooth', 
-                block: 'nearest',
-                inline: 'center'
-            });
-        }
-    };
 
     // Auto-select current task
     useEffect(() => {
@@ -137,20 +108,7 @@ const TestChart = () => {
         }
     }, [findCurrentTasks, findUpcomingTasks]);
 
-    // Scroll to current task and date
-    useEffect(() => {
-        if (isAutoScrollEnabled && currentTaskId && ganttRef.current) {
-            // This is a simplified approach - you might need to adjust based on gantt-task-react's API
-            scrollToCurrentTask();
-        }
-    }, [currentTaskId, isAutoScrollEnabled, view, scrollToCurrentTask]);
 
-  
-
-    // const handleFocusCurrent = () => {
-    //     setIsAutoScrollEnabled(true);
-    //     scrollToCurrentTask();
-    // };
 
     const tasks = useMemo(() => {
         try {

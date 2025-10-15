@@ -29,7 +29,7 @@ router.route('/no-project')
 router.route('/not-assigned-PE')
     .get(getNotAssignedPE)
 
-router.route('/assign')
+router.route('/assign/:id')
     .post(assignTeam)
 
 router.route('/:id')   

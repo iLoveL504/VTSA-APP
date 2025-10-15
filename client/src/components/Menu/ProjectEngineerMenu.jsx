@@ -23,12 +23,6 @@ const ProjectEngineerMenu = () => {
                 Dashboard
             </li>
           </Link>
-          <Link to="/technician">
-            <li>
-                <IoPerson style={{ color: 'white' }}/>
-                Technician
-            </li>
-          </Link>
           <Link to="/projects">
             <li>
                 <GoProjectRoadmap style={{ color: 'white' }}/>

@@ -1,10 +1,10 @@
-import React from 'react'
+import React, {useMemo, useEffect} from 'react'
 import Project from './Project'
 import useAxiosFetch from '../../hooks/useAxiosFetch'
 
 import { Grid } from 'ldrs/react'
 
-const ProjectList = () => {
+const ProjectList = ({searchTerm}) => {
 
   const backendURL = import.meta.env.VITE_BACKEND_URL || 'http://localhost:4000'
   const empId = sessionStorage.getItem('id')
@@ -12,9 +12,26 @@ const ProjectList = () => {
   const filter = {
     role
   }
-  console.log(filter)
   const {data: projects} = useAxiosFetch(`${backendURL}/api/projects`)
-  const {data: designatedProject} = useAxiosFetch(`${backendURL}/api/employees/${empId}/designated-project`, filter)
+  const {data: designatedProject, isLoading: designatedIsLoading} = useAxiosFetch(`${backendURL}/api/employees/${empId}/designated-project`, filter)
+    // Filter projects based on search term
+  const filteredProjects = useMemo(() => {
+    if (!searchTerm) return projects
+    
+    const term = searchTerm.toLowerCase()
+    return projects.filter(project => 
+      project.lift_name?.toLowerCase().includes(term) ||
+      project.client?.toLowerCase().includes(term) ||
+      project.status?.toLowerCase().includes(term)
+    )
+  }, [projects, searchTerm])
+
+useEffect(() => {
+  console.log(filteredProjects)
+}, [filteredProjects])
+
+
+
   // const [lowRole, setLowRole] = useState(true)
   // console.log(projects)
   // useEffect(() => {
@@ -25,17 +42,16 @@ const ProjectList = () => {
   // }, [])
 //console.log(updateIsLoading)
 
+    if (designatedIsLoading) {
 
-//     if (false) {
-//       console.log(projectsIsLoading)  
-// console.log(designatedIsLoading)
-//         return (
-//                 <div className="Loading">
-//                     <p>Data is Loading...</p>
-//                     <Grid size="60" speed="1.5" color="rgba(84, 176, 210, 1)" />
-//                 </div>
-//         )
-//     }
+        return (
+                <div className="Loading">
+                    <p>Data is Loading...</p>
+                    <Grid size="60" speed="1.5" color="rgba(84, 176, 210, 1)" />
+                </div>
+        )
+    }
+
 
   return (
     <div className='ProjectList'>  
@@ -44,7 +60,7 @@ const ProjectList = () => {
             sessionStorage.getItem('roles') === 'manager' ||
             sessionStorage.getItem('roles') === 'Project Manager'  ?
             (
-               projects.map(p => (
+               filteredProjects.map(p => (
                   <Project project={p} key={p.id}/>
                 ))
             )

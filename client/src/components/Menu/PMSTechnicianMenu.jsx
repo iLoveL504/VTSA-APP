@@ -22,22 +22,10 @@ const PMSTechnicianMenu = () => {
                 Dashboard
             </li>
           </Link>
-          <Link to="/technician">
-            <li>
-                <IoPerson style={{ color: 'white' }}/>
-                Technician
-            </li>
-          </Link>
           <Link to="/PMS">
             <li>
                 <MdHomeRepairService style={{ color: 'white' }}/>
                 PMS
-            </li>
-          </Link>
-          <Link to="/teams">
-            <li>
-                <RiTeamFill style={{ color: 'white' }}/>
-                Teams
             </li>
           </Link>
           <Link to="/baby-book">

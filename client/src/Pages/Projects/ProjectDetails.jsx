@@ -61,7 +61,7 @@ const ProjectDetails = ({
     saveStatus, handleSave, isEditing, errors, handleInputChange, handleNumberInputChange, handleBlur, handleSubmit,
     values, setIsEditing, handleCancel
 }) => {
-    console.log(projectExists)
+    console.log(teamIsLoading)
     const {projId} = useParams()
     const [showScheduleModal, setShowScheduleModal] = useState(false)
     const handleTaskComplete =  (task) => async () => {
@@ -273,6 +273,9 @@ console.log(currentTask)
                         <h3>Basic Information</h3>
                         <div className="form-row">
                             <label>Project ID: {values.id}</label>
+                            <label>{values.region}</label>
+                            <label>{values['province/municipality']}</label>
+                            <label>{values.city}</label>
                             <label>Lift Name:</label>
                             <input
                                 type="text"
@@ -283,6 +286,7 @@ console.log(currentTask)
                                 onBlur={handleBlur}
                             />
                             {errors && <span className='missing'>{errors.lift_name}</span>}
+
                         </div>
                         <div className="form-row">
                             <label>Description:</label>
@@ -388,7 +392,11 @@ console.log(currentTask)
                             <>
                                 <div className="form-row">
                                     <label>Project Engineer:</label>
-                                    <span>{teamInfo.find(t => t.job === 'Project Engineer').full_name}</span>
+                                    <span>{teamInfo[0].pe_username === null ? (
+                                        <button onClick={() => navigate(`/projects/${proj.id}/team`)}>Assign Project Engineer</button>
+                                    ) : (
+                                        teamInfo[0].pe_username
+                                    )}</span>
                                     <label>Foreman:</label>
                                     <span>{teamInfo[0].Foreman}</span>
                                 </div>
@@ -398,11 +406,11 @@ console.log(currentTask)
                                         {teamInfo.map((member, index) => (
                                             <span key={index} className="member-tag"
                                             onClick={
-                                                () => navigate(`/technician/${member.employee_id}`)
+                                                () => navigate(`/technician/${member.empe_id}`)
                                             }
                                             style={{'cursor': 'pointer'}}
                                             >
-                                                {member.full_name}
+                                                {member.e_username}
                                             </span>
                                         ))}
                                     </div>

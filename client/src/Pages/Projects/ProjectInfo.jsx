@@ -30,7 +30,7 @@ const ProjectInfo = () => {
     const isProjectsReady = Array.isArray(projects) && projects.length > 0;
     const fetchUrl = proj && isProjectsReady ? `${backendURL}/api/teams/${proj.id}` : null;
     const {data: teamInfo, isLoading: teamIsLoading} = useAxiosFetch(fetchUrl);
-    
+    console.log(teamInfo)
     // Get user role from session storage with debugging
     const [role, setRole] = useState(null)
     
@@ -177,16 +177,20 @@ const ProjectInfo = () => {
                 activePage === 'pms_entry' &&
                 <PMS_Entry />
             }
-
+            
             {/* Floating Daily Report Button - Test without role restriction first */}
-            <button 
-                className="floating-daily-report-btn" 
-                onClick={handleDailyReportClick}
-                style={{ display: role === 'Project Engineer' ? 'flex' : 'none' }}
-            >
-                <i className="fas fa-file-alt"></i>
-                Make Daily Project Report
-            </button>
+            
+     
+                <button 
+                    className="floating-daily-report-btn" 
+                    onClick={handleDailyReportClick}
+                    style={{ display: role === 'Foreman' ? 'flex' : 'none' }}
+                >
+                    <i className="fas fa-file-alt"></i>
+                    Make Daily Project Report
+                    {console.log(role)}
+                </button>
+            
 
             {/* Keep this for testing - will help see if button renders at all */}
             {/* <div style={{ position: 'fixed', bottom: '100px', right: '20px', background: 'red', color: 'white', padding: '10px', zIndex: 1001 }}>

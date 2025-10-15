@@ -13,7 +13,9 @@ export const getLastTeamId = async (req, res) => {
 export const getTeamPerId = async (req, res) => {
     try {
         const { id } = req.params;
+        console.log('hii')
         const results = await teams.getTeamPerId(Number(id));
+        console.log(results)
         res.status(200).json(results);
         
     } catch (error) {
@@ -66,28 +68,16 @@ export const assignTeam = async (req, res) => {
     
     const {
         projId,
-        ProjectEngineer,
-        Team: {members}
+        id
     } = req.body
-    const pe = {
-        employee_id: ProjectEngineer.employee_id,
-        full_name: `${ProjectEngineer.first_name} ${ProjectEngineer.last_name}`,
-        job: ProjectEngineer.job
-    }
-    const foreman = members.find(m => m.job === 'Foreman')
-    // console.log(foreman.employee_id)
-    members.push(pe)
-    const memberIds = members.map(m => m.employee_id)
-    // console.log(memberIds)
-    // console.log(pe.employee_id)
-
+    console.log('here in assign team')
+    console.log(req.body)
     try {
     
-        const results = await teams.assignTeam(pe.employee_id, foreman.employee_id, memberIds, projId)
+        const results = await teams.assignTeam(Number(projId), Number(id))
         res.status(200).json({
             success: true,
-            message: "Schedule saved successfully!",
-            results
+            message: "Project Engineer Assigned"
         });
     } catch (error) {
 

@@ -48,7 +48,7 @@ const Teams = () => {
               onClick={otherTeamsOnClick}
               className={activePage === 'other' ? 'active' : ''}
             >
-              Other Teams
+              Plan Manpower
             </button>
           </div>
         </div>

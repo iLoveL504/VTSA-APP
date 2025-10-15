@@ -6,122 +6,138 @@ import CircularProgress from '@mui/material/CircularProgress';
 
 const ProjectDocuments = () => {
     const navigate = useNavigate()
-     const {projId} = useParams()
-  const backendURL = import.meta.env.VITE_BACKEND_URL || "http://localhost:4000";
-  const [activeTab, setActiveTab] = useState('dailyReports');
-  const [searchTerm, setSearchTerm] = useState('');
-  const [selectedDate, setSelectedDate] = useState('');
-  
-  // Fetch actual daily reports data from API
-  const {data: reportsData, fetchError: fetchReportError, isLoading: reportsIsLoading} = useAxiosFetch(`${backendURL}/api/projects/report/${projId}`) // Adjust endpoint as needed
-  
-  // Use actual data from API or fallback to mock data
-  const dailyReports = reportsData || [
-    {
-      "id": 7,
-      "project_id": 1,
-      "workCompleted": "Work completed for today",
-      "workPlannedNextDay": "work planned for the next day",
-      "delaysIssues": "describe any delays, issues",
-      "remarks": "Any additional remarks or notes",
-      "report_date": "2025-09-30T16:00:00.000Z",
-      "author": "Foreman"
-    },
-    {
-      "id": 13,
-      "project_id": 1,
-      "workCompleted": "Set work completed",
-      "workPlannedNextDay": "set planned work for next day",
-      "delaysIssues": "Here are some issues and delays",
-      "remarks": "nah no additional notes",
-      "report_date": "2025-10-01T16:00:00.000Z",
-      "author": "Spongebob Squarepants"
-    }
-  ];
+    const {projId} = useParams()
+    const backendURL = import.meta.env.VITE_BACKEND_URL || "http://localhost:4000";
+    const [activeTab, setActiveTab] = useState('dailyReports');
+    const [searchTerm, setSearchTerm] = useState('');
+    const [selectedDate, setSelectedDate] = useState('');
+    const [expandedChecklist, setExpandedChecklist] = useState(null);
+    
+    // Fetch actual daily reports data from API
+    const {data: reportsData, fetchError: fetchReportError, isLoading: reportsIsLoading} = useAxiosFetch(`${backendURL}/api/projects/report/${projId}`)
+    
+    // Use actual data from API or fallback to mock data
+    const dailyReports = reportsData || [];
 
-  const checklistDocuments = [
-    {
-      id: 1,
-      title: 'Kick-Off Meeting Agenda Checklist',
-      link: 'kickoff',
-      category: 'Safety',
-      lastUpdated: '2024-01-10',
-      status: 'approved',
-      required: true,
-      description: 'Comprehensive safety inspection before equipment installation',
-      itemsCompleted: 15,
-      totalItems: 18,
-      dueDate: '2024-01-20'
-    },
-    {
-      id: 2,
-      title: 'Checklist Prior Handover',
-      link: 'handover-checklist',
-      category: 'Quality',
-      lastUpdated: '2024-01-12',
-      status: 'pending',
-      required: true,
-      description: 'Daily equipment maintenance and inspection log',
-      itemsCompleted: 8,
-      totalItems: 12,
-      dueDate: '2024-01-15'
-    },
-    {
-      id: 3,
-      title: 'QAQC Checklist',
-      link: 'qaqc',
-      category: 'Quality',
-      lastUpdated: '2024-01-08',
-      status: 'approved',
-      required: false,
-      description: 'Weekly site safety compliance assessment',
-      itemsCompleted: 22,
-      totalItems: 22,
-      dueDate: '2024-01-25'
-    },
-    {
-      id: 4,
-      title: 'Pre-Inspection Checklist',
-      link: 'preinspection-checklist',
-      category: 'Prerequisite',
-      lastUpdated: '2024-01-09',
-      status: 'pending',
-      required: true,
-      description: 'Quality assurance for completed work phases',
-      itemsCompleted: 5,
-      totalItems: 15,
-      dueDate: '2024-01-18'
-    }
-  ];
+    // Sequential checklist documents - ordered by project phase
+    const sequentialChecklists = [
+        {
+            id: 4,
+            title: 'Pre-Inspection Checklist',
+            link: 'preinspection-checklist',
+            category: 'Prerequisite',
+            phase: 1,
+            phaseName: 'Pre-Construction',
+            lastUpdated: '2024-01-09',
+            status: 'pending',
+            required: true,
+            description: 'Site assessment and preliminary safety checks before construction begins',
+            itemsCompleted: 5,
+            totalItems: 15,
+            dueDate: '2024-01-18',
+            dependencies: [],
+            icon: 'fas fa-clipboard-list',
+            color: '#8B5CF6'
+        },
+        {
+            id: 1,
+            title: 'Kick-Off Meeting Agenda Checklist',
+            link: 'kickoff',
+            category: 'Planning',
+            phase: 2,
+            phaseName: 'Project Kickoff',
+            lastUpdated: '2024-01-10',
+            status: 'approved',
+            required: true,
+            description: 'Comprehensive project initiation and team alignment documentation',
+            itemsCompleted: 15,
+            totalItems: 18,
+            dueDate: '2024-01-20',
+            dependencies: ['Pre-Inspection Checklist'],
+            icon: 'fas fa-handshake',
+            color: '#3B82F6'
+        },
+        {
+            id: 2,
+            title: 'Safety Compliance Checklist',
+            link: 'safety-checklist',
+            category: 'Safety',
+            phase: 3,
+            phaseName: 'Safety & Compliance',
+            lastUpdated: '2024-01-12',
+            status: 'pending',
+            required: true,
+            description: 'Daily equipment maintenance and safety compliance verification',
+            itemsCompleted: 8,
+            totalItems: 12,
+            dueDate: '2024-01-15',
+            dependencies: ['Kick-Off Meeting Agenda Checklist'],
+            icon: 'fas fa-shield-alt',
+            color: '#10B981'
+        },
+        {
+            id: 5,
+            title: 'QAQC Checklist',
+            link: 'qaqc',
+            category: 'Quality',
+            phase: 4,
+            phaseName: 'Quality Assurance',
+            lastUpdated: '2024-01-08',
+            status: 'approved',
+            required: false,
+            description: 'Quality assurance and control checks for completed work phases',
+            itemsCompleted: 22,
+            totalItems: 22,
+            dueDate: '2024-01-25',
+            dependencies: ['Safety Compliance Checklist'],
+            icon: 'fas fa-check-double',
+            color: '#F59E0B'
+        },
+        {
+            id: 3,
+            title: 'Pre-Handover Checklist',
+            link: 'handover-checklist',
+            category: 'Completion',
+            phase: 5,
+            phaseName: 'Project Handover',
+            lastUpdated: '2024-01-12',
+            status: 'pending',
+            required: true,
+            description: 'Final verification and documentation before project handover',
+            itemsCompleted: 8,
+            totalItems: 12,
+            dueDate: '2024-01-15',
+            dependencies: ['QAQC Checklist'],
+            icon: 'fas fa-clipboard-check',
+            color: '#EF4444'
+        }
+    ];
 
-  const filteredDailyReports = dailyReports.filter(report =>
-    report.workCompleted?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    report.author?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    report.delaysIssues?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    report.report_date?.includes(selectedDate)
-  );
+    const filteredDailyReports = dailyReports.filter(report =>
+        report.workCompleted?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        report.author?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        report.delaysIssues?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        report.report_date?.includes(selectedDate)
+    );
 
-  const filteredChecklists = checklistDocuments.filter(checklist =>
-    checklist.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    checklist.category.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    checklist.description.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+    const filteredChecklists = sequentialChecklists.filter(checklist =>
+        checklist.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        checklist.category.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        checklist.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        checklist.phaseName.toLowerCase().includes(searchTerm.toLowerCase())
+    );
 
-  const getStatusBadge = (status) => {
-    const statusConfig = {
-      completed: { class: 'status-completed', text: 'Completed' },
-      pending: { class: 'status-pending', text: 'Pending' },
-      approved: { class: 'status-approved', text: 'Approved' },
-      rejected: { class: 'status-rejected', text: 'Rejected' }
+    const getStatusBadge = (status) => {
+        const statusConfig = {
+            completed: { class: 'status-completed', text: 'Completed' },
+            pending: { class: 'status-pending', text: 'Pending' },
+            approved: { class: 'status-approved', text: 'Approved' },
+            rejected: { class: 'status-rejected', text: 'Rejected' }
+        };
+        return statusConfig[status] || { class: 'status-default', text: status };
     };
-    return statusConfig[status] || { class: 'status-default', text: status };
-  };
 
-const handleRowClick = (reportId) => {
-  navigate(`daily-reports/${reportId}`);
-};
-
-  const formatDate = (dateString) => {
+    const formatDate = (dateString) => {
     if (!dateString) return 'N/A';
     const date = new Date(dateString);
     return date.toLocaleDateString('en-US', {
@@ -162,71 +178,88 @@ const handleRowClick = (reportId) => {
     return total > 0 ? Math.round((completed / total) * 100) : 0;
   };
 
-  return (
-    <div className='Content ProjectDocuments'>
 
-      {/* Navigation Tabs */}
-      <div className="documents-tabs">
-        <button 
-          className={`tab-button ${activeTab === 'dailyReports' ? 'active' : ''}`}
-          onClick={() => setActiveTab('dailyReports')}
-        >
-          <i className="fas fa-file-alt"></i>
-          Daily Reports
-          <span className="tab-count">{dailyReports.length}</span>
-        </button>
-        <button 
-          className={`tab-button ${activeTab === 'checklists' ? 'active' : ''}`}
-          onClick={() => setActiveTab('checklists')}
-        >
-          <i className="fas fa-clipboard-check"></i>
-          Checklists
-          <span className="tab-count">{checklistDocuments.length}</span>
-        </button>
-      </div>
+    const handleRowClick = (reportId) => {
+        navigate(`daily-reports/${reportId}`);
+    };
 
-      {/* Search and Filter Bar */}
-      <div className="documents-toolbar">
-        <div className="search-box">
-          <i className="fas fa-search"></i>
-          <input
-            type="text"
-            placeholder={`Search ${activeTab === 'dailyReports' ? 'reports' : 'checklists'}...`}
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-          />
-        </div>
+    const toggleChecklistExpand = (checklistId) => {
+        setExpandedChecklist(expandedChecklist === checklistId ? null : checklistId);
+    };
+
+    const isChecklistLocked = (checklist) => {
+        if (checklist.dependencies.length === 0) return false;
         
-        {activeTab === 'dailyReports' && (
-          <div className="date-filter">
-            <i className="fas fa-calendar"></i>
-            <input
-              type="date"
-              value={selectedDate}
-              onChange={(e) => setSelectedDate(e.target.value)}
-            />
-          </div>
-        )}
+        // Check if all dependencies are completed/approved
+        return checklist.dependencies.some(depTitle => {
+            const depChecklist = sequentialChecklists.find(c => c.title === depTitle);
+            return depChecklist && !['completed', 'approved'].includes(depChecklist.status);
+        });
+    };
 
-        <div className="toolbar-actions">
-          {activeTab === 'dailyReports' ? (
-            <button className="btn-primary" onClick={handleCreateReport}>
-              <i className="fas fa-plus"></i>
-              Create Daily Report
-            </button>
-          ) : (
-            <button className="btn-primary" onClick={handleUploadChecklist}>
-              <i className="fas fa-upload"></i>
-              Upload Checklist
-            </button>
-          )}
-        </div>
-      </div>
+    return (
+        <div className='Content ProjectDocuments'>
+            {/* Navigation Tabs */}
+            <div className="documents-tabs">
+                <button 
+                    className={`tab-button ${activeTab === 'dailyReports' ? 'active' : ''}`}
+                    onClick={() => setActiveTab('dailyReports')}
+                >
+                    <i className="fas fa-file-alt"></i>
+                    Daily Reports
+                    <span className="tab-count">{dailyReports.length}</span>
+                </button>
+                <button 
+                    className={`tab-button ${activeTab === 'checklists' ? 'active' : ''}`}
+                    onClick={() => setActiveTab('checklists')}
+                >
+                    <i className="fas fa-clipboard-check"></i>
+                    Project Checklists
+                    <span className="tab-count">{sequentialChecklists.length}</span>
+                </button>
+            </div>
 
-      {console.log(dailyReports)}
-      <div className="documents-content">
-        {activeTab === 'dailyReports' ? (
-          // DAILY REPORTS - TABULAR FORM
+            {/* Search and Filter Bar */}
+            <div className="documents-toolbar">
+                <div className="search-box">
+                    <i className="fas fa-search"></i>
+                    <input
+                        type="text"
+                        placeholder={`Search ${activeTab === 'dailyReports' ? 'reports' : 'checklists'}...`}
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                    />
+                </div>
+                
+                {activeTab === 'dailyReports' && (
+                    <div className="date-filter">
+                        <i className="fas fa-calendar"></i>
+                        <input
+                            type="date"
+                            value={selectedDate}
+                            onChange={(e) => setSelectedDate(e.target.value)}
+                        />
+                    </div>
+                )}
+
+                <div className="toolbar-actions">
+                    {activeTab === 'dailyReports' ? (
+                        <button className="btn-primary" onClick={handleCreateReport}>
+                            <i className="fas fa-plus"></i>
+                            Create Daily Report
+                        </button>
+                    ) : (
+                        <button className="btn-primary" onClick={handleUploadChecklist}>
+                            <i className="fas fa-upload"></i>
+                            Upload Checklist
+                        </button>
+                    )}
+                </div>
+            </div>
+
+            <div className="documents-content">
+                {activeTab === 'dailyReports' ? (
+                              // DAILY REPORTS - TABULAR FORM
           <div className="daily-reports-table">
             {reportsIsLoading ? (
               <div className="loading-state">
@@ -343,148 +376,198 @@ const handleRowClick = (reportId) => {
               </div>
             )}
           </div>
-        ) : (
-          // CHECKLISTS - CARD/GRID FORM
-          <div className="checklists-grid">
-            {filteredChecklists.length > 0 ? (
-              filteredChecklists.map(checklist => {
-                const progressPercentage = getProgressPercentage(checklist.itemsCompleted, checklist.totalItems);
-                
-                return (
-      
-                  <div key={checklist.id} className="checklist-card" style={{
-                    cursor: 'pointer'
-                  }} onClick={() => navigate(`${checklist.link}`)}>
-                    <div className="card-header">
-                      <div className="card-title-section">
-                        <h3>{checklist.title}</h3>
-                        <span className={`status-badge ${getStatusBadge(checklist.status).class}`}>
-                          {getStatusBadge(checklist.status).text}
-                        </span>
-                      </div>
-                      {checklist.required && (
-                        <span className="required-badge">Required</span>
-                      )}
-                    </div>
-                    
-                    <div className="card-content">
-                      <p className="checklist-description">{checklist.description}</p>
-                      
-                      <div className="checklist-meta">
-                        <div className="meta-item">
-                          <i className="fas fa-folder"></i>
-                          <span>{checklist.category}</span>
-                        </div>
-                        {/* <div className="meta-item">
-                          <i className="fas fa-calendar"></i>
-                          <span>Due: {new Date(checklist.dueDate).toLocaleDateString()} </span>
-                          
-                        </div> */}
-                        <div className="meta-item">
-                          <i className="fas fa-sync"></i>
-                          <span>Updated: {new Date(checklist.lastUpdated).toLocaleDateString()}</span>
-                        </div>
-                      </div>
-                      
-                      {/* Progress Bar */}
-                      <div className="progress-section">
-                        <div className="progress-header">
-                          <span>Completion Progress <CircularProgress size={20} sx={{ ml: 1, verticalAlign: 'middle' }} /></span>
-                          <span className="progress-text">{progressPercentage}%</span>
-                        </div>
-                        <div className="progress-bar">
-                          <div 
-                            className="progress-fill"
-                            style={{ width: `${progressPercentage}%` }}
-                          ></div>
-                        </div>
-                        <div className="progress-stats">
-                          {checklist.itemsCompleted} of {checklist.totalItems} items completed
-                        </div>
-                      </div>
-                    </div>
+                ) : (
+                    // SEQUENTIAL CHECKLISTS - TIMELINE VIEW
+                    <div className="sequential-checklists">
+                        <div className="checklists-timeline">
+                            {filteredChecklists.length > 0 ? (
+                                filteredChecklists.map((checklist, index) => {
+                                    const progressPercentage = getProgressPercentage(checklist.itemsCompleted, checklist.totalItems);
+                                    const isLocked = isChecklistLocked(checklist);
+                                    const isExpanded = expandedChecklist === checklist.id;
+                                    
+                                    return (
+                                        <div 
+                                            key={checklist.id} 
+                                            className={`timeline-item ${isLocked ? 'locked' : ''} ${checklist.status === 'approved' ? 'completed' : ''} ${isExpanded ? 'expanded' : ''}`}
+                                        >
+                                            {/* Phase Connector */}
+                                            {index > 0 && (
+                                                <div className="phase-connector"></div>
+                                            )}
+                                            
+                                            {/* Phase Number */}
+                                            <div 
+                                                className="phase-marker"
+                                                style={{ backgroundColor: checklist.color }}
+                                            >
+                                                <i className={checklist.icon}></i>
+                                                <span className="phase-number">Phase {checklist.phase}</span>
+                                            </div>
 
-                    <div className="card-actions">
-                      <button 
-                        className="btn-outline"
-                        onClick={() => handlePreview(checklist, 'checklist')}
-                      >
-                        <i className="fas fa-eye"></i>
-                        Preview
-                      </button>
-                      <button 
-                        className="btn-outline"
-                        onClick={() => handleDownload(checklist, 'checklist')}
-                      >
-                        <i className="fas fa-download"></i>
-                        Download
-                      </button>
-                      <button 
-                        className="btn-primary"
-                        onClick={() => handleEdit(checklist, 'checklist')}
-                      >
-                        <i className="fas fa-edit"></i>
-                        Edit
-                      </button>
-                    </div>
-                  </div>
-                );
-              })
-            ) : (
-              <div className="empty-state">
-                <i className="fas fa-clipboard-check"></i>
-                <h3>No checklists found</h3>
-                <p>Upload your first checklist document</p>
-                <button className="btn-primary" onClick={handleUploadChecklist}>
-                  Upload Checklist
-                </button>
-              </div>
-            )}
-          </div>
-        )}
-      </div>
+                                            {/* Checklist Card */}
+                                            <div 
+                                              className="timeline-card"
+                                              onClick={() => {
+                                                navigate(checklist.link)
+                                              }}
+                                            >
+                                                <div className="card-header">
+                                                    <div className="phase-info">
+                                                        <h3 className="phase-name">{checklist.phaseName}</h3>
+                                                        <span className="phase-step">Step {checklist.phase} of {sequentialChecklists.length}</span>
+                                                    </div>
+                                                    <div className="card-status">
+                                                        <span className={`status-badge ${getStatusBadge(checklist.status).class}`}>
+                                                            {getStatusBadge(checklist.status).text}
+                                                        </span>
+                                                        {checklist.required && (
+                                                            <span className="required-badge">Required</span>
+                                                        )}
+                                                        {isLocked && (
+                                                            <span className="locked-badge">
+                                                                <i className="fas fa-lock"></i>
+                                                                Locked
+                                                            </span>
+                                                        )}
+                                                    </div>
+                                                </div>
 
-      {/* Quick Stats */}
-      <div className="documents-stats">
-        <div className="stat-card">
-          <div className="stat-icon">
-            <i className="fas fa-file-alt"></i>
-          </div>
-          <div className="stat-info">
-            <h3>{dailyReports.length}</h3>
-            <p>Daily Reports</p>
-          </div>
+                                                <div className="card-content">
+                                                    <h4 className="checklist-title">{checklist.title}</h4>
+                                                    <p className="checklist-description">{checklist.description}</p>
+                                                    
+                                                    {/* Dependencies */}
+                                                    {checklist.dependencies.length > 0 && (
+                                                        <div className="dependencies">
+                                                            <span className="dependencies-label">
+                                                                <i className="fas fa-link"></i>
+                                                                Requires: 
+                                                            </span>
+                                                            {checklist.dependencies.map((dep, depIndex) => {
+                                                                const depChecklist = sequentialChecklists.find(c => c.title === dep);
+                                                                const isDepComplete = depChecklist && ['completed', 'approved'].includes(depChecklist.status);
+                                                                
+                                                                return (
+                                                                    <span 
+                                                                        key={depIndex} 
+                                                                        className={`dependency ${isDepComplete ? 'completed' : 'pending'}`}
+                                                                    >
+                                                                        {dep}
+                                                                        {isDepComplete ? ' ✓' : ' ⏱️'}
+                                                                    </span>
+                                                                );
+                                                            })}
+                                                        </div>
+                                                    )}
+
+                                                    {/* Progress Section */}
+                                                    <div className="progress-section">
+                                                        <div className="progress-header">
+                                                            <span>Completion Progress</span>
+                                                            <span className="progress-text">{progressPercentage}%</span>
+                                                        </div>
+                                                        <div className="progress-bar">
+                                                            <div 
+                                                                className="progress-fill"
+                                                                style={{ 
+                                                                    width: `${progressPercentage}%`,
+                                                                    backgroundColor: checklist.color
+                                                                }}
+                                                            ></div>
+                                                        </div>
+                                                        <div className="progress-stats">
+                                                            {checklist.itemsCompleted} of {checklist.totalItems} items completed
+                                                        </div>
+                                                    </div>
+
+                                                    {/* Meta Information */}
+                                                    <div className="checklist-meta">
+                                                        <div className="meta-item">
+                                                            <i className="fas fa-calendar"></i>
+                                                            <span>Due: {formatDate(checklist.dueDate)}</span>
+                                                        </div>
+                                                        <div className="meta-item">
+                                                            <i className="fas fa-sync"></i>
+                                                            <span>Updated: {formatDate(checklist.lastUpdated)}</span>
+                                                        </div>
+                                                        <div className="meta-item">
+                                                            <i className="fas fa-folder"></i>
+                                                            <span>{checklist.category}</span>
+                                                        </div>
+                                                    </div>
+
+                                                    {/* Expandable Actions */}
+                                                    <div className="expandable-actions">
+                                                        <button 
+                                                            className="expand-toggle"
+                                                            onClick={() => toggleChecklistExpand(checklist.id)}
+                                                        >
+                                                            <i className={`fas fa-chevron-${isExpanded ? 'up' : 'down'}`}></i>
+                                                            {isExpanded ? 'Show Less' : 'Show Actions'}
+                                                        </button>
+                                                        
+                                                        {isExpanded && (
+                                                            <div className="action-buttons">
+                                                                <button 
+                                                                    className={`btn-primary ${isLocked ? 'disabled' : ''}`}
+                                                                    disabled={isLocked}
+                                                                    onClick={() => !isLocked && navigate(checklist.link)}
+                                                                >
+                                                                    <i className="fas fa-edit"></i>
+                                                                    {isLocked ? 'Complete Previous Steps' : 'Start Checklist'}
+                                                                </button>
+                                                                <button 
+                                                                    className="btn-outline"
+                                                                    onClick={() => handlePreview(checklist, 'checklist')}
+                                                                >
+                                                                    <i className="fas fa-eye"></i>
+                                                                    Preview
+                                                                </button>
+                                                                <button 
+                                                                    className="btn-outline"
+                                                                    onClick={() => handleDownload(checklist, 'checklist')}
+                                                                >
+                                                                    <i className="fas fa-download"></i>
+                                                                    Download Template
+                                                                </button>
+                                                            </div>
+                                                        )}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    );
+                                })
+                            ) : (
+                                <div className="empty-state">
+                                    <i className="fas fa-clipboard-check"></i>
+                                    <h3>No checklists found</h3>
+                                    <p>Upload your first checklist document</p>
+                                    <button className="btn-primary" onClick={handleUploadChecklist}>
+                                        Upload Checklist
+                                    </button>
+                                </div>
+                            )}
+                        </div>
+
+                        {/* Progress Overview */}
+                        <div className="progress-overview">
+                            <h3>Project Completion Progress</h3>
+                            <div className="overview-stats">
+                                <div className="overview-stat">
+                                    <span className="stat-value">
+                                        {sequentialChecklists.filter(c => ['completed', 'approved'].includes(c.status)).length}
+                                    </span>
+                                    <span className="stat-label">Checklists Completed</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                )}
+            </div>
         </div>
-        <div className="stat-card">
-          <div className="stat-icon">
-            <i className="fas fa-clipboard-check"></i>
-          </div>
-          <div className="stat-info">
-            <h3>{checklistDocuments.length}</h3>
-            <p>Checklists</p>
-          </div>
-        </div>
-        <div className="stat-card">
-          <div className="stat-icon">
-            <i className="fas fa-check-circle"></i>
-          </div>
-          <div className="stat-info">
-            <h3>{dailyReports.filter(r => r.status === 'completed').length}</h3>
-            <p>Completed Reports</p>
-          </div>
-        </div>
-        <div className="stat-card">
-          <div className="stat-icon">
-            <i className="fas fa-clipboard-list"></i>
-          </div>
-          <div className="stat-info">
-            <h3>{checklistDocuments.filter(c => c.status === 'approved').length}</h3>
-            <p>Approved Checklists</p>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
+    );
 };
 
 export default ProjectDocuments;

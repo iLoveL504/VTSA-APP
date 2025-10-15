@@ -78,6 +78,7 @@
     font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 0.5px;
+    text-overflow: ellipsis;
 }
 
 .status-badge.preliminaries {
@@ -141,12 +142,194 @@
     font-size: 0.9rem;
 }
 
+/* team info each project */
+
+/* Project Team Info Styles */
 .project-team-info {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    align-items: center;
+    gap: 1.5rem;
     padding-top: 1rem;
     border-top: 2px solid #f8f9fa;
+    margin-top: 1rem;
+}
+
+.project-team-info > div {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.project-team-info h4 {
+    color: #2c3e50;
+    margin: 0;
+    font-size: 1rem;
+    font-weight: 600;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid #e9ecef;
+}
+
+/* Team Member Lists */
+.team-member-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    min-height: 60px;
+}
+
+.team-member {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.5rem 0.75rem;
+    background: #f8f9fa;
+    border-radius: 6px;
+    border: 1px solid #e9ecef;
+    transition: all 0.3s ease;
+}
+
+.team-member:hover {
+    background: #e9ecef;
+    border-color: #315a95;
+}
+
+.team-member.selected {
+    background: #d4edda;
+    border-color: #28a745;
+    box-shadow: 0 2px 4px rgba(40, 167, 69, 0.2);
+}
+
+.team-member-name {
+    font-weight: 500;
+    color: #2c3e50;
+    font-size: 0.9rem;
+}
+
+.team-member-role {
+    font-size: 0.75rem;
+    color: #6c757d;
+    background: white;
+    padding: 0.2rem 0.5rem;
+    border-radius: 12px;
+    border: 1px solid #dee2e6;
+}
+
+/* Empty State */
+.team-empty-state {
+    text-align: center;
+    padding: 1rem;
+    color: #6c757d;
+    font-style: italic;
+    background: #f8f9fa;
+    border: 2px dashed #dee2e6;
+    border-radius: 6px;
+    font-size: 0.9rem;
+}
+
+/* Selection States for Personnel Cards */
+.personnel-card.selectable {
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border: 2px solid transparent;
+}
+
+.personnel-card.selectable:hover {
+    border-color: #315a95;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(49, 90, 149, 0.2);
+}
+
+.personnel-card.selected {
+    border-color: #28a745;
+    background: #f8fff9;
+    box-shadow: 0 4px 12px rgba(40, 167, 69, 0.2);
+}
+
+.personnel-card.disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+/* Selection Badge */
+.selection-badge {
+    position: absolute;
+    top: -8px;
+    left: -8px;
+    width: 24px;
+    height: 24px;
+    background: #28a745;
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.7rem;
+    font-weight: bold;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+/* Remove Button */
+.remove-member-btn {
+    background: #dc3545;
+    color: white;
+    border: none;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 0.7rem;
+    transition: all 0.3s ease;
+    opacity: 0;
+}
+
+.team-member:hover .remove-member-btn {
+    opacity: 1;
+}
+
+.remove-member-btn:hover {
+    background: #c82333;
+    transform: scale(1.1);
+}
+
+/* Role-specific colors */
+.role-foreman .team-member-role {
+    background: linear-gradient(135deg, #007bff, #0056b3);
+    color: white;
+    border: none;
+}
+
+.role-skilled-installer .team-member-role {
+    background: linear-gradient(135deg, #28a745, #1e7e34);
+    color: white;
+    border: none;
+}
+
+.role-installer .team-member-role {
+    background: linear-gradient(135deg, #6c757d, #545b62);
+    color: white;
+    border: none;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .project-team-info {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+    
+    .team-member {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.5rem;
+    }
+    
+    .remove-member-btn {
+        align-self: flex-end;
+        opacity: 1; /* Always show on mobile */
+    }
 }
 
 .assignment-status .assigned {
@@ -328,6 +511,7 @@
 .personnel-list {
   flex: 1;
   padding: 0 1.5rem;
+  max-height: 700px;
   overflow-y: auto;
 }
 
