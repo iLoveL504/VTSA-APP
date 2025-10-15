@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect } from 'react'
 import { Grid } from 'ldrs/react'
 import 'ldrs/react/Grid.css'
 import { useNavigate, useParams } from 'react-router-dom' 
@@ -63,7 +63,6 @@ const ProjectDetails = ({
 }) => {
     console.log(teamIsLoading)
     const {projId} = useParams()
-    const [showScheduleModal, setShowScheduleModal] = useState(false)
     const handleTaskComplete =  (task) => async () => {
         try {
             console.log(fetchedData)
@@ -111,19 +110,9 @@ const ProjectDetails = ({
     }, [proj, formData, teamInfo, projIsLoading, setFormData])
 
     const handleCreateSchedule = () => {
-        setShowScheduleModal(true)
+        navigate(`/projects/${projId}/custom`) 
     }
 
-    const handleScheduleChoice = (choice) => {
-        setShowScheduleModal(false)
-        if (choice === 'default') {
-            // Navigate to default schedule creation
-            navigate(`schedule`) // or your default schedule route
-        } else {
-            // Navigate to custom schedule creation
-            navigate(`/projects/${projId}/custom`) // or your custom schedule route
-        }
-    }
 //  || tasksIsLoading || projectExists === 'loading'
 // isLoading || teamIsLoading 
     console.log(teamIsLoading || currentIsLoading)
@@ -138,13 +127,6 @@ const ProjectDetails = ({
 console.log(currentTask)
     return (
         <div className="Content ProjectDetails">
-            {console.log(teamInfo)}
-            {/* Schedule Modal */}
-            <ScheduleModal 
-                isOpen={showScheduleModal}
-                onClose={() => setShowScheduleModal(false)}
-                onChoice={handleScheduleChoice}
-            />
             
             <div className="action-buttons">
                     {!isEditing ? (
@@ -160,11 +142,6 @@ console.log(currentTask)
             </div>
             {saveStatus === 'success' && <div className="status success">Project updated successfully!</div>}
                 {saveStatus === 'error' && <div className="status error">Error updating project</div>}
-                            <ScheduleModal 
-                isOpen={showScheduleModal}
-                onClose={() => setShowScheduleModal(false)}
-                onChoice={handleScheduleChoice}
-            />
             
                 <div className="task-overview-section">
                 <h3>Task Overview</h3>

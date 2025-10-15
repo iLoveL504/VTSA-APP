@@ -14,7 +14,7 @@ import tasks from '../data/TasksData.js'
 import { useReactToPrint } from "react-to-print";
 
 const Test1 = () => {
-  const testDate = "6/23/2025"
+  const testDate = new Date()
   const {projId} = useParams()
   //const location = useLocation();
   const navigate = useNavigate()
