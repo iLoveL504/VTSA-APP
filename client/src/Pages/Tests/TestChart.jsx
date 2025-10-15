@@ -142,7 +142,7 @@ const getTaskBarStyle = (task) => {
             const response = await Axios.post(`/api/projects/schedule/${Number(projId)}`, payload);
             if (response.data?.success) {
                 alert(response.data.message); // "Schedule saved successfully!"
-                navigate(`projects/${projId}`)
+                navigate(`/projects/${projId}`)
             } else {
                 alert("Unexpected server response. Please try again.");
             }
