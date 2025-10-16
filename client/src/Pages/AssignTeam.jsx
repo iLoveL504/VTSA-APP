@@ -73,9 +73,7 @@ const ViewProjectEngineers = () => {
                 </div>
                 <div className="pe-details">
                   <span className="pe-id">ID: {engineer.employee_id}</span>
-                  <span className={`pe-status ${engineer.is_active ? 'active' : 'inactive'}`}>
-                    {engineer.is_active ? 'Active' : 'Inactive'}
-                  </span>
+            
                 </div>
               </div>
             ))
