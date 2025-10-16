@@ -116,7 +116,7 @@ const CreateProject = () => {
   // State for location dropdowns
   const [selectedRegion, setSelectedRegion] = useState("");
   const [selectedProvince, setSelectedProvince] = useState("");
-  const [setSelectedCity] = useState("");
+  const [selectedCity, setSelectedCity] = useState("");
   const [filteredProvinces, setFilteredProvinces] = useState([]);
   const [filteredCities, setFilteredCities] = useState([]);
 
@@ -212,6 +212,7 @@ useEffect(() => {
   const handleCityChange = (event) => {
     const value = event.target.value;
     setSelectedCity(value);
+    console.log(selectedCity)
     handleInputChange({ target: { name: 'city', value } });
 
   };
