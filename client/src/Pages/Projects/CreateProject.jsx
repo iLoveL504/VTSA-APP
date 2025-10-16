@@ -28,8 +28,8 @@ import '../../css/CreateProject.css'
       errors.cap = "Capacity must be greater than 0";
     if (!values.speed || values.speed <= 0)
       errors.speed = "Speed must be greater than 0";
-    if (values.stops !== "" && (isNaN(values.stops) || values.stops < 0))
-      errors.stops = "Stops must be 0 or more";
+    if (!values.stops) errors.stops = "Stops must be 0 or more";
+      
     if (!values.servingFloor)
       errors.servingFloor = "Serving floor information is required";
     if (!values.travel) errors.travel = "Travel distance is required";
@@ -306,7 +306,6 @@ useEffect(() => {
       ...values,
       cap: values.cap ? Number(values.cap) : 0,
       speed: values.speed ? Number(values.speed) : 0,
-      stops: values.stops ? Number(values.stops) : 0,
       travel: values.travel ? Number(values.travel) : 0,
       overheadHeight: values.overheadHeight ? Number(values.overheadHeight) : 0,
       pitDepth: values.pitDepth ? Number(values.pitDepth) : 0,
@@ -328,7 +327,6 @@ useEffect(() => {
       ...values,
       cap: values.cap ? Number(values.cap) : 0,
       speed: values.speed ? Number(values.speed) : 0,
-      stops: values.stops ? Number(values.stops) : 0,
       travel: values.travel ? Number(values.travel) : 0,
       overheadHeight: values.overheadHeight ? Number(values.overheadHeight) : 0,
       pitDepth: values.pitDepth ? Number(values.pitDepth) : 0,
@@ -525,14 +523,14 @@ useEffect(() => {
           <div>
             <label htmlFor="stops">Stops</label>
             <input
-              type="number"
+              type="text"
               id="stops"
               name="stops"
               value={values.stops}
-              onChange={handleNumberInputChange}
+              onChange={handleInputChange}
               onBlur={handleBlur}
               placeholder="Number of stops"
-              min="0"
+  
             />
             {errors.stops && <p className="error">{errors.stops}</p>}
           </div>
