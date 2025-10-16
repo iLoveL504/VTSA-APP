@@ -187,6 +187,7 @@ useEffect(() => {
     if (prov) {
       const cits = philippines.cities.filter(c => c.province=== prov.key);
       setFilteredCities(cits);
+      setSelectedCity(cits)
     }
   } else {
     setFilteredCities([]);
@@ -300,6 +301,17 @@ useEffect(() => {
 
   const handleFormSubmit = (e) => {
     e.preventDefault();
+        const payload = {
+      ...values,
+      cap: values.cap ? Number(values.cap) : 0,
+      speed: values.speed ? Number(values.speed) : 0,
+      stops: values.stops ? Number(values.stops) : 0,
+      travel: values.travel ? Number(values.travel) : 0,
+      overheadHeight: values.overheadHeight ? Number(values.overheadHeight) : 0,
+      pitDepth: values.pitDepth ? Number(values.pitDepth) : 0,
+    };
+    console.log(payload)
+  
     console.log("Validation errors:", errors);
     if (Object.keys(errors).length === 0) {
       setShowConfirmation(true);
