@@ -35,6 +35,10 @@ export default createStore({
     setTeamNoProject: action((state, payload) => {
         state.teamsNoProject = payload
     }),
+    peProjects: [],
+    setPeProjects: action((state, payload) => {
+        state.peProjects = payload
+    }),
     tentativeProjectTeams: [],
     setTentativeProjectTeams: action((state, payload) => {
         state.tentativeProjectTeams = payload

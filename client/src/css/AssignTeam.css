@@ -1,9 +1,7 @@
-
-/* AssignTeam Component */
-/* TeamSelection Component - Updated to match existing color scheme */
+/* TeamSelection Component - List View */
 .TeamSelection {
   padding: 2rem;
-  max-width: 1400px;
+  width: 100%;
   margin: 0 auto;
   background: #f8fafc;
   min-height: 90vh;
@@ -12,283 +10,116 @@
 .TeamSelection h2 {
   color: #315a95;
   font-weight: 700;
-  margin-bottom: 1rem;
+  margin-bottom: 1.5rem;
   font-size: 2rem;
 }
 
-.instructions {
-  color: #64748b;
-  margin-bottom: 2rem;
-  font-size: 1.1rem;
-  line-height: 1.5;
+.pe-section{
+  width: 100%;
+  display: grid;
+  grid-template-columns: 1.5fr 1fr;
+  gap: 2rem;
 }
 
-/* Available Project Engineers Section */
+/* Available Project Engineers Section - List View */
 .available-pe-container {
   background: white;
   border-radius: 12px;
-  padding: 1.5rem;
+  padding: 0;
   margin: 2rem 0;
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
   border: 1px solid #e2e8f0;
+  overflow: hidden;
 }
 
-.available-pe-container h3 {
-  color: #315a95;
-  font-weight: 600;
-  margin-bottom: 1.5rem;
-  font-size: 1.5rem;
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
+.pe-list-table {
+  width: 100%;
 }
 
-.available-pe-container h3::before {
-  content: "👨‍💼";
-  font-size: 1.3rem;
+.table-container {
+  width: 100%;
 }
 
-.pe-list {
+.TeamSelection .table-header {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-  gap: 1rem;
+  grid-template-columns: 80px 1fr 1fr 1fr 120px;
+  background: linear-gradient(135deg, #315a95 0%, #4a7cc2 100%);
+  color: white;
 }
 
-.pe-card {
-  background: linear-gradient(135deg, #f8fafc 0%, #edf2f7 100%);
-  border: 2px solid #e2e8f0;
-  border-radius: 10px;
-  padding: 1.25rem;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+.TeamSelection .table-row {
+  display: grid;
+  grid-template-columns: 80px 1fr 1fr 1fr 120px;
+  align-items: center;
+  padding: 1rem 1.5rem;
+  border-bottom: 1px solid #e2e8f0;
+  transition: all 0.2s ease;
   cursor: pointer;
 }
 
-.pe-card:hover {
-  border-color: #315a95;
-  transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(49, 90, 149, 0.15);
-}
-
-.pe-card.selected {
-  border-color: #315a95;
-  background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%);
-  box-shadow: 0 6px 20px rgba(49, 90, 149, 0.2);
-}
-
-.pe-info {
-  display: flex;
-  align-items: center;
-  margin-bottom: 1rem;
-}
-
-.pe-name {
+.TeamSelection .table-row.header {
+  cursor: default;
   font-weight: 600;
-  color: #2d3748;
-  font-size: 1.1rem;
-  margin-right: auto;
-}
-
-.pe-username {
-  background: #315a95;
-  color: white;
-  padding: 0.3rem 0.8rem;
-  border-radius: 15px;
-  font-size: 0.8rem;
-  font-weight: 500;
-}
-
-.pe-details {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding-top: 1rem;
-  border-top: 1px solid #e2e8f0;
-}
-
-.pe-id {
-  color: #64748b;
   font-size: 0.9rem;
-  font-weight: 500;
-}
-
-.pe-status {
-  padding: 0.3rem 0.8rem;
-  border-radius: 12px;
-  font-size: 0.8rem;
-  font-weight: 600;
   text-transform: uppercase;
+  letter-spacing: 0.5px;
+  padding: 1.25rem 1.5rem;
 }
 
-.pe-status.active {
+.TeamSelection .table-row:not(.header):hover {
+  background-color: #f8fafc;
+}
+
+.TeamSelection .table-row.selected {
   background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%);
-  color: #2e7d32;
-  border: 1px solid #c8e6c9;
+  border-left: 4px solid #315a95;
 }
 
-.pe-status.inactive {
-  background: linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%);
-  color: #dc2626;
-  border: 1px solid #fecaca;
-}
-
-.no-results {
-  text-align: center;
-  color: #64748b;
-  font-style: italic;
-  padding: 2rem;
-  grid-column: 1 / -1;
-}
-
-/* Selected Engineer Section */
-.selected-pe {
-  background: linear-gradient(135deg, #0f766e 0%, #0d9488 100%);
-  color: white;
-  padding: 2rem;
-  border-radius: 16px;
-  margin: 2rem 0;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
-}
-
-.selected-pe h3 {
-  color: white;
-  margin: 0 0 1.5rem 0;
-  font-weight: 600;
-  font-size: 1.5rem;
-}
-
-.selected-pe-card h4 {
-  margin: 0 0 1.5rem 0;
-  color: white;
-  font-weight: 600;
-  font-size: 1.3rem;
-}
-
-.pe-details-list {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 1rem;
-}
-
-.pe-detail {
-  background: rgba(255, 255, 255, 0.15);
-  backdrop-filter: blur(10px);
-  padding: 1.25rem;
-  border-radius: 12px;
-  border: 1px solid rgba(255, 255, 255, 0.2);
-}
-
-.pe-detail .label {
-  display: block;
-  font-size: 0.9rem;
-  color: rgba(255, 255, 255, 0.8);
-  margin-bottom: 0.5rem;
-}
-
-.pe-detail .value {
-  display: block;
-  font-size: 1.1rem;
-  font-weight: 600;
-  color: white;
-}
-
-.pe-detail .value.status.active {
-  color: #a7f3d0;
-}
-
-.pe-detail .value.status.inactive {
-  color: #fecaca;
-}
-
-/* Responsive adjustments for PE section */
-@media (max-width: 768px) {
-  .pe-list {
-    grid-template-columns: 1fr;
-  }
-  
-  .pe-info {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 0.5rem;
-  }
-  
-  .pe-username {
-    margin-left: 0;
-  }
-  
-  .pe-details {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 0.5rem;
-  }
-  
-  .pe-details-list {
-    grid-template-columns: 1fr;
-  }
-}
-
-@media (max-width: 480px) {
-  .available-pe-container {
-    padding: 1rem;
-  }
-  
-  .pe-card {
-    padding: 1rem;
-  }
-}
-
-.teams-container h3 {
-  color: #315a95;
-  font-weight: 600;
-  margin-bottom: 1.5rem;
-  font-size: 1.5rem;
-}
-
-.teams-list {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
-  gap: 1.5rem;
-  margin-bottom: 2rem;
-}
-
-.team-card {
-  background: white;
-  border: 2px solid #e2e8f0;
-  border-radius: 12px;
-  padding: 1.5rem;
-  cursor: pointer;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-}
-
-.team-card:hover {
-  border-color: #315a95;
-  box-shadow: 0 8px 25px rgba(49, 90, 149, 0.15);
-  transform: translateY(-2px);
-}
-
-.team-card.selected {
-  border-color: #315a95;
-  background: linear-gradient(135deg, #f8fafc 0%, #edf2f7 100%);
-  box-shadow: 0 8px 25px rgba(49, 90, 149, 0.2);
-}
-
-.foreman-info {
+.table-cell {
+  padding: 0.5rem 0;
   display: flex;
   align-items: center;
-  margin-bottom: 1.25rem;
-  padding-bottom: 1rem;
-  border-bottom: 2px solid #f1f5f9;
 }
 
-.foreman-info h4 {
-  margin: 0 1rem 0 0;
+/* Radio Input Styling */
+.radio-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.radio-input {
+  width: 18px;
+  height: 18px;
+  cursor: pointer;
+  accent-color: #315a95;
+}
+
+/* Cell-specific styles */
+.name-cell {
+  font-weight: 600;
   color: #2d3748;
-  font-weight: 700;
-  font-size: 1.2rem;
+  font-size: 1rem;
 }
 
-.job-tag {
-  padding: 0.5rem 1rem;
+.username-cell {
+  color: #315a95;
+  font-weight: 500;
+}
+
+.id-cell {
+  color: #64748b;
+  font-family: 'Courier New', monospace;
+  font-weight: 500;
+}
+
+.status-cell {
+  display: flex;
+  justify-content: flex-start;
+}
+
+.status-badge {
+  padding: 0.4rem 0.8rem;
   border-radius: 20px;
   font-size: 0.8rem;
   font-weight: 600;
@@ -296,142 +127,38 @@
   letter-spacing: 0.5px;
 }
 
-.job-tag.foreman {
-  background: linear-gradient(135deg, #315a95 0%, #4a7cc2 100%);
-  color: white;
-}
-
-.job-tag.project-engineer {
+.status-badge.active {
   background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%);
   color: #2e7d32;
   border: 1px solid #c8e6c9;
 }
 
-.job-tag.installer {
-  background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
-  color: #1565c0;
-  border: 1px solid #bbdefb;
-}
-
-.team-size {
-  margin-left: auto;
-  color: #64748b;
-  font-size: 0.9rem;
-  font-weight: 500;
-  background: #f1f5f9;
-  padding: 0.4rem 0.8rem;
-  border-radius: 12px;
-}
-
-.TeamSelection .team-members {
-    display: block;
-}
-
-.TeamSelection .team-members h5 {
-  margin: 0 0 1rem 0;
-  color: #315a95;
-  font-weight: 600;
-  font-size: 1rem;
-}
-
-.TeamSelection .team-members ul {
-
-  list-style: none;
-  padding: 0;
-  margin: 0;
-}
-
-.member-item {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 0.75rem 0;
-  border-bottom: 1px solid #f1f5f9;
-  transition: background-color 0.2s ease;
-}
-
-.member-item:hover {
-  background-color: #f8fafc;
-  border-radius: 6px;
-  padding: 0.75rem;
-}
-
-.member-item:last-child {
-  border-bottom: none;
-}
-
-.member-name {
-  font-weight: 500;
-  color: #2d3748;
-  flex: 1;
-}
-
-.selected-team {
-  background: linear-gradient(135deg, #315a95 0%, #1e3a5f 100%);
-  color: white;
-  padding: 2rem;
-  border-radius: 16px;
-  margin: 2rem 0;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
-}
-
-.selected-team h3 {
-  color: white;
-  margin: 0 0 1.5rem 0;
-  font-weight: 600;
-  font-size: 1.5rem;
-}
-
-.selected-team-card h4 {
-  margin: 0 0 1.5rem 0;
-  color: white;
-  font-weight: 600;
-  font-size: 1.3rem;
-}
-
-.team-composition {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-  gap: 1rem;
-}
-
-.composition-item {
-  background: rgba(255, 255, 255, 0.15);
-  backdrop-filter: blur(10px);
-  padding: 1.25rem;
-  border-radius: 12px;
-  text-align: center;
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  transition: transform 0.2s ease;
-}
-
-.composition-item:hover {
-  transform: translateY(-2px);
-}
-
-.composition-item .count {
-  display: block;
-  font-size: 2rem;
-  font-weight: 700;
-  color: white;
-  margin-bottom: 0.5rem;
-}
-
-.composition-item .label {
-  font-size: 0.9rem;
-  color: rgba(255, 255, 255, 0.9);
-  font-weight: 500;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-}
-
-.error-message {
+.status-badge.inactive {
   background: linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%);
   color: #dc2626;
-  padding: 1rem 1.5rem;
-  border-radius: 8px;
-  margin: 1.5rem 0;
   border: 1px solid #fecaca;
+}
+
+/* Action Section */
+.action-section {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 1rem;
+  margin-top: 2rem;
+  padding: 1.5rem;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+  border: 1px solid #e2e8f0;
+}
+
+.selected-info {
+  padding: 1rem 1.5rem;
+  background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%);
+  border: 1px solid #c8e6c9;
+  border-radius: 8px;
+  color: #2e7d32;
   font-weight: 500;
 }
 
@@ -446,6 +173,7 @@
   cursor: pointer;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   box-shadow: 0 4px 15px rgba(49, 90, 149, 0.3);
+  min-width: 250px;
 }
 
 .submit-btn:hover:not(:disabled) {
@@ -459,6 +187,25 @@
   cursor: not-allowed;
   transform: none;
   box-shadow: none;
+}
+
+/* Error and Loading States */
+.error-message {
+  background: linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%);
+  color: #dc2626;
+  padding: 1rem 1.5rem;
+  border-radius: 8px;
+  margin: 1.5rem 0;
+  border: 1px solid #fecaca;
+  font-weight: 500;
+}
+
+.no-results {
+  text-align: center;
+  color: #64748b;
+  font-style: italic;
+  padding: 3rem;
+  font-size: 1.1rem;
 }
 
 .Loading {
@@ -476,10 +223,15 @@
   font-weight: 500;
 }
 
-/* Responsive adjustments */
-@media (max-width: 1024px) {
-  .teams-list {
-    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+/* Responsive adjustments for list view */
+@media (max-width: 968px) {
+  .table-row {
+    grid-template-columns: 60px 1fr 1fr 1fr 100px;
+    padding: 0.875rem 1rem;
+  }
+  
+  .table-row.header {
+    padding: 1rem;
   }
 }
 
@@ -488,44 +240,60 @@
     padding: 1rem;
   }
   
-  .teams-list {
-    grid-template-columns: 1fr;
+  .table-row {
+    grid-template-columns: 50px 1fr 1fr;
+    grid-template-areas: 
+      "radio name status"
+      ". username id";
+    gap: 0.5rem;
+    padding: 1rem;
   }
   
-  .team-composition {
-    grid-template-columns: repeat(3, 1fr);
+  .table-row.header {
+    display: none;
   }
   
-  .foreman-info {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 0.75rem;
+  .table-cell:nth-child(1) { grid-area: radio; }
+  .table-cell:nth-child(2) { grid-area: name; }
+  .table-cell:nth-child(3) { grid-area: username; }
+  .table-cell:nth-child(4) { grid-area: id; }
+  .table-cell:nth-child(5) { grid-area: status; }
+  
+  .table-cell {
+    padding: 0.25rem 0;
   }
   
-  .team-size {
-    margin-left: 0;
+  .action-section {
+    padding: 1rem;
+  }
+  
+  .submit-btn {
+    min-width: auto;
+    width: 100%;
   }
 }
 
 @media (max-width: 480px) {
-  .team-composition {
-    grid-template-columns: 1fr;
+  .table-row {
+    grid-template-columns: 40px 1fr;
+    grid-template-areas: 
+      "radio name"
+      "radio username"
+      "radio id"
+      "radio status";
+    padding: 0.875rem;
   }
   
   .TeamSelection h2 {
     font-size: 1.5rem;
   }
-  
-  .selected-team {
-    padding: 1.5rem;
-  }
 }
 
-/* Animation for team cards */
+/* Animation for table rows */
 @keyframes fadeInUp {
   from {
     opacity: 0;
-    transform: translateY(20px);
+    transform: translateY(10px);
   }
   to {
     opacity: 1;
@@ -533,15 +301,15 @@
   }
 }
 
-.team-card {
-  animation: fadeInUp 0.4s ease;
+.table-row:not(.header) {
+  animation: fadeInUp 0.3s ease;
 }
 
-.teams-list .team-card:nth-child(1) { animation-delay: 0.1s; }
-.teams-list .team-card:nth-child(2) { animation-delay: 0.15s; }
-.teams-list .team-card:nth-child(3) { animation-delay: 0.2s; }
-.teams-list .team-card:nth-child(4) { animation-delay: 0.25s; }
-.teams-list .team-card:nth-child(5) { animation-delay: 0.3s; }
-.teams-list .team-card:nth-child(6) { animation-delay: 0.35s; }
-.teams-list .team-card:nth-child(7) { animation-delay: 0.4s; }
-.teams-list .team-card:nth-child(8) { animation-delay: 0.45s; }
+.table-body .table-row:nth-child(1) { animation-delay: 0.05s; }
+.table-body .table-row:nth-child(2) { animation-delay: 0.1s; }
+.table-body .table-row:nth-child(3) { animation-delay: 0.15s; }
+.table-body .table-row:nth-child(4) { animation-delay: 0.2s; }
+.table-body .table-row:nth-child(5) { animation-delay: 0.25s; }
+.table-body .table-row:nth-child(6) { animation-delay: 0.3s; }
+.table-body .table-row:nth-child(7) { animation-delay: 0.35s; }
+.table-body .table-row:nth-child(8) { animation-delay: 0.4s; }

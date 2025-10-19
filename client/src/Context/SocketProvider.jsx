@@ -6,6 +6,9 @@ export const SocketProvider = ({ children }) => {
   const setForecastData = useStoreActions(action => action.setForecastData)
   const setTeamNoProject = useStoreActions(action => action.setTeamNoProject)
   const setTentativeProjectTeams = useStoreActions(action => action.setTentativeProjectTeams)
+  const setProjects = useStoreActions(action => action.setProjects)
+  const setPeProjects = useStoreActions(action => action.setPeProjects)
+  const setNotifications = useStoreActions(action => action.setNotifications)
 
   const forecastSocket = useSocket("/forecast", {
     forecast_done: (data) => setForecastData(data.map(d => ({ ...d, group: 'forecasted' }))),
@@ -24,8 +27,17 @@ export const SocketProvider = ({ children }) => {
     }
   })
 
+  const utilitiesSocket = useSocket("/utilities", {
+    update_done: (projects) => setProjects(projects),
+    pe_projects_fetch_done: (data) => setPeProjects(data),
+    notification_update_done: (data) => {
+      console.log('New notifications:', data);
+      setNotifications(data)
+    }
+  })
+
   return (
-    <SocketContext.Provider value={forecastSocket}>
+    <SocketContext.Provider value={{forecastSocket, utilitiesSocket}}>
       {children}
     </SocketContext.Provider>
   )

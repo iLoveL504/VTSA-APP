@@ -5,7 +5,8 @@ import useFindProjectTask from '../../hooks/useFindProjectTask.js';
 import '../../css/ProjectAssignment.css';
 
 const ProjectAssignment = () => {
-    const forecastSocket = useSharedSocket()
+    const {forecastSocket, utilitiesSocket} = useSharedSocket()
+
     const forecastData = useStoreState(state => state.forecastData)
     const teamsNoProject = useStoreState(state => state.teamsNoProject)
     const tentativeProjectTeams = useStoreState(state => state.tentativeProjectTeams)
@@ -39,7 +40,7 @@ const ProjectAssignment = () => {
             if(forecastSocket) {
                 forecastSocket.emit('no_project_team')
                 forecastSocket.emit('tentative_project_team')
-                
+                utilitiesSocket.emit('refresh_project_data')
             }
         }, [forecastSocket])
 
@@ -192,6 +193,7 @@ const ProjectAssignment = () => {
                                       </>
                                       
                                       )}
+                                      <h4>Project Engineer: {project.pe_fullname}</h4>
                                    <div className="project-team-info">
                                       {(() => {
                                         // ✅ Compute once per project card

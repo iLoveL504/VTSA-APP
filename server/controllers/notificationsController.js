@@ -14,10 +14,14 @@ export const newNotification = async (req, res, next) => {
         console.log(req.body)
         await notifications.newNotification(req.body)
         console.log('notification made')
+            res.status(200).json({
+            success: true,
+            message: "Report saved successfully!",
+        });
     } catch (e) {
         console.log(e)
     }
-    next()
+ 
 }
 export const distributeNotification = async (req, res) => {
     try{

@@ -22,6 +22,7 @@ import { Server } from 'socket.io';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import forecastMenNameSpace from "./sockets/forecastMenNameSpace.js";
+import utilitiesNamespace from "./sockets/utilitiesNamespace.js";
 
 const app = express();
 const server = http.createServer(app);
@@ -77,6 +78,7 @@ app.use((err, req, res, next) => {
 
 // Socket.io connection handling 
 forecastMenNameSpace(io.of("/forecast"))
+utilitiesNamespace(io.of("/utilities"))
 console.log('hih')
 // Start server
 const PORT = process.env.PORT || 4000;

@@ -12,6 +12,8 @@ class TeamModel {
             left join team_members tm on t.team_id = tm.foreman_id
             left join employees e on e.employee_id = tm.emp_id;
         `);
+
+        console.log(results)
         return results;
     }
 

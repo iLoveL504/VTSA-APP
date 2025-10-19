@@ -21,9 +21,17 @@ class ProjectModel {
     }
 
     static async getAllProjects(){
-        const [results] = await pool.query(
-            'SELECT * FROM projects'
-        )
+        const [results] = await pool.query(`
+           SELECT 
+          p.*, 
+          pm.project_engineer_id,
+          e.username AS project_engineer,
+          concat(e.last_name, ' ', e.first_name) as 'pe_fullname'
+      FROM projects p
+      LEFT JOIN project_manpower pm 
+          ON p.id = pm.project_id 
+          left join employees e on e.employee_id = pm.project_engineer_id;
+        `)
         return results
     }
 

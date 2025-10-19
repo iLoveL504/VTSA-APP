@@ -43,8 +43,8 @@ class ForecastModel {
   static async tentativeProjectTeams() {
     const [results] = await pool.query(`
       SELECT ftm.project_id, p.lift_name, ftm.foreman_id,
-             f.username AS foreman_username,
-             ftm.emp_id, e.username, e.job
+      f.username AS foreman_username,
+        ftm.emp_id, e.username, e.job
       FROM forecast_team_members ftm
       LEFT JOIN projects p ON p.id = ftm.project_id
       LEFT JOIN employees f ON f.employee_id = ftm.foreman_id
