@@ -46,9 +46,15 @@ export default function forecastMenNameSpace(nsp) {
       await emitAllUpdates(data.date);
     });
 
-    socket.on("save", async (data) => {
-      await forecast.finalizeTeam(data);
-      await emitAllUpdates(data.date);
+    socket.on("save", async (data, callback) => {
+
+      try {
+        await forecast.finalizeTeam(data);
+        await emitAllUpdates(data.date);
+        callback({success: true})
+      } catch (error) {
+        callback({success: false, error: error.message})
+      }
       nsp.emit("save_done")
     });
   });

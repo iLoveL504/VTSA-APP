@@ -183,7 +183,14 @@ const ProjectAssignment = () => {
                                     {(project.status === 'Planning') && (
                                       <>
                                         <button onClick={() => {
-                                          if(!project.has_team) forecastSocket.emit('save', project)
+                                          if(!project.has_team) forecastSocket.emit('save', project, (ack) => {
+                                            if (ack?.success) {
+                                              console.log('this runs')
+                                              utilitiesSocket.emit('pe_projects')
+                                            } else {
+                                              console.error('Save failed')
+                                            }
+                                          })
                                             
                                         }}>{!project.has_team ? 'Save' : 'Edit'}</button>
                                         <span>(Finalize)</span>
