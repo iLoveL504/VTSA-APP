@@ -6,6 +6,14 @@
     margin: 0;
 }
 
+.ProjectAssignment .project-phase-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    margin-top: 1rem;
+    margin-bottom: 2rem;
+}
+
 .project-assignment-header {
     margin-bottom: 2rem;
     text-align: center;

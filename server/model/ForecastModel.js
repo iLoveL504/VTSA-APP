@@ -3,7 +3,7 @@ import { pool } from "../config/database.js";
 class ForecastModel {
   static async forecastTeam(date) {
     const [results] = await pool.query(`
-      SELECT employee_id, username, job 
+      SELECT employee_id, username, job, concat(last_name, ' ', first_name) as 'full_name' 
       FROM employees e
       WHERE EXISTS (
         SELECT 1
@@ -25,7 +25,7 @@ class ForecastModel {
 
   static async teamsNoProject() {
     const [results] = await pool.query(`
-      SELECT employee_id, username, job 
+      SELECT employee_id, username, job, concat(last_name, ' ', first_name) as 'full_name'
       FROM employees e
       WHERE NOT EXISTS (
         SELECT 1
@@ -43,8 +43,8 @@ class ForecastModel {
   static async tentativeProjectTeams() {
     const [results] = await pool.query(`
       SELECT ftm.project_id, p.lift_name, ftm.foreman_id,
-      f.username AS foreman_username,
-        ftm.emp_id, e.username, e.job
+      f.username AS foreman_username, concat(f.last_name, ' ', f.first_name) as 'foreman_full_name',
+        ftm.emp_id, e.username, concat(e.last_name, ' ', e.first_name) as 'full_name', e.job
       FROM forecast_team_members ftm
       LEFT JOIN projects p ON p.id = ftm.project_id
       LEFT JOIN employees f ON f.employee_id = ftm.foreman_id
@@ -97,8 +97,39 @@ class ForecastModel {
     }).map(t => t.emp_id)
     console.log(foremanId)
     console.log(installers)
+    
+    const idToValidate = [foremanId, ...installers]
+    const validatePromises = idToValidate.map(idv => {
+      return pool.query('select job from employees where employee_id = ?', [idv])
+    })
+    
+    const validationResults = await Promise.all(validatePromises)
+    const jobs = validationResults.map(v => v[0][0].job)
+    console.log(jobs)
 
-
+    const tallyJobs = (countJobs) => {
+      let Foreman = 0
+      let SkilledInstaller = 0
+      let Installer = 0
+      countJobs.forEach(j => {
+        switch (j) {
+          case 'Foreman':
+            Foreman++;
+            break;
+          case 'Skilled Installer':
+            SkilledInstaller++;
+            break;
+          case 'Installer':
+            Installer++;
+            break;
+        }
+      })
+      if (Foreman === 0 || SkilledInstaller === 0 || Installer === 0) {
+        throw new Error('Must have at least 1 person per role');
+      }
+    }
+    //will throw an error if lacking and halt execution
+    tallyJobs(jobs)
     
     const insertPromises = installers.map(async(i) => {
       return pool.query(`insert into team_members (foreman_id, emp_id) values (?, ?)`, [foremanId, i])
@@ -110,9 +141,39 @@ class ForecastModel {
       await pool.query(`update project_manpower set team_id = ? where project_id = ?`, [foremanId, id])      
     }
 
+    await pool.query('delete from forecast_team_members where project_id = ?;', [id])
+
     await pool.query(`update projects set has_team = 1 where id = ?`, [id])
     return
   }
+
+  static async projectFinalizedTeams() {
+    const [results] =  await pool.query(`
+        SELECT 
+          e.employee_id, 
+          e.username, 
+          e.job, 
+          sub.project_id
+        FROM employees e
+        JOIN (
+          SELECT pm.project_id, tm.emp_id AS employee_id
+          FROM project_manpower pm
+          LEFT JOIN teams t ON pm.team_id = t.team_id
+          LEFT JOIN team_members tm ON t.team_id = tm.foreman_id
+
+          UNION
+
+          SELECT pm.project_id, tm.foreman_id AS employee_id
+          FROM project_manpower pm
+          LEFT JOIN teams t ON pm.team_id = t.team_id
+          LEFT JOIN team_members tm ON t.team_id = tm.foreman_id
+        ) AS sub ON e.employee_id = sub.employee_id;
+      `)
+      console.log(results)
+      return results
+  }
+
+  
 }
 
 export { ForecastModel };

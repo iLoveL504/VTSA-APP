@@ -9,28 +9,42 @@ const DailyReportDetails = () => {
   const contentRef = useRef();
   const navigate = useNavigate();
   const backendURL = import.meta.env.VITE_BACKEND_URL || "http://localhost:4000";
-  
+  const [attachments, setAttachments] = useState([])
   const [report, setReport] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
-
+  console.log(backendURL)
   // Fetch the specific daily report
   const { data: reportData, fetchError } = useAxiosFetch(
     `${backendURL}/api/projects/report/${projId}`
   );
 
-  useEffect(() => {
-    if (reportData) {
-        const foundReport = reportData.find(r => r.id === Number(reportId))
-      setReport(foundReport);
-      setIsLoading(false);
-      console.log(reportData)
+useEffect(() => {
+  if (reportData && reportData.length > 0) {
+    // Filter only the rows for this report ID
+    const sameReportRows = reportData.filter(r => r.id === Number(reportId));
+    
+    if (sameReportRows.length > 0) {
+      // Extract the first row for the main report details
+      const mainReport = sameReportRows[0];
+
+      // Collect all photo URLs for this report
+      const photos = sameReportRows
+        .map(r => r.photo_url)
+        .filter(url => url); // remove nulls just in case
+       console.log(photos)
+      setReport(mainReport);
+      setAttachments(photos);
     }
-    if (fetchError) {
-      setError(fetchError);
-      setIsLoading(false);
-    }
-  }, [reportData, fetchError, reportId]);
+
+    setIsLoading(false);
+  }
+
+  if (fetchError) {
+    setError(fetchError);
+    setIsLoading(false);
+  }
+}, [reportData, fetchError, reportId]);
 
   const handleBack = () => {
     navigate(-1); // Go back to previous page
@@ -249,7 +263,7 @@ const handlePrint = useReactToPrint({
         </section>
 
         {/* Attachments Section (if available) */}
-        {(report.attachments && report.attachments.length > 0) && (
+        {(attachments && attachments.length > 0) && (
           <section className="content-section">
             <div className="section-header">
               <i className="fas fa-paperclip"></i>
@@ -257,16 +271,15 @@ const handlePrint = useReactToPrint({
             </div>
             <div className="section-content">
               <div className="attachments-list">
-                {report.attachments.map((attachment, index) => (
+                {attachments.map((path, index) => (
                   <div key={index} className="attachment-item">
-                    <i className="fas fa-file"></i>
-                    <div className="attachment-info">
-                      <span className="attachment-name">{attachment.name}</span>
-                      <span className="attachment-size">{attachment.size}</span>
-                    </div>
-                    <button className="btn-download-attachment">
-                      <i className="fas fa-download"></i>
-                    </button>
+              
+                    <img
+                      src={`${backendURL}${path}`}
+                      alt={`Attachment ${index + 1}`}
+                      className="attachment-preview"
+                      onError={(e) => (e.target.style.display = 'none')}
+                    />
                   </div>
                 ))}
               </div>

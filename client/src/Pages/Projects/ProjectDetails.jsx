@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { Grid } from 'ldrs/react'
 import 'ldrs/react/Grid.css'
 import { useNavigate, useParams } from 'react-router-dom' 
@@ -6,49 +6,20 @@ import { Axios } from '../../api/axios.js'
 import "wx-react-gantt/dist/gantt.css";
 import "../../gantt-custom.css"
 
-// Modal Component
-const ScheduleModal = ({ isOpen, onClose, onChoice }) => {
+const ConfirmationModal = ({ isOpen, onClose, onConfirm, title, message, confirmText = "Confirm", cancelText = "Cancel" }) => {
   if (!isOpen) return null;
 
   return (
-    <div className="modal-overlay" onClick={onClose}>
-      <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-        <div className="modal-header">
-          <h3>Create Project Schedule</h3>
-          <button className="modal-close" onClick={onClose}>
-            <i className="fas fa-times"></i>
+    <div className="modal-overlay">
+      <div className="modal-content">
+        <h3>{title}</h3>
+        <p>{message}</p>
+        <div className="modal-actions">
+          <button onClick={onClose} className="btn-cancel">
+            {cancelText}
           </button>
-        </div>
-        
-        <div className="modal-body">
-          <p>How would you like to create the schedule?</p>
-          
-          <div className="schedule-options">
-            <div className="schedule-option" onClick={() => onChoice('default')}>
-              <div className="option-icon">
-                <i className="fas fa-bolt"></i>
-              </div>
-              <div className="option-content">
-                <h4>Use Default Schedule</h4>
-                <p>Quick setup with pre-defined tasks and timelines</p>
-              </div>
-            </div>
-            
-            <div className="schedule-option" onClick={() => onChoice('custom')}>
-              <div className="option-icon">
-                <i className="fas fa-sliders-h"></i>
-              </div>
-              <div className="option-content">
-                <h4>Customize Schedule</h4>
-                <p>Create a tailored schedule with custom tasks and timelines</p>
-              </div>
-            </div>
-          </div>
-        </div>
-        
-        <div className="modal-footer">
-          <button className="btn-secondary" onClick={onClose}>
-            Cancel
+          <button onClick={onConfirm} className="btn-confirm">
+            {confirmText}
           </button>
         </div>
       </div>
@@ -59,21 +30,69 @@ const ScheduleModal = ({ isOpen, onClose, onChoice }) => {
 const ProjectDetails = ({
     projectCompleted, currentTask, currentParentTask, currentIsLoading, projectExists, fetchedData, proj, setFormData, formData, teamInfo, projIsLoading, teamIsLoading,
     saveStatus, handleSave, isEditing, errors, handleInputChange, handleNumberInputChange, handleBlur, handleSubmit,
-    values, setIsEditing, handleCancel
+    values, setIsEditing, handleCancel, photos, photosIsLoading, backendURL
 }) => {
+
     console.log(teamIsLoading)
     const {projId} = useParams()
-    const handleTaskComplete =  (task) => async () => {
+
+    const [approvalModal, setApprovalModal] = useState({
+      isOpen: false,
+      task: null
+    });
+    
+    const [completionModal, setCompletionModal] = useState({
+      isOpen: false,
+      task: null
+    });
+
+    const handleApproval = (task) => () => {
+        console.log(task)
+        setApprovalModal({
+          isOpen: true,
+          task: task
+        });
+    }
+
+
+    const handleApprovalConfirm = async () => {
+      try {
+        // Your existing approval logic here
+        console.log("hi", approvalModal.task);
+        console.log('hiiii')
+        // Close modal after confirmation
+        setApprovalModal({ isOpen: false, task: null });
+        const task_id = approvalModal.task.task_id
+        const payload ={ task_id }
+        const response = await Axios.put(`/api/projects/task/approval/${projId}`, payload);
+        console.log(response)
+        if (response?.data.success) {
+            window.alert('task pending for completion')
+        }
+      } catch (e) {
+        console.log(e);
+        // Handle error (maybe show error message to user)
+      }
+    }
+
+    const handleTaskComplete = (task) => () => {
+        setCompletionModal({
+          isOpen: true,
+          task: task
+        });
+    }
+
+    const handleCompletionConfirm = async () => {
         try {
             console.log(fetchedData)
-            console.log(task)
+            console.log(completionModal.task)
             let percentCompleted = 0
             let taskUpdates = []
             for(const t in fetchedData) {
                 percentCompleted += fetchedData[t].task_percent
                 taskUpdates.push(fetchedData[t])
                 taskUpdates[t].task_done = 1
-                if (fetchedData[t].task_name === task.task_name) break
+                if (fetchedData[t].task_name === completionModal.task.task_name) break
             }
             console.log(taskUpdates)
             console.log(percentCompleted)
@@ -83,20 +102,14 @@ const ProjectDetails = ({
                 percentCompleted
             }
             await Axios.put(`/api/projects/schedule/${projId}`, payload)
-            //window.location.reload()
+            
+            // Close modal after completion
+            setCompletionModal({ isOpen: false, task: null });
+            window.location.reload()
         } catch (e) {
             console.log(e)
+            // Handle error (maybe show error message to user)
         } 
-        // const t = task.split('_date')[0]
-        // const task_done = t + '_done'
-        // console.log(task_done)
-        // const payload = {
-        //     id: Number(projId),
-        //     task: task_done
-        // }
-        // await Axios.put(`/projects/schedule/${projId}`, payload)
-
-
     }
 
     const navigate = useNavigate()
@@ -106,8 +119,9 @@ const ProjectDetails = ({
             console.log(proj)
             setFormData(proj)
             // setIsLoading(false)
+            console.log(photos.data)
         }
-    }, [proj, formData, teamInfo, projIsLoading, setFormData])
+    }, [proj, formData, teamInfo, projIsLoading, setFormData, photos, photosIsLoading])
 
     const handleCreateSchedule = () => {
         navigate(`/projects/${projId}/custom`) 
@@ -115,7 +129,7 @@ const ProjectDetails = ({
 
 //  || tasksIsLoading || projectExists === 'loading'
 // isLoading || teamIsLoading 
-    console.log(teamIsLoading || currentIsLoading)
+    console.log(teamIsLoading || currentIsLoading || photosIsLoading)
     if (projIsLoading) {
         return (
                 <div className="Loading">
@@ -124,9 +138,30 @@ const ProjectDetails = ({
                 </div>
         )
     }
-console.log(currentTask)
+
     return (
         <div className="Content ProjectDetails">
+            {/* Approval Confirmation Modal */}
+            <ConfirmationModal
+                isOpen={approvalModal.isOpen}
+                onClose={() => setApprovalModal({ isOpen: false, task: null })}
+                onConfirm={handleApprovalConfirm}
+                title="Confirm Approval"
+                message={`Are you sure you want to approve the task "${approvalModal.task?.task_name}"? This action cannot be undone.`}
+                confirmText="Approve Task"
+                cancelText="Cancel"
+            />
+
+            {/* Completion Confirmation Modal */}
+            <ConfirmationModal
+                isOpen={completionModal.isOpen}
+                onClose={() => setCompletionModal({ isOpen: false, task: null })}
+                onConfirm={handleCompletionConfirm}
+                title="Confirm Task Completion"
+                message={`Are you sure you want to mark the task "${completionModal.task?.task_name}" as complete? This action cannot be undone.`}
+                confirmText="Mark Complete"
+                cancelText="Cancel"
+            />            
             
             <div className="action-buttons">
                     {!isEditing ? (
@@ -161,15 +196,42 @@ console.log(currentTask)
                                     <div className="task-card-content">
                                         <div className="task-name">
                                             {currentTask.task_name}
-                                            <button 
-                                                className={`complete-btn ${currentTask.task_done === 1 ? 'completed' : ''}`}
-                                                onClick={handleTaskComplete(currentTask)}
-                                             disabled={currentTask.task_done === 1 || sessionStorage.getItem('roles') !== 'Project Engineer'} 
-                                            >
-                                                <i className="fas fa-check"></i>
-                                                {currentTask.task_done === 1 ? 'Completed' : 
-                                                sessionStorage.getItem('roles') === 'Project Engineer' ? 'Mark Complete' : 'Pending'}
-                                            </button>
+                                            {sessionStorage.getItem('roles') === 'Project Engineer' ? (
+                                            
+                                                <button 
+                                                    className={`complete-btn ${currentTask.task_done === 1 ? 'completed' : ''}`}
+                                                    onClick={handleTaskComplete(currentTask)}
+                                                    disabled={currentTask.task_done === 1 || sessionStorage.getItem('roles') !== 'Project Engineer' || currentTask.task_approval === 0} 
+                                                >
+                                                    {console.log('project Engineer buton')}
+                                                    <i className="fas fa-check"></i>
+                                                    {currentTask.task_done === 1 ? 'Completed' : 
+                                                    sessionStorage.getItem('roles') === 'Project Engineer' ? 'Mark Complete' : 'Pending'}
+                                                </button>                                                
+                                            ) : sessionStorage.getItem('roles') === 'Foreman' ? (
+                                                //Foreman button
+                                                <button 
+                                                    className={`complete-btn ${currentTask.task_done === 1 ? 'completed' : ''}`}
+                                                    onClick={handleApproval(currentTask)}
+                                                    disabled={currentTask.task_approval === 1} 
+                                                >
+                                                    <i className="fas fa-check"></i>
+                                                    {currentTask.task_done === 1 ? 'Completed' : currentTask.task_approval === 1 ? 'Confirmation Pending'
+                                                    : 'Task Done'}
+                                                </button>                                               
+                                            ) : (
+                                                //View
+                                                <button 
+                                                    className={`complete-btn ${currentTask.task_done === 1 ? 'completed' : ''}`}
+                                                    onClick={handleTaskComplete(currentTask)}
+                                                    disabled={true} 
+                                                >
+                                                    <i className="fas fa-check"></i>
+                                                    {currentTask.task_done === 1 ? 'Completed' : 
+                                                    sessionStorage.getItem('roles') === 'Project Engineer' ? 'Mark Complete' : 'Pending'}
+                                                </button> 
+                                            )}
+
                                         </div>
                                         <div className="task-dates">
                                             <div className="task-date">
@@ -238,7 +300,12 @@ console.log(currentTask)
                             </>
                         ) : (
                                 <div className='no-schedule-card'>
-                                    <button onClick={handleCreateSchedule}>Create Schedule</button>
+                                    {
+                                        sessionStorage.getItem('roles') === 'Project Engineer' ? (
+                                            <button onClick={handleCreateSchedule}>Create Schedule</button>
+                                        ) : (<div>Schedule to be created</div>)
+                                    }
+                                    
                                 </div>
                             )
                     }
@@ -250,9 +317,9 @@ console.log(currentTask)
                         <h3>Basic Information</h3>
                         <div className="form-row">
                             <label>Project ID: {values.id}</label>
-                            <label>{values.region}</label>
-                            <label>{values['province/municipality']}</label>
-                            <label>{values.city}</label>
+                            <label>Region: {values.region}</label>
+                            <label>Province: {values['province/municipality']}</label>
+                            <label>City/Municipality: {values.city}</label>
                             <label>Lift Name:</label>
                             <input
                                 type="text"
@@ -427,6 +494,28 @@ console.log(currentTask)
                             </div>
                         </div>
                     </div>
+
+                   
+                    {
+                        (photos.data && photos.data.length > 0) && (
+                            <div className="form-section">
+                                <h3>Contract</h3>
+                                <div className='attachments-list'>
+                                    attachments here
+                                    {console.log(photos.data)}
+                                    {photos.data.map((p, index) => (
+                                        <img
+                                        src={`${backendURL}${p}`}
+                                        alt={`Attachment ${index + 1}`}
+                                        className="attachment-preview"
+                                        onError={(e) => (e.target.style.display = 'none')}
+                                        />                    
+                                    ))}
+                                </div>
+                            </div>
+                        )
+                    }
+                    
                 </div>
         </div>
   )

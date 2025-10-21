@@ -53,9 +53,19 @@ export default function forecastMenNameSpace(nsp) {
         await emitAllUpdates(data.date);
         callback({success: true})
       } catch (error) {
+        console.log(error)
         callback({success: false, error: error.message})
       }
       nsp.emit("save_done")
     });
+
+    socket.on('installation_teams', async () => {
+      try {
+        const results = await forecast.projectFinalizedTeams()
+        nsp.emit('fetched_finalized_teams', results)
+      } catch {
+
+      }
+    })
   });
 }

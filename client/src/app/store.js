@@ -1,5 +1,6 @@
 import { createStore, action, thunk, computed } from "easy-peasy"
 import {Axios} from '../api/axios.js'
+import InstallationTeams from "../Pages/Teams/InstallationTeams.jsx"
 
 const d = new Date()
 
@@ -38,6 +39,10 @@ export default createStore({
     peProjects: [],
     setPeProjects: action((state, payload) => {
         state.peProjects = payload
+    }),
+    installationTeams: [],
+    setInstallationTeams: action((state, payload) => {
+        state.installationTeams = payload
     }),
     tentativeProjectTeams: [],
     setTentativeProjectTeams: action((state, payload) => {

@@ -24,6 +24,7 @@ const ProjectInfo = () => {
     const numId = Number(projId)
     const projects = useStoreState(state => state.projects)
     const {data: proj, isLoading: projIsLoading} = useAxiosFetch(`${backendURL}/api/projects/${projId}`)
+    const {data: photos, isLoading: photosIsLoading} = useAxiosFetch(`${backendURL}/api/projects/photos/${projId}`)
     const [isEditing, setIsEditing] = useState(false)
     const [formData, setFormData] = useState({})
     const {currentTask, currentParentTask, isLoading: currentIsLoading, fetchError: tasksFetchError, projectExists, fetchedData, projectCompleted} = useFindProjectTask(projId)
@@ -163,6 +164,9 @@ const ProjectInfo = () => {
                     values={values}
                     setIsEditing={setIsEditing}
                     handleCancel={handleCancel}
+                    photos={photos}
+                    photosIsLoading={photosIsLoading}
+                    backendURL={backendURL}
                 />
             }
             {

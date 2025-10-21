@@ -9,6 +9,7 @@ export const SocketProvider = ({ children }) => {
   const setProjects = useStoreActions(action => action.setProjects)
   const setPeProjects = useStoreActions(action => action.setPeProjects)
   const setNotifications = useStoreActions(action => action.setNotifications)
+  const setInstallationTeams = useStoreActions(action => action.setInstallationTeams)
 
   const forecastSocket = useSocket("/forecast", {
     forecast_done: (data) => setForecastData(data.map(d => ({ ...d, group: 'forecasted' }))),
@@ -24,6 +25,10 @@ export const SocketProvider = ({ children }) => {
     save_done: () => {
         console.log('done saving')
         //some emit callback here forecastSocket.emit('whatever')
+    },
+    fetched_finalized_teams: (data) => {
+      console.log(data)
+      setInstallationTeams(data)
     }
   })
 

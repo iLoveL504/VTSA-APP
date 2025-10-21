@@ -1,5 +1,6 @@
 import express from 'express'
 import path from 'path'
+import fs from 'fs'
 import { 
     getProjects, 
     findProject, 
@@ -15,7 +16,9 @@ import {
     fillKickOffChecklist,
     getKickOffChecklist,
     getPTNCChecklist, 
-    fillPTNCChecklist 
+    fillPTNCChecklist,
+    projectContract,
+    foremanApprove 
 } from "../../controllers/projectController.js"
 const router = express.Router()
 import multer from 'multer'
@@ -28,14 +31,44 @@ import multer from 'multer'
 //   },
 // });
 
-const upload = multer({ dest: 'public/data/uploads' });
+const uploadPath = path.join(process.cwd(), 'public/data/uploads')
+console.log('Upload path:', uploadPath)
+
+// Create directory if needed
+if(!fs.existsSync(uploadPath)) {
+    fs.mkdirSync(uploadPath, { recursive: true })
+    console.log('Created upload directory: ', uploadPath)
+}
+
+// Use diskStorage to properly configure Multer
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, uploadPath);
+  },
+  filename: (req, file, cb) => {
+    // Preserve original filename with timestamp
+    cb(null, Date.now() + '-' + file.originalname);
+  },
+});
+
+const upload = multer({ 
+  storage: storage,
+  limits: {
+    fileSize: 5 * 1024 * 1024, // 5MB limit
+  }
+});
+
 
 router.route('/')
     .get(getProjects)
-    .post(createProject)
+    .post(upload.array('photos', 5), createProject)
+
 
 router.route('/update-status')
     .put(updateProjectStatus)
+
+router.route('/photos/:id')
+    .get(projectContract)
 
 router.route('/report/:id')
     .post(upload.array('photos', 5), sendDailyReport)
@@ -57,34 +90,11 @@ router.route('/checklist-ptnc/:id')
 router.route('/accomplishment/:id')
     .get(getProjectAccomplishment)
 
+router.route('/task/approval/:id')
+    .put(foremanApprove)
+
 router.route('/:id')
     .get(findProject)
     .put(updateProject)
 
-
-
-
-
-
 export { router }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

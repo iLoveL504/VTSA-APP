@@ -12,10 +12,11 @@ export default function utilitiesNamespace (usp) {
             socket.emit("update_done", results)
         })
         // get real time data for corresponding project engineers
-        socket.on("pe_projects", async () => {
+        socket.on("pe_projects", async (_, callback) => {
             const results = await utilities.peProjects()
-     
             socket.emit("pe_projects_fetch_done", results)
+
+            if (callback) callback()
         })
         // make and distribute notifications
         socket.on("new_notification", async (data, callback) => {

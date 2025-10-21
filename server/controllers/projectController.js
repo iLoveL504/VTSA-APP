@@ -15,7 +15,7 @@ export const findProject = async (req, res) => {
 
 export const createProject = async (req, res) => {
     try {
-    await projects.createProject(req.body)
+    await projects.createProject(req.body, req.files)
 
     const [projectId] = await projects.findByName(req.body.liftName)
     if (!projectId) return res.status(404).json({"message": "not found"})
@@ -123,7 +123,7 @@ export const getDailyReport = async (req, res) => {
 export const sendDailyReport = async (req, res) => {
 
     try {
-   
+        console.log('fsfsfs')
         await projects.submitProjectReport(req.body, req.files, Number(req.params.id))
         res.status(200).json({
             success: true,
@@ -202,4 +202,36 @@ export const fillPTNCChecklist = async (req, res) => {
     console.error(e);
     res.status(500).json({ success: false, message: "Error saving checklist." });
   }
+}
+
+export const projectContract = async (req, res) => {
+    const { id } = req.params;
+    try {
+        const results = await projects.getContractPhoto(Number(id))
+        const photos = results.map(p => p.photo_url)
+        res.status(200).json({
+            success: true,
+            message: "Contract photos",
+            data: photos
+        });        
+    } catch (e) {
+        console.error(e);
+        res.status(500).json({ success: false, message: "Error saving checklist." });        
+    }
+}
+
+export const foremanApprove = async (req, res) => {
+    const { id } = req.params
+    try {
+        console.log(req.body)
+        const { task_id } = req.body
+        await projects.foremanApprove(Number(id), task_id)
+        res.status(200).json({
+            success: true,
+            message: "approved"
+        })
+    } catch (e) {
+        console.error(e);
+        res.status(500).json({ success: false, message: "Error approving" });         
+    }
 }

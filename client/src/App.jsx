@@ -29,8 +29,12 @@ import DailyReportDetails from './Pages/Projects/DailyReportDetails.jsx'
 import HandOverChecklist from './Pages/Documents/HandOverChecklist.jsx'
 import PreInspection_Checklist from './Pages/Documents/PreInspection.jsx'
 import SchneiderServiceReport from './Pages/Documents/SchneiderServiceReport.jsx'
+import Users from './Pages/Admin/Users.jsx'
 import PMSPage from './Pages/PMS/PMSPage.jsx'
-
+import '@mantine/core/styles.css';
+// ‼️ import dates styles after core package styles
+import '@mantine/dates/styles.css';
+import { MantineProvider } from '@mantine/core';
 
 function App() {
   console.log('backendurl', import.meta.env.VITE_BACKEND_URL )
@@ -42,9 +46,9 @@ const { data: empData } =
 
 const { data: projData } =
   useAxiosFetch(`${backendURL}/api/projects`);
-
+console.log(sessionStorage.getItem('id'))
 const { data: notifData } =
-  useAxiosFetch(`${backendURL}/api/notifications/${sessionStorage.getItem('id')}`);
+  useAxiosFetch(`${backendURL}/api/notifications`);
 
   //const isLoggedIn = useStoreState(state => state.isLoggedIn)
   const setEmployees = useStoreActions(actions => actions.setEmployees)
@@ -107,6 +111,7 @@ useEffect(() => {
 }, [notifData, setNotifications])
 
   return (
+    <MantineProvider>
       <Routes>
         <Route path="/" element={<Navigate to="/login" replace />} />
         <Route path="login" element={<Login />} />
@@ -120,7 +125,10 @@ useEffect(() => {
           <Route path="technician">
             <Route index element={<Technician />} /> 
             <Route path=":empId" element={<TechnicianInfo />} />
+          </Route>
 
+          <Route path="admin">
+            <Route path="users" element={<Users />} />
           </Route>
 
           <Route path="projects">
@@ -164,7 +172,9 @@ useEffect(() => {
           <Route path="baby-book" element={<BabyBook />} />
         </Route>
         
-      </Routes>
+      </Routes>      
+    </MantineProvider>
+
   )
 }
 

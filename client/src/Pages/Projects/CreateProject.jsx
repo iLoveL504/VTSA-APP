@@ -11,7 +11,7 @@ import philippines from 'philippines'
 import '../../css/CreateProject.css'
 
   const validate = (values) => {
-
+    console.log(values)
     let errors = {};
 
     // Project & General Information
@@ -21,6 +21,7 @@ import '../../css/CreateProject.css'
     if (!values.region) errors.region = "Region is required";
     if (!values.province) errors.province = "Province is required";
     if (!values.city) errors.city = "City is required";
+    if (values.photos.length === 0) errors.photos = "Contract attachment is required"
     // if (!values.equipmentType) errors.equipmentType = "Equipment type is required";
 
     // Essential Lift Specifications
@@ -155,6 +156,7 @@ const CreateProject = () => {
     doorSize: "",
     overheadHeight: "",
     pitDepth: "",
+    photos: []
   }), []);
 
   const {
@@ -162,7 +164,8 @@ const CreateProject = () => {
     errors,
     handleInputChange,
     handleNumberInputChange,
-    handleBlur
+    handleBlur,
+    handleContractChange
   } = useFormValidate(initialState, validate);
 
   // Filter provinces based on selected region
@@ -318,42 +321,50 @@ useEffect(() => {
     }
   };
 
-  const handleConfirm = async () => {
-    console.log('hih')
-    setIsSubmitting(true);
-    setShowConfirmation(false);
-    
-    const payload = {
-      ...values,
-      cap: values.cap ? Number(values.cap) : 0,
-      speed: values.speed ? Number(values.speed) : 0,
-      travel: values.travel ? Number(values.travel) : 0,
-      overheadHeight: values.overheadHeight ? Number(values.overheadHeight) : 0,
-      pitDepth: values.pitDepth ? Number(values.pitDepth) : 0,
-    };
+const handleConfirm = async () => {
+  setIsSubmitting(true);
+  setShowConfirmation(false);
 
-    try {
-      console.log(payload);
-      const response = await Axios.post("/api/projects", payload);
-        if (response.data?.success) {
-            setShowSuccess(true);
-            setIsSubmitting(false);
-            console.log(response.data?.projectId.id)
-      
-            setTimeout(() => {
-              navigate(`/projects/${response.data?.projectId.id}/team`);
-            }, 3000);
-        } else {
-            alert("Unexpected server response. Please try again.");
-        }
+  const formData = new FormData();
 
-
-      
-    } catch (err) {
-      console.error("Error creating project:", err);
-      setIsSubmitting(false);
+  // Append text fields
+  Object.entries(values).forEach(([key, value]) => {
+    // For arrays like photos, skip (we’ll handle below)
+    if (key !== 'photos') {
+      formData.append(key, value);
     }
-  };
+  });
+
+  // Append photos (if any)
+  if (values.photos && values.photos.length > 0) {
+    for (let i = 0; i < values.photos.length; i++) {
+      formData.append('photos', values.photos[i]);
+    }
+  }
+
+  try {
+    const response = await Axios.post("/api/projects", formData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    });
+
+    if (response.data?.success) {
+      setShowSuccess(true);
+      setIsSubmitting(false);
+      setTimeout(() => {
+        navigate(`/projects/${response.data?.projectId.id}/team`);
+      }, 3000);
+    } else {
+      alert("Unexpected server response. Please try again.");
+    }
+
+  } catch (err) {
+    console.error("Error creating project:", err);
+    setIsSubmitting(false);
+  }
+};
+
 
   const handleCancel = () => {
     setShowConfirmation(false);
@@ -710,10 +721,36 @@ useEffect(() => {
           </div>
         </div>
 
+        <div className="form-section-group">
+          <h3>Attach Contract</h3>
+          <label htmlFor="photos">Contract</label>
+          <input 
+            type="file"
+            id="photos"
+            name="photos"
+            multiple
+            accept="image/*"
+            onChange={handleContractChange}    
+          />
+          <small>
+            Photos inserted:
+          </small>
+          {errors.photos && <p className="error">{errors.photos}</p>}
+          <button onClick={(e) => {
+            e.preventDefault()
+
+            console.log(values)
+          }
+          }>fds</button>
+        </div>
+
+
         <button type="submit" disabled={isSubmitting}>
           {isSubmitting ? "Creating Project..." : "Create Project"}
         </button>
       </form>
+
+        
 
       <ConfirmationModal
         isOpen={showConfirmation}

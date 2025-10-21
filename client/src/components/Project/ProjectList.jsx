@@ -13,6 +13,7 @@ const ProjectList = ({searchTerm}) => {
     role
   }
   const {data: projects} = useAxiosFetch(`${backendURL}/api/projects`)
+  console.log(projects)
   const {data: designatedProject, isLoading: designatedIsLoading} = useAxiosFetch(`${backendURL}/api/employees/${empId}/designated-project`, filter)
     // Filter projects based on search term
   const filteredProjects = useMemo(() => {

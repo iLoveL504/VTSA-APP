@@ -12,6 +12,8 @@ class UtilitiesModel {
             `)
         return results
     }
+
+    
 }
 
 export { UtilitiesModel }

@@ -12,9 +12,9 @@ import Modal from "@mui/material/Modal";
 import "../css/Test1.css";
 import tasks from '../data/TasksData.js'
 import { useReactToPrint } from "react-to-print";
+import { DatePickerInput } from '@mantine/dates';
 
 const Test1 = () => {
-  const testDate = new Date()
   const {projId} = useParams()
   //const location = useLocation();
   const navigate = useNavigate()
@@ -22,6 +22,9 @@ const Test1 = () => {
   const contentRef = useRef()
   const [selectedTaskID, setSelectedTaskID] = useState("");
   const [isCalendarDays, setIsCalendarDays] = useState(false)
+  const [startDate, setStartDate] = useState(new Date())
+
+
 
   // ✅ Normalize helper
   const normalizeDate = (date) => {
@@ -31,17 +34,28 @@ const Test1 = () => {
   };
 
   const [linkedList, setLinkedList] = useState(() => {
-    console.log(tasks)
-    const ll = new LinkedList(testDate, false);
+    const ll = new LinkedList(startDate, false);
     tasks.forEach((t) => {
       if (t.start) t.start = normalizeDate(t.start);
       if (t.end) t.end = normalizeDate(t.end);
       ll.insertLast(t);
     });
 
-    console.log(ll.toArray())
     return ll;
   });
+
+  useEffect(() => {
+    setLinkedList(() => {
+    const ll = new LinkedList(startDate, false);
+    tasks.forEach((t) => {
+      if (t.start) t.start = normalizeDate(t.start);
+      if (t.end) t.end = normalizeDate(t.end);
+      ll.insertLast(t);
+    });
+
+    return ll;
+    })
+  }, [startDate])
   
   const [actionType, setActionType] = useState(""); // "before" or "after"
   const [newTaskText, setNewTaskText] = useState("");
@@ -93,7 +107,7 @@ const Test1 = () => {
 useEffect(() => {
   setLinkedList((prevLL) => {
     const currentTasks = prevLL.toArray();
-    const newLL = new LinkedList(testDate, isCalendarDays);
+    const newLL = new LinkedList(startDate, isCalendarDays);
     currentTasks.forEach(task => newLL.insertLast(task));
     return newLL;
   });
@@ -119,7 +133,7 @@ useEffect(() => {
     if (selectedIndex === -1) return;
 
     // Step 1: Create a temporary linked list from current data
-    const tempLL = new LinkedList(testDate);
+    const tempLL = new LinkedList(startDate);
     listArray.forEach((task) => tempLL.insertLast(task));
     
     // Step 2: Generate a new unique ID for this parent
@@ -144,7 +158,7 @@ useEffect(() => {
     };
 
     // Step 4: Rebuild the linked list with the new task inserted
-    const newLinkedList = new LinkedList(testDate);
+    const newLinkedList = new LinkedList(startDate);
 
     listArray.forEach((task, index) => {
       if (index === selectedIndex && actionType === "before") {
@@ -186,7 +200,7 @@ useEffect(() => {
     const selectedIndex = getTaskIndex(selectedTaskID);
     if (selectedIndex === -1) return;
 
-    const newLinkedList = new LinkedList(testDate);
+    const newLinkedList = new LinkedList(startDate);
     
     listArray.forEach((task, index) => {
       if (index === selectedIndex) {
@@ -220,7 +234,7 @@ useEffect(() => {
 
     if (!window.confirm("Are you sure you want to delete this task?")) return;
 
-    const newLinkedList = new LinkedList(testDate);
+    const newLinkedList = new LinkedList(startDate);
 
     listArray.forEach((task, index) => {
       if (index !== selectedIndex) {
@@ -291,6 +305,12 @@ useEffect(() => {
 
         {/* Action Controls */}
         <div className="schedule-actions">
+          <DatePickerInput
+            label="Pick date"
+            placeholder="Pick date"
+            value={startDate}
+            onChange={setStartDate}
+          />
           <FormControl className="form-control-professional" size="small">
             <InputLabel id="parent-select-label">Parent Task</InputLabel>
             <Select

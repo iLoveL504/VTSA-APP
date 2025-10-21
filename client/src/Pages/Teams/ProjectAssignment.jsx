@@ -10,10 +10,12 @@ const ProjectAssignment = () => {
     const forecastData = useStoreState(state => state.forecastData)
     const teamsNoProject = useStoreState(state => state.teamsNoProject)
     const tentativeProjectTeams = useStoreState(state => state.tentativeProjectTeams)
+    const installationTeams = useStoreState(state => state.installationTeams)
     const [selectedProject, setSelectedProject] = useState({})
     const [activeRoleTab, setActiveRoleTab] = useState('all')
     const {currentTask} = useFindProjectTask(1)
-    
+    console.log(tentativeProjectTeams)
+    console.log(teamsNoProject)
     const [selectedTab, setSelectedTab] = useState('preliminaries')
    // console.log(import.meta.env.VITE_BECKEND_URL)
 // Filter personnel based on active tab
@@ -41,6 +43,7 @@ const ProjectAssignment = () => {
                 forecastSocket.emit('no_project_team')
                 forecastSocket.emit('tentative_project_team')
                 utilitiesSocket.emit('refresh_project_data')
+                forecastSocket.emit('installation_teams')
             }
         }, [forecastSocket])
 
@@ -95,7 +98,7 @@ const ProjectAssignment = () => {
                     <h2>Manage Manpower Plan</h2>
                     <p>Assign teams and forecast manpower for upcoming projects</p>
                 </div>
-                <div className='project-buttons'>
+                <div className='project-phase-buttons'>
                     <button onClick={preliminariesOnClick}>
                       Preliminaries
                     </button>
@@ -183,12 +186,16 @@ const ProjectAssignment = () => {
                                     {(project.status === 'Planning') && (
                                       <>
                                         <button onClick={() => {
+
                                           if(!project.has_team) forecastSocket.emit('save', project, (ack) => {
                                             if (ack?.success) {
-                                              console.log('this runs')
-                                              utilitiesSocket.emit('pe_projects')
+                                              window.alert('Team is saved')
+                                              utilitiesSocket.emit('pe_projects', null, () => {
+                                                window.location.reload()
+                                              })
                                             } else {
-                                              console.error('Save failed')
+                                              window.alert(ack.error)
+                                              console.error(ack.error)
                                             }
                                           })
                                             
@@ -201,6 +208,7 @@ const ProjectAssignment = () => {
                                       
                                       )}
                                       <h4>Project Engineer: {project.pe_fullname}</h4>
+                                    {!project.has_team ? (
                                    <div className="project-team-info">
                                       {(() => {
                                         // ✅ Compute once per project card
@@ -234,7 +242,8 @@ const ProjectAssignment = () => {
                                                     }}
                                                   >
                                                     <span className="team-member-name">
-                                                      {foreman.foreman_username}
+                                                      {console.log(foreman)}
+                                                      {foreman.foreman_full_name}
                                                     </span>
                                                     <span className="team-member-role">Foreman</span>
                                                   </div>
@@ -270,6 +279,68 @@ const ProjectAssignment = () => {
                                                       }}
                                                     >
                                                       <span className="team-member-name">
+                                                        
+                                                        {installer.full_name}
+                                                      </span>
+                                                      <span className="team-member-role">{installer.job}</span>
+                                                    </div>
+                                                  ))
+                                                ) : (
+                                                  <div className="team-empty-state">No installers assigned</div>
+                                                )}
+                                              </div>
+                                            </div>
+                                          </>
+                                        );
+                                      })()}
+                                    </div>                                      
+                                    ) : (
+                                    <div className="project-team-info">
+                                      {(() => {
+                     
+                                        console.log(installationTeams)
+                                        const projectTeams = installationTeams.filter(
+                                          (t) => Number(t.project_id) === Number(project.id)
+                                        );
+                                        const foreman = projectTeams.find(p => p.job === "Foreman");
+                                        const installers = projectTeams.filter(
+                                          (t) => t.job !== "Foreman"
+                                        );
+
+                                        return (
+                                          <>
+                                            {/* Foreman Section */}
+                                            <div>
+                                              <h4>Foreman</h4>
+                                              <div className="team-member-list">
+                                                {foreman ? (
+                                                  <div
+                                                    className="team-member role-foreman selected"
+                                                  >
+                                                    <span className="team-member-name">
+                                                      {foreman.username}
+                                                    </span>
+                                                    <span className="team-member-role">Foreman</span>
+                                                  </div>
+                                                ) : (
+                                                  <div className="team-empty-state">No foreman assigned</div>
+                                                )}
+                                              </div>
+                                            </div>
+
+                                            {/* Installers Section */}
+                                            <div>
+                                              <h4>Installers</h4>
+                                              <div className="team-member-list">
+                                                {installers.length > 0 ? (
+                                                  installers.map((installer) => (
+                                                    <div
+                                                      key={installer.employee_id}
+                                                      className={`team-member role-${installer.job
+                                                        .toLowerCase()
+                                                        .replace(" ", "-")} selected`}
+                                                    >
+                                                      <span className="team-member-name">
                                                         {installer.username}
                                                       </span>
                                                       <span className="team-member-role">{installer.job}</span>
@@ -284,6 +355,8 @@ const ProjectAssignment = () => {
                                         );
                                       })()}
                                     </div>
+                                  )}
+
 
                                 </div>
                             ))
@@ -410,7 +483,7 @@ const ProjectAssignment = () => {
                                                         const employee_id = installer.emp_id;
                                                         const date = project.installation_start_date.split("T")[0];
                                                         console.log(
-                                                          `🗑 Removing ${installer.username} from project ${projectId}`
+                                                          `🗑 Removing ${installer.full_name} from project ${projectId}`
                                                         );
                                                         forecastSocket.emit("remove_forecast_member", {
                                                           projectId,
@@ -420,7 +493,7 @@ const ProjectAssignment = () => {
                                                       }}
                                                     >
                                                       <span className="team-member-name">
-                                                        {installer.username}
+                                                        {installer.full_name}
                                                       </span>
                                                       <span className="team-member-role">{installer.job}</span>
                                                     </div>
@@ -558,7 +631,7 @@ const ProjectAssignment = () => {
                                                         const employee_id = installer.emp_id;
                                                         const date = project.installation_start_date.split("T")[0];
                                                         console.log(
-                                                          `🗑 Removing ${installer.username} from project ${projectId}`
+                                                          `🗑 Removing ${installer.full_name} from project ${projectId}`
                                                         );
                                                         forecastSocket.emit("remove_forecast_member", {
                                                           projectId,
@@ -568,7 +641,7 @@ const ProjectAssignment = () => {
                                                       }}
                                                     >
                                                       <span className="team-member-name">
-                                                        {installer.username}
+                                                        {installer.full_name}
                                                       </span>
                                                       <span className="team-member-role">{installer.job}</span>
                                                     </div>
@@ -653,7 +726,7 @@ const ProjectAssignment = () => {
                                 <div className="personnel-group-badge">
                                     {person.group === 'no-project' ? 'Available' : 'Forecasted'}
                                 </div>
-                                <div className="personnel-name">{person.username}</div>
+                                <div className="personnel-name">{person.full_name}</div>
                                 <div className="personnel-id">ID: {person.employee_id}</div>
                                 <div className={`personnel-job job-${person.job.toLowerCase().replace(' ', '-')}`}>
                                     {person.job}

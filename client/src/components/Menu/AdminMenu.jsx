@@ -22,10 +22,10 @@ const AdminMenu = () => {
                 Dashboard
             </li>
           </Link>
-          <Link to="/technician">
+          <Link to="/admin/users">
             <li>
                 <IoPerson style={{ color: 'white' }}/>
-                Technician
+                Users
             </li>
           </Link>
           <Link to="/projects">

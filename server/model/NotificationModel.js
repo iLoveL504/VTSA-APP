@@ -17,7 +17,7 @@ class NotificationModel {
 
     static async getNotificationsById(id) {
         const [results] = await pool.query(`
-            SELECT n.notification_id, n.subject, n.body, e.username
+            SELECT n.notification_id, n.subject, n.body, nr.employee_id, e.username
             FROM notification n
             JOIN notification_recipients nr
                 ON n.notification_id = nr.notification_id

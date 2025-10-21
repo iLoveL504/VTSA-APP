@@ -594,6 +594,10 @@
   grid-column: 1 / -1;
 }
 
+.form-section:nth-child(5) {
+  grid-column: 1 / -1;
+}
+
 /* Responsive design */
 @media (max-width: 1024px) {
   .project-form {

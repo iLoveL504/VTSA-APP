@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react'
 const useFormValidate = (initialState, validate) => {
     const [errors, setErrors] = useState({})
     const [values, setValues] = useState(initialState)
+
     const [saveStatus, setSaveStatus] = useState('')
 
     useEffect(() => {
@@ -14,7 +15,19 @@ const useFormValidate = (initialState, validate) => {
         setValues({
             ...values , [name] : value
         })
-    } 
+    }
+    
+    const handleContractChange = (e) => {
+       // const {name, value} = e.target
+
+        console.log([...Array.from(e.target.files)])
+        const pa = Array.from(e.target.files)
+
+        setValues(prev => ({
+            ...prev,
+            photos: [...prev.photos, ...pa]
+        }))
+    }
 
     const handleNumberInputChange = (e) => {
         const {name, value} = e.target
@@ -50,7 +63,8 @@ const useFormValidate = (initialState, validate) => {
         values,
         setValues,
         saveStatus,
-        setSaveStatus
+        setSaveStatus,
+        handleContractChange
     }
 }
 

@@ -35,7 +35,15 @@ class ProjectModel {
         return results
     }
 
-    static async createProject(project){
+    static async getContractPhoto(id) {
+      const [results] = await pool.query(`
+          select p.id, p.lift_name, c.photo_url from projects p 
+          join project_contract_photos c on p.id = c.project_id where project_id = ?; 
+        `, [id])
+      return results
+    }
+
+    static async createProject(project, files){
       
         const {
             liftName,
@@ -96,7 +104,13 @@ class ProjectModel {
         );
         const newProjectId = results.insertId;
         await pool.query(`insert into project_manpower(project_id) values (?)`, [newProjectId])
-        console.log(newProjectId)
+        for (const file of files) {
+        const filePath = "/uploads/" + file.filename;
+        await pool.query(
+            `INSERT INTO project_contract_photos (project_id, photo_url) VALUES (?, ?)`,
+            [newProjectId, filePath]
+        );
+        }
         return results
     }
 
@@ -211,6 +225,13 @@ static async getProjectSchedule(id) {
 
    static async makeProjectSchedule(tasks, id) {
   try {
+    const checkQuery = `show tables like 'project_${id}_schedule'`
+    const [results] = await pool.query(checkQuery)
+    console.log(results)
+    if(results.length !== 0) {
+      const deleteQuery = `drop table project_${id}_schedule`
+      await pool.query(deleteQuery)
+    }
     // Create the table (with new columns already included)
     const createTableQuery = `
       CREATE TABLE IF NOT EXISTS project_${id}_schedule (
@@ -222,6 +243,7 @@ static async getProjectSchedule(id) {
         task_duration INT,
         task_type VARCHAR(255),
         task_parent INT,
+        task_approval TINYINT(1) DEFAULT 0,
         task_done TINYINT(1) DEFAULT 0,
         task_percent INT DEFAULT 0,
 
@@ -330,7 +352,9 @@ static async getProjectSchedule(id) {
     }
 
     static async retrieveProjectReport(id) {
-        const [results] = await pool.query(`select * from project_daily_report where project_id = ?`, [id])
+        const [results] = await pool.query(`select dr.*, drp.photo_url from project_daily_report dr join daily_report_photos drp on dr.id = drp.report_id where project_id = ?`, [id])
+        console.log(results)
+        console.log('------------------------------')
         return results
     }
 
@@ -535,6 +559,11 @@ static async getProjectSchedule(id) {
       return res.status(404).json({ message: "Checklist not found" });
     }
 
+  }
+
+  static async foremanApprove (projId, taskId) {
+    const query = `update project_${projId}_schedule set task_approval = 1 where task_id = ?;`
+    await pool.query(query, [taskId])
   }
 }
 

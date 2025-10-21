@@ -12,11 +12,18 @@ const NavBar = ({ invertMenuToggle }) => {
   const user = useStoreState(state => state.user)
   const notifications = useStoreState(state => state.notifications)
   const [notifToggle, invertNotifToggle] = useToggle();
-  const [notifs, setNotifs] = useState([]);
+  const [notifs, setNotifs] = useState(['dfs', 'sdf'])
   useEffect(() => {
-    setNotifs(notifications)
-  }, [notifications])
+    if(notifications){
+        const f = notifications.filter(n => n.employee_id === Number(sessionStorage.getItem('id')))
 
+        setNotifs(f)
+        console.log(notifications)
+    }
+
+    //setNotifs(notifications)
+  }, [notifications])
+console.log(notifs)
 
   return (
     <nav>
@@ -26,7 +33,9 @@ const NavBar = ({ invertMenuToggle }) => {
       <div onClick={() => invertNotifToggle()} className="Notification-Icon">
         <IoIosNotifications className="BellIcon" size={30} style={{ color: 'white' }}/>
         
-        {notifs !== 0 && <div className="Notifications" style={{ display: `${notifications.length !== 0 ? '' : 'none'}` }}>{notifications.length}</div>}
+        {notifs.length !== 0 && <div className="Notifications" style={{ display: `${notifications.length !== 0 ? '' : 'none'}` }}>{
+          notifs.length
+        }</div>}
         <div className={`NotificationList ${notifToggle ? ' Hidden' : ''}`}>
           <div>
             <NotificationList />

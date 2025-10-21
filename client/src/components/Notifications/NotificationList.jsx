@@ -7,6 +7,8 @@ const NotificationList = () => {
     const notifications = useStoreState(state => state.notifications)
     const id = Number(sessionStorage.getItem("id"))
     console.log(notifications)
+
+    console.log(id)
     return (
         <ul>
             {

@@ -23,6 +23,7 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import forecastMenNameSpace from "./sockets/forecastMenNameSpace.js";
 import utilitiesNamespace from "./sockets/utilitiesNamespace.js";
+import usersNamespace from "./sockets/usersNamespace.js";
 
 const app = express();
 const server = http.createServer(app);
@@ -60,6 +61,7 @@ app.use('/api/pms', pmsRouter);
 // Serve static frontend files
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
+app.use('/uploads', express.static(path.join(__dirname, '../public/data/uploads')));
 const clientDist = path.resolve(__dirname, '../client/dist');
 app.use(express.static(clientDist));
 
@@ -79,6 +81,7 @@ app.use((err, req, res, next) => {
 // Socket.io connection handling 
 forecastMenNameSpace(io.of("/forecast"))
 utilitiesNamespace(io.of("/utilities"))
+
 console.log('hih')
 // Start server
 const PORT = process.env.PORT || 4000;
