@@ -9,6 +9,7 @@ const useFindProjectTask = (id) => {
     const [tasksIsLoading, setTasksIsLoading] = useState(true)
     const [currentTask, setCurrentTask] = useState(null)
     const [currentParentTask, setCurrentParentTask] = useState(null)
+    const [currentTaskPhase, setCurrentTaskPhase] = useState(null)
     const [projectExists, setProjectExists] = useState('loading')
     const {data: fetchedData, fetchError: fetchError, isLoading: isLoading} = useAxiosFetch(`${backendURL}/api/projects/schedule/${id}`)
     const [projectCompleted, setProjectCompleted] = useState(false)
@@ -34,6 +35,8 @@ const useFindProjectTask = (id) => {
     
             //find current task
             const foundCurrentTask = fetchedData.find(t => t.task_type === 'task' && new Date(dateNow) > new Date(t.task_start) && new Date(dateNow) < new Date(t.task_end))
+            const foundCurrentTaskPhase = fetchedData.find(t => t.task_id === foundCurrentTask.task_parent)
+            setCurrentTaskPhase(foundCurrentTaskPhase)
             console.log(foundCurrentTask)
             setCurrentTask(foundCurrentTask)
             setTasksIsLoading(false)
@@ -42,7 +45,7 @@ const useFindProjectTask = (id) => {
         }
     }, [isLoading, fetchedData, dateNow, fetchError])
 
-    return{currentTask, currentParentTask, tasksIsLoading, fetchError, projectExists, fetchedData, projectCompleted}
+    return{currentTask, currentParentTask, tasksIsLoading, fetchError, projectExists, fetchedData, projectCompleted, currentTaskPhase}
 }
 
 export default useFindProjectTask

@@ -18,7 +18,9 @@ import {
     getPTNCChecklist, 
     fillPTNCChecklist,
     projectContract,
-    foremanApprove 
+    foremanApprove,
+    requestProjQAQC,
+    assignProjQAQC
 } from "../../controllers/projectController.js"
 const router = express.Router()
 import multer from 'multer'
@@ -78,6 +80,12 @@ router.route('/schedule/:id')
     .get(getProjectSchedule)
     .post(makeProjectSchedule)
     .put(completeTask)
+
+router.route('/qaqc/request/:id')
+    .post(requestProjQAQC)
+
+router.route('/qaqc/assign/:id')
+    .put(assignProjQAQC)
 
 router.route('/kickoff/:id')
     .put(fillKickOffChecklist)

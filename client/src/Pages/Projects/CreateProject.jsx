@@ -499,7 +499,7 @@ const handleConfirm = async () => {
           <h3>Essential Lift Specifications</h3>
 
           <div>
-            <label htmlFor="capacity">Capacity</label>
+            <label htmlFor="capacity">Capacity (Kgs)</label>
             <input
               type="number"
               id="capacity"
@@ -515,7 +515,7 @@ const handleConfirm = async () => {
           </div>
 
           <div>
-            <label htmlFor="speed">Speed</label>
+            <label htmlFor="speed">Speed (m/s)</label>
             <input
               type="number"
               id="speed"

@@ -10,7 +10,7 @@ import "wx-react-gantt/dist/gantt.css";
 import "../../gantt-custom.css"
 import ProjectDetails from './ProjectDetails.jsx'
 import ProjectProgress from './ProjectProgress.jsx'
-import ScheduleProject from './ScheduleProject.jsx'
+import RequestQAQC from './RequestQAQC.jsx'
 import '../../css/ProjectPage.css'
 import tasks from '../../data/TasksData'
 import ProjectDocuments from './ProjectDocuments.jsx'
@@ -27,7 +27,7 @@ const ProjectInfo = () => {
     const {data: photos, isLoading: photosIsLoading} = useAxiosFetch(`${backendURL}/api/projects/photos/${projId}`)
     const [isEditing, setIsEditing] = useState(false)
     const [formData, setFormData] = useState({})
-    const {currentTask, currentParentTask, isLoading: currentIsLoading, fetchError: tasksFetchError, projectExists, fetchedData, projectCompleted} = useFindProjectTask(projId)
+    const {currentTask, currentParentTask, currentTaskPhase, isLoading: currentIsLoading, fetchError: tasksFetchError, projectExists, fetchedData, projectCompleted} = useFindProjectTask(projId)
     const isProjectsReady = Array.isArray(projects) && projects.length > 0;
     const fetchUrl = proj && isProjectsReady ? `${backendURL}/api/teams/${proj.id}` : null;
     const {data: teamInfo, isLoading: teamIsLoading} = useAxiosFetch(fetchUrl);
@@ -167,6 +167,8 @@ const ProjectInfo = () => {
                     photos={photos}
                     photosIsLoading={photosIsLoading}
                     backendURL={backendURL}
+                    setActivePage={setActivePage}
+                    currentTaskPhase={currentTaskPhase}
                 />
             }
             {
@@ -180,6 +182,10 @@ const ProjectInfo = () => {
             {
                 activePage === 'pms_entry' &&
                 <PMS_Entry />
+            }
+            {
+                activePage === 'qaqc' &&
+                <RequestQAQC proj={proj} currentTask={currentTask}/>
             }
             
             {/* Floating Daily Report Button - Test without role restriction first */}

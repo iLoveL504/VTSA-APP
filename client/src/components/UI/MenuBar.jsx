@@ -4,6 +4,8 @@ import ForemanMenu from "../Menu/ForemanMenu"
 import PMSCoordinatorMenu from "../Menu/PMSCoordinatorMenu";
 import PMSTechnicianMenu from "../Menu/PMSTechnicianMenu";
 import InstallerMenu from "../Menu/InstallerMenu";
+import QAQCCoordinatorMenu from "../Menu/QAQCCoordinatorMenu";
+import QAQCMenu from "../Menu/QAQCMenu";
 
 const MenuBar = ({ menuToggle }) => {
 const user = sessionStorage.getItem('roles');
@@ -18,6 +20,8 @@ return (
       user === "Installer" || user === "Skilled Installer" ? <InstallerMenu /> :
       user === "PMS Coordinator" ? <PMSCoordinatorMenu /> :
       user === "PMS Technician" ? <PMSTechnicianMenu /> :
+      user === "QAQC Coordinator" ? <QAQCCoordinatorMenu /> :
+      user === "QAQC" ? <QAQCMenu /> : 
       <AdminMenu/>
     }
   </div>

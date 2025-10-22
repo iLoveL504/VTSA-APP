@@ -23,10 +23,12 @@ const useFormValidate = (initialState, validate) => {
         console.log([...Array.from(e.target.files)])
         const pa = Array.from(e.target.files)
 
-        setValues(prev => ({
-            ...prev,
-            photos: [...prev.photos, ...pa]
-        }))
+        setValues(prev => {
+            const updated = { ...prev, photos: [...prev.photos, ...pa] };
+            // Immediately validate after updating
+            setErrors(validate(updated));
+            return updated;
+        });
     }
 
     const handleNumberInputChange = (e) => {

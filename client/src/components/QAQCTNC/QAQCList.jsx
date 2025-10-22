@@ -1,10 +1,10 @@
 import React, {useMemo, useEffect} from 'react'
-import Project from './Project'
+import QAQCEntry from './QAQCEntry'
 import useAxiosFetch from '../../hooks/useAxiosFetch'
 
 import { Grid } from 'ldrs/react'
 
-const ProjectList = ({searchTerm}) => {
+const QAQCList = ({searchTerm, setSelectedEntry, onAssignClick}) => {
 
   const backendURL = import.meta.env.VITE_BACKEND_URL || 'http://localhost:4000'
   const empId = sessionStorage.getItem('id')
@@ -58,18 +58,15 @@ useEffect(() => {
     <div className='ProjectList'>  
         
         {
-            sessionStorage.getItem('roles') === 'manager' ||
-            sessionStorage.getItem('roles') === 'Project Manager' ||
-            sessionStorage.getItem('roles') === 'TNC Coordinator' ||
             sessionStorage.getItem('roles') === 'QAQC Coordinator' ?
             (
                filteredProjects.map(p => (
-                  <Project project={p} key={p.id}/>
+                  <QAQCEntry project={p} key={p.id} setSelectedEntry={setSelectedEntry} onAssignClick={onAssignClick}/>
                 ))
             )
             :  (  
                 designatedProject.map(p => (
-                  <Project project={p} key={p.id}/>
+                  <QAQCEntry project={p} key={p.id} setSelectedEntry={setSelectedEntry} onAssignClick={onAssignClick}/>
                 ))
             )
         }
@@ -77,4 +74,4 @@ useEffect(() => {
   )
 }
 
-export default ProjectList
+export default QAQCList

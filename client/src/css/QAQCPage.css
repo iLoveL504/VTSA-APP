@@ -1,0 +1,824 @@
+.Content.QAQCMenu {
+  padding: 2rem;
+  width: 100%;
+  max-width: 1700px;;
+  margin: 0 auto;
+}
+
+/* .Content.QAQCMenu > div:first-child {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+} */
+
+.Content.QAQCMenu button {
+  background-color: #315a95;
+  color: white;
+  padding: 0.75rem 1.5rem;
+  border: none;
+  border-radius: 4px;
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.Content.QAQCMenu button:hover {
+  background-color: #26467c;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+/* Project Table Header */
+.project-table-header {
+  background-color: #315a95;
+  color: white;
+  border-radius: 8px 8px 0 0;
+  margin-bottom: 0;
+  font-weight: 600;
+}
+
+.Content.QAQCMenu .project-table-header .header-row {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1.5fr 2fr 1.5fr 2fr;
+  align-items: center;
+  padding: 1rem;
+  gap: 1rem;
+}
+
+.Content.QAQCMenu .table-cell {
+  font-weight: 600;
+  font-size: 0.9rem;
+  text-align: left;
+}
+
+
+
+/* Project Header Styling */
+.Content.QAQCMenu .project-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+  background-color: #7b1fa2;
+}
+
+.Content.QAQCMenu .project-header h1 {
+  color: #315a95;
+  font-weight: 600;
+  margin: 0;
+}
+
+.Content.QAQCMenu .ProjectList {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+  padding: 1rem;
+  height: 100%;
+  max-height: 800px;
+  overflow-y: auto;
+}
+
+.ProjectList::-webkit-scrollbar {
+  display: none; 
+}
+
+/* Project Component */
+
+.Content.QAQCMenu .ProjectInfo {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1.5fr 2fr 1.5fr 2fr;
+  align-items: center;
+  gap: 1rem;
+  padding: 1.25rem;
+  background-color: white;
+  border-radius: 6px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.Content.QAQCMenu .ProjectInfo:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+.Content.QAQCMenu .ProjectInfo p {
+  margin: 0;
+  font-size: 0.9rem;
+  color: #555;
+}
+
+.current-task {
+  font-size: 0.85rem;
+  color: #495057;  
+}
+
+.qaqc-status {
+  font-weight: 600;
+  font-size: 0.85rem;
+  text-align: center;
+  padding: 0.25rem 0.5rem;
+  border-radius: 12px;
+  background-color: rgba(0,0,0,0.05);
+}
+
+.qaqc-dates {
+  font-size: 0.8rem;
+  color: #495057;
+  line-height: 1.3;
+}
+
+.Content.QAQCMenu .ProjectInfo > p:first-of-type {
+  font-weight: 500;
+  color: #315a95;
+}
+
+/* Status Badges */
+.Content.QAQCMenu .ProjectInfo .status-badge {
+  padding: 0.25rem 0.5rem;
+  border-radius: 12px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-align: center;
+  text-transform: capitalize;
+}
+
+/* Alternative CSS with hyphenated class names */
+.Content.QAQCMenu .ProjectInfo .status-Preliminaries {
+  background-color: #e3f2fd;
+  color: #1565c0;
+  border-color: #bbdefb;
+}
+
+.Content.QAQCMenu .ProjectInfo .status-Structural-Manufacturing {
+  background-color: #fff3e0;
+  color: #ef6c00;
+  border-color: #ffe0b2;
+}
+
+.Content.QAQCMenu.ProjectInfo .status-Planning {
+  background-color: #f3e5f5;
+  color: #7b1fa2;
+  border-color: #e1bee7;
+}
+
+.Content.QAQCMenu .ProjectInfo .status-Installation {
+  background-color: #e8f5e9;
+  color: #2e7d32;
+  border-color: #c8e6c9;
+}
+
+.Content.QAQCMenu .ProjectInfo .status-Test-and-Comm {
+  background-color: #fff8e1;
+  color: #ff8f00;
+  border-color: #ffecb3;
+}
+
+/* Progress Bar Container */
+.Content.QAQCMenu .ProjectInfo .progress-container {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+/* Responsive adjustments */
+@media (max-width: 1024px) {
+  .header-row,
+  .ProjectInfo {
+    grid-template-columns: 2fr 1fr 1fr;
+    grid-template-rows: auto auto;
+    gap: 0.5rem;
+  }
+  
+  .table-cell:nth-child(n+4),
+  .ProjectInfo > div:nth-child(n+4) {
+    grid-column: span 1;
+  }
+}
+
+@media (max-width: 768px) {
+  .header-row,
+  .ProjectInfo {
+    grid-template-columns: 1fr;
+    gap: 0.5rem;
+  }
+  
+  .project-header {
+    flex-direction: column;
+    gap: 1rem;
+    align-items: stretch;
+  }
+  
+  .project-header h1 {
+    text-align: center;
+  }
+  
+  .project-header button {
+    width: 100%;
+  }
+}
+
+/* Full Row Highlight for QAQC Pending Projects */
+.ProjectInfo.qaqc-pending {
+  background: linear-gradient(135deg, #fffbf0, #fff3cd) !important;
+  border: 2px solid #ffc107 !important;
+  border-left: 6px solid #ffc107 !important;
+  box-shadow: 0 4px 15px rgba(255, 193, 7, 0.2) !important;
+  position: relative;
+  transform: scale(1.01);
+  z-index: 1;
+}
+
+.ProjectInfo.qaqc-pending::before {
+  content: '🕐 QAQC PENDING';
+  position: absolute;
+  top: -2px;
+  right: -2px;
+  background: linear-gradient(135deg, #ffc107, #ffb300);
+  color: white;
+  font-size: 0.7rem;
+  font-weight: 700;
+  padding: 0.35rem 0.9rem;
+  border-radius: 0 6px 0 8px;
+  z-index: 2;
+  letter-spacing: 0.5px;
+  box-shadow: 0 2px 8px rgba(255, 179, 0, 0.3);
+}
+
+.ProjectInfo.qaqc-pending:hover {
+  box-shadow: 0 6px 20px rgba(255, 193, 7, 0.3) !important;
+  transform: scale(1.02) translateY(-1px);
+}
+
+/* Ensure all child elements maintain visibility */
+.ProjectInfo.qaqc-pending .project-name,
+.ProjectInfo.qaqc-pending .project-client,
+.ProjectInfo.qaqc-pending .progress-text,
+.ProjectInfo.qaqc-pending .current-task,
+.ProjectInfo.qaqc-pending .qaqc-status,
+.ProjectInfo.qaqc-pending .qaqc-dates {
+  color: #8B6914 !important;
+  font-weight: 600;
+}
+
+/* Status badge contrast adjustment */
+.ProjectInfo.qaqc-pending .status-badge {
+  opacity: 0.9;
+  border-width: 2px;
+}
+
+/* Progress bar styling for highlighted rows */
+.ProjectInfo.qaqc-pending .MuiLinearProgress-root {
+  background-color: #ffeaa7 !important;
+}
+
+.ProjectInfo.qaqc-pending .MuiLinearProgress-bar {
+  background: linear-gradient(135deg, #e67e22, #f39c12) !important;
+}
+
+/* Urgent/High Priority Variation */
+.ProjectInfo.qaqc-pending.urgent {
+  background: linear-gradient(135deg, #ffeaa7, #ffd8a8) !important;
+  border-color: #e74c3c !important;
+  border-left-color: #e74c3c !important;
+  animation: urgent-pulse 2s ease-in-out infinite;
+}
+
+.ProjectInfo.qaqc-pending.urgent::before {
+  content: '⚡ URGENT QAQC';
+  background: linear-gradient(135deg, #e74c3c, #c0392b);
+}
+
+.ProjectInfo.qaqc-pending.urgent .project-name,
+.ProjectInfo.qaqc-pending.urgent .project-client,
+.ProjectInfo.qaqc-pending.urgent .progress-text,
+.ProjectInfo.qaqc-pending.urgent .current-task,
+.ProjectInfo.qaqc-pending.urgent .qaqc-status,
+.ProjectInfo.qaqc-pending.urgent .qaqc-dates {
+  color: #c0392b !important;
+}
+
+@keyframes urgent-pulse {
+  0%, 100% {
+    box-shadow: 0 4px 15px rgba(231, 76, 60, 0.3);
+  }
+  50% {
+    box-shadow: 0 4px 20px rgba(231, 76, 60, 0.5);
+  }
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .ProjectInfo.qaqc-pending {
+    border-left: 4px solid #ffc107 !important;
+    margin: 2px;
+  }
+  
+  .ProjectInfo.qaqc-pending::before {
+    position: relative;
+    top: 0;
+    right: 0;
+    border-radius: 6px;
+    margin-bottom: 0.5rem;
+    display: block;
+    text-align: center;
+  }
+}
+
+/* Projects Header */
+.Content.QAQCMenu .projects-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+  padding: 0 1rem;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.Content.QAQCMenu .header-left h1 {
+  color: #315a95;
+  margin: 0 0 0.5rem 0;
+  font-size: 2rem;
+  font-weight: 700;
+}
+
+.Content.QAQCMenu .projects-count {
+  color: #64748b;
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+.Content.QAQCMenu .header-right {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+/* Search Container */
+.Content.QAQCMenu .search-container {
+  position: relative;
+  min-width: 300px;
+}
+
+.Content.QAQCMenu .search-input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.Content.QAQCMenu .search-input {
+  width: 100%;
+  padding: 0.75rem 3rem 0.75rem 1rem;
+  border: 2px solid #e2e8f0;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  transition: all 0.3s ease;
+  background: white;
+  color: #2d3748;
+}
+
+.Content.QAQCMenu .search-input:focus {
+  outline: none;
+  border-color: #315a95;
+  box-shadow: 0 0 0 3px rgba(49, 90, 149, 0.1);
+}
+
+.Content.QAQCMenu .search-input::placeholder {
+  color: #94a3b8;
+}
+
+.Content.QAQCMenu .search-icon {
+  position: absolute;
+  right: 1rem;
+  color: #64748b;
+  font-size: 1rem;
+}
+
+.Content.QAQCMenu .clear-search-btn {
+  position: absolute;
+  right: 2.5rem;
+  background: none;
+  border: none;
+  color: #94a3b8;
+  cursor: pointer;
+  padding: 0.25rem;
+  border-radius: 50%;
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2rem;
+  transition: all 0.2s ease;
+}
+
+.Content.QAQCMenu .clear-search-btn:hover {
+  background: #f1f5f9;
+  color: #64748b;
+}
+
+
+/* No Results Message */
+.no-results {
+  text-align: center;
+  padding: 3rem 2rem;
+  color: #64748b;
+  background: #f8fafc;
+  border-radius: 8px;
+  margin: 2rem 0;
+  border: 2px dashed #e2e8f0;
+}
+
+.no-results p {
+  margin: 0 0 1rem 0;
+  font-size: 1.1rem;
+}
+
+.clear-search-link {
+  background: none;
+  border: none;
+  color: #315a95;
+  cursor: pointer;
+  text-decoration: underline;
+  font-weight: 600;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  transition: background-color 0.2s ease;
+}
+
+.clear-search-link:hover {
+  background: #f1f5f9;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .projects-header {
+    flex-direction: column;
+    align-items: stretch;
+    text-align: center;
+  }
+  
+  .header-right {
+    justify-content: center;
+  }
+  
+  .search-container {
+    min-width: 100%;
+  }
+  
+  .header-left h1 {
+    font-size: 1.5rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .header-right {
+    flex-direction: column;
+    width: 100%;
+  }
+  
+  .search-container {
+    width: 100%;
+  }
+  
+  .create-project-btn {
+    width: 100%;
+    text-align: center;
+  }
+}
+
+/* Enhanced Entry Section Styles */
+.entry-section {
+  background: white;
+  border-radius: 16px;
+  padding: 2.5rem;
+  margin-bottom: 2.5rem;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  border: 1px solid #e1e5e9;
+  position: relative;
+  overflow: hidden;
+}
+
+.entry-section::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(135deg, #315a95, #4a7cc2);
+}
+
+.entry-section h1 {
+  color: #315a95;
+  margin: 0 0 2rem 0;
+  font-size: 1.75rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.entry-section h1::before {
+  content: '📋';
+  font-size: 1.5rem;
+}
+
+.entry-info {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1.25rem;
+}
+
+.QAQCMenu .info-item {
+  background: linear-gradient(135deg, #f8f9fa, #ffffff);
+  border-radius: 12px;
+  padding: 1.25rem;
+  border: 1px solid #e9ecef;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+  transition: all 0.3s ease;
+  position: relative;
+}
+
+.QAQCMenu .info-item:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+  border-color: #315a95;
+}
+
+.QAQCMenu .info-item::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  width: 4px;
+  background: linear-gradient(135deg, #315a95, #4a7cc2);
+  border-radius: 4px 0 0 4px;
+}
+
+.QAQCMenu .info-item strong {
+  display: block;
+  font-size: 0.8rem;
+  color: #6c757d;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 0.5rem;
+  font-weight: 600;
+}
+
+.QAQCMenu .info-item span {
+  display: block;
+  font-size: 1.1rem;
+  color: #2c3e50;
+  font-weight: 600;
+}
+
+/* QAQC Assignment Section */
+.qaqc-assignment {
+  grid-column: 1 / -1;
+  background: linear-gradient(135deg, #e8f4fd, #f0f8ff) !important;
+  border: 2px dashed #315a95 !important;
+  padding: 2rem !important;
+  text-align: center;
+}
+
+.qaqc-assignment::before {
+  background: linear-gradient(135deg, #28a745, #20c997) !important;
+}
+
+.qaqc-assignment h3 {
+  color: #315a95;
+  margin: 0 0 1rem 0;
+  font-size: 1.25rem;
+  font-weight: 600;
+}
+
+.assign-qaqc-btn {
+  background: linear-gradient(135deg, #28a745, #20c997);
+  color: white;
+  border: none;
+  padding: 1rem 2rem;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  box-shadow: 0 4px 15px rgba(40, 167, 69, 0.3);
+}
+
+.assign-qaqc-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(40, 167, 69, 0.4);
+}
+
+.assign-qaqc-btn::before {
+  content: '🔍';
+  font-size: 1.1rem;
+}
+
+/* No Inspection State */
+.no-inspection {
+  grid-column: 1 / -1;
+  background: linear-gradient(135deg, #f8f9fa, #e9ecef) !important;
+  border: 2px dashed #6c757d !important;
+  color: #6c757d !important;
+  text-align: center;
+  padding: 2rem !important;
+}
+
+.no-inspection::before {
+  background: #6c757d !important;
+}
+
+.no-inspection strong {
+  color: #6c757d !important;
+}
+
+/* Empty State */
+.entry-section:has(.info-item span:empty) {
+  opacity: 0.6;
+}
+
+.entry-section:has(.info-item span:empty) .info-item {
+  background: #f8f9fa;
+  color: #6c757d;
+}
+
+.entry-section:has(.info-item span:empty) .info-item::before {
+  background: #6c757d;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .entry-section {
+    padding: 2rem 1.5rem;
+    margin-bottom: 2rem;
+    border-radius: 12px;
+  }
+
+  .entry-section h1 {
+    font-size: 1.5rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .entry-info {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+
+  .info-item {
+    padding: 1rem;
+  }
+
+  .qaqc-assignment,
+  .no-inspection {
+    padding: 1.5rem !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .entry-section {
+    padding: 1.5rem 1rem;
+  }
+
+  .entry-section h1 {
+    font-size: 1.25rem;
+  }
+
+  .info-item {
+    padding: 0.875rem;
+  }
+
+  .assign-qaqc-btn {
+    width: 100%;
+    justify-content: center;
+    padding: 0.875rem 1.5rem;
+  }
+}
+
+/* Assignment Modal Styles */
+.assign-modal {
+  max-width: 500px;
+}
+
+.modal-project-info {
+  background: #f8f9fa;
+  padding: 1rem;
+  border-radius: 8px;
+  margin-bottom: 1.5rem;
+  border-left: 4px solid #315a95;
+}
+
+.modal-project-info p {
+  margin: 0.5rem 0;
+  color: #495057;
+}
+
+.tech-selection {
+  margin-bottom: 1.5rem;
+}
+
+.tech-selection label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: 600;
+  color: #315a95;
+}
+
+.tech-select {
+  width: 100%;
+  padding: 0.75rem;
+  border: 2px solid #e2e8f0;
+  border-radius: 6px;
+  font-size: 1rem;
+  background: white;
+}
+
+.tech-select:focus {
+  outline: none;
+  border-color: #315a95;
+  box-shadow: 0 0 0 3px rgba(49, 90, 149, 0.1);
+}
+
+/* Assign button in project entry */
+.assign-btn {
+  background: #28a745;
+  color: white;
+  border: none;
+  padding: 0.4rem 0.8rem;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  cursor: pointer;
+  margin-top: 0.5rem;
+  transition: all 0.2s ease;
+}
+
+.assign-btn:hover {
+  background: #218838;
+  transform: translateY(-1px);
+}
+
+/* QAQC Assigned State */
+.qaqc-assigned {
+  grid-column: 1 / -1;
+  background: linear-gradient(135deg, #e8f5e9, #d4edda) !important;
+  border: 2px solid #28a745 !important;
+  padding: 1.5rem !important;
+  text-align: center;
+}
+
+.qaqc-assigned::before {
+  background: linear-gradient(135deg, #28a745, #20c997) !important;
+}
+
+.qaqc-assigned strong {
+  display: block;
+  color: #155724;
+  margin-bottom: 0.5rem;
+}
+
+.qaqc-assigned span {
+  display: block;
+  color: #155724;
+  margin-bottom: 0.25rem;
+}
+
+/* Status messages */
+.status {
+  padding: 0.75rem;
+  border-radius: 6px;
+  margin-bottom: 1rem;
+  font-weight: 600;
+}
+
+.status.error {
+  background: #f8d7da;
+  color: #721c24;
+  border: 1px solid #f5c6cb;
+}
+
+.status.success {
+  background: #d4edda;
+  color: #155724;
+  border: 1px solid #c3e6cb;
+}
+
+/* Pending badge */
+.pending-badge {
+  color: #ffc107;
+  margin-left: 0.5rem;
+}

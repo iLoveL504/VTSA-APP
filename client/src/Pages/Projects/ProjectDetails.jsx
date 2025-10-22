@@ -28,9 +28,9 @@ const ConfirmationModal = ({ isOpen, onClose, onConfirm, title, message, confirm
 };
 
 const ProjectDetails = ({
-    projectCompleted, currentTask, currentParentTask, currentIsLoading, projectExists, fetchedData, proj, setFormData, formData, teamInfo, projIsLoading, teamIsLoading,
+    projectCompleted, currentTask, currentIsLoading, projectExists, fetchedData, proj, setFormData, formData, teamInfo, projIsLoading, teamIsLoading,
     saveStatus, handleSave, isEditing, errors, handleInputChange, handleNumberInputChange, handleBlur, handleSubmit,
-    values, setIsEditing, handleCancel, photos, photosIsLoading, backendURL
+    values, setIsEditing, handleCancel, photos, photosIsLoading, backendURL, setActivePage, currentTaskPhase
 }) => {
 
     console.log(teamIsLoading)
@@ -54,6 +54,9 @@ const ProjectDetails = ({
         });
     }
 
+    const handleRequestQAQC = () => {
+        setActivePage('qaqc')
+    }
 
     const handleApprovalConfirm = async () => {
       try {
@@ -267,26 +270,44 @@ const ProjectDetails = ({
                                     <h4>Parent Project</h4>
                                     <span className="project-badge">OVERVIEW</span>
                                 </div>
-                                {currentParentTask && Object.keys(currentParentTask).length > 0 ? (
+                                {currentTaskPhase && Object.keys(currentTaskPhase).length > 0 ? (
                                     <div className="task-card-content">
-                                        <div className="task-name">{currentParentTask.task_name}</div>
+                                        <div className="task-name">{currentTaskPhase.task_name}</div>
                                         <div className="task-dates">
                                             <div className="task-date">
                                                 <i className="fas fa-play-circle"></i>
-                                                Start: {new Date(currentParentTask.task_start).toLocaleDateString("en-GB")}
+                                                Start: {new Date(currentTaskPhase.task_start).toLocaleDateString("en-GB")}
                                             </div>
                                             <div className="task-date">
                                                 <i className="fas fa-flag-checkered"></i>
-                                                End: {new Date(currentParentTask.task_end).toLocaleDateString("en-GB")}
+                                                End: {new Date(currentTaskPhase.task_end).toLocaleDateString("en-GB")}
                                             </div>
                                             <div className="task-duration">
                                                 <i className="fas fa-clock"></i>
-                                                Duration: {currentParentTask.task_duration} days
+                                                Duration: {currentTaskPhase.task_duration} days
                                             </div>
                                         </div>
                                         <div className="task-progress">
-                                     
-                                            <span>{((currentParentTask.task_done || 0) * 100).toFixed(0)}% Complete</span>
+                                        {sessionStorage.getItem('roles') === 'Project Engineer' ?
+                                            (<button 
+                                                className='btn-request-qaqc'
+                                                onClick={handleRequestQAQC}
+                                                disabled={proj.qaqc_pending ? true : proj.qaqc_ongoing ? true : proj.qaqc_is_assigned ? true : false}
+                                            >
+                                                    {proj.qaqc_pending ? 'QAQC Inspection Pending' : 
+                                                     proj.qaqc_is_assigned ? 'QAQC Inspection to be conducted' :
+                                                     proj.qaqc_ongoing ? '🔍 QAQC Inspection Ongoing' :
+                                                     'Request QAQC Inspection'}
+                                            </button>   )  : (
+                                                <div>
+                                                    {proj.qaqc_pending ? 'QAQC Inspection Pending' : 
+                                                     proj.qaqc_is_assigned ? 'QAQC Inspection to be conducted' :
+                                                     proj.qaqc_ongoing ? '🔍 QAQC Inspection Ongoing' :
+                                                     'No QAQC Inspection Ongoing'}
+                                                </div>
+                                            )                                   
+                                        }
+
                                         </div>
                                     </div>
                                 ) : (

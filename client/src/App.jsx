@@ -31,6 +31,7 @@ import PreInspection_Checklist from './Pages/Documents/PreInspection.jsx'
 import SchneiderServiceReport from './Pages/Documents/SchneiderServiceReport.jsx'
 import Users from './Pages/Admin/Users.jsx'
 import PMSPage from './Pages/PMS/PMSPage.jsx'
+import QAQCAssignment from './Pages/QAQC/QAQCAssignment.jsx'
 import '@mantine/core/styles.css';
 // ‼️ import dates styles after core package styles
 import '@mantine/dates/styles.css';
@@ -163,6 +164,10 @@ useEffect(() => {
           </Route>
           <Route path="chat">
             <Route index element={<Chat />} />
+            
+          </Route>
+          <Route path="QAQC">
+            <Route index element={<QAQCAssignment updateIsLoading={updateIsLoading} />} />
             
           </Route>
 

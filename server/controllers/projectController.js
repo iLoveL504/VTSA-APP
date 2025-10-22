@@ -1,3 +1,4 @@
+import { pool } from '../config/database.js'
 import { ProjectModel as projects } from '../model/ProjectModel.js'
 
 
@@ -226,6 +227,36 @@ export const foremanApprove = async (req, res) => {
         console.log(req.body)
         const { task_id } = req.body
         await projects.foremanApprove(Number(id), task_id)
+        res.status(200).json({
+            success: true,
+            message: "approved"
+        })
+    } catch (e) {
+        console.error(e);
+        res.status(500).json({ success: false, message: "Error approving" });         
+    }
+}
+
+export const requestProjQAQC = async (req, res) => {
+    const { projectId, dueDate } = req.body
+    console.log(dueDate)
+    try {
+        await projects.requestProjQAQC(projectId, dueDate)
+        res.status(200).json({
+            success: true,
+            message: "approved"
+        })
+    } catch (e) {
+        console.error(e);
+        res.status(500).json({ success: false, message: "Error approving" });         
+    }
+}
+
+export const assignProjQAQC = async (req, res) => {
+    const { project_id, qaqc_technician_id } = req.body
+    console.log(req.body)
+    try {
+        await projects.assignProjQAQC(project_id, qaqc_technician_id)
         res.status(200).json({
             success: true,
             message: "approved"

@@ -405,6 +405,80 @@
     }
 }
 
+/* Add these styles to your existing CSS */
+
+/* Request QAQC Button Styles */
+.btn-request-qaqc {
+  background: linear-gradient(135deg, #27ae60, #219a52);
+  color: white;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  box-shadow: 0 2px 8px rgba(39, 174, 96, 0.3);
+  margin-top: 0.5rem;
+}
+
+.btn-request-qaqc:hover {
+  background: linear-gradient(135deg, #219a52, #27ae60);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(39, 174, 96, 0.4);
+}
+
+.btn-request-qaqc:active {
+  transform: translateY(0);
+}
+
+/* Disabled State */
+.btn-request-qaqc:disabled {
+  background: linear-gradient(135deg, #bdc3c7, #95a5a6);
+  color: #7f8c8d;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+  opacity: 0.7;
+}
+
+.btn-request-qaqc:disabled:hover {
+  background: linear-gradient(135deg, #bdc3c7, #95a5a6);
+  transform: none;
+  box-shadow: none;
+}
+
+/* Icon for the button */
+.btn-request-qaqc::before {
+  content: "🔍";
+  font-size: 1rem;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .btn-request-qaqc {
+    width: 100%;
+    justify-content: center;
+    padding: 0.875rem 1rem;
+  }
+  
+  .complete-btn {
+    width: 100%;
+    margin-left: 0;
+    margin-top: 0.5rem;
+    justify-content: center;
+  }
+  
+  .task-name {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
+
 .current-task-card {
     padding: 1rem;
     background: white;

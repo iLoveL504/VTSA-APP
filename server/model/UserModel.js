@@ -31,7 +31,7 @@ class UserModel {
 
         const filter = role === 'Project Engineer' ? 'pm.project_engineer_id' 
                             : role === 'Foreman' ? 't.foreman_id' 
-                                : 'tm.emp_id'
+                                : role === 'QAQC' ? 'pm.qaqc_id' : 'tm.emp_id'
         // Get team info
         const filterQuery = role !== 'Project Engineer' ? `
             select p.id as 'project_id'

@@ -311,10 +311,10 @@ static async getProjectSchedule(id) {
    
       
         const promises = Object.keys(updates).map(key => {
-            const { id, status, start_date, end_date, manufacturing_end_date, tnc_start_date, installation_start_date, foundCurrentTask } = updates[key];
+            const { id, status, start_date, end_date, manufacturing_end_date, tnc_start_date, installation_start_date, foundCurrentTask, phaseName } = updates[key];
             return pool.query(
-            'UPDATE projects SET created_at = ?, manufacturing_end_date = ?, project_end_date = ? , status = ?, tnc_start_date = ?, installation_start_date = ?, current_task = ? WHERE id = ?',
-            [start_date, manufacturing_end_date, end_date, status, tnc_start_date, installation_start_date, foundCurrentTask, id]  
+            'UPDATE projects SET created_at = ?, manufacturing_end_date = ?, project_end_date = ? , status = ?, tnc_start_date = ?, installation_start_date = ?, current_task = ?, task_phase = ? WHERE id = ?',
+            [start_date, manufacturing_end_date, end_date, status, tnc_start_date, installation_start_date, foundCurrentTask, phaseName, id]  
             ).then(() => {
 
             }).catch(err => {
@@ -564,6 +564,17 @@ static async getProjectSchedule(id) {
   static async foremanApprove (projId, taskId) {
     const query = `update project_${projId}_schedule set task_approval = 1 where task_id = ?;`
     await pool.query(query, [taskId])
+  }
+
+  static async requestProjQAQC (projId, date) {
+    await pool.query(`update projects set qaqc_inspection_date = ?, qaqc_pending = 1 where id = ?`, [date, projId])
+  }
+
+  static async assignProjQAQC (projId, qaqcId) {
+    console.log(qaqcId)
+    await pool.query(`update project_manpower set qaqc_id = ? where project_id = ?`, [qaqcId, projId])
+    console.log('do I run')
+    await pool.query(`update projects set qaqc_pending = 0, qaqc_is_assigned = 1 where id = ?`, [projId])
   }
 }
 
