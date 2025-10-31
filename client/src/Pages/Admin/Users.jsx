@@ -5,8 +5,9 @@ import { Axios } from '../../api/axios'
 import AdminEmployeeList from '../../components/Admin/AdminEmployeeList'
 import EmployeeModal from '../../components/Admin/EmployeeModal'
 import '../../css/AdminUsers.css'
+import { Grid } from 'ldrs/react'
 
-const Users = () => {
+const Users = ({empIsLoading}) => {
     const { usersSocket } = useSharedSocket()
     const [showModal, setShowModal] = useState(false)
     const [editingEmployee, setEditingEmployee] = useState(null)
@@ -15,7 +16,7 @@ const Users = () => {
     const searchEmployee = useStoreState((state) => state.searchEmployee)
     const setSearchEmployee = useStoreActions((actions) => actions.setSearchEmployee)
     const employees = useStoreState((state) => state.employees)
-
+    console.log(employees)
 
     const roles = [
         'Project Manager', 
@@ -76,6 +77,15 @@ const Users = () => {
         employee.job.toLowerCase().includes(searchEmployee.toLowerCase()) ||
         employee.username.toLowerCase().includes(searchEmployee.toLowerCase())
     ).filter(e => e.job !== 'manager')
+
+    if(empIsLoading){
+        return (
+                <div className="Loading">
+                    <p>Data is Loading...</p>
+                    <Grid size="60" speed="1.5" color="rgba(84, 176, 210, 1)" />
+                </div>
+        )
+    }
     
     return (
         <div className="Content Users">

@@ -1,9 +1,10 @@
 import { pool } from "../config/database.js";
+import { UtilitiesModel as utility } from './UtilitiesModel.js';
 
 class ForecastModel {
   static async forecastTeam(date) {
     const [results] = await pool.query(`
-      SELECT employee_id, username, job, concat(last_name, ' ', first_name) as 'full_name' 
+      SELECT employee_id, username, job, island_group, concat(last_name, ' ', first_name) as 'full_name' 
       FROM employees e
       WHERE EXISTS (
         SELECT 1
@@ -25,7 +26,7 @@ class ForecastModel {
 
   static async teamsNoProject() {
     const [results] = await pool.query(`
-      SELECT employee_id, username, job, concat(last_name, ' ', first_name) as 'full_name'
+      SELECT employee_id, island_group, username, job, concat(last_name, ' ', first_name) as 'full_name'
       FROM employees e
       WHERE NOT EXISTS (
         SELECT 1
@@ -95,8 +96,7 @@ class ForecastModel {
     const installers = teamToBeSaved.filter(t => {
       if(t.foreman_id === null) return true
     }).map(t => t.emp_id)
-    console.log(foremanId)
-    console.log(installers)
+
     
     const idToValidate = [foremanId, ...installers]
     const validatePromises = idToValidate.map(idv => {
@@ -105,7 +105,7 @@ class ForecastModel {
     
     const validationResults = await Promise.all(validatePromises)
     const jobs = validationResults.map(v => v[0][0].job)
-    console.log(jobs)
+
 
     const tallyJobs = (countJobs) => {
       let Foreman = 0
@@ -132,10 +132,13 @@ class ForecastModel {
     tallyJobs(jobs)
     
     const insertPromises = installers.map(async(i) => {
+      
       return pool.query(`insert into team_members (foreman_id, emp_id) values (?, ?)`, [foremanId, i])
     })
 
     await Promise.all(insertPromises)
+
+    await utility.changeUserStatus([...installers, foremanId], 'active')
     const [IU] = await pool.query('select * from project_manpower where project_id = ?', [id])
     if (IU.length > 0) {
       await pool.query(`update project_manpower set team_id = ? where project_id = ?`, [foremanId, id])      
@@ -144,6 +147,8 @@ class ForecastModel {
     await pool.query('delete from forecast_team_members where project_id = ?;', [id])
 
     await pool.query(`update projects set has_team = 1 where id = ?`, [id])
+    
+
     return
   }
 
@@ -169,7 +174,7 @@ class ForecastModel {
           LEFT JOIN team_members tm ON t.team_id = tm.foreman_id
         ) AS sub ON e.employee_id = sub.employee_id;
       `)
-      console.log(results)
+
       return results
   }
 

@@ -1,11 +1,20 @@
 import { pool } from '../config/database.js'
+import { UtilitiesModel as utility } from './UtilitiesModel.js';
 import dotenv from 'dotenv'
 dotenv.config()
 
 class ProjectModel {
     static async findById(id){
         const [results] = await pool.query(
-            'SELECT * FROM projects WHERE id = ?',
+            `           SELECT 
+          p.*, 
+          pm.project_engineer_id,
+          e.username AS project_engineer,
+          concat(e.last_name, ' ', e.first_name) as 'pe_fullname'
+      FROM projects p
+      LEFT JOIN project_manpower pm 
+          ON p.id = pm.project_id 
+          left join employees e on e.employee_id = pm.project_engineer_id where p.handover_done = 0 and p.id = ?`,
             [id]
         )
         return results[0]
@@ -30,7 +39,7 @@ class ProjectModel {
       FROM projects p
       LEFT JOIN project_manpower pm 
           ON p.id = pm.project_id 
-          left join employees e on e.employee_id = pm.project_engineer_id;
+          left join employees e on e.employee_id = pm.project_engineer_id where p.handover_done = 0;
         `)
         return results
     }
@@ -68,15 +77,16 @@ class ProjectModel {
             equipmentType,
             region,
             province,
-            city
+            city,
+            island_group
         } = project;
 
         const [results] = await pool.query(
             `INSERT INTO projects 
                 (lift_name, description, cap, drive, door_operator, speed,
                  control, stops, serving_floor, travel, power_supply, shaft, shaft_size, 
-                 car_size, door_size, overhead_height, pit_depth, client, product_type, region, \`province/municipality\`, city) 
-             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+                 car_size, door_size, overhead_height, pit_depth, client, product_type, region, \`province\`, \`city/municipality\`, island_group) 
+             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
             [
                 liftName,
                 description,
@@ -99,7 +109,8 @@ class ProjectModel {
                 equipmentType,
                 region,
                 province,
-                city
+                city,
+                island_group
             ]
         );
         const newProjectId = results.insertId;
@@ -160,6 +171,9 @@ class ProjectModel {
 
 
 static async getProjectSchedule(id) {
+    const checkQuery = `show tables like 'project_${id}_schedule'`
+    const [check] = await pool.query(checkQuery)
+    if (check.length === 0) return []
     const query = `SELECT * FROM project_${id}_schedule`;
     const [results] = await pool.query(query);
     if (!results) return
@@ -198,8 +212,13 @@ static async getProjectSchedule(id) {
         
         return 0;
     });
-    
+
     return sortedTasks;
+}
+
+static async getTaskPhotos(id) {
+  const [results] = await pool.query('select * from task_photos where project_id = ?', [id])
+  return results
 }
 
     static async completeTask(updates, percent, id) {
@@ -220,14 +239,13 @@ static async getProjectSchedule(id) {
         });
 
          await Promise.all(promises)
-         await pool.query(`update projects set progress = ? where id = ?`, [percent, id])
+         await pool.query(`update projects set progress = ?, qaqc_approval = 0, tnc_approval = 0 where id = ?`, [percent, id])
     }
 
    static async makeProjectSchedule(tasks, id) {
   try {
     const checkQuery = `show tables like 'project_${id}_schedule'`
     const [results] = await pool.query(checkQuery)
-    console.log(results)
     if(results.length !== 0) {
       const deleteQuery = `drop table project_${id}_schedule`
       await pool.query(deleteQuery)
@@ -246,6 +264,7 @@ static async getProjectSchedule(id) {
         task_approval TINYINT(1) DEFAULT 0,
         task_done TINYINT(1) DEFAULT 0,
         task_percent INT DEFAULT 0,
+        task_actual_current tinyint default 0,
 
         -- Added columns
         section_title VARCHAR(255),
@@ -297,7 +316,10 @@ static async getProjectSchedule(id) {
     });
 
     await Promise.all(insertPromises);
+    const initializeQuery = `update project_${id}_schedule set task_actual_current = 1 where task_id = 100`
+    await pool.query(initializeQuery)
     await pool.query(`update projects set schedule_created = 1 where id = ?`, [id])
+    
     return { success: true, message: `Schedule created with ${tasks.length} tasks` };
   } catch (error) {
     console.error('Error creating schedule:', error);
@@ -307,22 +329,90 @@ static async getProjectSchedule(id) {
 
 
     static async updateProjectStatus(updates) {
+    
+    const promises = Object.keys(updates).map(async (key) => {
+      const { 
+        id, status, start_date, end_date, 
+        manufacturing_end_date, tnc_start_date, 
+        installation_start_date, foundCurrentTask, 
+        phaseName, in_tnc, in_qaqc, currentTask_id, joint_inspection,
+        handover_done
+      } = updates[key];
+      if(handover_done) return
+      try {
+        // Run main project update
+        await pool.query(
+          `UPDATE projects 
+          SET created_at = ?, 
+              manufacturing_end_date = ?, 
+              project_end_date = ?, 
+              status = ?, 
+              tnc_start_date = ?, 
+              installation_start_date = ?, 
+              current_task = ?, 
+              task_phase = ?, 
+              in_tnc = ?,
+              current_task_id = ? 
+          WHERE id = ?`,
+          [
+            start_date,
+            manufacturing_end_date,
+            end_date,
+            status,
+            tnc_start_date,
+            installation_start_date,
+            foundCurrentTask,
+            phaseName,
+            in_tnc,
+            currentTask_id,
+            id,
+          ]
+        );
+        console.log(currentTask_id)
+
+        const cleanScheduleQuery = `update project_${id}_schedule set task_actual_current = 0`
+        await pool.query(cleanScheduleQuery)
+        const projectScheduleQuery = `update project_${id}_schedule set task_actual_current = 1 where task_id = ?`
+        await pool.query(projectScheduleQuery, [currentTask_id])
+
         
-   
-      
-        const promises = Object.keys(updates).map(key => {
-            const { id, status, start_date, end_date, manufacturing_end_date, tnc_start_date, installation_start_date, foundCurrentTask, phaseName } = updates[key];
-            return pool.query(
-            'UPDATE projects SET created_at = ?, manufacturing_end_date = ?, project_end_date = ? , status = ?, tnc_start_date = ?, installation_start_date = ?, current_task = ?, task_phase = ? WHERE id = ?',
-            [start_date, manufacturing_end_date, end_date, status, tnc_start_date, installation_start_date, foundCurrentTask, phaseName, id]  
-            ).then(() => {
+        // ✅ Check to see if TNC and QAQC should be ongoing
+        if (in_tnc === 1) {
+          // Example: update a related table or log it
+          await pool.query(
+            `UPDATE projects SET tnc_pending = 0, tnc_is_assigned = 0, tnc_ongoing = 1 WHERE id = ?`,
+            [id]
+          );
+        }
+        console.log('in here')
+        console.log(in_qaqc)
+        if (in_qaqc) {
+          await pool.query(
+            `UPDATE projects SET qaqc_pending = 0, qaqc_is_assigned = 0, qaqc_ongoing = 1, qaqc_approval = 1 WHERE id = ?`,
+            [id]
+          );
 
-            }).catch(err => {
-            console.error(`Error updating project ${id}:`, err);
-            });
-        });
+          const [qaqcId] = await pool.query(`select qaqc_id from project_manpower where project_id = ?`, [id])
+          const Ids = qaqcId.map(q => q.qaqc_id)
+          console.log(Ids)
+          
+          await utility.changeUserStatus(Ids, 'active')
+        }
 
-        await Promise.all(promises)
+        if (joint_inspection){
+          console.log('joint inspection')
+          await pool.query( 
+            `update projects set pms_is_assigned = 0, pms_ongoing = 1, pms_approval = 1 where id = ?`,
+            [id]
+          )
+        }
+      } catch (err) {
+        console.error(`Error updating project ${id}:`, err);
+      }
+    });
+
+    await Promise.all(promises);
+
         return
     }
 
@@ -561,21 +651,288 @@ static async getProjectSchedule(id) {
 
   }
 
-  static async foremanApprove (projId, taskId) {
+  static async foremanApprove (projId, data, photos) {
+    const { task_id, task_name, start_date, end_date, task_duration, task_percent} = data
     const query = `update project_${projId}_schedule set task_approval = 1 where task_id = ?;`
-    await pool.query(query, [taskId])
+    await pool.query(query, [task_id])
+    console.log('safda')
+
+    for (const photo of photos) {
+      const filePath = "/uploads/" + photo.filename;
+        await pool.query(
+            `INSERT INTO task_photos (project_id, task_name, task_id, start_date, end_date, photo_url, task_duration, task_percent) VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
+            [projId, task_name, task_id, start_date, end_date, filePath, task_duration, task_percent]
+        );
+      }
+    
   }
 
-  static async requestProjQAQC (projId, date) {
-    await pool.query(`update projects set qaqc_inspection_date = ?, qaqc_pending = 1 where id = ?`, [date, projId])
+  // QAQC Area
+  static async requestProjQAQC (projId, date, reason) {
+    await pool.query(`update projects set qaqc_inspection_date = ?, qaqc_inspection_reason = ?, qaqc_pending = 1, qaqc_approval = 1, qaqc_ongoing = 0, qaqc_is_assigned = 0 where id = ?`, [date, reason, projId])
   }
 
-  static async assignProjQAQC (projId, qaqcId) {
-    console.log(qaqcId)
+  static async addQAQCInspectionRecord (projId, data) {
+    const {inspection_type, inspection_reason, inspection_date} = data
+    const [results] =  await pool.query(`
+        insert qaqc_inspection_history (project_id, inspection_type, inspection_reason, inspection_date)
+        values (?, ?, ?, ?)
+      `, [projId, inspection_type, inspection_reason, inspection_date])
+
+    const newInspectionId = results.insertId;
+    //set the current qaqc inspection id of the projct
+    await pool.query(`update projects set current_qaqc_id = ? where id = ?`, [newInspectionId, projId])
+  }
+
+  static async assignProjQAQC (data) {
+    const {projId, qaqcId} = data
     await pool.query(`update project_manpower set qaqc_id = ? where project_id = ?`, [qaqcId, projId])
     console.log('do I run')
-    await pool.query(`update projects set qaqc_pending = 0, qaqc_is_assigned = 1 where id = ?`, [projId])
+    await pool.query(`update projects set qaqc_pending = 0, qaqc_is_assigned = 1, qaqc_ongoing = 0 where id = ?`, [projId])
+    await this.addQAQCInspectionRecord(projId, data)
+
   }
+
+  static async ongoingProjQAQC (projId) {
+    await pool.query(`update projects set qaqc_approval = 1, qaqc_ongoing = 1, qaqc_is_assigned = 0, qaqc_pending = 0 where id = ?`, [projId])
+  }
+
+static async completeProjQAQC (projId, data, photos) {
+  const { inspection_id, checklist } = data;
+  const { documents, evidence } = photos
+  console.log('here at projQAQC')
+  // get a connection for transaction
+  const conn = await pool.getConnection();
+  try {
+    await conn.beginTransaction();
+
+    // mark inspection record complete
+    await conn.query(
+      `UPDATE qaqc_inspection_history SET inspection_complete = 1 WHERE id = ?`,
+      [inspection_id]
+    );
+
+    // insert photos
+    if (documents !== undefined) {
+      for (const photo of documents) {
+        const filePath = "/uploads/" + photo.filename;
+        await conn.query(
+          `INSERT INTO project_inspection_photos (inspection_id, checklist, photo_url) VALUES (?, ?, ?)`,
+          [inspection_id, checklist, filePath]
+        );
+      }    
+    }
+
+
+    // reset project inspection flags and set qaqc_approval = 0 (0 = done/no inspection)
+    await conn.query(
+      `UPDATE projects
+       SET qaqc_inspection_date = NULL,
+           qaqc_inspection_reason = NULL,
+           current_qaqc_id = NULL,
+           qaqc_pending = 0,
+           qaqc_is_assigned = 0,
+           qaqc_ongoing = 0,
+           qaqc_approval = 0
+       WHERE id = ?`,
+      [projId]
+    );
+
+    // clear assigned qaqc_id in project_manpower for this project
+    await conn.query(
+      `UPDATE project_manpower SET qaqc_id = NULL WHERE project_id = ?`,
+      [projId]
+    );
+
+    const [qaqcId] = await pool.query(`select qaqc_id from project_manpower where project_id = ?`, [projId])
+    const Ids = qaqcId.map(q => q.qaqc_id)
+    console.log(Ids)
+    
+    await utility.changeUserStatus(Ids, 'Inactive')
+
+    await conn.commit();
+    conn.release();
+    return true;
+  } catch (err) {
+    await conn.rollback().catch(() => {});
+    conn.release();
+    console.error("Error in ProjectModel.completeProjQAQC:", err);
+    throw err;
+  }
+}
+
+static async qaqcPunchlisting (projId, photos) {
+  console.log(photos)
+  const {punchlist, evidence} = photos
+  const [result] = await pool.query(`select current_qaqc_id from projects where id = ?`, [projId])
+  const inspectionId = result[0].current_qaqc_id
+  await pool.query(`update projects set qaqc_punchlist = 1 where id = ?`, [projId])
+    for (const photo of punchlist) {
+  const filePath = "/uploads/" + photo.filename;
+    await pool.query(
+        `insert into qaqc_punchlisting (inspection_id, doc_url) values (?, ?)`,
+        [inspectionId, filePath]
+    );
+  }
+}
+
+static async rectifyItems (projId) {
+  console.log('rectify')
+  await pool.query(`update projects set qaqc_punchlist = 0 where id = ?`, [projId])
+}
+
+  //TNC Area
+  static async requestProjTNC (projId, date) {
+    //sets tnc inspection date and renders it in pending status
+    await pool.query(`update projects set tnc_assign_date = ?, tnc_pending = 1, tnc_ongoing = 0 where id = ?`, [date, projId])
+  }
+
+  static async assignProjTNC (projId, tncId) {
+    await pool.query(`update project_manpower set tnc_tech_id = ? where project_id = ?`, [tncId, projId])
+    console.log('do I run')
+    await pool.query(`update projects set tnc_pending = 0, tnc_is_assigned = 1, tnc_ongoing = 0 where id = ?`, [projId])
+  }
+
+  static async ongoingProjTNC (projId) {
+    await pool.query(`update projects set tnc_ongoing = 1, tnc_is_assigned = 0, tnc_pending = 0 where id = ?`, [projId])
+  }
+
+  static async approveProjTaskTNC(projId, data, photos){
+    const { task_id, task_name, start_date, end_date, task_duration, task_percent, checklist_type} = data
+    const query = `update project_${projId}_schedule set task_approval = 1 where task_id = ?;`
+    await pool.query(query, [task_id])
+    console.log('safda')
+
+    const {evidence, documents} = photos
+    console.log(evidence)
+
+    if(evidence !== null) {
+      if(evidence.length !== 0) {
+        for (const photo of evidence) {
+        const filePath = "/uploads/" + photo.filename;
+          await pool.query(
+              `INSERT INTO task_photos (project_id, task_name, task_id, start_date, end_date, photo_url, task_duration, task_percent) VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
+              [projId, task_name, task_id, start_date, end_date, filePath, task_duration, task_percent]
+          );
+        }
+      }     
+    }
+
+
+    if(documents !== undefined) {
+      if(documents.length !== 0){
+              for (const photo of documents) {
+        const filePath = "/uploads/" + photo.filename;
+          await pool.query(
+              `INSERT INTO tnc_inspection_documents (project_id, checklist_type, photo_url) VALUES (?, ?, ?)`,
+              [projId, checklist_type, filePath]
+          );
+        }
+      }      
+    }
+
+    //console.log(photos.evidence)
+
+  }
+
+  static async completeProjTNC(projId, files, documentNames) {
+    try {
+      // Ensure documentNames is always an array
+      const docNames = Array.isArray(documentNames)
+        ? documentNames
+        : [documentNames];
+
+      const insertQueries = files.map((file, index) => {
+        const documentName = docNames[index] || null; // match doc type
+        const photoUrl = `/data/uploads/${file.filename}`;
+
+        return pool.query(
+          `INSERT INTO tnc_inspection_photos (project_id, document_name, photo_url) VALUES (?, ?, ?)`,
+          [projId, documentName, photoUrl]
+        );
+      });
+
+      await Promise.all(insertQueries);
+
+      await pool.query(`
+      update projects set tnc_pending = 0, tnc_is_assigned = 0, 
+      tnc_ongoing = 0, tnc_approval = 0 where id = ?
+    `, [projId])
+
+      return true;
+    } catch (error) {
+      console.error("Error in Project.completeProjTNC:", error);
+      throw error;
+    }
+  }
+
+  //PMS
+  static async requestProjPMS (projId, date) {
+    await pool.query(`update projects set pms_joint_inspection = ?, pms_pending = 1, pms_ongoing = 0, pms_is_assigned = 0, pms_approval = 1 where id = ?`, [date, projId])
+  }
+
+  static async approveProjPMS (projId, pmsId) {
+    console.log(`[${projId}, ${pmsId}]`)
+    const results = await pool.query(`update projects set pms_pending = 0, pms_ongoing = 0, pms_is_assigned = 1 where id = ?`, [projId])
+    console.log(results)
+    await pool.query(`update project_manpower set pms_id = ? where project_id = ?`, [pmsId, projId])
+  }
+
+  //PMS finishes in joint inspection
+  static async completePMSJoint (projId, data, photos) {
+  const { task_id, task_name, start_date, end_date, task_duration, task_percent} = data
+  
+    await pool.query(`
+        update projects set pms_approval = 0 where id = ?
+      `, [projId])
+
+      // insert photos
+
+    for (const photo of photos) {
+      const filePath = "/uploads/" + photo.filename;
+        await pool.query(
+            `INSERT INTO task_photos (project_id, task_name, task_id, start_date, end_date, photo_url, task_duration, task_percent) VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
+            [projId, task_name, task_id, start_date, end_date, filePath, task_duration, task_percent]
+        );
+      } 
+      
+
+  }
+
+  //Hold
+  static async requestProjHold (projId) {
+    await pool.query(`update projects set request_hold = 1 where id = ?`, [projId])
+  }
+
+  static async approveProjHold (projId) {
+    await pool.query(`update projects set on_hold = 1, request_hold = 0 where id = ?`, [projId])
+  }
+
+  //Handover process
+  static async prepareProjHandover(projId, data, photos) {
+    const { task_id, task_name, start_date, end_date, task_duration, task_percent} = data
+    await pool.query(`update projects set prepare_handover = 1 where id = ?`, [projId])
+    for (const photo of photos) {
+      const filePath = "/uploads/" + photo.filename;
+      await pool.query(
+          `INSERT INTO task_photos (project_id, task_name, task_id, start_date, end_date, photo_url, task_duration, task_percent) VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
+          [projId, task_name, task_id, start_date, end_date, filePath, task_duration, task_percent]
+      );
+    } 
+      
+  }
+
+  static async projHandoverDone (projId, photos) {
+    await pool.query(`update projects set handover_done = 1 where id =  ?`, [projId])
+      for (const photo of photos) {
+      const filePath = "/uploads/" + photo.filename;
+      await pool.query(
+          `INSERT INTO handover_documents (project_id, doc_url) values (?, ?)`,
+          [projId, filePath]
+      );
+    } 
+  }
+
 }
 
 export { ProjectModel }

@@ -4,20 +4,19 @@ import { io } from '../server.js'
 class NotificationModel {
     static async getAllNotifications() {
         const [results] = await pool.query(`
-            SELECT n.notification_id, n.subject, n.body, e.username, e.employee_id
+            SELECT nr.id, n.notification_id, n.subject, n.body, e.username, e.employee_id, n.notify_date, nr.mark_read
             FROM notification n
             JOIN notification_recipients nr
                 ON n.notification_id = nr.notification_id
             JOIN employees e
                 ON nr.employee_id = e.employee_id
         `)
-        console.log(results)
-        return results
+         return results
     }
 
     static async getNotificationsById(id) {
         const [results] = await pool.query(`
-            SELECT n.notification_id, n.subject, n.body, nr.employee_id, e.username
+            SELECT nr.id n.notification_id, n.subject, n.body, nr.employee_id, e.username, n.notify_date
             FROM notification n
             JOIN notification_recipients nr
                 ON n.notification_id = nr.notification_id
@@ -36,8 +35,7 @@ class NotificationModel {
 
         console.log('-----------------------------this is create-----------------------------------')
         const notificationId = results.insertId
-        console.log(notificationId)
-        console.log(notification.Ids)
+
         const insertPromises = notification.Ids.map(i => {
             return pool.query('insert into notification_recipients (notification_id, employee_id) values (?, ?);', [notificationId, i])
         })

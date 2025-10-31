@@ -1,4 +1,5 @@
 import { pool } from '../config/database.js'
+import { UtilitiesModel as utility } from './UtilitiesModel.js';
 
 class TeamModel {
     static async getAllTeams() {
@@ -13,7 +14,7 @@ class TeamModel {
             left join employees e on e.employee_id = tm.emp_id;
         `);
 
-        console.log(results)
+    
         return results;
     }
 
@@ -116,14 +117,19 @@ class TeamModel {
         `);
 
 
-        console.log(result)
         return result;
     }
 
 static async assignTeam(projId, pe) {
     await pool.query(`update project_manpower set project_engineer_id = ? where project_id = ?`, [pe, projId])
+    await utility.changeUserStatus([pe], 'active')
     return
 }
+
+    static async getProjectManpower() {
+        const [results] = await pool.query(`select * from project_manpower`)
+        return results
+    }
 
 }
 

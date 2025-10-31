@@ -13,9 +13,7 @@ export const getLastTeamId = async (req, res) => {
 export const getTeamPerId = async (req, res) => {
     try {
         const { id } = req.params;
-        console.log('hii')
         const results = await teams.getTeamPerId(Number(id));
-        console.log(results)
         res.status(200).json(results);
         
     } catch (error) {
@@ -56,7 +54,6 @@ export const getTeamsWithNoProject = async (req, res) => {
 }
 export const getNotAssignedPE = async (req, res) => {
     try {
-        console.log('hii')
         const results = await teams.getNotAssignedPE()
         res.status(200).json(results)
     } catch (error) {
@@ -79,6 +76,17 @@ export const assignTeam = async (req, res) => {
             success: true,
             message: "Project Engineer Assigned"
         });
+    } catch (error) {
+
+        console.log(error)
+        res.status(500).json({ error: error.message });
+    }
+}
+
+export const getProjectManpower = async (req, res) => {
+        try {
+        const results = await teams.getProjectManpower()
+        res.status(200).json(results);
     } catch (error) {
 
         console.log(error)

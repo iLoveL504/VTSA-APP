@@ -81,6 +81,7 @@ app.use((err, req, res, next) => {
 // Socket.io connection handling 
 forecastMenNameSpace(io.of("/forecast"))
 utilitiesNamespace(io.of("/utilities"))
+usersNamespace(io.of("/users"))
 
 console.log('hih')
 // Start server

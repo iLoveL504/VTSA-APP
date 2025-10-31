@@ -11,7 +11,7 @@ export const getNotificationsById = async (req, res) => {
 }
 export const newNotification = async (req, res, next) => {
     try{
-        console.log(req.body)
+   
         await notifications.newNotification(req.body)
         console.log('notification made')
             res.status(200).json({

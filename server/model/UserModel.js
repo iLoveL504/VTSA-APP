@@ -9,29 +9,57 @@ class UserModel {
         return results[0];
     }
 
+    //READ
     static async getAllUsers(){
         const [results] = await pool.query(
             'SELECT * FROM employees'
         );
+   
         return results;
     }
 
-    static async updateUser(user){
-        const { last_name, first_name, employee_id } = user;
-        const [results] = await pool.query(
-            `UPDATE employees 
-             SET last_name = ?, first_name = ? 
-             WHERE employee_id = ?`,
-            [last_name, first_name, employee_id]
-        );
-        return results;
+    //UPDATE
+    static async updateUser (user, id) {
+        const { username, password, last_name, first_name, job } = user;
+        await pool.query(`
+            update employees set username = ?, password = ?,
+            last_name = ?, first_name = ?, job = ? where employee_id = ? 
+        `, [username, password, last_name, first_name, job, id]);
+    }
+
+    //CREATE
+    static async addUser (user) {
+        const { username, password, first_name, last_name, job } = user
+        const [result] =  await pool.query(`
+            insert into employees (username, password, first_name, last_name, job)
+            values (?, ?, ?, ?, ?)    
+        `, [username, password, first_name, last_name, job])
+
+        if (job === 'Foreman') {
+            const foremanId = result.insertId
+            const foreman_full_name = `${first_name} ${last_name}`
+            await pool.query(`
+                insert into teams (team_id, Foreman, foreman_id) values
+                (?, ?, ?)
+            `, [foremanId, foreman_full_name, foremanId])
+        }
+    }
+
+    //DELETE
+    static async deleteUser (id) {
+        await pool.query(`
+            delete from employees where employee_id = ?   
+        `, [id])
+        
     }
 
     static async getDesignatedProject(id, role) {
 
         const filter = role === 'Project Engineer' ? 'pm.project_engineer_id' 
                             : role === 'Foreman' ? 't.foreman_id' 
-                                : role === 'QAQC' ? 'pm.qaqc_id' : 'tm.emp_id'
+                                : role === 'QAQC' ? 'pm.qaqc_id' 
+                                    : role === 'TNC Technician' ? 'pm.tnc_tech_id'
+                                        : role === 'PMS Technician' ? 'pm.pms_id' : 'tm.emp_id'
         // Get team info
         const filterQuery = role !== 'Project Engineer' ? `
             select p.id as 'project_id'
@@ -62,7 +90,7 @@ class UserModel {
         // Extract only the rows from each query result
         const projects = projectResults.map(([rows]) => rows[0]);
 
-        console.log(projects);
+      
 
         return projects;
     }

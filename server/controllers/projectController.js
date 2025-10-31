@@ -9,7 +9,7 @@ export const getProjects = async (req, res) => {
 
 export const findProject = async (req, res) => {
   
-    const results = await projects?.findById(req.params.id)
+    const results = await projects?.findById(Number(req.params.id))
     //console.log(results)
     res.json(results)
 }
@@ -58,6 +58,7 @@ const updateStatus = async (req, res) => {
 
 export const getProjectSchedule = async (req, res) => {
     const { id } = req.params
+    console.log('--------------------')
     try {
         const results = await projects.getProjectSchedule(Number(id))
          if (results.length === 0) return res.status(404).json({message: "not found", scheduleExists: false})
@@ -226,7 +227,7 @@ export const foremanApprove = async (req, res) => {
     try {
         console.log(req.body)
         const { task_id } = req.body
-        await projects.foremanApprove(Number(id), task_id)
+        await projects.foremanApprove(Number(id), req.body, req.files)
         res.status(200).json({
             success: true,
             message: "approved"
@@ -237,11 +238,12 @@ export const foremanApprove = async (req, res) => {
     }
 }
 
+//QAQC Controllers
 export const requestProjQAQC = async (req, res) => {
-    const { projectId, dueDate } = req.body
-    console.log(dueDate)
+    const { project_id, scheduled_date, reason } = req.body
+ 
     try {
-        await projects.requestProjQAQC(projectId, dueDate)
+        await projects.requestProjQAQC(project_id, scheduled_date, reason)
         res.status(200).json({
             success: true,
             message: "approved"
@@ -253,10 +255,8 @@ export const requestProjQAQC = async (req, res) => {
 }
 
 export const assignProjQAQC = async (req, res) => {
-    const { project_id, qaqc_technician_id } = req.body
-    console.log(req.body)
     try {
-        await projects.assignProjQAQC(project_id, qaqc_technician_id)
+        await projects.assignProjQAQC(req.body)
         res.status(200).json({
             success: true,
             message: "approved"
@@ -266,3 +266,273 @@ export const assignProjQAQC = async (req, res) => {
         res.status(500).json({ success: false, message: "Error approving" });         
     }
 }
+
+export const ongoingProjQAQC = async (req, res) => {
+    const { id } = req.params
+    console.log('i run')
+    try {
+        await projects.ongoingProjQAQC(Number(id))
+        res.status(200).json({
+            success: true,
+            message: "approved"
+        })
+    } catch (e) {
+        console.error(e);
+        res.status(500).json({ success: false, message: "Error ongoing" });         
+    }
+}
+
+export const completeProjQAQC = async (req, res) => {
+    const {id} = req.params
+    console.log(req.files)
+    console.log(req.body)
+    console.log('in complete qaqc')
+    try {
+        await projects.completeProjQAQC(Number(id), req.body, req.files)
+        res.status(200).json({
+            success: true,
+            message: "approved"
+        })
+    } catch (e) {
+        console.error(e)
+        res.status(500).json({ success: false, message: "Error completing" })
+    }
+}
+
+export const qaqcPunchlisting = async (req, res) => {
+    const {id} = req.params
+    console.log('reaching punchlist')
+    try {
+        await projects.qaqcPunchlisting(Number(id), req.files)
+        res.status(200).json({
+            success: true,
+            message: "approved"
+        })
+    } catch (e) {
+        console.error(e)
+        res.status(500).json({ success: false, message: "Error completing" })
+    }
+}
+
+export const rectifyItems = async (req, res) => {
+    const {id} = req.params
+    console.log('rectifying punchlist')
+    try {
+        await projects.rectifyItems(Number(id))
+        res.status(200).json({
+            success: true,
+            message: "approved"
+        })
+    } catch (e) {
+        console.error(e)
+        res.status(500).json({ success: false, message: "Error completing" })
+    }
+}
+
+//TNC Controllers
+export const requestProjTNC = async (req, res) => {
+    const { project_id, scheduled_date } = req.body
+  
+    console.log('here in request proj tnc')
+    try {
+        await projects.requestProjTNC(project_id, scheduled_date)
+        res.status(200).json({
+            success: true,
+            message: "approved"
+        })
+    } catch (e) {
+        console.error(e);
+        res.status(500).json({ success: false, message: "Error approving" });         
+    }
+}
+
+export const assignProjTNC = async (req, res) => {
+    const { project_id, tnc_technician_id } = req.body
+    
+    try {
+        await projects.assignProjTNC(project_id, tnc_technician_id)
+        res.status(200).json({
+            success: true,
+            message: "approved"
+        })
+    } catch (e) {
+        console.error(e);
+        res.status(500).json({ success: false, message: "Error approving" });         
+    }
+}
+
+export const ongoingProjTNC = async (req, res) => {
+    const { projId } = req.params
+    try {
+        await projects.ongoingProjTNC(Number(projId))
+        res.status(200).json({
+            success: true,
+            message: "approved"
+        })
+    } catch (e) {
+        console.error(e);
+        res.status(500).json({ success: false, message: "Error ongoing" });         
+    }
+}
+
+export const approveProjTaskTNC = async (req, res) => {
+    console.log('hihih')
+    const { id } = req.params
+    try {
+        console.log(req.body)
+        console.log(req.files)
+        console.log(req.files.documents === undefined)
+        const { task_id } = req.body
+        await projects.approveProjTaskTNC(Number(id), req.body, req.files)
+        res.status(200).json({
+            success: true,
+            message: "approved"
+        })
+    } catch (e) {
+        console.error(e);
+        res.status(500).json({ success: false, message: "Error approving" });         
+    }
+}
+
+export const completeProjTNC = async (req, res) => {
+  try {
+    const projectId = req.params.id;
+    const files = req.files; // multer-uploaded files
+    const { document_names } = req.body; // from formData (array of doc types)
+
+    if (!files || files.length === 0) {
+      return res.status(400).json({ message: "No photos uploaded" });
+    }
+
+    // Pass to model for DB insertion
+    await projects.completeProjTNC(projectId, files, document_names);
+
+    res.status(200).json({
+      message: "TNC completion photos uploaded successfully",
+      count: files.length,
+    });
+  } catch (error) {
+    console.error("Error in completeProjTNC controller:", error);
+    res.status(500).json({ message: "Server error", error });
+  }
+};
+
+//PMS
+export const requestProjPMS = async (req, res) => {
+    const { project_id, scheduled_date } = req.body
+  
+    console.log('here in request proj tnc')
+    try {
+        await projects.requestProjPMS(project_id, scheduled_date)
+        res.status(200).json({
+            success: true,
+            message: "approved"
+        })
+    } catch (e) {
+        console.error(e);
+        res.status(500).json({ success: false, message: "Error approving" });         
+    }
+}
+
+export const approveProjPMS = async (req, res) => {
+    const {id} = req.params
+    const {pmsId} = req.body
+    try {
+        await projects.approveProjPMS(Number(id), pmsId)
+        res.status(200).json({
+            success: true,
+            message: "approved"
+        })
+    } catch (e) {
+        console.error(e);
+        res.status(500).json({ success: false, message: "Error approving" });         
+    }    
+}
+
+export const completePMSJoint = async (req, res) => {
+    const {id} = req.params
+    try {
+        await projects.completePMSJoint(Number(id), req.body, req.files)
+        res.status(200).json({
+            success: true,
+            message: "complete"
+        })
+    } catch (e) {
+        console.error(e);
+        res.status(500).json({ success: false, message: "Error approving" });   
+    }
+}
+
+//Handover control transferred to pms
+export const prepareProjHandover = async (req, res) => {
+    const {id} = req.params
+    console.log(req.body)
+    console.log(req.files)
+    try {
+        await projects.prepareProjHandover(Number(id), req.body, req.files)
+        res.status(200).json({
+            success: true,
+            message: "complete"
+        })
+    } catch (e) {
+        console.error(e);
+        res.status(500).json({ success: false, message: "Error approving" });         
+    }
+}
+
+export const getTaskPhotos = async (req, res) => {
+    const {id} = req.params
+    try {
+        const results = await projects.getTaskPhotos(Number(id))
+        console.log('line 307')
+        console.log(results)
+        res.status(200).json(results)
+    } catch (e) {
+        console.error(e)
+        res.status(500).json({ success: false, message: "Error fetching" })
+    }
+}
+
+export const requestProjHold = async (req, res) => {
+    const {id} = req.params
+    try {
+        await projects.requestProjHold(Number(id))
+        res.status(200).json({
+            success: true,
+            message: "approved"
+        })
+    } catch (e) {
+        console.error(e);
+        res.status(500).json({ success: false, message: "Error approving" });         
+    }
+}
+
+export const approveProjHold = async (req, res) => {
+    const {id} = req.params
+    try {
+        await projects.approveProjHold(Number(id))
+        res.status(200).json({
+            success: true,
+            message: "approved"
+        })
+    } catch (e) {
+        console.error(e);
+        res.status(500).json({ success: false, message: "Error approving" });         
+    }
+}
+
+export const projHandoverDone = async (req, res) => {
+    const {id} = req.params
+    console.log(req.files)
+    try {
+        await projects.projHandoverDone(id, req.files)
+        res.status(200).json({
+            success: true,
+            message: "approved"
+        })
+    } catch (e) {
+        console.error(e);
+        res.status(500).json({ success: false, message: "Error approving" });           
+    }
+}
+

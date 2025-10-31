@@ -20,7 +20,22 @@ import {
     projectContract,
     foremanApprove,
     requestProjQAQC,
-    assignProjQAQC
+    assignProjQAQC,
+    completeProjQAQC,
+    requestProjTNC,
+    assignProjTNC,
+    getTaskPhotos,
+    completeProjTNC,
+    approveProjTaskTNC,
+    requestProjPMS,
+    requestProjHold,
+    approveProjHold,
+    approveProjPMS,
+    completePMSJoint,
+    prepareProjHandover,
+    projHandoverDone,
+    qaqcPunchlisting,
+    rectifyItems
 } from "../../controllers/projectController.js"
 const router = express.Router()
 import multer from 'multer'
@@ -72,6 +87,9 @@ router.route('/update-status')
 router.route('/photos/:id')
     .get(projectContract)
 
+router.route('/task-photos/:id')
+    .get(getTaskPhotos)
+
 router.route('/report/:id')
     .post(upload.array('photos', 5), sendDailyReport)
     .get(getDailyReport)
@@ -81,11 +99,65 @@ router.route('/schedule/:id')
     .post(makeProjectSchedule)
     .put(completeTask)
 
+//qaqc routes
 router.route('/qaqc/request/:id')
     .post(requestProjQAQC)
 
 router.route('/qaqc/assign/:id')
     .put(assignProjQAQC)
+
+router.route('/qaqc/complete/:id')
+    .post(upload.fields([
+        { name: 'evidence', maxCount: 10},
+        { name: 'documents', maxCount: 10}
+    ]), completeProjQAQC)
+
+router.route('/qaqc/punchlist/:id')
+    .post(upload.fields([
+        { name: 'punchlist', maxCount: 10},
+        { name: 'punchlist_evidence', maxCount: 10}
+    ]), qaqcPunchlisting)
+
+router.route('/qaqc/rectified/:id')
+    .put(rectifyItems)
+
+//tnc routes
+router.route('/tnc/request/:id')
+    .post(requestProjTNC)
+
+router.route('/tnc/assign/:id')
+    .put(assignProjTNC)
+
+router.route(`/tnc/approve-task/:id`)
+    .post(upload.fields([
+        { name: 'evidence', maxCount: 10 },
+        { name: 'documents', maxCount: 10 },
+    ]), approveProjTaskTNC);
+
+router.route('/tnc/complete/:id')
+    .post(upload.array('photos', 5), completeProjTNC);
+
+router.route(`/pms/request/:id`)
+    .post(requestProjPMS)    
+
+router.route(`/pms/approve/:id`)
+    .put(approveProjPMS)
+
+router.route(`/pms/complete/:id`)
+    .post(upload.array('photos', 5), completePMSJoint)
+
+router.route(`/prepare-handover/:id`)
+    .put(upload.array('photos', 5), prepareProjHandover)
+
+router.route(`/complete-handover/:id`)
+    .put(upload.array('photos', 5), projHandoverDone)
+
+//Project hold routes
+router.route(`/request-hold/:id`)    
+    .put(requestProjHold)
+
+router.route(`/approve-hold/:id`)    
+    .put(approveProjHold)
 
 router.route('/kickoff/:id')
     .put(fillKickOffChecklist)
@@ -99,10 +171,12 @@ router.route('/accomplishment/:id')
     .get(getProjectAccomplishment)
 
 router.route('/task/approval/:id')
-    .put(foremanApprove)
+    .put(upload.array('photos', 5), foremanApprove)
 
 router.route('/:id')
     .get(findProject)
     .put(updateProject)
+
+
 
 export { router }

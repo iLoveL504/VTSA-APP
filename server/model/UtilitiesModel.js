@@ -13,7 +13,26 @@ class UtilitiesModel {
         return results
     }
 
-    
+static async changeUserStatus(userIds, status) {
+    if (!Array.isArray(userIds) || userIds.length === 0) return;
+    console.log(userIds)
+    const placeholders = userIds.map(() => '?').join(', ');
+    console.log(placeholders)
+    const sql = `
+        UPDATE employees 
+        SET is_active = ? 
+        WHERE employee_id IN (${placeholders})
+    `;
+
+    const values = [status === 'active' ? 1 : 0, ...userIds];
+    await pool.query(sql, values);
+}
+
+static async setContractAmount(projId, amount) {
+    console.log('setting amount...')
+    await pool.query(`update projects set contract_amount = ? where id = ?`, [amount, projId])
+}
+
 }
 
 export { UtilitiesModel }

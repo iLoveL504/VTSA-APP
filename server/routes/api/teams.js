@@ -8,7 +8,8 @@ import {
         forecastTeam, 
         getTeamsWithNoProject,
         getNotAssignedPE,
-        assignTeam
+        assignTeam,
+        getProjectManpower
     } from '../../controllers/teamsController.js'
 
 router.route('/')
@@ -16,6 +17,9 @@ router.route('/')
 
 router.route('/latest-team')
     .get(getLastTeamId)
+
+router.route('/project-manpower')
+    .get(getProjectManpower)
 
 router.route('/team-designation/:id')   
     .get(getTeamDesignation)

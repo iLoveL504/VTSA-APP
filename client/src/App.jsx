@@ -44,7 +44,7 @@ function App() {
   const backendURL = import.meta.env.VITE_BACKEND_URL || 'https://vtsa-app-production.up.railway.app';
   //console.log('https://vtsa-app-production.up.railway.app')
 
-const { data: empData } =
+const { data: empData, isLoading: empIsLoading } =
   useAxiosFetch(`${backendURL}/api/employees`);
 
 const { data: pmsData } =
@@ -54,7 +54,7 @@ const { data: projData } =
   useAxiosFetch(`${backendURL}/api/projects`);
 const { data: notifData } =
   useAxiosFetch(`${backendURL}/api/notifications`);
-
+  console.log(empIsLoading)
   //const isLoggedIn = useStoreState(state => state.isLoggedIn)
   const setEmployees = useStoreActions(actions => actions.setEmployees)
   const setProjects = useStoreActions(actions => actions.setProjects)
@@ -138,7 +138,7 @@ useEffect(() => {
           </Route>
 
           <Route path="admin">
-            <Route path="users" element={<Users />} />
+            <Route path="users" element={<Users empIsLoading={empIsLoading}/>} />
           </Route>
 
           <Route path="projects">
