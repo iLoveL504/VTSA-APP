@@ -105,6 +105,20 @@
   cursor: pointer;
 }
 
+.ProjectInfo .proj-name {
+  display: flex;
+  flex-direction: column;
+}
+
+.ProjectInfo.request-hold {
+  background-color: #ffc037;
+  opacity: 0.7;
+}
+.ProjectInfo.on-hold {
+  background-color: #c5c5c5;
+  opacity: 0.7;
+}
+
 .ProjectInfo:hover {
   transform: translateY(-2px);
   box-shadow: 0 4px 8px rgba(0,0,0,0.1);

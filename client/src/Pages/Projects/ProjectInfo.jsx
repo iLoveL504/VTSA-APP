@@ -15,6 +15,38 @@ import '../../css/ProjectPage.css'
 import tasks from '../../data/TasksData'
 import ProjectDocuments from './ProjectDocuments.jsx'
 import PMS_Entry from './PMS_Entry.jsx'
+import TaskDetails from './TaskDetails.jsx'
+import RequestHold from './RequestHold.jsx'
+
+
+const ConfirmationModal = ({ isOpen, onClose, onConfirm, title, message, confirmText = "Confirm", cancelText = "Cancel", type}) => {
+  if (!isOpen) return null;
+
+  return (
+    <div className="modal-overlay">
+      <div className="modal-content">
+        {type === 'punchlisting' ? (
+            <h3>Confirm Punchlisting?</h3>
+        ) : (
+            <h3>{(type === 'qaqc' || type === 'tnc') ? 'Confirm Inspection' : title}</h3>            
+        )}
+
+        <p>{type}</p>
+        <p>{message}</p>
+        <div className="modal-actions">
+          <button onClick={onClose} className="btn-cancel">
+            {cancelText}
+          </button>
+          <button onClick={onConfirm} className="btn-confirm">
+            {confirmText}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+
 
 const ProjectInfo = () => {
     const navigate = useNavigate()
@@ -25,15 +57,29 @@ const ProjectInfo = () => {
     const projects = useStoreState(state => state.projects)
     const {data: proj, isLoading: projIsLoading} = useAxiosFetch(`${backendURL}/api/projects/${projId}`)
     const {data: photos, isLoading: photosIsLoading} = useAxiosFetch(`${backendURL}/api/projects/photos/${projId}`)
+    const { data: projSched, isLoading: projSchedIsLoading } = useAxiosFetch(`${backendURL}/api/projects/schedule/${projId}`);
+    const { data: taskPhotos } = useAxiosFetch(`${backendURL}/api/projects/task-photos/${projId}`)
     const [isEditing, setIsEditing] = useState(false)
     const [formData, setFormData] = useState({})
-    const {currentTask, currentParentTask, currentTaskPhase, isLoading: currentIsLoading, fetchError: tasksFetchError, projectExists, fetchedData, projectCompleted} = useFindProjectTask(projId)
+    const {currentTask, 
+        currentParentTask, 
+        currentTaskPhase, 
+        isLoading: currentIsLoading, 
+        fetchError: tasksFetchError, 
+        projectExists, 
+        fetchedData, 
+        projectCompleted,
+        projectedTask,
+        isBehindSchedule
+    } = useFindProjectTask(projId)
     const isProjectsReady = Array.isArray(projects) && projects.length > 0;
     const fetchUrl = proj && isProjectsReady ? `${backendURL}/api/teams/${proj.id}` : null;
     const {data: teamInfo, isLoading: teamIsLoading} = useAxiosFetch(fetchUrl);
-    console.log(teamInfo)
+    console.log(currentTask)
     // Get user role from session storage with debugging
     const [role, setRole] = useState(null)
+
+    console.log(isBehindSchedule)
     
     useEffect(() => {
         const userRole = sessionStorage.getItem('roles');
@@ -108,12 +154,13 @@ const ProjectInfo = () => {
         setActivePage(`progress`)
     }
 
+
     const documentsOnClick = () => {
         setActivePage(`documents`)
     }
 
-    const pmsOnClick = () => {
-        setActivePage('pms_entry')
+    const holdOnClick = () => {
+        setActivePage('hold')
     }
 
     // Function to handle daily report button click
@@ -129,12 +176,39 @@ const ProjectInfo = () => {
         <div className="Content ProjectPage">
             <div className="project-header">
                 <h2>{values.lift_name}</h2>
-                <div className="action-buttons">
-                    <button onClick={() => setActivePage('details')}>Details</button>
-                    <button onClick={progressOnClick}>Progress</button>
-                    <button onClick={documentsOnClick}>Documents</button>
-                    <button onClick={pmsOnClick}>Register to PMS</button>
-                </div>
+                    <div className="action-buttons">
+                        <div 
+                            onClick={() => setActivePage('details')}
+                            className={activePage === 'details' ? 'active' : ''}
+                        >
+                            Details
+                        </div>
+                        {(sessionStorage.getItem('roles') === 'Project Engineer' ||
+                        sessionStorage.getItem('roles') === 'Project Manager') && (
+                            <>
+                            <div 
+                                onClick={progressOnClick}
+                                className={activePage === 'progress' ? 'active' : ''}
+                            >
+                                Progress
+                            </div>
+                            <div 
+                                onClick={documentsOnClick}
+                                className={activePage === 'documents' ? 'active' : ''}
+                            >
+                                Documents
+                            </div>
+                            <div 
+                                onClick={holdOnClick}
+                                className={activePage === 'hold' ? 'active' : ''}
+                            >
+                                Put on Hold
+                            </div>                        
+                            </>
+                        )}
+
+
+                    </div>
             </div>
             
             {
@@ -169,11 +243,19 @@ const ProjectInfo = () => {
                     backendURL={backendURL}
                     setActivePage={setActivePage}
                     currentTaskPhase={currentTaskPhase}
+                    projectedTask={projectedTask}
+                    isBehindSchedule={isBehindSchedule}
                 />
             }
             {
                 activePage === 'progress' &&
-                <ProjectProgress allTaskDates={tasks} projId={projId}/>
+                <ProjectProgress 
+                    allTaskDates={tasks} 
+                    projId={projId} 
+                    projSched={projSched} 
+                    projSchedIsLoading={projSchedIsLoading}
+                    taskPhotos={taskPhotos}
+                />
             }
             {
                 activePage === 'documents' &&
@@ -186,6 +268,21 @@ const ProjectInfo = () => {
             {
                 activePage === 'qaqc' &&
                 <RequestQAQC proj={proj} currentTask={currentTask}/>
+            }       
+            {
+                activePage === 'hold' &&
+                <RequestHold proj={proj} currentTask={currentTask}/>
+            }       
+            {
+                activePage === 'task' &&
+                <TaskDetails 
+                    currentTask={currentTask} 
+                    currentParentTask={currentParentTask} 
+                    currentTaskPhase={currentTaskPhase}
+                    proj={proj}
+                    ConfirmationModal={ConfirmationModal}
+                    fetchedData={fetchedData}
+                />
             }
             
             {/* Floating Daily Report Button - Test without role restriction first */}

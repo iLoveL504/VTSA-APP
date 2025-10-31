@@ -4,9 +4,8 @@ import { IoPerson } from "react-icons/io5"
 import { RiTeamFill } from "react-icons/ri"
 import { GoProjectRoadmap } from "react-icons/go";
 import { IoIosDocument } from "react-icons/io";
-import { useNavigate, Routes, Route, Link } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { BiSolidLogOut } from "react-icons/bi"
-
 
 const ProjectManagerMenu = () => {
   const navigate = useNavigate()
@@ -17,7 +16,6 @@ const ProjectManagerMenu = () => {
   return (
     <>
         <ul>
-          huhuh
           <Link to="/dashboard">
             <li>
                 <MdDashboard style={{ color: 'white' }}/>
@@ -27,7 +25,7 @@ const ProjectManagerMenu = () => {
           <Link to="/technician">
             <li>
                 <IoPerson style={{ color: 'white' }}/>
-                Technician
+                Users
             </li>
           </Link>
           <Link to="/projects">
@@ -36,18 +34,30 @@ const ProjectManagerMenu = () => {
                 Projects
             </li>
           </Link>
+          <Link to="/PMS">
+            <li>
+                <MdHomeRepairService style={{ color: 'white' }}/>
+                PMS
+            </li>
+          </Link>
           <Link to="/teams">
             <li>
                 <RiTeamFill style={{ color: 'white' }}/>
                 Teams
             </li>
           </Link>
-   
+          <Link to="/baby-book">
+            <li>
+                <IoIosDocument style={{ color: 'white' }}/>
+                Baby Book
+            </li>
+          </Link>
+            
           
         </ul>
 
         <div className="Logout" onClick={handleLogout}><span><BiSolidLogOut /></span>Log Out</div>
-    </> 
+    </>      
   )
 }
 

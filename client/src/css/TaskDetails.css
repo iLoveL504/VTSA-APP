@@ -1,0 +1,558 @@
+.Content.TaskDetails {
+  padding: 2rem;
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+.Content.TaskDetails h3 {
+  color: #315a95;
+  margin-bottom: 2rem;
+  font-size: 1.5rem;
+  font-weight: 700;
+}
+
+/* Minimal Task Overview */
+.Content.TaskDetails .task-overview-minimal {
+  background: #f8fafc;
+  padding: 1.5rem;
+  border-radius: 8px;
+  border-left: 4px solid #e2e8f0;
+  margin-bottom: 2rem;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem;
+}
+
+.Content.TaskDetails .task-context {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.Content.TaskDetails .context-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.Content.TaskDetails .context-label {
+  font-weight: 600;
+  color: #64748b;
+  font-size: 0.9rem;
+  min-width: 80px;
+}
+
+.Content.TaskDetails .context-value {
+  color: #374151;
+  font-weight: 500;
+}
+
+.Content.TaskDetails .context-value.highlight {
+  color: #dc2626;
+  font-weight: 700;
+  background: #fef2f2;
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+}
+
+.Content.TaskDetails .task-timeline {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  justify-content: center;
+}
+
+.Content.TaskDetails .timeline-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.Content.TaskDetails .timeline-date {
+  color: #374151;
+  font-weight: 500;
+}
+
+.Content.TaskDetails .timeline-duration {
+  background: #e5e7eb;
+  padding: 0.2rem 0.6rem;
+  border-radius: 12px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #6b7280;
+}
+
+.Content.TaskDetails .progress-indicator {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  color: #475569;
+  font-size: 0.9rem;
+}
+
+.Content.TaskDetails .progress-indicator strong {
+  color: #059669;
+}
+
+/* Emphasized Completion Section */
+.Content.TaskDetails .completion-section.emphasized {
+  background: linear-gradient(135deg, #fff7ed, #fffbeb);
+  border: 2px solid #fbbf24;
+  padding: 2rem;
+  border-radius: 12px;
+  margin-bottom: 2rem;
+  box-shadow: 0 4px 20px rgba(251, 191, 36, 0.15);
+}
+
+.Content.TaskDetails .section-header {
+  display: flex;
+
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+.Content.TaskDetails .section-header h4 {
+  color: #92400e;
+  margin: 0;
+  font-size: 1.3rem;
+  font-weight: 700;
+}
+
+
+.Content.TaskDetails .completion-content {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 2rem;
+  align-items: start;
+}
+
+/* File Upload Section */
+.Content.TaskDetails .file-upload-section {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.Content.TaskDetails .upload-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.Content.TaskDetails .upload-label {
+  font-weight: 600;
+  color: #374151;
+  font-size: 1rem;
+}
+
+.Content.TaskDetails .upload-required {
+  color: #dc2626;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.Content.TaskDetails .upload-area {
+  position: relative;
+  border: 2px dashed #d1d5db;
+  border-radius: 8px;
+  padding: 2rem;
+  background: #f9fafb;
+  transition: all 0.3s ease;
+  text-align: center;
+}
+
+.Content.TaskDetails .upload-area:hover {
+  border-color: #f59e0b;
+  background: #fefce8;
+}
+
+.Content.TaskDetails .upload-area input[type="file"] {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.Content.TaskDetails .upload-hint {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  color: #6b7280;
+}
+
+.Content.TaskDetails .upload-hint i {
+  font-size: 1.5rem;
+  color: #d1d5db;
+}
+
+.Content.TaskDetails .upload-hint span {
+  font-weight: 500;
+}
+
+.Content.TaskDetails .upload-hint small {
+  font-size: 0.8rem;
+}
+
+/* Primary Action Button */
+/* Disabled Button States */
+.Content.TaskDetails .complete-task-btn.primary-action:disabled,
+.Content.TaskDetails .begin-inspection-btn.primary-action:disabled,
+.Content.TaskDetails .confirm-completion-btn.disabled {
+    background: #e5e7eb !important;
+    color: #9ca3af !important;
+    cursor: not-allowed !important;
+    transform: none !important;
+    box-shadow: none !important;
+    border: 1px solid #d1d5db !important;
+}
+
+.Content.TaskDetails .complete-task-btn.primary-action:disabled:hover,
+.Content.TaskDetails .begin-inspection-btn.primary-action:disabled:hover,
+.Content.TaskDetails .confirm-completion-btn.disabled:hover {
+    background: #e5e7eb !important;
+    transform: none !important;
+    box-shadow: none !important;
+}
+
+/* Ready/Enabled Button States */
+.Content.TaskDetails .complete-task-btn.primary-action:not(:disabled),
+.Content.TaskDetails .begin-inspection-btn.primary-action:not(:disabled),
+.Content.TaskDetails .confirm-completion-btn.ready {
+    background: linear-gradient(135deg, #059669, #047857) !important;
+    color: white !important;
+    border: none !important;
+    cursor: pointer !important;
+    box-shadow: 0 4px 15px rgba(5, 150, 105, 0.3) !important;
+}
+
+.Content.TaskDetails .complete-task-btn.primary-action:not(:disabled):hover,
+.Content.TaskDetails .begin-inspection-btn.primary-action:not(:disabled):hover,
+.Content.TaskDetails .confirm-completion-btn.ready:hover {
+    background: linear-gradient(135deg, #047857, #065f46) !important;
+    transform: translateY(-2px) !important;
+    box-shadow: 0 6px 20px rgba(5, 150, 105, 0.4) !important;
+}
+
+/* Begin Inspection Button Specific */
+.Content.TaskDetails .begin-inspection-btn.primary-action {
+    background: linear-gradient(135deg, #dc2626, #b91c1c);
+    color: white;
+    border: none;
+    padding: 1rem 2rem;
+    border-radius: 8px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    box-shadow: 0 4px 15px rgba(220, 38, 38, 0.3);
+    width: 100%;
+    justify-content: center;
+}
+
+.Content.TaskDetails .begin-inspection-btn.primary-action:hover:not(:disabled) {
+    background: linear-gradient(135deg, #b91c1c, #991b1b);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(220, 38, 38, 0.4);
+}
+
+/* Confirm Completion Button */
+.Content.TaskDetails .confirm-completion-btn {
+    width: 100%;
+    padding: 1rem 1.5rem;
+    border: none;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+}
+
+/* Scheduling Sections */
+.Content.TaskDetails .scheduling-sections {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+}
+
+.Content.TaskDetails .schedule-section {
+  background: white;
+  padding: 1.5rem;
+  border-radius: 8px;
+  border: 1px solid #e5e7eb;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.Content.TaskDetails .schedule-section .section-header {
+  margin-bottom: 1rem;
+}
+
+.Content.TaskDetails .schedule-section .section-header h4 {
+  color: #374151;
+  margin: 0;
+  font-size: 1.1rem;
+}
+
+.Content.TaskDetails .schedule-content {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.Content.TaskDetails .schedule-input-group {
+  width: 100%;
+}
+
+.Content.TaskDetails .date-picker {
+  width: 100%;
+}
+
+.Content.TaskDetails .form-control-professional {
+  width: 100%;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .Content.TaskDetails {
+    padding: 1rem;
+  }
+  
+  .Content.TaskDetails .task-overview-minimal {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+    padding: 1.25rem;
+  }
+  
+  .Content.TaskDetails .completion-section.emphasized {
+    padding: 1.5rem;
+  }
+  
+  .Content.TaskDetails .completion-content {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+  
+  .Content.TaskDetails .scheduling-sections {
+    grid-template-columns: 1fr;
+  }
+  
+  .Content.TaskDetails .upload-area {
+    padding: 1.5rem;
+  }
+  
+  .Content.TaskDetails .complete-task-btn.primary-action {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+@media (max-width: 480px) {
+  .Content.TaskDetails .section-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+  
+  .Content.TaskDetails .context-item {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.25rem;
+  }
+  
+  .Content.TaskDetails .timeline-item {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.25rem;
+  }
+}
+
+/* Modal Styles */
+.Content.TaskDetails .modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(4px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    padding: 1rem;
+}
+
+.Content.TaskDetails .modal-content {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    max-width: 500px;
+    width: 100%;
+    animation: modalSlideIn 0.3s ease-out;
+}
+
+@keyframes modalSlideIn {
+    from {
+        opacity: 0;
+        transform: translateY(-20px) scale(0.95);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+.Content.TaskDetails .modal-header {
+    padding: 1.5rem 2rem;
+    border-bottom: 1px solid #e2e8f0;
+    background: linear-gradient(135deg, #315a95, #1e3a5f);
+    color: white;
+    border-radius: 12px 12px 0 0;
+}
+
+.Content.TaskDetails .modal-header h3 {
+    margin: 0;
+    color: white;
+    font-size: 1.3rem;
+}
+
+.Content.TaskDetails .modal-body {
+    padding: 2rem;
+}
+
+.Content.TaskDetails .modal-body p {
+    color: #64748b;
+    margin-bottom: 1.5rem;
+    text-align: center;
+    font-size: 1.1rem;
+}
+
+.Content.TaskDetails .confirmation-details {
+    background: #f8fafc;
+    padding: 1.5rem;
+    border-radius: 8px;
+    border: 1px solid #e2e8f0;
+    margin-bottom: 1rem;
+}
+
+.Content.TaskDetails .detail-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.5rem 0;
+    border-bottom: 1px solid #f1f5f9;
+}
+
+.Content.TaskDetails .detail-item:last-child {
+    border-bottom: none;
+}
+
+.Content.TaskDetails .detail-item strong {
+    color: #374151;
+}
+
+.Content.TaskDetails .detail-item span {
+    color: #64748b;
+    text-align: right;
+}
+
+.Content.TaskDetails .modal-actions {
+    padding: 1.5rem 2rem;
+    border-top: 1px solid #e2e8f0;
+    display: flex;
+    gap: 1rem;
+    justify-content: flex-end;
+}
+
+.Content.TaskDetails .btn-cancel {
+    background: #6b7280;
+    color: white;
+    border: none;
+    padding: 0.75rem 1.5rem;
+    border-radius: 6px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.Content.TaskDetails .btn-cancel:hover {
+    background: #4b5563;
+}
+
+.Content.TaskDetails .btn-confirm {
+    background: linear-gradient(135deg, #059669, #047857);
+    color: white;
+    border: none;
+    padding: 0.75rem 1.5rem;
+    border-radius: 6px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.Content.TaskDetails .btn-confirm:hover:not(:disabled) {
+    background: linear-gradient(135deg, #047857, #065f46);
+}
+
+.Content.TaskDetails .btn-confirm:disabled {
+    background: #9ca3af;
+    cursor: not-allowed;
+}
+
+/* Schedule Buttons */
+.Content.TaskDetails .schedule-btn {
+    background: linear-gradient(135deg, #315a95, #4a7cc2);
+    color: white;
+    border: none;
+    padding: 0.75rem 1.5rem;
+    border-radius: 6px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    width: 100%;
+    margin-top: 1rem;
+}
+
+.Content.TaskDetails .schedule-btn:hover:not(:disabled) {
+    background: linear-gradient(135deg, #26467c, #3b6ab8);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(49, 90, 149, 0.3);
+}
+
+.Content.TaskDetails .schedule-btn:disabled {
+    background: #9ca3af;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+}
+
+/* Status Messages */
+.Content.TaskDetails .status-message {
+    padding: 1rem;
+    border-radius: 8px;
+    margin-bottom: 1.5rem;
+    font-weight: 600;
+    text-align: center;
+}
+
+.Content.TaskDetails .status-message.success {
+    background: linear-gradient(135deg, #d4edda, #c3e6cb);
+    color: #155724;
+    border: 1px solid #b8dfc1;
+}
+
+.Content.TaskDetails .status-message.error {
+    background: linear-gradient(135deg, #f8d7da, #f5c6cb);
+    color: #721c24;
+    border: 1px solid #f1b0b7;
+}

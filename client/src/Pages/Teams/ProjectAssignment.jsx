@@ -4,7 +4,73 @@ import { useStoreState } from 'easy-peasy';
 import useFindProjectTask from '../../hooks/useFindProjectTask.js';
 import '../../css/ProjectAssignment.css';
 
+const SaveTeamModal = ({ isOpen, onClose, project, forecastSocket, utilitiesSocket, team }) => {
+    if (!isOpen) return null;
+    const teamIds = team.map(p => p.emp_id === null ? p.foreman_id : p.emp_id)
+    console.log(teamIds)
+    console.log(project.project_engineer_id)
+    const Ids = [...teamIds, ...[project.project_engineer_id]]
+    console.log(Ids)
+    const handleSave = () => {
+        forecastSocket.emit('save', project, (ack) => {
+            if (ack?.success) {
+                window.alert('Team saved successfully!');
+                utilitiesSocket.emit('pe_projects', null, () => {
+                    window.location.reload();
+                });
+                utilitiesSocket.emit("new_notification", {
+                    subject: `Project Assigned`,
+                    body: `Project Assigned for ${project.lift_name} (${project.client})`,
+                    Ids
+                }, (ack) => {
+        
+                    if (ack?.success) {
+                        utilitiesSocket.emit("refresh_project_data");
+                    } else {
+                      console.log('error');
+                    }
+                });
+            } else {
+                window.alert(ack?.error || 'Failed to save team');
+            }
+        });
+    };
+
+    return (
+        <div className="modal-overlay" onClick={onClose}>
+            <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+                <div className="modal-header">
+                    <h3>Save Team for {project?.lift_name}</h3>
+                    <button className="modal-close" onClick={onClose}>×</button>
+                </div>
+                <div className="modal-body">
+                    <p>Are you sure you want to save this team assignment? This action cannot be undone.</p>
+                    <div className="project-info">
+                        <strong>Project:</strong> {project?.lift_name}<br/>
+                        <strong>ID:</strong> #{project?.id}
+                    </div>
+                    <h3>Team Composition</h3>
+                    <div className="team-info">
+                      {team.map((t, i)=> (
+                        <div key={i}>{t.foreman_full_name ? 
+                          (`${t.foreman_full_name} ID#${t.foreman_id} (Foreman)`) : 
+                          (`${t.full_name} ID#${t.emp_id} (${t.job})`)}</div>
+                      ))}
+                    </div>
+                </div>
+                <div className="modal-footer">
+                    <button className="btn-secondary" onClick={onClose}>Cancel</button>
+                    <button className="btn-primary" onClick={handleSave}>Save Team</button>
+                </div>
+            </div>
+        </div>
+    );
+};
+
+
 const ProjectAssignment = () => {
+    const [isModalOpen, setIsModalOpen] = useState(false);
+
     const {forecastSocket, utilitiesSocket} = useSharedSocket()
 
     const forecastData = useStoreState(state => state.forecastData)
@@ -14,6 +80,8 @@ const ProjectAssignment = () => {
     const [selectedProject, setSelectedProject] = useState({})
     const [activeRoleTab, setActiveRoleTab] = useState('all')
     const {currentTask} = useFindProjectTask(1)
+    const [teamToSave, setTeamToSave] = useState([])
+
     console.log(tentativeProjectTeams)
     console.log(teamsNoProject)
     const [selectedTab, setSelectedTab] = useState('preliminaries')
@@ -62,6 +130,7 @@ const ProjectAssignment = () => {
         // console.log(teamsNoProject.concat(forecastData))
         forecastSocket.emit('forecast_team', selectedProject.installation_start_date.split("T")[0])
         
+        console.log(selectedProject.id)
     }, [selectedProject, forecastSocket])
 
     const preliminariesOnClick = () => {
@@ -76,6 +145,7 @@ const ProjectAssignment = () => {
     }
     const projectOnClick = (project, team) => {
         project.team = team
+
         console.log(project)
         setSelectedProject(project)
     }
@@ -126,6 +196,7 @@ const ProjectAssignment = () => {
                                         const fTeam = tentativeProjectTeams.filter(t => t.project_id === project.id)
                            
                                         projectOnClick(project, fTeam)
+
                                     }}
                                     style={{
                                         cursor: 'pointer',
@@ -183,30 +254,24 @@ const ProjectAssignment = () => {
                                             <span className="timeline-date">{project.project_end_date !== null ? formatDate(project.project_end_date) : 'no date'}</span>
                                         </div>
                                     </div>
-                                    {(project.status === 'Planning') && (
-                                      <>
-                                        <button onClick={() => {
-
-                                          if(!project.has_team) forecastSocket.emit('save', project, (ack) => {
-                                            if (ack?.success) {
-                                              window.alert('Team is saved')
-                                              utilitiesSocket.emit('pe_projects', null, () => {
-                                                window.location.reload()
-                                              })
-                                            } else {
-                                              window.alert(ack.error)
-                                              console.error(ack.error)
-                                            }
-                                          })
-                                            
-                                        }}>{!project.has_team ? 'Save' : 'Edit'}</button>
-                                        <span>(Finalize)</span>
-                                        {project.has_team ? (
-                                          <button>Clear Team</button>
-                                        ) : (<></>)}
-                                      </>
-                                      
-                                      )}
+                                    {((project.status === 'Planning' || project.status === 'Installation') 
+                                    && (project.id === selectedProject.id)) && (
+                                        <>
+                                            <button onClick={(e) => {
+                                                const fTeam = tentativeProjectTeams.filter(t => t.project_id === project.id)
+                                                setTeamToSave(fTeam)
+                                                e.stopPropagation(); // Prevent card click event
+                                                setSelectedProject(project); // Make sure this project is selected
+                                                setIsModalOpen(true);
+                                            }}>
+                                                {!project.has_team ? 'Save' : 'Edit'}
+                                            </button>
+                                            <span>(Finalize)</span>
+                                            {project.has_team ? (
+                                                <button>Clear Team</button>
+                                            ) : (<></>)}
+                                        </>
+                                    )}
                                       <h4>Project Engineer: {project.pe_fullname}</h4>
                                     {!project.has_team ? (
                                    <div className="project-team-info">
@@ -663,6 +728,8 @@ const ProjectAssignment = () => {
                             )
                         }
                     </div>
+
+                    {/* ----------------------------Team Section------------------------------ */}
                     {selectedProject && selectedProject.lift_name && selectedProject.installation_start_date !== null ? (
                     <div className='forecasted-team'>
                         <div className="forecasted-team-header">
@@ -731,6 +798,7 @@ const ProjectAssignment = () => {
                                 <div className={`personnel-job job-${person.job.toLowerCase().replace(' ', '-')}`}>
                                     {person.job}
                                 </div>
+                                <div>Island: {person.island_group}</div>
                                 <button className="select-person-btn">Select for Team</button>
                                 </div>
                             ))}
@@ -768,7 +836,14 @@ const ProjectAssignment = () => {
                 </div>
                 
                 </div>
-       
+              <SaveTeamModal 
+                isOpen={isModalOpen}
+                onClose={() => setIsModalOpen(false)}
+                project={selectedProject}
+                forecastSocket={forecastSocket}
+                utilitiesSocket={utilitiesSocket}
+                team={teamToSave}
+            />       
         </>
     )
 }

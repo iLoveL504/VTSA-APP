@@ -10,7 +10,6 @@ const ProjectDocuments = () => {
     const backendURL = import.meta.env.VITE_BACKEND_URL || "http://localhost:4000";
     const [activeTab, setActiveTab] = useState('dailyReports');
     const [searchTerm, setSearchTerm] = useState('');
-    const [selectedDate, setSelectedDate] = useState('');
     const [expandedChecklist, setExpandedChecklist] = useState(null);
     
     // Fetch actual daily reports data from API
@@ -116,8 +115,7 @@ const ProjectDocuments = () => {
     const filteredDailyReports = dailyReports.filter(report =>
         report.workCompleted?.toLowerCase().includes(searchTerm.toLowerCase()) ||
         report.author?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        report.delaysIssues?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        report.report_date?.includes(selectedDate)
+        report.delaysIssues?.toLowerCase().includes(searchTerm.toLowerCase())
     );
 
     const filteredChecklists = sequentialChecklists.filter(checklist =>
@@ -170,9 +168,6 @@ const ProjectDocuments = () => {
     console.log(`Preview ${type}:`, document);
   };
 
-  const handleEdit = (document, type) => {
-    console.log(`Edit ${type}:`, document);
-  };
 
   const getProgressPercentage = (completed, total) => {
     return total > 0 ? Math.round((completed / total) * 100) : 0;
@@ -202,6 +197,14 @@ const ProjectDocuments = () => {
             {/* Navigation Tabs */}
             <div className="documents-tabs">
                 <button 
+                    className={`tab-button ${activeTab === 'QAQC History' ? 'active' : ''}`}
+                    onClick={() => setActiveTab('qaqcHistory')}
+                >
+                    <i className="fas fa-file-alt"></i>
+                    QAQC Inspection History
+                    <span className="tab-count">{dailyReports.length}</span>
+                </button>
+                <button 
                     className={`tab-button ${activeTab === 'dailyReports' ? 'active' : ''}`}
                     onClick={() => setActiveTab('dailyReports')}
                 >
@@ -209,14 +212,14 @@ const ProjectDocuments = () => {
                     Daily Reports
                     <span className="tab-count">{dailyReports.length}</span>
                 </button>
-                <button 
+                {/* <button 
                     className={`tab-button ${activeTab === 'checklists' ? 'active' : ''}`}
                     onClick={() => setActiveTab('checklists')}
                 >
                     <i className="fas fa-clipboard-check"></i>
                     Project Checklists
                     <span className="tab-count">{sequentialChecklists.length}</span>
-                </button>
+                </button> */}
             </div>
 
             {/* Search and Filter Bar */}
@@ -231,30 +234,6 @@ const ProjectDocuments = () => {
                     />
                 </div>
                 
-                {activeTab === 'dailyReports' && (
-                    <div className="date-filter">
-                        <i className="fas fa-calendar"></i>
-                        <input
-                            type="date"
-                            value={selectedDate}
-                            onChange={(e) => setSelectedDate(e.target.value)}
-                        />
-                    </div>
-                )}
-
-                <div className="toolbar-actions">
-                    {activeTab === 'dailyReports' ? (
-                        <button className="btn-primary" onClick={handleCreateReport}>
-                            <i className="fas fa-plus"></i>
-                            Create Daily Report
-                        </button>
-                    ) : (
-                        <button className="btn-primary" onClick={handleUploadChecklist}>
-                            <i className="fas fa-upload"></i>
-                            Upload Checklist
-                        </button>
-                    )}
-                </div>
             </div>
 
             <div className="documents-content">
@@ -282,7 +261,6 @@ const ProjectDocuments = () => {
                     <th>Work Planned</th>
                     <th>Delays & Issues</th>
                     <th>Remarks</th>
-                    <th>Actions</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -336,31 +314,6 @@ const ProjectDocuments = () => {
                           </span>
                         </div>
                       </td>
-                      <td>
-                        <div className="table-actions">
-                          <button 
-                            className="icon-btn"
-                            onClick={() => handlePreview(report, 'report')}
-                            title="View Full Report"
-                          >
-                            <i className="fas fa-eye"></i>
-                          </button>
-                          <button 
-                            className="icon-btn"
-                            onClick={() => handleDownload(report, 'report')}
-                            title="Download Report"
-                          >
-                            <i className="fas fa-download"></i>
-                          </button>
-                          <button 
-                            className="icon-btn"
-                            onClick={() => handleEdit(report, 'report')}
-                            title="Edit Report"
-                          >
-                            <i className="fas fa-edit"></i>
-                          </button>
-                        </div>
-                      </td>
                     </tr>
                   ))}
                 </tbody>
@@ -376,7 +329,7 @@ const ProjectDocuments = () => {
               </div>
             )}
           </div>
-                ) : (
+                ) : activeTab === 'checklists' ? (
                     // SEQUENTIAL CHECKLISTS - TIMELINE VIEW
                     <div className="sequential-checklists">
                         <div className="checklists-timeline">
@@ -564,6 +517,10 @@ const ProjectDocuments = () => {
                             </div>
                         </div>
                     </div>
+                ) : (
+                  <div>
+                    QAQC Inspection History
+                  </div>
                 )}
             </div>
         </div>

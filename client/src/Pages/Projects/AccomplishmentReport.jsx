@@ -5,8 +5,10 @@ import '../../css/AccomplishmentReport.css'
 import { useReactToPrint } from "react-to-print";
 import useAxiosFetch from '../../hooks/useAxiosFetch'
 import { useParams } from 'react-router-dom'
+import { useSharedSocket } from "../../Context/SocketContext";
 
-const AccomplishmentReport = () => {
+const AccomplishmentReport = ({proj}) => {
+    const { utilitiesSocket } = useSharedSocket()
     const { projId } = useParams()
     const backendURL = import.meta.env.VITE_BACKEND_URL || 'http://localhost:4000'
     const [editMode, setEditMode] = useState(false);
@@ -17,11 +19,11 @@ const AccomplishmentReport = () => {
     const [guideRail, setGuideRail] = useState([]);
     const [additionalSections, setAdditionalSections] = useState([]);
     const {data: accomplishments, isLoading: accomplishmentsIsLoading} = useAxiosFetch(`${backendURL}/api/projects/schedule/${projId}`)
-    const [totalContractAmount, setTotalContractAmount] = useState(884000);
-    
+    const [totalContractAmount, setTotalContractAmount] = useState(null);
+  
 useEffect(() => {
   if (!accomplishmentsIsLoading && accomplishments) {
-    console.log(accomplishments);
+    console.log(proj);
     const sort = accomplishments.filter(a => a.task_id >= 500)
     
     // Group items by section_title
@@ -66,6 +68,10 @@ useEffect(() => {
   }
 }, [accomplishmentsIsLoading, accomplishments]);
 
+useEffect(() => {
+  console.log(proj)
+  setTotalContractAmount(proj.contract_amount)
+}, [proj])
 
     const [projectInfo] = useState({
         company: 'VTSA INTERNATIONAL INC.',
@@ -138,10 +144,12 @@ useEffect(() => {
 
     const totals = calculateTotals();
 
-    const formatNumber = (num) => {
-        return num.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-    };
-
+  const formatNumber = (num) => {
+      if (num === null || num === undefined || isNaN(num)) {
+          return '0.00';
+      }
+      return num.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  };
     const formatPercent = (num) => {
         return num.toFixed(2) + '%';
     };
@@ -246,15 +254,25 @@ useEffect(() => {
         <div className="panel-header">
           <div className="contract-input-group">
             <label className="input-label">Total Contract Amount</label>
-            <div className="input-with-icon">
+            <div className="save-section">
+              <div className="input-with-icon">
               <span className="currency-symbol">₱</span>
               <input
                 type="number"
                 value={totalContractAmount}
-                onChange={(e) => setTotalContractAmount(parseFloat(e.target.value) || 0)}
+                onChange={(e) => setTotalContractAmount(parseFloat(e.target.value))}
                 className="amount-input"
               />
             </div>
+              <button onClick={() => {
+                console.log(totalContractAmount)
+                utilitiesSocket.emit('set_contract', {amount: totalContractAmount, projId})
+                console.log(totalContractAmount)
+              }}>
+                Save
+              </button>            
+            </div>
+
           </div>
 
           <div className="action-buttons">

@@ -12,12 +12,15 @@ const summaryMap = {
     'Testing and Commissioning (Passenger Elavator)': 'Test-and-Comm'
 }
 
-const QAQCEntry = ({project, setSelectedEntry, onAssignClick}) => {
-
-  
+const QAQCEntry = ({project, setSelectedEntry, onAssignClick, manpower, qaqcTechs}) => {
   const handleSelect = (project) => (e) => {
-    // Don't trigger selection if clicking the assign button
     if (e.target.closest('.assign-btn')) return
+    const findProjectM = manpower.find(m => m.project_id === project.id)
+    const findQAQC = qaqcTechs.find(q => q.employee_id === findProjectM.qaqc_id)
+    if (findQAQC) {
+      project.qaqc = findQAQC
+    } else project.qaqc = undefined
+    console.log(project)
     setSelectedEntry(project)
   }
 
@@ -26,14 +29,10 @@ const QAQCEntry = ({project, setSelectedEntry, onAssignClick}) => {
     onAssignClick(project)
   }
 
-  // Check if project needs QAQC assignment
-  const needsAssignment = project.qaqc_inspection_date ? true : false
-  const isQAQCPending = needsAssignment
-
   const getQAQCStatus = () => {
     if (project.qaqc_ongoing) return 'ongoing'
     if (project.qaqc_is_assigned) return 'assigned'
-    if (project.qaqc_inspection_date) return 'pending'
+    if (project.qaqc_pending) return 'pending'
     return 'none'
   }
 
@@ -41,22 +40,21 @@ const QAQCEntry = ({project, setSelectedEntry, onAssignClick}) => {
 
   return (
     <div 
-      className={`ProjectInfo ${isQAQCPending ? 'qaqc-pending' : ''}`} 
+      className={`ProjectInfo qaqc-${qaqcStatus}`} 
       onClick={handleSelect(project)}
     >
-      <div className="project-main">
-        <div className="project-name">
-          {project.lift_name}
-          {needsAssignment && <span className="pending-badge"> ⚡</span>}
-        </div>
+      {/* Column 1: Project Name & Client */}
+      <div>
+        <div className="project-name">{project.lift_name}</div>
         <div className="project-client">{project.client}</div>
-        {needsAssignment && (
+        {qaqcStatus === 'pending' && (
           <button className="assign-btn" onClick={handleAssignClick}>
             Assign QAQC
           </button>
         )}
       </div>
       
+      {/* Column 2: Progress */}
       <div className="progress-section">
         <Box sx={{ width: '100%' }}>
           <div className="progress-text">{project.progress}%</div>
@@ -76,29 +74,31 @@ const QAQCEntry = ({project, setSelectedEntry, onAssignClick}) => {
         </Box>
       </div>
       
+      {/* Column 3: Status Badge */}
       <div className={`status-badge status-${summaryMap[project.status]}`}>
         {project.status}
       </div>
       
+      {/* Column 4: Current Task */}
       <div className="current-task">
         {project.current_task || 'No active task'}
       </div>
+
+      {/* Column 4: Current Task */}
+      <div className="current-task">
+        {project.qaqc_inspection_reason || '-'}
+      </div>
       
+      {/* Column 5: QAQC Status */}
       <div className="qaqc-status">
         {qaqcStatus === 'assigned' ? 'Assigned' : 
          qaqcStatus === 'pending' ? 'Pending Assignment' : 
-         qaqcStatus === 'ongoing' ? 'Ongoing' : 'Not Required'}
+         qaqcStatus === 'ongoing' ? 'Ongoing' : '-'}
       </div>
       
+      {/* Column 6: QAQC Dates */}
       <div className="qaqc-dates">
-        {project.qaqc_assign_date ? (
-          <div>
-            <div>Assigned: {new Date(project.qaqc_assign_date).toLocaleDateString('en-GB')}</div>
-            {project.qaqc_inspection_date && (
-              <div>Due: {new Date(project.qaqc_inspection_date).toLocaleDateString('en-GB')}</div>
-            )}
-          </div>
-        ) : project.qaqc_inspection_date ? (
+        {project.qaqc_inspection_date ? (
           <div>Due: {new Date(project.qaqc_inspection_date).toLocaleDateString('en-GB')}</div>
         ) : (
           <div>-</div>

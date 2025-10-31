@@ -8,8 +8,9 @@ import UniverSpreadsheet from '../../spreadsheet-components/spreadsheet.jsx'
 import "wx-react-gantt/dist/gantt.css";
 import ViewSchedule from './ViewSchedule.jsx'
 import AccomplishmentReport from './AccomplishmentReport.jsx'
+import TaskList from './TaskList.jsx'
 
-const ProjectProgress = ({ allTaskDates, tasksIsLoading}) => {
+const ProjectProgress = ({ projSched, projSchedIsLoading, taskPhotos}) => {
     const { projId } = useParams()
     const numId = Number(projId)
     const projects = useStoreState(state => state.projects)
@@ -22,6 +23,7 @@ const ProjectProgress = ({ allTaskDates, tasksIsLoading}) => {
 
     return (
         <div className="Content ProjectProgress">
+            <TaskList projSched={projSched} taskPhotos={taskPhotos} />
             <div className="progress-header">
                 <h2>Project Progress - {proj.lift_name}</h2>
                 <div className="tabs">
@@ -37,19 +39,13 @@ const ProjectProgress = ({ allTaskDates, tasksIsLoading}) => {
                     >
                         AccomplishmentReport
                     </button>
-                    <button 
-                        className={activeTab === 'tasks' ? 'active' : ''}
-                        onClick={() => setActiveTab('tasks')}
-                    >
-                        Daily Tasks
-                    </button>
+
                 </div>
             </div>
 
             <div className="progress-content">
-                {activeTab === 'gantt' && <ViewSchedule />}
-                {activeTab === 'tasks' && <DailyTasks allTaskDates={allTaskDates} tasksIsLoading={tasksIsLoading}/>}
-                {activeTab === 'accomplishment' && <AccomplishmentReport />}
+                {activeTab === 'gantt' && <ViewSchedule projSched={projSched} projSchedIsLoading={projSchedIsLoading} />}
+                {activeTab === 'accomplishment' && <AccomplishmentReport proj={proj}/>}
             </div>
         </div>
     )

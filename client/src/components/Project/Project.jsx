@@ -18,11 +18,22 @@ const Project = ({project}) => {
     navigate(`/projects/${project.id}`)
   }
   
+const projectStatus = () => {
+  return project.request_hold ? 'request-hold' :
+    project.on_hold ? 'on-hold' : ''
+}
+
+console.log(projectStatus())
+
   return (
-    <div className='ProjectInfo' onClick={handleClick}>
-      {project.lift_name}
+    <div className={`ProjectInfo ${projectStatus()}`} onClick={handleClick}>
+      <div className='proj-name'>
+        <div>{project.lift_name}</div>
+        <div>{projectStatus()}</div>
+      </div>
+      
       <p>{project.client}</p>
-      <p>{new Date(project.created_at).toLocaleDateString("en-GB")}</p>
+      <p>{project.project_created_at === undefined ? '-' : new Date(project.created_at).toLocaleDateString("en-GB")}</p>
       <p>{project.project_end_date === null ? 'Date pending' : new Date(project.project_end_date).toLocaleDateString("en-GB")}</p>
       <div className="progress-section">
         <Box sx={{ width: '100%' }}>
@@ -43,7 +54,7 @@ const Project = ({project}) => {
         </Box>
       </div>
       <p className={`status-badge status-${summaryMap[project.status]}`}>
-        {project.status}
+        {project.status ? project.status : '-'}
       </p>
     </div>
   )

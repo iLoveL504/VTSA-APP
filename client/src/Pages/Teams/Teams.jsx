@@ -12,6 +12,7 @@ const Teams = () => {
   const teamsByGroup = useMemo(() => {
     if (teamData && !teamIsLoading) {
       return teamData.reduce((acc, entry) => {
+         if (entry.team_id == null) return acc;
         const key = entry.team_id;
         if (!acc[key]) {
           acc[key] = [];
@@ -22,7 +23,7 @@ const Teams = () => {
     }
     return {};
   }, [teamData, teamIsLoading]);
-
+  console.log(teamsByGroup)
   const installationOnClick = () => {
     setActivePage('installation');
   };

@@ -304,19 +304,19 @@
 
 /* Role-specific colors */
 .role-foreman .team-member-role {
-    background: linear-gradient(135deg, #007bff, #0056b3);
+    background-color: rgb(39, 111, 204);
     color: white;
     border: none;
 }
 
 .role-skilled-installer .team-member-role {
-    background: linear-gradient(135deg, #28a745, #1e7e34);
+    background-color: rgb(57, 161, 57);
     color: white;
     border: none;
 }
 
 .role-installer .team-member-role {
-    background: linear-gradient(135deg, #6c757d, #545b62);
+    background-color: rgb(106, 106, 106);
     color: white;
     border: none;
 }
@@ -670,17 +670,17 @@
 
 /* Job-specific colors */
 .job-foreman {
-  background: linear-gradient(135deg, #007bff, #0056b3);
+  background-color: rgb(39, 111, 204);
   color: white;
 }
 
 .job-skilled-installer {
-  background: linear-gradient(135deg, #28a745, #1e7e34);
+  background-color: rgb(57, 161, 57);
   color: white;
 }
 
 .job-installer {
-  background: linear-gradient(135deg, #6c757d, #545b62);
+  background-color: rgb(106, 106, 106);
   color: white;
 }
 
@@ -721,4 +721,104 @@
   .summary-stats {
     grid-template-columns: 1fr;
   }
+}
+
+/* Modal Styles */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.6);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    padding: 1rem;
+}
+
+.modal-content {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    width: 100%;
+    max-width: 500px;
+    max-height: 90vh;
+    overflow-y: auto;
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.5rem;
+    border-bottom: 1px solid #e1e8ed;
+}
+
+.modal-header h3 {
+    margin: 0;
+    color: #2c3e50;
+    font-size: 1.3rem;
+}
+
+.modal-close {
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    cursor: pointer;
+    color: #6c757d;
+    padding: 0;
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.modal-close:hover {
+    color: #2c3e50;
+    background: #f8f9fa;
+    border-radius: 50%;
+}
+
+.modal-body {
+    padding: 1.5rem;
+}
+
+.modal-body p {
+    margin-bottom: 1rem;
+    color: #6c757d;
+    line-height: 1.5;
+}
+
+.project-info {
+    background: #f8f9fa;
+    padding: 1rem;
+    border-radius: 8px;
+    border-left: 4px solid #315a95;
+}
+
+.modal-footer {
+    display: flex;
+    gap: 1rem;
+    justify-content: flex-end;
+    padding: 1.5rem;
+    border-top: 1px solid #e1e8ed;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .modal-content {
+        margin: 1rem;
+        width: calc(100% - 2rem);
+    }
+    
+    .modal-footer {
+        flex-direction: column;
+    }
+    
+    .modal-footer button {
+        width: 100%;
+    }
 }

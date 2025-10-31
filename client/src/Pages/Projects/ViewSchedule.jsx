@@ -2,7 +2,6 @@ import React, { useState, useMemo, useEffect, useRef } from "react";
 import { Gantt, ViewMode } from "gantt-task-react";
 import "gantt-task-react/dist/index.css";
 import "../Tests/TestChart.css";
-import useAxiosFetch from "../../hooks/useAxiosFetch";
 import { useParams } from "react-router-dom";
 import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
@@ -11,11 +10,10 @@ import Select from '@mui/material/Select';
 
 import { useReactToPrint } from "react-to-print";
 
-const TestChart = () => {
+const TestChart = ({projSched, projSchedIsLoading}) => {
     const { projId } = useParams()
     const [view, setView] = useState(ViewMode.Day);
-    const backendURL = import.meta.env.VITE_BACKEND_URL || 'http://localhost:4000';
-    const { data: projSched, isLoading: projSchedIsLoading } = useAxiosFetch(`${backendURL}/api/projects/schedule/${projId}`);
+    
     const [displayTasks, setDisplayTasks] = useState([])
     const [isPrinting, setIsPrinting] = useState(false);
     const [currentTaskId, setCurrentTaskId] = useState(null);

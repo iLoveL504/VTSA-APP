@@ -4,7 +4,7 @@ import useAxiosFetch from '../../hooks/useAxiosFetch'
 
 import { Grid } from 'ldrs/react'
 
-const QAQCList = ({searchTerm, setSelectedEntry, onAssignClick}) => {
+const QAQCList = ({searchTerm, setSelectedEntry, onAssignClick, manpower, qaqcTechs}) => {
 
   const backendURL = import.meta.env.VITE_BACKEND_URL || 'http://localhost:4000'
   const empId = sessionStorage.getItem('id')
@@ -61,12 +61,12 @@ useEffect(() => {
             sessionStorage.getItem('roles') === 'QAQC Coordinator' ?
             (
                filteredProjects.map(p => (
-                  <QAQCEntry project={p} key={p.id} setSelectedEntry={setSelectedEntry} onAssignClick={onAssignClick}/>
+                  <QAQCEntry project={p} key={p.id} setSelectedEntry={setSelectedEntry} onAssignClick={onAssignClick} manpower={manpower} qaqcTechs={qaqcTechs}/>
                 ))
             )
             :  (  
                 designatedProject.map(p => (
-                  <QAQCEntry project={p} key={p.id} setSelectedEntry={setSelectedEntry} onAssignClick={onAssignClick}/>
+                  <QAQCEntry project={p} key={p.id} setSelectedEntry={setSelectedEntry} onAssignClick={onAssignClick} manpower={manpower} qaqcTechs={qaqcTechs}/>
                 ))
             )
         }

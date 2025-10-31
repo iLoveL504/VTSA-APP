@@ -22,16 +22,16 @@ const PMSCoordinatorMenu = () => {
                 Dashboard
             </li>
           </Link>
-          <Link to="/technician">
+          <Link to="/PMS/new-entry">
             <li>
-                <IoPerson style={{ color: 'white' }}/>
-                Technician
+                <MdHomeRepairService style={{ color: 'white' }}/>
+                New PMS Entry
             </li>
           </Link>
           <Link to="/PMS">
             <li>
                 <MdHomeRepairService style={{ color: 'white' }}/>
-                PMS
+                PMS Assignment
             </li>
           </Link>
           <Link to="/teams">

@@ -5,15 +5,17 @@ import QAQCList from '../../components/QAQCTNC/QAQCList.jsx'
 import { useSharedSocket } from '../../Context/SocketContext.js';
 import '../../css/QAQCPage.css'
 import { Axios } from '../../api/axios.js'
+import useAxiosFetch from '../../hooks/useAxiosFetch.js';
 
 const QAQCAssignment = ({updateIsLoading}) => {
     const { utilitiesSocket } = useSharedSocket()
+    const backendURL = import.meta.env.VITE_BACKEND_URL || "http://localhost:4000";
+    const { data: manpower, isLoading: manpowerIsLoading } = useAxiosFetch(`${backendURL}/api/teams/project-manpower`)
     const navigate = useNavigate()
     const projects = useStoreState(state => state.projects)
     const employees = useStoreState(state => state.employees)
     const qaqcTechs = employees.filter(e => e.job === 'QAQC' && e.is_active === 0)
-    
-    console.log(qaqcTechs)
+    console.log(manpower)
     const [searchTerm, setSearchTerm] = useState('')
     const [selectedEntry, setSelectedEntry] = useState({})
     const [assignModal, setAssignModal] = useState({ isOpen: false, project: null })
@@ -53,7 +55,7 @@ const QAQCAssignment = ({updateIsLoading}) => {
         setSelectedTech('')
         setAssignmentStatus('')
     }
-
+    console.log(selectedEntry)
     const handleAssignConfirm = async () => {
         if (!selectedTech) {
             setAssignmentStatus('Please select a QAQC technician')
@@ -65,10 +67,14 @@ const QAQCAssignment = ({updateIsLoading}) => {
             const peID = projects.find(p => p.id === assignModal.project.id).project_engineer_id
             const ProjectManagerId = employees.find(e => e.job === 'Project Manager').employee_id
             setAssignmentStatus('assigning')
+            console.log(selectedEntry)
             const payload = {
-                project_id: assignModal.project.id,
-                qaqc_technician_id: parseInt(selectedTech.employee_id),
-                assign_date: new Date().toISOString().split('T')[0]
+                projId: assignModal.project.id,
+                qaqcId: parseInt(selectedTech.employee_id),
+                assign_date: new Date().toISOString().split('T')[0],
+                inspection_type: 'QAQC',
+                inspection_reason: selectedEntry.qaqc_inspection_reason,
+                inspection_date: new Date(selectedEntry.qaqc_inspection_date).toISOString().split('T')[0]
             }
        
             console.log(peID)
@@ -117,6 +123,10 @@ const QAQCAssignment = ({updateIsLoading}) => {
         setSelectedTech('')
         setAssignmentStatus('')
     }
+
+    if (manpowerIsLoading) return (
+        <div>loading data</div>
+    )
 
     return (
         <div className='Content QAQCMenu'>
@@ -196,8 +206,8 @@ const QAQCAssignment = ({updateIsLoading}) => {
                     <strong>Current Task</strong>
                     <span>{selectedEntry.current_task || 'N/A'}</span>
                     </div>
-                    {selectedEntry.qaqc_inspection_date && !selectedEntry.qaqc_assign_date ? (
-                    <div className="qaqc-assignment">
+                    {selectedEntry.qaqc_pending ? (
+                    <div className="entry-qaqc-assignment">
                         <h3>QAQC Inspection Required</h3>
                         <p>This project needs QAQC inspection assigned</p>
                         <button 
@@ -207,14 +217,20 @@ const QAQCAssignment = ({updateIsLoading}) => {
                             Assign QAQC Inspector
                         </button>
                     </div>
-                    ) : selectedEntry.qaqc_assign_date ? (
-                    <div className="qaqc-assigned">
+                    ) : selectedEntry.qaqc_is_assigned ? (
+                    <div className="entry-qaqc-assigned">
                         <strong>QAQC Assigned</strong>
-                        <span>Assigned to: {selectedEntry.qaqc_technician_name || 'Technician'}</span>
-                        <span>Assigned on: {new Date(selectedEntry.qaqc_assign_date).toLocaleDateString('en-GB')}</span>
+                        <span>Assigned to: {selectedEntry.qaqc ? `${selectedEntry.qaqc.last_name} ${selectedEntry.qaqc.first_name}` : 'Technician'}</span>
+                        <span>Assigned on: {new Date(selectedEntry.qaqc_inspection_date).toLocaleDateString('en-GB')}</span>
                     </div>
+                    ) : selectedEntry.qaqc_ongoing ? (
+                        <div className="entry-qaqc-ongoing">
+                            <strong>QAQC Ongoing</strong>
+                            <span>Assigned to: {selectedEntry.qaqc ? `${selectedEntry.qaqc.last_name} ${selectedEntry.qaqc.first_name}` : 'Technician'}</span>
+                            <span>Assigned on: {new Date(selectedEntry.qaqc_inspection_date).toLocaleDateString('en-GB')}</span>
+                        </div>
                     ) : (
-                    <div className="no-inspection">
+                    <div className="entry-no-inspection">
                         <strong>QAQC Status</strong>
                         <span>No inspection required at the moment</span>
                     </div>
@@ -272,6 +288,7 @@ const QAQCAssignment = ({updateIsLoading}) => {
                 <div className="table-cell">Progress</div>
                 <div className="table-cell">Phase</div>
                 <div className="table-cell">Current Task</div>
+                <div className="table-cell">QAQC Reason</div>
                 <div className="table-cell">QAQC Status</div>
                 <div className="table-cell">QAQC Dates</div>
             </div>
@@ -284,6 +301,8 @@ const QAQCAssignment = ({updateIsLoading}) => {
                     updateIsLoading={updateIsLoading} 
                     setSelectedEntry={setSelectedEntry}
                     onAssignClick={handleAssignClick}
+                    manpower={manpower}
+                    qaqcTechs={qaqcTechs}
                 />
             </div>
 

@@ -71,11 +71,13 @@ const x = Object.entries(teamsByGroup)
       <div className="teams-stats-header">
         <div className="stats-overview">
           <div className="stat-card">
+            {console.log()}
             <span className="stat-number">{Object.keys(teamsByGroup).length}</span>
             <span className="stat-label">Active Teams</span>
           </div>
           <div className="stat-card">
             <span className="stat-number">
+              {console.log(teamsByGroup)}
               {Object.values(teamsByGroup).reduce((total, team) => total + team.length, 0)}
             </span>
             <span className="stat-label">Total Members</span>

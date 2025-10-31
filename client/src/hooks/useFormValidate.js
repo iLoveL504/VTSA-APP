@@ -38,6 +38,14 @@ const useFormValidate = (initialState, validate) => {
         })
     }
 
+    const updatePhotos = (newPhotos) => {
+        setValues(prev => {
+            const updated = { ...prev, photos: newPhotos };
+            setErrors(validate(updated));
+            return updated;
+        });
+    };
+
     const handleBlur = () => {
         const validationErrors = validate(values)
         console.log(validationErrors)
@@ -66,7 +74,8 @@ const useFormValidate = (initialState, validate) => {
         setValues,
         saveStatus,
         setSaveStatus,
-        handleContractChange
+        handleContractChange,
+        updatePhotos
     }
 }
 

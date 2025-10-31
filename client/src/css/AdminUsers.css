@@ -1,0 +1,274 @@
+/* Admin Users Page */
+.Content.Users {
+  padding: 2rem;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.Content.Users .page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+}
+
+.Content.Users .page-header h1 {
+  color: #2c3e50;
+  margin: 0;
+}
+
+.Content.Users .btn-primary {
+  background-color: #315a95;
+  color: white;
+  padding: 0.75rem 1.5rem;
+  border: none;
+  border-radius: 4px;
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  max-width: 300px;
+
+}
+
+.Content.Users .btn-primary:hover {
+  background-color: #26467c;
+}
+
+.Content.Users .search-section {
+  margin-bottom: 1.5rem;
+}
+
+.Content.Users .search-section label {
+  display: block;
+  font-weight: 500;
+  margin-bottom: 0.5rem;
+  color: #2c3e50;
+  font-size: 0.9rem;
+}
+
+.Content.Users .search-section input[type="text"] {
+  padding: 0.75rem;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-family: 'Montserrat', sans-serif;
+  min-width: 300px;
+  transition: border 0.3s ease;
+}
+
+.Content.Users .search-section input[type="text"]:focus {
+  outline: none;
+  border-color: #315a95;
+  box-shadow: 0 0 0 2px rgba(49, 90, 149, 0.2);
+}
+
+/* Admin Labels */
+.Content.Users .admin-labels {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr 1fr 1fr 1fr;
+  padding: 1rem;
+  background-color: #315a95;
+  color: white;
+  font-weight: 500;
+  border-radius: 4px;
+  margin-bottom: 0.5rem;
+}
+
+/* Admin Employee Row */
+.Content.Users .admin-employee {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr 1fr 1fr 1fr;
+  align-items: center;
+  padding: 1.25rem;
+  transition: all 0.3s ease;
+  border-bottom: 1px solid #eee;
+  cursor: pointer;
+}
+
+.Content.Users .admin-employee:hover {
+  background-color: #f8f9fa;
+  transform: translateX(5px);
+}
+
+.Content.Users .admin-employee p {
+  margin: 0;
+  color: #333;
+}
+
+.Content.Users .actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.Content.Users .btn-edit, 
+.Content.Users .btn-delete {
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 4px;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 0.8rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.Content.Users .btn-edit {
+  background-color: #ffc107;
+  color: #000;
+}
+
+.Content.Users .btn-edit:hover {
+  background-color: #e0a800;
+}
+
+.Content.Users .btn-delete {
+  background-color: #dc3545;
+  color: white;
+}
+
+.Content.Users .btn-delete:hover {
+  background-color: #c82333;
+}
+
+/* Status Badge */
+.Content.Users .Status {
+  display: inline-block;
+  padding: 0.35rem 0.75rem;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-align: center;
+  width: fit-content;
+}
+
+.Content.Users .Status.Active {
+  background-color: #e6f7ee;
+  color: #28a745;
+}
+
+.Content.Users .Status.Inactive {
+  background-color: #fce8e8;
+  color: #dc3545;
+}
+
+/* Modal Styles */
+.Content.Users .modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.Content.Users .modal-content {
+  background: white;
+  padding: 2rem;
+  border-radius: 8px;
+  width: 90%;
+  max-width: 600px;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+.Content.Users .modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+.Content.Users .close-btn {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+  color: #6c757d;
+}
+
+.Content.Users .close-btn:hover {
+  color: #495057;
+}
+
+.Content.Users .form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.Content.Users .form-group {
+  display: flex;
+  flex-direction: column;
+}
+
+.Content.Users .form-group label {
+  font-weight: 500;
+  margin-bottom: 0.5rem;
+  color: #2c3e50;
+}
+
+.Content.Users .form-group input, 
+.Content.Users .form-group select {
+  padding: 0.75rem;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-family: 'Montserrat', sans-serif;
+}
+
+.Content.Users .form-group input:focus,
+.Content.Users .form-group select:focus {
+  outline: none;
+  border-color: #315a95;
+  box-shadow: 0 0 0 2px rgba(49, 90, 149, 0.2);
+}
+
+.Content.Users .checkbox-group {
+  flex-direction: row;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.Content.Users .checkbox-group input {
+  margin: 0;
+}
+
+.Content.Users .modal-actions {
+  display: flex;
+  gap: 1rem;
+  justify-content: flex-end;
+  margin-top: 2rem;
+}
+
+.Content.Users .btn-secondary {
+  background-color: #6c757d;
+  color: white;
+  padding: 0.75rem 1.5rem;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-family: 'Montserrat', sans-serif;
+}
+
+.Content.Users .btn-secondary:hover {
+  background-color: #5a6268;
+}
+
+.Content.Users .loading, 
+.Content.Users .no-employees {
+  text-align: center;
+  padding: 2rem;
+  color: #6c757d;
+  font-style: italic;
+}
+
+/* Employee List Container */
+.Content.Users .EmployeeList {
+  background: white;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}

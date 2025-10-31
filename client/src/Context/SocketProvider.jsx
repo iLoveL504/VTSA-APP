@@ -10,6 +10,7 @@ export const SocketProvider = ({ children }) => {
   const setPeProjects = useStoreActions(action => action.setPeProjects)
   const setNotifications = useStoreActions(action => action.setNotifications)
   const setInstallationTeams = useStoreActions(action => action.setInstallationTeams)
+  const setEmployees = useStoreActions(action => action.setEmployees)
 
   const forecastSocket = useSocket("/forecast", {
     forecast_done: (data) => setForecastData(data.map(d => ({ ...d, group: 'forecasted' }))),
@@ -33,7 +34,7 @@ export const SocketProvider = ({ children }) => {
   })
 
   const utilitiesSocket = useSocket("/utilities", {
-    update_done: (projects) => setProjects(projects),
+    update_done: (projects) => {setProjects(projects); console.log(projects)},
     pe_projects_fetch_done: (data) => setPeProjects(data),
     notification_update_done: (data) => {
       console.log('New notifications:', data);
@@ -41,8 +42,12 @@ export const SocketProvider = ({ children }) => {
     }
   })
 
+  const usersSocket = useSocket("/users", {
+    update_done: (users) => {setEmployees(users); console.log(users)}
+  })
+
   return (
-    <SocketContext.Provider value={{forecastSocket, utilitiesSocket}}>
+    <SocketContext.Provider value={{forecastSocket, utilitiesSocket, usersSocket}}>
       {children}
     </SocketContext.Provider>
   )

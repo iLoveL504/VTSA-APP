@@ -9,7 +9,7 @@ const Projects = ({updateIsLoading}) => {
   const navigate = useNavigate()
   const projects = useStoreState(state => state.projects)
   const [searchTerm, setSearchTerm] = useState('')
-
+  const [onHold, setOnHold] = useState(false)
   // Filter projects based on search term
   const filteredProjects = useMemo(() => {
     if (!searchTerm) return projects
@@ -38,6 +38,13 @@ useEffect(() => {
     setSearchTerm('')
   }
 
+  const handleToggleHold = () => {
+    setOnHold(prev => {
+      return !prev
+    })
+    console.log(onHold)
+  }
+
   return (
     <div className='Content ProjectMenu'>
       {/* Header with Create Button and Search */}
@@ -48,7 +55,16 @@ useEffect(() => {
             {filteredProjects.length} of {projects.length} projects
           </span>
         </div>
-        
+        {
+          sessionStorage.getItem('roles') === 'Project Manager' && (
+            <div>
+              <button onClick={handleToggleHold}>
+                {onHold ? 'All Projects' : 'Projects on Hold'}
+              </button>
+            </div>            
+          )
+        }
+
         <div className="header-right">
           {/* Search Bar */}
           <div className="search-container">
@@ -98,7 +114,7 @@ useEffect(() => {
 
       {/* Project List */}
       <div>
-        <ProjectList searchTerm={searchTerm} updateIsLoading={updateIsLoading}/>
+        <ProjectList onHold={onHold} searchTerm={searchTerm} updateIsLoading={updateIsLoading}/>
       </div>
 
       {/* No Results Message */}

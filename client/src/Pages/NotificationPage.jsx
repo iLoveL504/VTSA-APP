@@ -1,7 +1,7 @@
 import React from 'react'
 import { useStoreState } from 'easy-peasy'
 import { useParams, useNavigate } from 'react-router-dom'
-import '../css/NotificationPage.css'
+//import '../css/NotificationPage.css'
 
 const NotificationPage = () => {
   const { notifId } = useParams()

@@ -1,13 +1,13 @@
 import { useEffect, useMemo } from 'react'
 import Layout from './Pages/Layout'
-import Dashboard from './Pages/Dashboard'
+import Dashboard from './Pages/Dashboard/Dashboard.jsx'
 import Technician from './Pages/Technician/Technician.jsx'
 import TechnicianInfo from './Pages/Technician/TechnicianInfo.jsx'
 import Projects from './Pages/Projects/Projects'
 import ProjectInfo from './Pages/Projects/ProjectInfo.jsx'
 import ProjectProgress from './Pages/Projects/ProjectProgress.jsx'
 import ProjectReport from './Pages/Projects/ProjectReport.jsx'
-import PMS from './Pages/PMS/PMS.jsx'
+import PMSAssignment from './Pages/PMS/PMSAssignment.jsx'
 import Login from './Pages/Login'
 import Teams from './Pages/Teams/Teams.jsx'
 import BabyBook from './Pages/BabyBook'
@@ -32,22 +32,26 @@ import SchneiderServiceReport from './Pages/Documents/SchneiderServiceReport.jsx
 import Users from './Pages/Admin/Users.jsx'
 import PMSPage from './Pages/PMS/PMSPage.jsx'
 import QAQCAssignment from './Pages/QAQC/QAQCAssignment.jsx'
+import TNCAssignment from './Pages/TNC/TNCAssignment.jsx'
 import '@mantine/core/styles.css';
 // ‼️ import dates styles after core package styles
 import '@mantine/dates/styles.css';
 import { MantineProvider } from '@mantine/core';
+import PMSNewEntry from './Pages/PMS/PMSNewEntry.jsx'
+
 
 function App() {
-  console.log('backendurl', import.meta.env.VITE_BACKEND_URL )
   const backendURL = import.meta.env.VITE_BACKEND_URL || 'https://vtsa-app-production.up.railway.app';
   //console.log('https://vtsa-app-production.up.railway.app')
 
 const { data: empData } =
   useAxiosFetch(`${backendURL}/api/employees`);
 
+const { data: pmsData } =
+  useAxiosFetch(`${backendURL}/api/pms/clients`);
+
 const { data: projData } =
   useAxiosFetch(`${backendURL}/api/projects`);
-console.log(sessionStorage.getItem('id'))
 const { data: notifData } =
   useAxiosFetch(`${backendURL}/api/notifications`);
 
@@ -57,6 +61,7 @@ const { data: notifData } =
   const setUser = useStoreActions(actions => actions.setUser)
   const setNotifications = useStoreActions(actions => actions.setNotifications)
   const projects = useStoreState(state => state.projects)
+  const setPMSProjects = useStoreActions(actions => actions.setPMSProjects)
 
   // array of project ids
   const projectIDs = useMemo(() => {
@@ -96,8 +101,12 @@ const { data: notifData } =
   // }, [socket, isLoggedIn])
 
 useEffect(() => {
-  if (empData) setEmployees(empData)
+  if (empData) {setEmployees(empData);}
 }, [empData, setEmployees])
+
+useEffect(() => {
+  if (pmsData) setPMSProjects(pmsData)
+}, [pmsData, setPMSProjects])
 
 useEffect(() => {
   if (projData) setProjects(projData)
@@ -154,7 +163,8 @@ useEffect(() => {
           
           <Route path="testsheet" element={<TestJspreadsheet />} />
           <Route path="PMS">
-            <Route index element={<PMS />} />
+            <Route index element={<PMSAssignment updateIsLoading={updateIsLoading}/>} />
+            <Route path="new-entry" element={<PMSNewEntry updateIsLoading={updateIsLoading}/>} />
             <Route path=":projId" element={<PMSPage />} />
           </Route>
 
@@ -169,6 +179,10 @@ useEffect(() => {
           <Route path="QAQC">
             <Route index element={<QAQCAssignment updateIsLoading={updateIsLoading} />} />
             
+          </Route>
+
+          <Route path="TNC">
+            <Route index element={<TNCAssignment updateIsLoading={updateIsLoading} />} />
           </Route>
 
   

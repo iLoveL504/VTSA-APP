@@ -1,9 +1,10 @@
 import { createStore, action, thunk, computed } from "easy-peasy"
 import {Axios} from '../api/axios.js'
 import InstallationTeams from "../Pages/Teams/InstallationTeams.jsx"
-
+//YYYY-MM-DD for testing
+// const d = new Date('2025-10-10')
+//always current date
 const d = new Date()
-
 const addDuration = (start, days) => {
     const date = new Date(start)
     date.setDate(date.getDate() + days)
@@ -14,10 +15,18 @@ const modifiedDate = addDuration(d, 0)
 
 export default createStore({
     date: modifiedDate,
-    user: { username: null, roles: null },
+    setDate: action((state, payload) => {
+        state.date = payload
+    }),
+    projectManagerId: [],
+    pmsCoordinatorId: [],
+    tncCoordinatorId: [],
+    qaqcCoordinatorId: [],
+    user: { username: null, roles: null, fullName: null },
     setUser: action((state, payload) => {
         state.user.username = payload.username
         state.user.roles = payload.roles
+        state.user.fullName = sessionStorage.getItem('fullName')
     }),
     isLoggedIn: false,
     setIsLoggedIn: action((state, payload) => {
@@ -27,6 +36,22 @@ export default createStore({
     setEmployees: action((state, payload) => {
         state.employees = Array.isArray(payload) ? payload : []
         state.searchResults = Array.isArray(payload) ? payload : []
+
+        state.projectManagerId = Array.isArray(payload)
+        ? payload.find(p => p.job === 'Project Manager')?.employee_id
+        : null;
+
+        state.pmsCoordinatorId = Array.isArray(payload)
+        ? payload.find(p => p.job === 'PMS Coordinator')?.employee_id
+        : null;
+        
+        state.qaqcCoordinatorIdId = Array.isArray(payload)
+        ? payload.find(p => p.job === 'QAQC Coordinator')?.employee_id
+        : null;
+
+        state.tncCoordinatorId = Array.isArray(payload)
+        ? payload.find(p => p.job === 'TNC Coordinator')?.employee_id
+        : null;
     }),
     forecastData: [],
     setForecastData: action((state, payload) => {
@@ -39,6 +64,10 @@ export default createStore({
     peProjects: [],
     setPeProjects: action((state, payload) => {
         state.peProjects = payload
+    }),
+    pmsProjects: [],
+    setPMSProjects: action((state, payload) => {
+        state.pmsProjects = payload
     }),
     installationTeams: [],
     setInstallationTeams: action((state, payload) => {

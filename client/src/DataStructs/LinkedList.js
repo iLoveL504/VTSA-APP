@@ -1,5 +1,4 @@
-import tasks from "../data/TasksData.js";
-
+import tasksLite from '../data/TasksDataTesting.js'
 /**
  * addWorkingDays:
  * - Returns an EXCLUSIVE end date (the day AFTER the last counted work day).
@@ -31,13 +30,6 @@ const addWorkingDays = (start, days, isGovernment = false, holidays = []) => {
   return date;
 };
 
-// const getDayName = (date) => {
-//   const days = [
-//     "Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday",
-//   ];
-//   return days[new Date(date).getDay()];
-// };
-
 class Node {
   constructor(data, next = null) {
     this.data = data;
@@ -53,6 +45,10 @@ class LinkedList {
     this.isGovernment = !!isGovernment;
     // normalize holiday list to strings for quick comparisons
     this.holidays = (holidays || []).map((h) => new Date(h).toDateString());
+    // Track postponed state
+    this.postponed = false;
+    this.postponedFromTask = null;
+    this.postponedStartDate = null;
   }
 
   // Generate new ID
@@ -76,6 +72,114 @@ class LinkedList {
       current = current.next;
     }
     return null;
+  }
+
+  // Find task by ID
+  findTaskByID(taskID) {
+    let current = this.head;
+    while (current) {
+      if (current.data.id === taskID) return current;
+      current = current.next;
+    }
+    return null;
+  }
+
+  // Find previous node for a given node
+  findPreviousNode(node) {
+    if (!this.head || node === this.head) return null;
+    
+    let current = this.head;
+    while (current && current.next !== node) {
+      current = current.next;
+    }
+    return current;
+  }
+
+  // POSTPONE FEATURE: Mark project as postponed from a specific task
+  postponeProject(fromTaskID) {
+    const taskNode = this.findTaskByID(fromTaskID);
+    if (!taskNode) {
+      console.error(`Task with ID ${fromTaskID} not found`);
+      return false;
+    }
+
+    this.postponed = true;
+    this.postponedFromTask = taskNode;
+    this.postponedStartDate = new Date(); // Record when postponement started
+
+    console.log(`Project postponed from task "${taskNode.data.text}"`);
+    return true;
+  }
+
+  // POSTPONE FEATURE: Resume project after postponement with specified delay days
+  resumeProject(postponedDays) {
+    if (!this.postponed) {
+      console.log("Project is not postponed");
+      return false;
+    }
+
+    if (typeof postponedDays !== 'number' || postponedDays < 0) {
+      console.error("Invalid postponed days. Must be a non-negative number.");
+      return false;
+    }
+
+    console.log(`Resuming project after ${postponedDays} days postponement`);
+
+    // Find the task where postponement started
+    const postponedTask = this.postponedFromTask;
+    if (!postponedTask) {
+      console.error("Cannot find postponed task");
+      return false;
+    }
+
+    // Add postponement days to all tasks starting from the postponed task
+    this.addPostponementDelay(postponedTask, postponedDays);
+
+    // Reset postponed state
+    this.postponed = false;
+    this.postponedFromTask = null;
+    this.postponedStartDate = null;
+
+    return true;
+  }
+
+  // Add postponement delay to tasks from a specific node onwards
+  addPostponementDelay(fromNode, delayDays) {
+    let current = fromNode;
+    
+    while (current) {
+      // Add delay to both start and end dates
+      if (current.data.start) {
+        current.data.start = addWorkingDays(current.data.start, delayDays, this.isGovernment, this.holidays);
+      }
+      if (current.data.end) {
+        current.data.end = addWorkingDays(current.data.end, delayDays, this.isGovernment, this.holidays);
+      }
+      
+      current = current.next;
+    }
+
+    // Update parent durations after the delay
+    this.updateAllParentDurations();
+  }
+
+  // Update all parent durations in the list
+  updateAllParentDurations() {
+    const parentIDs = new Set();
+    let current = this.head;
+    
+    // Collect all parent IDs
+    while (current) {
+      if (current.data.parent && current.data.parent !== 0) {
+        parentIDs.add(current.data.parent);
+      }
+      current = current.next;
+    }
+    
+    // Update each parent
+    parentIDs.forEach(parentID => {
+      this.updateParentDuration(parentID);
+    });
   }
 
   // Insert last node (append). Uses EXCLUSIVE end semantics (end is day after last workday)
@@ -108,6 +212,7 @@ class LinkedList {
     } else {
       // start = previous.end (exclusive semantics -> correct)
       node.data.start = new Date(current.data.end);
+      
     }
     node.data.start.setHours(0, 0, 0, 0);
 
@@ -261,6 +366,16 @@ class LinkedList {
     return count;
   }
 
+  // Get project status
+  getProjectStatus() {
+    return {
+      postponed: this.postponed,
+      postponedFromTask: this.postponedFromTask ? this.postponedFromTask.data.text : null,
+      postponedFromTaskID: this.postponedFromTask ? this.postponedFromTask.data.id : null,
+      postponedStartDate: this.postponedStartDate
+    };
+  }
+
   // Convert to array for UI
   toArray() {
     const arr = [];
@@ -276,20 +391,39 @@ class LinkedList {
   // Debug helper
   printListData() {
     let current = this.head;
-    //console.log("=== SCHEDULE ===");
+    console.log("=== SCHEDULE ===");
+    if (this.postponed) {
+      console.log(`PROJECT POSTPONED from task "${this.postponedFromTask.data.text}"`);
+    }
     while (current) {
-      // console.log(
-      //   `${current.data.id} ${current.data.text} | start: ${s ? s.toDateString() : "?"} | end(excl): ${e ? e.toDateString() : "?"} | dur: ${current.data.duration}`
-      // );
+      const s = current.data.start;
+      const e = current.data.end;
+      console.log(
+        `${current.data.id} ${current.data.text} | start: ${s ? s.toDateString() : "?"} | end(excl): ${e ? e.toDateString() : "?"} | dur: ${current.data.duration}`
+      );
       current = current.next;
     }
   }
 }
 
-// Example usage
+// Example usage with postponement feature
 const holidays = ["2025-06-03", "2025-06-12", "2025-08-26"];
 const privateLL = new LinkedList(new Date("2025-06-01"), false, holidays);
-tasks.forEach((t) => privateLL.insertLast(t));
+tasksLite.forEach((t) => privateLL.insertLast(t));
+
+console.log("=== INITIAL SCHEDULE ===");
+privateLL.printListData();
+
+// Example: Postpone project from task 3 for 18 days
+privateLL.postponeProject(103);
+
+console.log("\n=== AFTER POSTPONEMENT (before resume) ===");
+privateLL.printListData();
+
+// Resume project - dates will adjust automatically
+privateLL.resumeProject(4);
+
+console.log("\n=== AFTER RESUME (dates adjusted) ===");
 privateLL.printListData();
 
 export default LinkedList;

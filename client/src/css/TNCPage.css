@@ -1,0 +1,622 @@
+.Content.TNCMenu {
+  padding: 2rem;
+  width: 100%;
+  max-width: 1700px;
+  margin: 0 auto;
+}
+
+.Content.TNCMenu button {
+  background-color: #315a95;
+  color: white;
+  padding: 0.75rem 1.5rem;
+  border: none;
+  border-radius: 4px;
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.Content.TNCMenu button:hover {
+  background-color: #26467c;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+/* Project Table Header */
+.Content.TNCMenu .project-table-header {
+  background-color: #315a95;
+  color: white;
+  border-radius: 8px 8px 0 0;
+  margin-bottom: 0;
+  font-weight: 600;
+}
+
+.Content.TNCMenu .project-table-header .header-row {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1.5fr 2fr 1.5fr 2fr;
+  align-items: center;
+  padding: 1rem;
+  gap: 1rem;
+}
+
+.Content.TNCMenu .table-cell {
+  font-weight: 600;
+  font-size: 0.9rem;
+  text-align: left;
+}
+
+/* Project Header Styling */
+.Content.TNCMenu .project-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+  background-color: #7b1fa2;
+}
+
+.Content.TNCMenu .project-header h1 {
+  color: #315a95;
+  font-weight: 600;
+  margin: 0;
+}
+
+.Content.TNCMenu .ProjectList {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+  padding: 1rem;
+  height: 100%;
+  max-height: 800px;
+  overflow-y: auto;
+}
+.Content.TNCMenu .ProjectList::-webkit-scrollbar {
+  display: none; 
+}
+
+/* TNC Pending - Waiting for inspection schedule approval */
+
+/* Remove the old tnc-pending styles that might conflict */
+
+/* Responsive adjustments */
+
+/* Projects Header */
+.Content.TNCMenu .projects-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+  padding: 0 1rem;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.Content.TNCMenu .header-left h1 {
+  color: #315a95;
+  margin: 0 0 0.5rem 0;
+  font-size: 2rem;
+  font-weight: 700;
+}
+
+.Content.TNCMenu .projects-count {
+  color: #64748b;
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+.Content.TNCMenu .header-right {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+/* Search Container */
+.Content.TNCMenu .search-container {
+  position: relative;
+  min-width: 300px;
+}
+
+.Content.TNCMenu .search-input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.Content.TNCMenu .search-input {
+  width: 100%;
+  padding: 0.75rem 3rem 0.75rem 1rem;
+  border: 2px solid #e2e8f0;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  transition: all 0.3s ease;
+  background: white;
+  color: #2d3748;
+}
+
+.Content.TNCMenu .search-input:focus {
+  outline: none;
+  border-color: #315a95;
+  box-shadow: 0 0 0 3px rgba(49, 90, 149, 0.1);
+}
+
+.Content.TNCMenu .search-input::placeholder {
+  color: #94a3b8;
+}
+
+.Content.TNCMenu .search-icon {
+  position: absolute;
+  right: 1rem;
+  color: #64748b;
+  font-size: 1rem;
+}
+
+.Content.TNCMenu .clear-search-btn {
+  position: absolute;
+  right: 2.5rem;
+  background: none;
+  border: none;
+  color: #94a3b8;
+  cursor: pointer;
+  padding: 0.25rem;
+  border-radius: 50%;
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2rem;
+  transition: all 0.2s ease;
+}
+
+.Content.TNCMenu .clear-search-btn:hover {
+  background: #f1f5f9;
+  color: #64748b;
+}
+
+/* No Results Message */
+.Content.TNCMenu .no-results {
+  text-align: center;
+  padding: 3rem 2rem;
+  color: #64748b;
+  background: #f8fafc;
+  border-radius: 8px;
+  margin: 2rem 0;
+  border: 2px dashed #e2e8f0;
+}
+
+.Content.TNCMenu .no-results p {
+  margin: 0 0 1rem 0;
+  font-size: 1.1rem;
+}
+
+.Content.TNCMenu .clear-search-link {
+  background: none;
+  border: none;
+  color: #315a95;
+  cursor: pointer;
+  text-decoration: underline;
+  font-weight: 600;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  transition: background-color 0.2s ease;
+}
+
+.Content.TNCMenu .clear-search-link:hover {
+  background: #f1f5f9;
+}
+
+/* Enhanced Entry Section Styles */
+.Content.TNCMenu .entry-section {
+  background: white;
+  border-radius: 16px;
+  padding: 2.5rem;
+  margin-bottom: 2.5rem;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  border: 1px solid #e1e5e9;
+  position: relative;
+  overflow: hidden;
+}
+
+.Content.TNCMenu .entry-section::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(135deg, #315a95, #4a7cc2);
+}
+
+.Content.TNCMenu .entry-section h1 {
+  color: #315a95;
+  margin: 0 0 2rem 0;
+  font-size: 1.75rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.Content.TNCMenu .entry-section h1::before {
+  content: '📋';
+  font-size: 1.5rem;
+}
+
+.Content.TNCMenu .entry-info {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1.25rem;
+}
+
+.Content.TNCMenu .info-item {
+  background: linear-gradient(135deg, #f8f9fa, #ffffff);
+  border-radius: 12px;
+  padding: 1.25rem;
+  border: 1px solid #e9ecef;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+  transition: all 0.3s ease;
+  position: relative;
+}
+
+.Content.TNCMenu .info-item:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+  border-color: #315a95;
+}
+
+.Content.TNCMenu .info-item::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  width: 4px;
+  background: linear-gradient(135deg, #315a95, #4a7cc2);
+  border-radius: 4px 0 0 4px;
+}
+
+.Content.TNCMenu .info-item strong {
+  display: block;
+  font-size: 0.8rem;
+  color: #6c757d;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 0.5rem;
+  font-weight: 600;
+}
+
+.Content.TNCMenu .info-item span {
+  display: block;
+  font-size: 1.1rem;
+  color: #2c3e50;
+  font-weight: 600;
+}
+
+/* TNC Assignment Section */
+.Content.TNCMenu .tnc-assignment {
+  grid-column: 1 / -1;
+  background: linear-gradient(135deg, #e8f4fd, #f0f8ff) !important;
+  border: 2px dashed #315a95 !important;
+  padding: 2rem !important;
+  text-align: center;
+}
+
+.Content.TNCMenu .tnc-assignment::before {
+  background: linear-gradient(135deg, #28a745, #20c997) !important;
+}
+
+.Content.TNCMenu .tnc-assignment h3 {
+  color: #315a95;
+  margin: 0 0 1rem 0;
+  font-size: 1.25rem;
+  font-weight: 600;
+}
+
+.Content.TNCMenu .assign-tnc-btn {
+  background: linear-gradient(135deg, #28a745, #20c997);
+  color: white;
+  border: none;
+  padding: 1rem 2rem;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  box-shadow: 0 4px 15px rgba(40, 167, 69, 0.3);
+}
+
+.Content.TNCMenu .assign-tnc-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(40, 167, 69, 0.4);
+}
+
+.Content.TNCMenu .assign-tnc-btn::before {
+  content: '🔍';
+  font-size: 1.1rem;
+}
+
+/* No Inspection State */
+.Content.TNCMenu .no-inspection {
+  grid-column: 1 / -1;
+  background: linear-gradient(135deg, #f8f9fa, #e9ecef) !important;
+  border: 2px dashed #6c757d !important;
+  color: #6c757d !important;
+  text-align: center;
+  padding: 2rem !important;
+}
+
+.Content.TNCMenu .no-inspection::before {
+  background: #6c757d !important;
+}
+
+.Content.TNCMenu .no-inspection strong {
+  color: #6c757d !important;
+}
+
+/* Empty State */
+.Content.TNCMenu .entry-section:has(.info-item span:empty) {
+  opacity: 0.6;
+}
+
+.Content.TNCMenu .entry-section:has(.info-item span:empty) .info-item {
+  background: #f8f9fa;
+  color: #6c757d;
+}
+
+.Content.TNCMenu .entry-section:has(.info-item span:empty) .info-item::before {
+  background: #6c757d;
+}
+
+/* Assignment Modal Styles */
+.Content.TNCMenu .assign-modal {
+  max-width: 500px;
+}
+
+.Content.TNCMenu .modal-project-info {
+  background: #f8f9fa;
+  padding: 1rem;
+  border-radius: 8px;
+  margin-bottom: 1.5rem;
+  border-left: 4px solid #315a95;
+}
+
+.Content.TNCMenu .modal-project-info p {
+  margin: 0.5rem 0;
+  color: #495057;
+}
+
+.Content.TNCMenu .tech-selection {
+  margin-bottom: 1.5rem;
+}
+
+.Content.TNCMenu .tech-selection label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: 600;
+  color: #315a95;
+}
+
+.Content.TNCMenu .tech-select {
+  width: 100%;
+  padding: 0.75rem;
+  border: 2px solid #e2e8f0;
+  border-radius: 6px;
+  font-size: 1rem;
+  background: white;
+}
+
+.Content.TNCMenu .tech-select:focus {
+  outline: none;
+  border-color: #315a95;
+  box-shadow: 0 0 0 3px rgba(49, 90, 149, 0.1);
+}
+
+/* Assign button in project entry */
+.Content.TNCMenu .assign-btn {
+  background: #28a745;
+  color: white;
+  border: none;
+  padding: 0.4rem 0.8rem;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  cursor: pointer;
+  margin-top: 0.5rem;
+  transition: all 0.2s ease;
+}
+
+.Content.TNCMenu .assign-btn:hover {
+  background: #218838;
+  transform: translateY(-1px);
+}
+
+/* Status messages */
+.Content.TNCMenu .status {
+  padding: 0.75rem;
+  border-radius: 6px;
+  margin-bottom: 1rem;
+  font-weight: 600;
+}
+
+.Content.TNCMenu .status.error {
+  background: #f8d7da;
+  color: #721c24;
+  border: 1px solid #f5c6cb;
+}
+
+.Content.TNCMenu .status.success {
+  background: #d4edda;
+  color: #155724;
+  border: 1px solid #c3e6cb;
+}
+
+/* Pending badge */
+.Content.TNCMenu .pending-badge {
+  color: #ffc107;
+  margin-left: 0.5rem;
+}
+
+/* TNC Status Styles */
+.Content.TNCMenu .ProjectInfo {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1.5fr 2fr 1.5fr 2fr;
+}
+
+/* TNC Pending - Red theme */
+.Content.TNCMenu .ProjectInfo.tnc-pending {
+  background: #fef2f2 !important;
+  border: 2px solid #dc2626 !important;
+  border-left: 6px solid #dc2626 !important;
+}
+
+/* TNC Assigned - Yellow theme */
+.Content.TNCMenu .ProjectInfo.tnc-assigned {
+  background: #fffbeb !important;
+  border: 2px solid #d97706 !important;
+  border-left: 6px solid #d97706 !important;
+}
+
+/* TNC Ongoing - Green theme */
+.Content.TNCMenu .ProjectInfo.tnc-ongoing {
+  background: #f0fdf4 !important;
+  border: 2px solid #16a34a !important;
+  border-left: 6px solid #16a34a !important;
+}
+
+/* Responsive adjustments */
+@media (max-width: 1024px) {
+  .Content.TNCMenu .header-row,
+  .Content.TNCMenu .ProjectInfo {
+    grid-template-columns: 2fr 1fr 1fr;
+    grid-template-rows: auto auto;
+    gap: 0.5rem;
+  }
+  
+  .Content.TNCMenu .table-cell:nth-child(n+4),
+  .Content.TNCMenu .ProjectInfo > div:nth-child(n+4) {
+    grid-column: span 1;
+  }
+}
+
+@media (max-width: 768px) {
+  .Content.TNCMenu .header-row,
+  .Content.TNCMenu .ProjectInfo {
+    grid-template-columns: 1fr;
+    gap: 0.5rem;
+  }
+  
+  .Content.TNCMenu .project-header {
+    flex-direction: column;
+    gap: 1rem;
+    align-items: stretch;
+  }
+  
+  .Content.TNCMenu .project-header h1 {
+    text-align: center;
+  }
+  
+  .Content.TNCMenu .project-header button {
+    width: 100%;
+  }
+  
+  .Content.TNCMenu .projects-header {
+    flex-direction: column;
+    align-items: stretch;
+    text-align: center;
+  }
+  
+  .Content.TNCMenu .header-right {
+    justify-content: center;
+  }
+  
+  .Content.TNCMenu .search-container {
+    min-width: 100%;
+  }
+  
+  .Content.TNCMenu .header-left h1 {
+    font-size: 1.5rem;
+  }
+  
+  .Content.TNCMenu .entry-section {
+    padding: 2rem 1.5rem;
+    margin-bottom: 2rem;
+    border-radius: 12px;
+  }
+
+  .Content.TNCMenu .entry-section h1 {
+    font-size: 1.5rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .Content.TNCMenu .entry-info {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+
+  .Content.TNCMenu .info-item {
+    padding: 1rem;
+  }
+
+  .Content.TNCMenu .tnc-assignment,
+  .Content.TNCMenu .no-inspection {
+    padding: 1.5rem !important;
+  }
+  
+  .Content.TNCMenu .ProjectInfo.tnc-pending {
+    border-left: 4px solid #ffc107 !important;
+    margin: 2px;
+  }
+  
+  .Content.TNCMenu .ProjectInfo.tnc-pending::before {
+    position: relative;
+    top: 0;
+    right: 0;
+    border-radius: 6px;
+    margin-bottom: 0.5rem;
+    display: block;
+    text-align: center;
+  }
+}
+
+@media (max-width: 480px) {
+  .Content.TNCMenu .header-right {
+    flex-direction: column;
+    width: 100%;
+  }
+  
+  .Content.TNCMenu .search-container {
+    width: 100%;
+  }
+  
+  .Content.TNCMenu .create-project-btn {
+    width: 100%;
+    text-align: center;
+  }
+  
+  .Content.TNCMenu .entry-section {
+    padding: 1.5rem 1rem;
+  }
+
+  .Content.TNCMenu .entry-section h1 {
+    font-size: 1.25rem;
+  }
+
+  .Content.TNCMenu .info-item {
+    padding: 0.875rem;
+  }
+
+  .Content.TNCMenu .assign-tnc-btn {
+    width: 100%;
+    justify-content: center;
+    padding: 0.875rem 1.5rem;
+  }
+}

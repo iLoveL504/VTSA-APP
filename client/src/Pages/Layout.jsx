@@ -4,6 +4,7 @@ import { Outlet } from 'react-router-dom'
 import NavBar from '../components/UI/NavBar'
 import { useNavigate } from 'react-router-dom'
 
+
 const Layout = () => {
     const navigate = useNavigate()
     const isLoggedIn = sessionStorage.getItem("isLoggedIn") === "true" ? true : false 

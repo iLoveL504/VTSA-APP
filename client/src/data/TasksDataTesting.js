@@ -1,0 +1,62 @@
+const tasksLite = [
+  {
+    blah: 'blahblahbalh',
+    id: 100,
+    text: "Preliminaries",
+    type: "summary",
+    start: null,
+    end: null,
+    duration: 15,
+    parent: 0,
+    open: true,
+    percent_progress: 0,
+  },
+  {
+    id: 101,
+    text: "Pre-Inspection(Checkin of Shaft)",
+    type: "task",
+    start: null,
+    end: null,
+    duration: 6,
+    parent: 100,
+    open: true,
+    percent_progress: 0,
+  },
+  {
+    id: 102,
+    text: "Layout of Drawing",
+    type: "task",
+    start: null,
+    end: null,
+    duration: 3,
+    parent: 100,
+    open: true,
+    percent_progress: 0,
+  },
+  {
+    id: 103,
+    text: "Submission of Drawing and Finishes for Approval",
+    type: "task",
+    start: null,
+    end: null,
+    duration: 5,
+    parent: 100,
+    open: true,
+    percent_progress: 0,
+  },
+  
+  {
+    id: 104,
+    text: "Submission of PO to Factory",
+    type: "task",
+    start: null,
+    end: null,
+    duration: 1,
+    parent: 100,
+    open: true,
+    percent_progress: 0,
+  },
+];
+
+
+export default tasksLite

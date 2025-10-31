@@ -11,7 +11,7 @@ import Button from "@mui/material/Button";
 import Modal from "@mui/material/Modal";
 import "../css/Test1.css";
 import tasks from '../data/TasksData.js'
-import { useReactToPrint } from "react-to-print";
+//import { useReactToPrint } from "react-to-print";
 import { DatePickerInput } from '@mantine/dates';
 
 const Test1 = () => {
@@ -257,14 +257,13 @@ useEffect(() => {
     navigate(`/projects/${projId}/schedule`, {state: { schedule: linkedList.toArray(), toggle: isCalendarDays }})
   };
 
-  const handlePrint = useReactToPrint({
-    contentRef,
-    documentTitle: `Daily Report - ${3}`,
-  });
+  // const handlePrint = useReactToPrint({
+  //   contentRef,
+  //   documentTitle: `Daily Report - ${3}`,
+  // });
 
   return (
     <div className="Content SchedulePage">
-      <button onClick={() => handlePrint()}>fsdf</button>
       <div ref={contentRef}>
         <div className="schedule-page">
         <h2>Customize Project Schedule</h2>

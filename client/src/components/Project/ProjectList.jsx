@@ -4,7 +4,7 @@ import useAxiosFetch from '../../hooks/useAxiosFetch'
 
 import { Grid } from 'ldrs/react'
 
-const ProjectList = ({searchTerm}) => {
+const ProjectList = ({onHold, searchTerm}) => {
 
   const backendURL = import.meta.env.VITE_BACKEND_URL || 'http://localhost:4000'
   const empId = sessionStorage.getItem('id')
@@ -53,7 +53,6 @@ useEffect(() => {
         )
     }
 
-
   return (
     <div className='ProjectList'>  
         
@@ -63,14 +62,21 @@ useEffect(() => {
             sessionStorage.getItem('roles') === 'TNC Coordinator' ||
             sessionStorage.getItem('roles') === 'QAQC Coordinator' ?
             (
-               filteredProjects.map(p => (
+              <>
+                {onHold ? (filteredProjects.filter(p => (p.request_hold || p.on_hold)).map(p => (
                   <Project project={p} key={p.id}/>
-                ))
+                ))) : (filteredProjects.map(p => (
+                  <Project project={p} key={p.id}/>
+                )))}        
+              </>
             )
-            :  (  
-                designatedProject.map(p => (
+            :  (
+              <>
+                {designatedProject.map(p => (
                   <Project project={p} key={p.id}/>
-                ))
+                ))}            
+              </>  
+
             )
         }
     </div>

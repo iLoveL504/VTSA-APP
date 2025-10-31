@@ -30,6 +30,12 @@
   min-width: 300px;
 }
 
+.save-section{
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
 .input-label {
   display: block;
   font-weight: 600;

@@ -10,8 +10,34 @@ import Select from "@mui/material/Select";
 import philippines from 'philippines'
 import '../../css/CreateProject.css'
 
-  const validate = (values) => {
-    console.log(values)
+const regionToIslandGroup = {
+  // Luzon
+  "NCR": "Luzon",
+  "CAR": "Luzon",
+  "Region I": "Luzon",
+  "Region II": "Luzon",
+  "Region III": "Luzon",
+  "Region IV-A": "Luzon",
+  "Region IV-B": "Luzon",
+  "Region V": "Luzon",
+
+  // Visayas
+  "Region VI": "Visayas",
+  "Region VII": "Visayas",
+  "Region VIII": "Visayas",
+
+  // Mindanao
+  "Region IX": "Mindanao",
+  "Region X": "Mindanao",
+  "Region XI": "Mindanao",
+  "Region XII": "Mindanao",
+  "Region XIII": "Mindanao",
+  "ARMM": "Mindanao",
+};
+
+
+const validate = (values) => {
+
     let errors = {};
 
     // Project & General Information
@@ -109,7 +135,7 @@ const SuccessMessage = ({ isOpen, projectName, onClose }) => {
 const CreateProject = () => {
   const navigate = useNavigate();
   const {projId} = useParams()
-
+    console.log(philippines)
   const [showConfirmation, setShowConfirmation] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -305,6 +331,8 @@ useEffect(() => {
 
   const handleFormSubmit = (e) => {
     e.preventDefault();
+    const islandGroup = regionToIslandGroup[values.region] || "Unknown";
+
         const payload = {
       ...values,
       cap: values.cap ? Number(values.cap) : 0,
@@ -312,6 +340,7 @@ useEffect(() => {
       travel: values.travel ? Number(values.travel) : 0,
       overheadHeight: values.overheadHeight ? Number(values.overheadHeight) : 0,
       pitDepth: values.pitDepth ? Number(values.pitDepth) : 0,
+      islandGroup
     };
     console.log(payload)
   
@@ -324,7 +353,7 @@ useEffect(() => {
 const handleConfirm = async () => {
   setIsSubmitting(true);
   setShowConfirmation(false);
-
+  const islandGroup = regionToIslandGroup[values.region] || "Unknown";
   const formData = new FormData();
 
   // Append text fields
@@ -334,6 +363,8 @@ const handleConfirm = async () => {
       formData.append(key, value);
     }
   });
+
+  formData.append('island_group', islandGroup)
 
   // Append photos (if any)
   if (values.photos && values.photos.length > 0) {
@@ -736,12 +767,6 @@ const handleConfirm = async () => {
             Photos inserted:
           </small>
           {errors.photos && <p className="error">{errors.photos}</p>}
-          <button onClick={(e) => {
-            e.preventDefault()
-
-            console.log(values)
-          }
-          }>fds</button>
         </div>
 
 

@@ -61,6 +61,11 @@ function formatForMySQL(dateInput) {
               dueDate: dueDate
             });
             
+            if (!response.data?.success) {
+                window.alert("Something went wrong during assignment.");
+                return;
+            }
+
             //Make notification
             await new Promise((resolve, reject) => {
                 const timeout = setTimeout(() => {
@@ -81,10 +86,7 @@ function formatForMySQL(dateInput) {
                     }
                 });
             });
-            if (!response.data?.success) {
-                window.alert("Something went wrong during assignment.");
-                return;
-            }
+
             window.alert("Request for Inspection sent")
             navigate(`/projects/${proj.id}`)
             window.location.reload()
