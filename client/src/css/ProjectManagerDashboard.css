@@ -483,7 +483,7 @@
   align-items: center;
   gap: 8px;
   padding: 16px 12px;
-  background: #f8f9fa;
+  background: #2964a0;
   border: 1px solid #e9ecef;
   border-radius: 8px;
   cursor: pointer;
@@ -679,5 +679,165 @@
   }
   100% {
     background-position: -200% 0;
+  }
+}
+
+/* New Alert Types */
+.Content.ProjectManagerDashboard .content-card.lagging-alert {
+  border-left: 4px solid #ffc107;
+  background: linear-gradient(135deg, #fff 0%, #fffbf0 100%);
+}
+
+.Content.ProjectManagerDashboard .content-card.pending-alert {
+  border-left: 4px solid #6c757d;
+  background: linear-gradient(135deg, #fff 0%, #f8f9fa 100%);
+}
+
+.Content.ProjectManagerDashboard .content-card.tnc-alert {
+  border-left: 4px solid #17a2b8;
+  background: linear-gradient(135deg, #fff 0%, #f0f9ff 100%);
+}
+
+.Content.ProjectManagerDashboard .content-card.tnc-next-alert {
+  border-left: 4px solid #20c997;
+  background: linear-gradient(135deg, #fff 0%, #f0fff4 100%);
+}
+
+/* Badge Styles */
+.Content.ProjectManagerDashboard .badge {
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.Content.ProjectManagerDashboard .badge.critical {
+  background: #f8d7da;
+  color: #721c24;
+}
+
+.Content.ProjectManagerDashboard .badge.lagging {
+  background: #fff3cd;
+  color: #856404;
+}
+
+.Content.ProjectManagerDashboard .badge.pending {
+  background: #e2e3e5;
+  color: #383d41;
+}
+
+.Content.ProjectManagerDashboard .badge.tnc {
+  background: #d1ecf1;
+  color: #0c5460;
+}
+
+.Content.ProjectManagerDashboard .badge.tnc-next {
+  background: #d1f2eb;
+  color: #0c5460;
+}
+
+/* Status Badge Variations */
+.Content.ProjectManagerDashboard .status-badge.critical {
+  background: #f8d7da;
+  color: #721c24;
+}
+
+.Content.ProjectManagerDashboard .status-badge.lagging {
+  background: #fff3cd;
+  color: #856404;
+}
+
+.Content.ProjectManagerDashboard .status-badge.pending {
+  background: #e2e3e5;
+  color: #383d41;
+}
+
+.Content.ProjectManagerDashboard .status-badge.tnc {
+  background: #d1ecf1;
+  color: #0c5460;
+}
+
+.Content.ProjectManagerDashboard .status-badge.tnc-next {
+  background: #d1f2eb;
+  color: #0c5460;
+}
+
+/* Progress Fill Variations */
+.Content.ProjectManagerDashboard .progress-fill.critical {
+  background: linear-gradient(90deg, #dc3545, #fd7e14);
+}
+
+.Content.ProjectManagerDashboard .progress-fill.lagging {
+  background: linear-gradient(90deg, #ffc107, #ffd54f);
+}
+
+.Content.ProjectManagerDashboard .progress-fill.pending {
+  background: linear-gradient(90deg, #6c757d, #adb5bd);
+}
+
+.Content.ProjectManagerDashboard .progress-fill.tnc {
+  background: linear-gradient(90deg, #17a2b8, #20c997);
+}
+
+.Content.ProjectManagerDashboard .progress-fill.tnc-next {
+  background: linear-gradient(90deg, #20c997, #51cf66);
+}
+
+/* Days Remaining Styling */
+.Content.ProjectManagerDashboard .days-remaining {
+  color: #dc3545;
+  font-weight: 600;
+  margin-left: 4px;
+}
+
+/* Animation for different alert types */
+@keyframes pulseLagging {
+  0% {
+    box-shadow: 0 0 0 0 rgba(255, 193, 7, 0.4);
+  }
+  70% {
+    box-shadow: 0 0 0 10px rgba(255, 193, 7, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(255, 193, 7, 0);
+  }
+}
+
+@keyframes pulseTNC {
+  0% {
+    box-shadow: 0 0 0 0 rgba(23, 162, 184, 0.4);
+  }
+  70% {
+    box-shadow: 0 0 0 10px rgba(23, 162, 184, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(23, 162, 184, 0);
+  }
+}
+
+.Content.ProjectManagerDashboard .project-item.critical {
+  animation: pulseCritical 2s infinite;
+}
+
+.Content.ProjectManagerDashboard .project-item.lagging {
+  animation: pulseLagging 2s infinite;
+}
+
+.Content.ProjectManagerDashboard .project-item.tnc {
+  animation: pulseTNC 2s infinite;
+}
+
+/* Responsive adjustments for new sections */
+@media (max-width: 768px) {
+  .Content.ProjectManagerDashboard .card-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+  
+  .Content.ProjectManagerDashboard .badge {
+    align-self: flex-start;
   }
 }

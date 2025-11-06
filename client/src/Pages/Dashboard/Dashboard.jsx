@@ -12,6 +12,8 @@ const Dashboard = () => {
   const role = sessionStorage.getItem('roles');
   const userId = sessionStorage.getItem('user_id');
 
+
+  console.log(projects)
   const handleNewProject = () => {
     navigate('/projects/create');
   };

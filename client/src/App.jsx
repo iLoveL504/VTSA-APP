@@ -38,10 +38,16 @@ import '@mantine/core/styles.css';
 import '@mantine/dates/styles.css';
 import { MantineProvider } from '@mantine/core';
 import PMSNewEntry from './Pages/PMS/PMSNewEntry.jsx'
-
+import PMSInspections from './Pages/PMS/PMSInspections.jsx'
+import InspectionPage from './Pages/PMS/InspectionPage.jsx'
+import ClientBabyBook from './Pages/ClientBabyBook.jsx'
+import {useSharedSocket} from './Context/SocketContext.js'
+import Inbox from './Pages/Inbox.jsx'
 
 function App() {
-  const backendURL = import.meta.env.VITE_BACKEND_URL || 'https://vtsa-app-production.up.railway.app';
+  const backendURL = import.meta.env.VITE_BACKEND_URL || 'https://localhost:4000';
+  const {messagesSocket} = useSharedSocket()
+  console.log(backendURL)
   //console.log('https://vtsa-app-production.up.railway.app')
 
 const { data: empData, isLoading: empIsLoading } =
@@ -59,10 +65,10 @@ const { data: notifData } =
   const setEmployees = useStoreActions(actions => actions.setEmployees)
   const setProjects = useStoreActions(actions => actions.setProjects)
   const setUser = useStoreActions(actions => actions.setUser)
+  const user = useStoreState(state => state.user)
   const setNotifications = useStoreActions(actions => actions.setNotifications)
   const projects = useStoreState(state => state.projects)
   const setPMSProjects = useStoreActions(actions => actions.setPMSProjects)
-
   // array of project ids
   const projectIDs = useMemo(() => {
     if(projects.length != 0) {
@@ -73,7 +79,7 @@ const { data: notifData } =
     }
   }, [projects])
   // hook for project status batch update
-  const [updateIsLoading] = useUpdateProjects(projectIDs)
+  const {lodaing: updateIsLoading} = useUpdateProjects(projectIDs)
 
   // add event listeners to socket hook
 
@@ -81,24 +87,25 @@ const { data: notifData } =
   useEffect(() => {
     // Handle login state and user data
     const loggedIn = sessionStorage.getItem("isLoggedIn") === "true";
-    
+    console.log(sessionStorage.getItem('id'))
     if (loggedIn) {
       setUser({ 
         username: sessionStorage.getItem('username'), 
-        roles: sessionStorage.getItem('roles') 
+        roles: sessionStorage.getItem('roles'),
+        employee_id: sessionStorage.getItem('id')
       });
     }
-    
+    console.log(user)
     //console.log(dateNow);
-  }, [setUser]);
+  }, [setUser, user]);
   
   //join room useEffect
-  // useEffect(() => {
-  //   if(socket && isLoggedIn === true) {
-  //     socket.emit("join_notifications", sessionStorage.getItem("id"))
-      
-  //   }
-  // }, [socket, isLoggedIn])
+  useEffect(() => {
+    if(messagesSocket) {
+      messagesSocket.emit("fetch_inbox", sessionStorage.getItem("id"))
+      messagesSocket.emit("join_user", sessionStorage.getItem("id"))
+    }
+  }, [messagesSocket])
 
 useEffect(() => {
   if (empData) {setEmployees(empData);}
@@ -165,6 +172,8 @@ useEffect(() => {
           <Route path="PMS">
             <Route index element={<PMSAssignment updateIsLoading={updateIsLoading}/>} />
             <Route path="new-entry" element={<PMSNewEntry updateIsLoading={updateIsLoading}/>} />
+            <Route path="inspections" element={<PMSInspections />} />
+            <Route path="inspections/:clientId" element={<InspectionPage />} />
             <Route path=":projId" element={<PMSPage />} />
           </Route>
 
@@ -185,10 +194,17 @@ useEffect(() => {
             <Route index element={<TNCAssignment updateIsLoading={updateIsLoading} />} />
           </Route>
 
+          <Route path="inbox">
+            <Route index element={<Inbox />} />
+          </Route>
+
   
 
           <Route path="teams" element={<Teams />} />
-          <Route path="baby-book" element={<BabyBook />} />
+          <Route path="baby-book"  >
+            <Route index element={<BabyBook />} />
+            <Route path=':clientId' element={<ClientBabyBook />} />
+          </Route>
         </Route>
         
       </Routes>      

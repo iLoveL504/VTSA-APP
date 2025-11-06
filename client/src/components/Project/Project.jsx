@@ -19,6 +19,8 @@ const Project = ({project}) => {
   }
   
 const projectStatus = () => {
+  console.log(project)
+  console.log(`project status: `, project.on_hold)
   return project.request_hold ? 'request-hold' :
     project.on_hold ? 'on-hold' : ''
 }

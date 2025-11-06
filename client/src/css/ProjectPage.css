@@ -407,6 +407,7 @@
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
     border: 1px solid #e2e8f0;
     transition: transform 0.2s ease, box-shadow 0.2s ease;
+    cursor: pointer;
 }
 
 .Content.ProjectPage .task-card:hover {
@@ -1574,3 +1575,86 @@
         gap: 0.25rem;
     }
 }
+
+/* Project Progress Section */
+.Content.ProjectPage .project-progress-section {
+    background: white;
+    padding: 1.5rem;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    margin-bottom: 2rem;
+    border: 1px solid #e2e8f0;
+}
+
+.Content.ProjectPage .project-progress-section h3 {
+    color: #315a95;
+    margin-bottom: 1rem;
+    font-size: 1.3rem;
+    font-weight: 600;
+}
+
+.Content.ProjectPage .progress-container {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.Content.ProjectPage .progress-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.Content.ProjectPage .progress-label {
+    font-weight: 600;
+    color: #2d3748;
+}
+
+.Content.ProjectPage .progress-percent {
+    font-weight: 700;
+    color: #315a95;
+    font-size: 1.2rem;
+}
+
+.Content.ProjectPage .progress-bar {
+    width: 100%;
+    height: 12px;
+    background: #e2e8f0;
+    border-radius: 6px;
+    overflow: hidden;
+}
+
+.Content.ProjectPage .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #315a95, #4a7cc2);
+    border-radius: 6px;
+    transition: width 0.5s ease-in-out;
+}
+
+.Content.ProjectPage .progress-stats {
+    display: flex;
+    gap: 2rem;
+    flex-wrap: wrap;
+}
+
+.Content.ProjectPage .stat-item {
+    font-size: 0.9rem;
+    color: #64748b;
+}
+
+.Content.ProjectPage .stat-item strong {
+    color: #2d3748;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .Content.ProjectPage .project-progress-section {
+        padding: 1rem;
+    }
+    
+    .Content.ProjectPage .progress-stats {
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+}
+

@@ -1,12 +1,12 @@
 import React, { useState, useRef, useEffect } from 'react'
 import '../../css/TaskList.css'
 
-const TaskList = ({ projSched, taskPhotos }) => {
+const TaskList = ({ projSched, taskPhotos, currentTask }) => {
     const backendURL = import.meta.env.VITE_BACKEND_URL || "http://localhost:4000";
     const [selectedTask, setSelectedTask] = useState(null)
     const taskListRef = useRef(null)
     const avoidPhotos = [100, 200, 300, 400]
-
+    console.log(taskPhotos)
     const getTaskPhotos = (taskId) => {
         return taskPhotos.filter(t => t.task_id === taskId).map(t => t.photo_url)
     }
@@ -81,17 +81,10 @@ const TaskList = ({ projSched, taskPhotos }) => {
     const isTaskComplete = (task) => {
         return task.task_done === 1
     }
-
+    console.log(currentTask)
     const isTaskCurrent = (task) => {
-        const today = new Date()
-        today.setHours(0, 0, 0, 0)
         
-        const startDate = new Date(task.task_start)
-        const endDate = new Date(task.task_end)
-        startDate.setHours(0, 0, 0, 0)
-        endDate.setHours(0, 0, 0, 0)
-
-        return today >= startDate && today <= endDate
+        return task.task_id === currentTask.task_id
     }
 
     return (

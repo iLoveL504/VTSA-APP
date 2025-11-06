@@ -38,11 +38,6 @@ const PMSEntry = ({ project, setSelectedEntry, onAssignClick }) => {
             <div className="project-column">
                 <div className="project-name">{project.lift_name}</div>
                 <div className="project-client">{project.client}</div>
-                {canAssign && (
-                    <button className="assign-btn" onClick={handleAssignClick}>
-                        Assign PMS Techs
-                    </button>
-                )}
             </div>
             
             {/* Column 2: Product Type */}

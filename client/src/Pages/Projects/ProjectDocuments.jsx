@@ -150,10 +150,6 @@ const ProjectDocuments = () => {
     return text.length > maxLength ? text.substring(0, maxLength) + '...' : text;
   };
 
-  const handleCreateReport = () => {
-    // Navigate to report creation page or open modal
-    console.log('Create new daily report');
-  };
 
   const handleUploadChecklist = () => {
     // Handle checklist upload
@@ -323,9 +319,6 @@ const ProjectDocuments = () => {
                 <i className="fas fa-file-alt"></i>
                 <h3>No daily reports found</h3>
                 <p>Create your first daily report to get started</p>
-                <button className="btn-primary" onClick={handleCreateReport}>
-                  Create Daily Report
-                </button>
               </div>
             )}
           </div>

@@ -34,22 +34,23 @@ const ProjectManagerMenu = () => {
                 Projects
             </li>
           </Link>
-          <Link to="/PMS">
-            <li>
-                <MdHomeRepairService style={{ color: 'white' }}/>
-                PMS
-            </li>
-          </Link>
           <Link to="/teams">
             <li>
                 <RiTeamFill style={{ color: 'white' }}/>
                 Teams
             </li>
+          </Link>          
+          <Link to="/PMS">
+            <li>
+                <MdHomeRepairService style={{ color: 'white' }}/>
+                PMS and Baby Book
+            </li>
           </Link>
+
           <Link to="/baby-book">
             <li>
                 <IoIosDocument style={{ color: 'white' }}/>
-                Baby Book
+                Project Reports
             </li>
           </Link>
             

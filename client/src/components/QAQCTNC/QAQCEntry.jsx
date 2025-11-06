@@ -16,7 +16,9 @@ const QAQCEntry = ({project, setSelectedEntry, onAssignClick, manpower, qaqcTech
   const handleSelect = (project) => (e) => {
     if (e.target.closest('.assign-btn')) return
     const findProjectM = manpower.find(m => m.project_id === project.id)
+    console.log(qaqcTechs)
     const findQAQC = qaqcTechs.find(q => q.employee_id === findProjectM.qaqc_id)
+    console.log(findQAQC)
     if (findQAQC) {
       project.qaqc = findQAQC
     } else project.qaqc = undefined

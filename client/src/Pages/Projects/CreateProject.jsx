@@ -148,14 +148,20 @@ const CreateProject = () => {
   const [filteredCities, setFilteredCities] = useState([]);
 
   const equipmentTypes = [
-    "passenger elevator",
-    "residential elevator", 
-    "freight elevator",
-    "hospital elevator",
-    "car elevator",
-    "E200 Escalator",
-    "T200 Escalator",
-    "dumbwaiter"
+    "Home/Residential Elevator",
+    "Machine Room Passenger Elevator", 
+    "Machine Room less Passenger Elevator",
+    "Machine Room Freight/Cargo Elevator",
+    "Machine Room Hospital Bed Elevator",
+    "Machine Room less Hospital Bed Elevator",
+    "Machine Room Car Elevator",
+    "Machine Room less Car Elevator",
+    "Macine Room Panoramic Elevator",
+    "Machine Room less Panoramic Elevator",
+    "PWD Lift",
+    "Escalator 600K",
+    "Escalator 800k",
+    "Escalator 1000K"
   ];
 
   const initialState = useMemo(() => ({

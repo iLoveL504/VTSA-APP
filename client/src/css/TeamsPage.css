@@ -21,8 +21,9 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
+  width: 100%;
   max-width: 1200px; /* This controls the content width, not the header background */
-  margin: 0 auto; /* This centers the content */
+ /* This centers the content */
 }
 
 /* Rest of your CSS remains the same */

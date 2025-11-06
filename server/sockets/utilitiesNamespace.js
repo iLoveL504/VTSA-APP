@@ -58,11 +58,13 @@ export default function utilitiesNamespace (usp) {
             // const results = await utilities.peProjects()
   
             try {
+                console.log(data)
                 await notifications.newNotification(data)
                 const results = await notifications.getAllNotifications()
                 callback({success: true})
                 socket.broadcast.emit("notification_update_done", results)
             } catch (error) {
+                console.error('Error: ', error)
                 callback({success: false, error: error.message})
             }
         })

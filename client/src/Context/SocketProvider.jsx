@@ -12,6 +12,9 @@ export const SocketProvider = ({ children }) => {
   const setInstallationTeams = useStoreActions(action => action.setInstallationTeams)
   const setEmployees = useStoreActions(action => action.setEmployees)
 
+  const setInbox = useStoreActions(action => action.setInbox)
+  const setSentMessages = useStoreActions(action => action.setSentMessages)
+
   const forecastSocket = useSocket("/forecast", {
     forecast_done: (data) => setForecastData(data.map(d => ({ ...d, group: 'forecasted' }))),
     no_project_done: (data) => setTeamNoProject(data.map(d => ({ ...d, group: 'no-project' }))),
@@ -46,8 +49,36 @@ export const SocketProvider = ({ children }) => {
     update_done: (users) => {setEmployees(users); console.log(users)}
   })
 
+  // 💬 Messages socket
+    const messagesSocket = useSocket("/messages", {
+      fetch_inbox_done: (data) => {
+        console.log("📥 Inbox fetched:", data)
+        setInbox(data)
+      },
+      fetch_sent_done: (data) => {
+        console.log("📤 Sent fetched:", data)
+        setSentMessages(data)
+      },
+      send_message_done: (data) => {
+        console.log("✅ Message sent:", data)
+      },
+      new_message_done: (data) => {
+        console.log('-----------message received--------------')
+        console.log("📨 New message received:", data)
+        setInbox(data)
+      },
+      mark_as_read_done: ({ message_id, data }) => {
+        console.log("👁️ Marked as read:", message_id)
+        console.log(data)
+        setInbox(data)
+      },
+      delete_message_done: ({ message_id }) => {
+        console.log("🗑️ Message deleted:", message_id)
+      }
+    })
+
   return (
-    <SocketContext.Provider value={{forecastSocket, utilitiesSocket, usersSocket}}>
+    <SocketContext.Provider value={{forecastSocket, utilitiesSocket, usersSocket, messagesSocket}}>
       {children}
     </SocketContext.Provider>
   )

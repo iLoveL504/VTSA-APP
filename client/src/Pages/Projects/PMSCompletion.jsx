@@ -66,7 +66,7 @@ const PMSCompletion = ({
   // }, [currentTask]);
 
   // Check if PMS has already approved
-
+  console.log(proj)
   return (
     <div className="completion-section emphasized">
       <div className="section-header">
@@ -75,7 +75,17 @@ const PMSCompletion = ({
            (!proj.pms_ongoing) ? "PMS Final Inspection to be conducted" : "PMS Review"}
         </h4>
       </div>
-      
+      {proj.pms_approval ? (
+        <button 
+          className="complete-task-btn primary-action"
+          onClick={handleTaskComplete(currentTask, 'pms')}
+          disabled={!isUploadComplete()}
+        >
+          <i className="fas fa-stamp"></i>
+          Grant PMS Approval
+        </button>        
+      ) : (<></>)}
+
       <div className="completion-content">
         {!proj.pms_approval ? (
           <div className="task-completed-state">
@@ -100,14 +110,8 @@ const PMSCompletion = ({
               </div>
             </div>
           </div>
-        ) : !proj.pms_ongoing ? (
+        ) : proj.pms_approval ? (
           <>
-            <div>
-                PMS Final Joint Inspection to be conducted at {new Date(proj.pms_joint_inspection).toLocaleDateString('en-GB')}
-            </div>
-          </>
-        ) : (
-            <>
             <div className="pms-documents-section">
               <div className="section-subheader">
                 <h5>PMS Completion Evidence</h5>
@@ -157,25 +161,21 @@ const PMSCompletion = ({
                   </div>
                 </div>
                 </div>
-        
-            </div>
-
-            <button 
-              className="complete-task-btn primary-action"
-              onClick={handleTaskComplete(currentTask, 'pms')}
-              disabled={!isUploadComplete()}
-            >
-              <i className="fas fa-stamp"></i>
-              Grant PMS Approval
-            </button>
-
+     
             {!isUploadComplete() && (
               <div className="upload-requirement-notice">
                 <i className="fas fa-info-circle"></i>
                 <span>Completion evidence is required before granting PMS approval</span>
               </div>
-            )}
+            )}   
+            </div>
 
+          </>
+        ) : (
+            <>
+            <div>
+                PMS Final Joint Inspection to be conducted at {new Date(proj.pms_joint_inspection).toLocaleDateString('en-GB')}
+            </div>
             </>
         )}
       </div>

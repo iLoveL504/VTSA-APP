@@ -1,0 +1,791 @@
+/* Project Engineer Dashboard Styles */
+.Content.ProjectEngineerDashboard {
+  padding: 20px;
+  background-color: #f8f9fa;
+  min-height: 100vh;
+}
+
+.Content.ProjectEngineerDashboard .dashboard-header {
+  margin-bottom: 30px;
+}
+
+.Content.ProjectEngineerDashboard .engineer-welcome h1 {
+  color: #2c3e50;
+  font-size: 2.5rem;
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+
+.Content.ProjectEngineerDashboard .engineer-welcome p {
+  color: #6c757d;
+  font-size: 1.1rem;
+  margin: 0;
+}
+
+.Content.ProjectEngineerDashboard .engineer-stats {
+  display: flex;
+  gap: 12px;
+  margin-top: 16px;
+  flex-wrap: wrap;
+}
+
+.Content.ProjectEngineerDashboard .stat-badge {
+  background: #e9ecef;
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #495057;
+}
+
+.Content.ProjectEngineerDashboard .stat-badge.active {
+  background: #d4edda;
+  color: #155724;
+}
+
+.Content.ProjectEngineerDashboard .stat-badge.completed {
+  background: #d1ecf1;
+  color: #0c5460;
+}
+
+/* Stats Grid */
+.Content.ProjectEngineerDashboard .stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 20px;
+  margin-bottom: 30px;
+}
+
+.Content.ProjectEngineerDashboard .stat-card {
+  background: white;
+  border-radius: 12px;
+  padding: 24px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+  border: 1px solid #e9ecef;
+  display: flex;
+  align-items: center;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.Content.ProjectEngineerDashboard .stat-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.12);
+}
+
+.Content.ProjectEngineerDashboard .stat-icon {
+  width: 60px;
+  height: 60px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 16px;
+  font-size: 1.5rem;
+}
+
+.Content.ProjectEngineerDashboard .stat-content h3 {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #2c3e50;
+  margin: 0 0 4px 0;
+  line-height: 1;
+}
+
+.Content.ProjectEngineerDashboard .stat-content p {
+  color: #6c757d;
+  font-size: 0.9rem;
+  font-weight: 500;
+  margin: 0;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* Dashboard Content Layout */
+.Content.ProjectEngineerDashboard .dashboard-content {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 24px;
+  align-items: start;
+}
+
+/* Content Cards */
+.Content.ProjectEngineerDashboard .content-card {
+  background: white;
+  border-radius: 12px;
+  padding: 24px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+  border: 1px solid #e9ecef;
+  margin-bottom: 24px;
+}
+
+.Content.ProjectEngineerDashboard .content-card.critical-alert {
+  border-left: 4px solid #dc3545;
+  background: linear-gradient(135deg, #fff 0%, #fff8f8 100%);
+}
+
+.Content.ProjectEngineerDashboard .card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid #e9ecef;
+}
+
+.Content.ProjectEngineerDashboard .card-header h3 {
+  color: #2c3e50;
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin: 0;
+}
+
+/* Badge Styles */
+.Content.ProjectEngineerDashboard .badge {
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.Content.ProjectEngineerDashboard .badge.critical {
+  background: #f8d7da;
+  color: #721c24;
+}
+
+.Content.ProjectEngineerDashboard .badge.active {
+  background: #d1ecf1;
+  color: #0c5460;
+}
+
+.Content.ProjectEngineerDashboard .badge.lagging {
+  background: #fff3cd;
+  color: #856404;
+}
+
+.Content.ProjectEngineerDashboard .badge.pending {
+  background: #e2e3e5;
+  color: #383d41;
+}
+
+/* Projects List */
+.Content.ProjectEngineerDashboard .projects-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.Content.ProjectEngineerDashboard .project-item {
+  display: grid;
+  grid-template-columns: 1fr auto auto;
+  gap: 16px;
+  align-items: center;
+  padding: 20px;
+  background: #f8f9fa;
+  border-radius: 8px;
+  border: 1px solid #e9ecef;
+  transition: all 0.2s ease;
+}
+
+.Content.ProjectEngineerDashboard .project-item:hover {
+  background: #fff;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  transform: translateY(-1px);
+}
+
+.Content.ProjectEngineerDashboard .project-item.critical {
+  background: #fff5f5;
+  border: 1px solid #fecaca;
+  border-left: 4px solid #dc3545;
+}
+
+.Content.ProjectEngineerDashboard .project-info h4 {
+  color: #2c3e50;
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin: 0 0 8px 0;
+}
+
+.Content.ProjectEngineerDashboard .project-meta {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  margin-bottom: 8px;
+  flex-wrap: wrap;
+}
+
+.Content.ProjectEngineerDashboard .status-badge {
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.Content.ProjectEngineerDashboard .status-badge.installation {
+  background: #cce7ff;
+  color: #004085;
+}
+
+.Content.ProjectEngineerDashboard .status-badge.structural-manufacturing {
+  background: #fff3cd;
+  color: #856404;
+}
+
+.Content.ProjectEngineerDashboard .status-badge.test-and-comm {
+  background: #d1ecf1;
+  color: #0c5460;
+}
+
+.Content.ProjectEngineerDashboard .status-badge.completed {
+  background: #d4edda;
+  color: #155724;
+}
+
+.Content.ProjectEngineerDashboard .status-badge.critical {
+  background: #f8d7da;
+  color: #721c24;
+}
+
+.Content.ProjectEngineerDashboard .project-id {
+  color: #6c757d;
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.Content.ProjectEngineerDashboard .project-location {
+  color: #495057;
+  font-size: 0.875rem;
+  font-weight: 500;
+  background: #e9ecef;
+  padding: 2px 8px;
+  border-radius: 4px;
+}
+
+.Content.ProjectEngineerDashboard .project-client {
+  color: #6c757d;
+  font-size: 0.9rem;
+  margin: 0 0 8px 0;
+}
+
+.Content.ProjectEngineerDashboard .current-task,
+.Content.ProjectEngineerDashboard .project-deadline,
+.Content.ProjectEngineerDashboard .team-assigned {
+  color: #6c757d;
+  font-size: 0.875rem;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 2px 0;
+}
+
+.Content.ProjectEngineerDashboard .current-task i,
+.Content.ProjectEngineerDashboard .project-deadline i,
+.Content.ProjectEngineerDashboard .team-assigned i {
+  color: #315a95;
+}
+
+.Content.ProjectEngineerDashboard .days-remaining {
+  color: #dc3545;
+  font-weight: 600;
+  margin-left: 4px;
+}
+
+.Content.ProjectEngineerDashboard .days-remaining.urgent {
+  color: #dc3545;
+  font-weight: 700;
+}
+
+/* Progress Bars */
+.Content.ProjectEngineerDashboard .project-progress {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  min-width: 120px;
+}
+
+.Content.ProjectEngineerDashboard .progress-bar {
+  width: 100%;
+  height: 8px;
+  background: #e9ecef;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.Content.ProjectEngineerDashboard .progress-bar.small {
+  height: 6px;
+}
+
+.Content.ProjectEngineerDashboard .progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #28a745, #20c997);
+  border-radius: 4px;
+  transition: width 0.3s ease;
+}
+
+.Content.ProjectEngineerDashboard .progress-fill.critical {
+  background: linear-gradient(90deg, #dc3545, #fd7e14);
+}
+
+.Content.ProjectEngineerDashboard .project-progress span {
+  color: #6c757d;
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+/* Project Actions */
+.Content.ProjectEngineerDashboard .project-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 120px;
+}
+
+.Content.ProjectEngineerDashboard .btn-primary,
+.Content.ProjectEngineerDashboard .btn-secondary,
+.Content.ProjectEngineerDashboard .btn-outline {
+  background: #315a95;
+  color: white;
+  border: none;
+  padding: 8px 12px;
+  border-radius: 6px;
+  font-size: 0.8rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  white-space: nowrap;
+  text-align: center;
+}
+
+.Content.ProjectEngineerDashboard .btn-primary:hover {
+  background: #2a4d80;
+}
+
+.Content.ProjectEngineerDashboard .btn-secondary {
+  background: #6c757d;
+}
+
+.Content.ProjectEngineerDashboard .btn-secondary:hover {
+  background: #5a6268;
+}
+
+.Content.ProjectEngineerDashboard .btn-outline {
+  background: transparent;
+  border: 1px solid #6c757d;
+  color: #6c757d;
+}
+
+.Content.ProjectEngineerDashboard .btn-outline:hover {
+  background: #6c757d;
+  color: white;
+}
+
+.Content.ProjectEngineerDashboard .btn-sm {
+  padding: 6px 10px;
+  font-size: 0.75rem;
+}
+
+/* Tasks List */
+.Content.ProjectEngineerDashboard .tasks-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.Content.ProjectEngineerDashboard .task-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px;
+  background: #f8f9fa;
+  border-radius: 8px;
+  border: 1px solid #e9ecef;
+  transition: all 0.2s ease;
+  gap: 16px;
+}
+
+.Content.ProjectEngineerDashboard .task-item:hover {
+  background: #fff;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.Content.ProjectEngineerDashboard .task-info {
+  flex: 1;
+}
+
+.Content.ProjectEngineerDashboard .task-info h4 {
+  color: #2c3e50;
+  font-size: 1rem;
+  font-weight: 600;
+  margin: 0 0 4px 0;
+}
+
+.Content.ProjectEngineerDashboard .task-description {
+  color: #6c757d;
+  font-size: 0.875rem;
+  margin: 0 0 6px 0;
+}
+
+.Content.ProjectEngineerDashboard .task-status {
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.Content.ProjectEngineerDashboard .task-progress {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  min-width: 80px;
+}
+
+/* Milestones List */
+.Content.ProjectEngineerDashboard .milestones-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.Content.ProjectEngineerDashboard .milestone-item {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  padding: 16px;
+  background: #f8f9fa;
+  border-radius: 8px;
+  border: 1px solid #e9ecef;
+  transition: all 0.2s ease;
+}
+
+.Content.ProjectEngineerDashboard .milestone-item:hover {
+  background: #fff;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.Content.ProjectEngineerDashboard .milestone-date {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-width: 50px;
+  padding: 8px;
+  background: white;
+  border-radius: 6px;
+  border: 1px solid #e9ecef;
+}
+
+.Content.ProjectEngineerDashboard .milestone-date.urgent {
+  background: #f8d7da;
+  border-color: #f5c6cb;
+}
+
+.Content.ProjectEngineerDashboard .date-day {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #315a95;
+  line-height: 1;
+}
+
+.Content.ProjectEngineerDashboard .date-month {
+  font-size: 0.75rem;
+  color: #6c757d;
+  text-transform: uppercase;
+  font-weight: 600;
+}
+
+.Content.ProjectEngineerDashboard .milestone-details {
+  flex: 1;
+}
+
+.Content.ProjectEngineerDashboard .milestone-details h4 {
+  color: #2c3e50;
+  font-size: 1rem;
+  font-weight: 600;
+  margin: 0 0 4px 0;
+}
+
+.Content.ProjectEngineerDashboard .milestone-details p {
+  color: #6c757d;
+  font-size: 0.875rem;
+  margin: 0 0 8px 0;
+}
+
+.Content.ProjectEngineerDashboard .milestone-type {
+  color: #315a95;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* Quick Actions */
+.Content.ProjectEngineerDashboard .quick-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.Content.ProjectEngineerDashboard .quick-action-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 16px 12px;
+  background: #1f4d7b;
+  border: 1px solid #e9ecef;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-align: center;
+}
+
+.Content.ProjectEngineerDashboard .quick-action-btn:hover {
+  background: #315a95;
+  color: white;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(49, 90, 149, 0.3);
+}
+
+.Content.ProjectEngineerDashboard .quick-action-btn i {
+  font-size: 1.25rem;
+  margin-bottom: 4px;
+}
+
+.Content.ProjectEngineerDashboard .quick-action-btn span {
+  font-size: 0.8rem;
+  font-weight: 500;
+  line-height: 1.2;
+}
+
+/* Status Distribution */
+.Content.ProjectEngineerDashboard .status-distribution {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.Content.ProjectEngineerDashboard .status-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 0;
+  border-bottom: 1px solid #e9ecef;
+}
+
+.Content.ProjectEngineerDashboard .status-item:last-child {
+  border-bottom: none;
+}
+
+.Content.ProjectEngineerDashboard .status-name {
+  color: #495057;
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+.Content.ProjectEngineerDashboard .status-count {
+  background: #315a95;
+  color: white;
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  min-width: 30px;
+  text-align: center;
+}
+
+/* Empty States */
+.Content.ProjectEngineerDashboard .empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 20px;
+  color: #6c757d;
+  text-align: center;
+}
+
+.Content.ProjectEngineerDashboard .empty-state i {
+  font-size: 3rem;
+  margin-bottom: 16px;
+  color: #dee2e6;
+}
+
+.Content.ProjectEngineerDashboard .empty-state p {
+  margin: 0 0 8px 0;
+  font-size: 1rem;
+}
+
+/* Animation for critical alerts */
+@keyframes pulseCritical {
+  0% {
+    box-shadow: 0 0 0 0 rgba(220, 53, 69, 0.4);
+  }
+  70% {
+    box-shadow: 0 0 0 10px rgba(220, 53, 69, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(220, 53, 69, 0);
+  }
+}
+
+.Content.ProjectEngineerDashboard .project-item.critical {
+  animation: pulseCritical 2s infinite;
+}
+
+/* Responsive Design */
+@media (max-width: 1200px) {
+  .Content.ProjectEngineerDashboard .dashboard-content {
+    grid-template-columns: 1fr;
+  }
+  
+  .Content.ProjectEngineerDashboard .sidebar {
+    order: -1;
+  }
+}
+
+@media (max-width: 768px) {
+  .Content.ProjectEngineerDashboard {
+    padding: 16px;
+  }
+  
+  .Content.ProjectEngineerDashboard .stats-grid {
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 16px;
+  }
+  
+  .Content.ProjectEngineerDashboard .project-item {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+  
+  .Content.ProjectEngineerDashboard .project-actions {
+    flex-direction: row;
+    justify-content: flex-start;
+  }
+  
+  .Content.ProjectEngineerDashboard .task-item {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+  
+  .Content.ProjectEngineerDashboard .task-progress {
+    align-self: stretch;
+    align-items: flex-start;
+  }
+  
+  .Content.ProjectEngineerDashboard .quick-actions {
+    grid-template-columns: 1fr;
+  }
+  
+  .Content.ProjectEngineerDashboard .card-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+}
+
+@media (max-width: 480px) {
+  .Content.ProjectEngineerDashboard .stats-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .Content.ProjectEngineerDashboard .stat-card {
+    padding: 20px;
+  }
+  
+  .Content.ProjectEngineerDashboard .content-card {
+    padding: 20px;
+  }
+  
+  .Content.ProjectEngineerDashboard .project-meta {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+  
+  .Content.ProjectEngineerDashboard .engineer-stats {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  
+  .Content.ProjectEngineerDashboard .stat-badge {
+    align-self: stretch;
+    text-align: center;
+  }
+}
+
+/* Loading states */
+.Content.ProjectEngineerDashboard .loading {
+  opacity: 0.7;
+  pointer-events: none;
+}
+
+.Content.ProjectEngineerDashboard .skeleton {
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 200% 100%;
+  animation: loading 1.5s infinite;
+  border-radius: 4px;
+}
+
+@keyframes loading {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+/* Additional Alert Types */
+.Content.ProjectEngineerDashboard .content-card.lagging-alert {
+  border-left: 4px solid #ffc107;
+  background: linear-gradient(135deg, #fff 0%, #fffbf0 100%);
+}
+
+.Content.ProjectEngineerDashboard .content-card.pending-alert {
+  border-left: 4px solid #6c757d;
+  background: linear-gradient(135deg, #fff 0%, #f8f9fa 100%);
+}
+
+/* Status Badge Variations */
+.Content.ProjectEngineerDashboard .status-badge.lagging {
+  background: #fff3cd;
+  color: #856404;
+}
+
+.Content.ProjectEngineerDashboard .status-badge.pending {
+  background: #e2e3e5;
+  color: #383d41;
+}
+
+/* Progress Fill Variations */
+.Content.ProjectEngineerDashboard .progress-fill.lagging {
+  background: linear-gradient(90deg, #ffc107, #ffd54f);
+}
+
+.Content.ProjectEngineerDashboard .progress-fill.pending {
+  background: linear-gradient(90deg, #6c757d, #adb5bd);
+}
+
+/* Animation for different alert types */
+@keyframes pulseLagging {
+  0% {
+    box-shadow: 0 0 0 0 rgba(255, 193, 7, 0.4);
+  }
+  70% {
+    box-shadow: 0 0 0 10px rgba(255, 193, 7, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(255, 193, 7, 0);
+  }
+}
+
+.Content.ProjectEngineerDashboard .project-item.lagging {
+  animation: pulseLagging 2s infinite;
+}

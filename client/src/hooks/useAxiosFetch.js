@@ -8,7 +8,6 @@ const useAxiosFetch = (dataUrl, params = {}) => {
     
     useEffect(() => {
         if (!dataUrl) return
-
         let isMounted = true
         const controller = new AbortController()
         const fetchData = async() => {

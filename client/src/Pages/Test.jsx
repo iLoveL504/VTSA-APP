@@ -1,6 +1,6 @@
 import React, { useState, useMemo, useRef, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import LinkedList from "../DataStructs/LinkedList.js";
+import LinkedList from "../../../DataStructs/LinkedList.js";
 import Box from "@mui/material/Box";
 import InputLabel from "@mui/material/InputLabel";
 import MenuItem from "@mui/material/MenuItem";
@@ -10,21 +10,19 @@ import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button";
 import Modal from "@mui/material/Modal";
 import "../css/Test1.css";
-import tasks from '../data/TasksData.js'
+import tasks from '../../../data/TasksData.js'
 //import { useReactToPrint } from "react-to-print";
 import { DatePickerInput } from '@mantine/dates';
 
 const Test1 = () => {
   const {projId} = useParams()
-  //const location = useLocation();
   const navigate = useNavigate()
   const itemRefs = useRef([]);
-  const contentRef = useRef()
   const [selectedTaskID, setSelectedTaskID] = useState("");
   const [isCalendarDays, setIsCalendarDays] = useState(false)
   const [startDate, setStartDate] = useState(new Date())
-
-
+  const [holidays, setHolidays] = useState([]);
+  const [newHoliday, setNewHoliday] = useState(null);
 
   // ✅ Normalize helper
   const normalizeDate = (date) => {
@@ -33,50 +31,101 @@ const Test1 = () => {
     return d;
   };
 
+  // Helper functions to map between field name conventions
+  const mapTaskToLinkedList = (task) => ({
+    task_id: task.id || task.task_id,
+    task_name: task.text || task.task_name,
+    task_start: task.start ? normalizeDate(task.start) : (task.task_start ? normalizeDate(task.task_start) : null),
+    task_end: task.end ? normalizeDate(task.end) : (task.task_end ? normalizeDate(task.task_end) : null),
+    task_duration: task.duration || task.task_duration || 1,
+    task_type: task.type || task.task_type || 'task',
+    task_parent: task.parent || task.task_parent || 0,
+    task_percent: task.percent_progress || task.task_percent || 0,
+    section_title: task.section_title || 'General',
+    wt: task.wt || 0.00,
+    section_id: task.section_id || Math.floor(Math.random() * 900) + 100,
+    item_code: task.item_code
+  });
+
+  const mapTaskFromLinkedList = (task) => ({
+    id: task.task_id,
+    text: task.task_name,
+    start: task.task_start,
+    end: task.task_end,
+    duration: task.task_duration,
+    type: task.task_type,
+    parent: task.task_parent,
+    percent: task.task_percent,
+    section_title: task.section_title,
+    wt: task.wt,
+    section_id: task.section_id,
+    // Include original fields for compatibility
+    task_id: task.task_id,
+    task_name: task.task_name,
+    task_start: task.task_start,
+    task_end: task.task_end,
+    task_duration: task.task_duration,
+    task_type: task.task_type,
+    task_parent: task.task_parent
+  });
+
   const [linkedList, setLinkedList] = useState(() => {
     const ll = new LinkedList(startDate, false);
     tasks.forEach((t) => {
-      if (t.start) t.start = normalizeDate(t.start);
-      if (t.end) t.end = normalizeDate(t.end);
-      ll.insertLast(t);
+      ll.insertLast(mapTaskToLinkedList(t));
     });
-
     return ll;
   });
 
   useEffect(() => {
     setLinkedList(() => {
-    const ll = new LinkedList(startDate, false);
-    tasks.forEach((t) => {
-      if (t.start) t.start = normalizeDate(t.start);
-      if (t.end) t.end = normalizeDate(t.end);
-      ll.insertLast(t);
+      const ll = new LinkedList(startDate, isCalendarDays, holidays);
+      tasks.forEach((t) => {
+        ll.insertLast(mapTaskToLinkedList(t));
+      });
+      return ll;
     });
+  }, [startDate, isCalendarDays, holidays]);
 
-    return ll;
-    })
-  }, [startDate])
-  
-  const [actionType, setActionType] = useState(""); // "before" or "after"
+  const [actionType, setActionType] = useState("");
   const [newTaskText, setNewTaskText] = useState("");
   const [newTaskDuration, setNewTaskDuration] = useState(1);
   const [editDuration, setEditDuration] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
 
-  // ✅ End date calculator
   const FindEndOfProject = (startDate, numberofDays) => {
     let result = new Date(startDate);
     result.setDate(result.getDate() + numberofDays);
-    result = normalizeDate(result); // strip time
+    result = normalizeDate(result);
+  };
 
+  const handleAddHoliday = () => {
+    if (!newHoliday) return;
+    const normalized = normalizeDate(newHoliday).toDateString();
+    if (holidays.includes(normalized)) {
+      alert("Holiday already exists!");
+      return;
+    }
+    setHolidays((prev) => [...prev, normalized]);
+    setNewHoliday(null);
+  };
+
+  const handleRemoveHoliday = (holiday) => {
+    if (window.confirm(`Remove holiday ${holiday}?`)) {
+      setHolidays((prev) => prev.filter((h) => h !== holiday));
+    }
   };
 
   const taskOnClick = (t) => {
     setSelectedTaskID(t.id);
   };
 
-  const listArray = useMemo(() => linkedList.toArray(), [linkedList]);
+  // Convert linked list to array and map field names for display
+  const listArray = useMemo(() => 
+    linkedList.toArray().map(mapTaskFromLinkedList), 
+    [linkedList]
+  );
 
   useEffect(() => {
     itemRefs.current.forEach((ref) => {
@@ -98,21 +147,19 @@ const Test1 = () => {
     return listArray.findIndex(task => task.id === taskId);
   };
 
-    const handleScheduleChange = (e) => {
+  const handleScheduleChange = (e) => {
     console.log('hi')
     setIsCalendarDays(e.target.value)
   };
 
-// 💡 Only rebuild linked list when schedule type changes
-useEffect(() => {
-  setLinkedList((prevLL) => {
-    const currentTasks = prevLL.toArray();
-    const newLL = new LinkedList(startDate, isCalendarDays);
-    currentTasks.forEach(task => newLL.insertLast(task));
-    return newLL;
-  });
-}, [isCalendarDays]);
-
+  useEffect(() => {
+    setLinkedList((prevLL) => {
+      const currentTasks = prevLL.toArray();
+      const newLL = new LinkedList(startDate, isCalendarDays);
+      currentTasks.forEach(task => newLL.insertLast(task));
+      return newLL;
+    });
+  }, [isCalendarDays]);
 
   const handleAddTask = (position) => {
     if (!selectedTaskID) {
@@ -132,47 +179,50 @@ useEffect(() => {
     const selectedIndex = getTaskIndex(selectedTaskID);
     if (selectedIndex === -1) return;
 
-    // Step 1: Create a temporary linked list from current data
+    // Create a temporary linked list from current data
     const tempLL = new LinkedList(startDate);
-    listArray.forEach((task) => tempLL.insertLast(task));
+    listArray.forEach((task) => tempLL.insertLast(mapTaskToLinkedList(task)));
     
-    // Step 2: Generate a new unique ID for this parent
-    const parentID = listArray[selectedIndex].parent === 0 ? listArray[selectedIndex].id
-     : listArray[selectedIndex].type ===  'summary' ? listArray[selectedIndex].id 
-     : listArray[selectedIndex].parent;
+    // Generate a new unique ID for this parent
+    const selectedTask = listArray[selectedIndex];
+    const parentID = selectedTask.task_parent === 0 ? selectedTask.task_id
+     : selectedTask.task_type === 'summary' ? selectedTask.task_id 
+     : selectedTask.task_parent;
+    
     const newID = tempLL.generateNewID(parentID);
 
-    // Step 3: Build the new task (normalized start)
+    // Build the new task with database field names
     const newTask = {
-      id: newID + 1000,
-      text: newTaskText,
-      type: "task",
-      start: normalizeDate(new Date()), // ✅ always midnight
-      end: null,
-      duration: parseInt(newTaskDuration),
-      parent: parentID,
-      percent: 0,
+      task_id: newID,
+      task_name: newTaskText,
+      task_type: "task",
+      task_start: normalizeDate(new Date()),
+      task_end: null,
+      task_duration: parseInt(newTaskDuration),
+      task_parent: parentID,
+      task_percent: 0,
       section_title: 'General',
       wt: 0.00,
       section_id: Math.floor(Math.random() * 900) + 100
     };
 
-    // Step 4: Rebuild the linked list with the new task inserted
+    // Rebuild the linked list with the new task inserted
     const newLinkedList = new LinkedList(startDate);
 
     listArray.forEach((task, index) => {
+      const taskToInsert = mapTaskToLinkedList(task);
       if (index === selectedIndex && actionType === "before") {
         newLinkedList.insertLast(newTask);
-        newLinkedList.insertLast(task);
+        newLinkedList.insertLast(taskToInsert);
       } else if (index === selectedIndex && actionType === "after") {
-        newLinkedList.insertLast(task);
+        newLinkedList.insertLast(taskToInsert);
         newLinkedList.insertLast(newTask);
       } else {
-        newLinkedList.insertLast(task);
+        newLinkedList.insertLast(taskToInsert);
       }
     });
 
-    // Step 5: Update state
+    // Update state
     setLinkedList(newLinkedList);
     setSelectedTaskID(newID); 
     setNewTaskText("");
@@ -200,21 +250,17 @@ useEffect(() => {
     const selectedIndex = getTaskIndex(selectedTaskID);
     if (selectedIndex === -1) return;
 
-    const newLinkedList = new LinkedList(startDate);
+    const newLinkedList = new LinkedList(startDate, isCalendarDays);
     
     listArray.forEach((task, index) => {
       if (index === selectedIndex) {
-        const updatedTask = { 
+        const updatedTask = mapTaskToLinkedList({ 
           ...task, 
-          duration: parseInt(editDuration),
-          // ✅ normalize recomputed end if needed
-          end: task.start 
-            ? normalizeDate(new Date(task.start.getTime() + parseInt(editDuration) * 86400000)) 
-            : null
-        };
+          duration: parseInt(editDuration)
+        });
         newLinkedList.insertLast(updatedTask);
       } else {
-        newLinkedList.insertLast(task);
+        newLinkedList.insertLast(mapTaskToLinkedList(task));
       }
     });
 
@@ -238,7 +284,7 @@ useEffect(() => {
 
     listArray.forEach((task, index) => {
       if (index !== selectedIndex) {
-        newLinkedList.insertLast(task);
+        newLinkedList.insertLast(mapTaskToLinkedList(task));
       }
     });
  
@@ -253,18 +299,18 @@ useEffect(() => {
   };
 
   const handleNavigate = () => {
-
-    navigate(`/projects/${projId}/schedule`, {state: { schedule: linkedList.toArray(), toggle: isCalendarDays }})
+    navigate(`/projects/${projId}/schedule`, {
+      state: { 
+        schedule: linkedList.toArray(), 
+        holiday: holidays, 
+        toggle: isCalendarDays 
+      }
+    });
   };
-
-  // const handlePrint = useReactToPrint({
-  //   contentRef,
-  //   documentTitle: `Daily Report - ${3}`,
-  // });
 
   return (
     <div className="Content SchedulePage">
-      <div ref={contentRef}>
+      <div className='schedule-area'>
         <div className="schedule-page">
         <h2>Customize Project Schedule</h2>
 
@@ -293,37 +339,27 @@ useEffect(() => {
             </FormControl>
           </Box>
 
-          <button 
-            className="schedule-btn" 
-            onClick={() => FindEndOfProject("9/22/2025", 10)}
-          >
-            <i className="fas fa-calculator"></i>
-            Calculate End Date
-          </button>
         </div>
 
         {/* Action Controls */}
         <div className="schedule-actions">
           <DatePickerInput
-            label="Pick date"
-            placeholder="Pick date"
+            label="Start date"
+            placeholder="Start date"
             value={startDate}
             onChange={setStartDate}
           />
           <FormControl className="form-control-professional" size="small">
-            <InputLabel id="parent-select-label">Parent Task</InputLabel>
+            <InputLabel id="parent-select-label">Schedule Type</InputLabel>
             <Select
               labelId="parent-select-label"
               id="parent-select"
               value={isCalendarDays}
-              label="Parent Task"
+              label="Schedule Type"
               onChange={handleScheduleChange}
             >
-              <MenuItem value="">
-                <em>None</em>
-              </MenuItem>
-              <MenuItem value={false}>Private</MenuItem>
-              <MenuItem value={true}>Government</MenuItem>
+              <MenuItem value={false}>Private (Working Days)</MenuItem>
+              <MenuItem value={true}>Government (Calendar Days)</MenuItem>
             </Select>
           </FormControl>
           <button 
@@ -364,52 +400,134 @@ useEffect(() => {
         </div>
 
         {/* Task Cards Grid */}
-        <div className="schedule-tasks-grid">
-          {listArray.map((t, index) => (
-            <div
-              onClick={() => taskOnClick(t)}
-              key={index}
-              className="task-card"
-              ref={(el) => (itemRefs.current[index] = {el, t})}
-            >
-              <div className="task-header">
-                <div className="task-title">
-                  <h4>{t.text}</h4>
-                  <span className="task-type">{t.type || "task"}</span>
-                  <p>ID: {t.id}</p>
-                </div>
-                <span className={`task-status ${getStatusClass(t)}`}>
-                  {t.completed ? "Completed" : "Active"}
-                </span>
-              </div>
-
-              <div className="task-details">
-                <div className="task-detail-item">
-                  <i className="fas fa-clock"></i>
-                  <span>Duration: {t.duration || 1} day(s)</span>
-                </div>
-                <div className="task-detail-item">
-                  <i className="fas fa-project-diagram"></i>
-                  <span>Parent: {t.parent || "None"}</span>
-                </div>
-              </div>
-
-              <div className="task-dates">
-                <p>
-                  <span className="date-label">Start:</span>
-                  <span className="date-value">
-                    {t.start?.toLocaleDateString("en-GB") || "Not set"}
-                  </span>
-                </p>
-                <p>
-                  <span className="date-label">End:</span>
-                  <span className="date-value">
-                    {t.end?.toLocaleDateString("en-GB") || "Not set"}
-                  </span>
-                </p>
-              </div>
+        <div className="schedule-table-container">
+          <div className="table-header">
+            <h3>Project Schedule</h3>
+            <div className="table-stats">
+              <span className="stat">
+                <i className="fas fa-tasks"></i>
+                Total: {listArray.length} tasks
+              </span>
             </div>
-          ))}
+          </div>
+
+          <div className="schedule-table-wrapper">
+            <table className="schedule-table">
+              <thead>
+                <tr>
+                  <th className="col-order">#</th>
+                  <th className="col-task">Task</th>
+                  <th className="col-type">Type</th>
+                  <th className="col-duration">Duration</th>
+                  <th className="col-dates">Start - End</th>
+                  <th className="col-status">Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                {listArray.map((task, index) => {
+                  const indentLevel = task.level || 0;
+                  const isParent = task.type === 'parent';
+                  const isSummary = task.type === 'summary';
+                  const isTask = task.type === 'task';
+                  
+                  return (
+                    <tr 
+                      key={task.id}
+                      className={`
+                        task-row 
+                        ${selectedTaskID === task.id ? 'selected' : ''}
+                        ${isParent ? 'row-parent' : ''}
+                        ${isSummary ? 'row-summary' : ''}
+                        ${isTask ? 'row-task' : ''}
+                      `}
+                      onClick={() => taskOnClick(task)}
+                      style={{ 
+                        paddingLeft: `${indentLevel * 20}px`,
+                        cursor: 'pointer'
+                      }}
+                    >
+                      <td className="col-order">
+                        <div className="task-order">
+                          {index + 1}
+                        </div>
+                      </td>
+
+                      <td className="col-task">
+                        <div 
+                          className="task-name-cell"
+                          style={{ paddingLeft: `${indentLevel * 20 + 8}px` }}
+                        >
+                          {indentLevel > 0 && (
+                            <div className="task-indent-guides">
+                              {Array.from({ length: indentLevel }).map((_, i) => (
+                                <div key={i} className="indent-guide"></div>
+                              ))}
+                            </div>
+                          )}
+                          <div className="task-name-content">
+                            {isParent && <i className="fas fa-folder-open parent-icon"></i>}
+                            {isSummary && <i className="fas fa-layer-group summary-icon"></i>}
+                            {isTask && <i className="fas fa-tasks task-icon"></i>}
+                            <span className="task-text">{task.text}</span>
+                            {task.parent !== 0 && task.parent && (
+                              <span className="parent-id">(Parent: {task.parent})</span>
+                            )}
+                          </div>
+                        </div>
+                      </td>
+
+                      <td className="col-type">
+                        <span className={`task-type-badge ${task.type}`}>
+                          {task.type || 'task'}
+                        </span>
+                      </td>
+
+                      <td className="col-duration">
+                        <div className="duration-cell">
+                          <i className="fas fa-clock"></i>
+                          {task.duration || 1} day(s)
+                        </div>
+                      </td>
+
+                      <td className="col-dates">
+                        <div className="dates-cell">
+                          <div className="date-range">
+                            <span className="date-start">
+                              {task.start?.toLocaleDateString("en-GB") || "Not set"}
+                            </span>
+                            <i className="fas fa-arrow-right date-arrow"></i>
+                            <span className="date-end">
+                              {task.end?.toLocaleDateString("en-GB") || "Not set"}
+                            </span>
+                          </div>
+                          {task.start && task.end && (
+                            <div className="date-duration">
+                              ({task.duration || 1} days)
+                            </div>
+                          )}
+                        </div>
+                      </td>
+
+                      <td className="col-status">
+                        <span className={`status-badge ${getStatusClass(task)}`}>
+                          {task.completed ? 'Completed' : 
+                          task.start && new Date(task.start) > new Date() ? 'Pending' : 'Active'}
+                        </span>
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+
+            {listArray.length === 0 && (
+              <div className="table-empty-state">
+                <i className="fas fa-calendar-plus"></i>
+                <h4>No Tasks Scheduled</h4>
+                <p>Start by adding tasks to your project schedule</p>
+              </div>
+            )}
+          </div>
         </div>
 
         {listArray.length === 0 && (
@@ -471,14 +589,85 @@ useEffect(() => {
           </div>
         </Modal>
 
-                {/* Floating Action Button */}
+        {/* Floating Action Button */}
         <button className="floating-action-button" onClick={handleNavigate}>
           <i className="fas fa-arrow-right"></i>
-          {/* You can change the icon to whatever you prefer */}
         </button>
+        </div>
+
+        {/* Holiday Section */}
+        <div className="schedule-sidebar">
+          <div className="holiday-section">
+            <div className="holiday-header">
+              <h3>
+                <i className="fas fa-umbrella-beach"></i>
+                Project Holidays
+              </h3>
+              <span className="holiday-count">{holidays.length} days</span>
+            </div>
+
+            <div className="holiday-add-card">
+              <h4>Add New Holiday</h4>
+              <div className="holiday-input-group">
+                <DatePickerInput
+                  placeholder="Select holiday date"
+                  value={newHoliday}
+                  onChange={setNewHoliday}
+                  style={{ flex: 1 }}
+                />
+                <Button
+                  variant="contained"
+                  className="add-holiday-btn"
+                  onClick={handleAddHoliday}
+                  disabled={!newHoliday}
+                >
+                  <i className="fas fa-plus"></i>
+                  Add
+                </Button>
+              </div>
+            </div>
+
+            <div className="holiday-list-section">
+              <h4>Holiday List</h4>
+              {holidays.length > 0 ? (
+                <div className="holiday-list">
+                  {holidays.map((h, idx) => (
+                    <div key={idx} className="holiday-item">
+                      <div className="holiday-info">
+                        <i className="fas fa-calendar-day"></i>
+                        <span className="holiday-date">{h}</span>
+                      </div>
+                      <Button
+                        color="error"
+                        size="small"
+                        className="remove-holiday-btn"
+                        onClick={() => handleRemoveHoliday(h)}
+                      >
+                        <i className="fas fa-times"></i>
+                      </Button>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="holiday-empty">
+                  <i className="fas fa-calendar-plus"></i>
+                  <p>No holidays added yet</p>
+                  <span>Add holidays to exclude them from schedule calculations</span>
+                </div>
+              )}
+            </div>
+
+            <div className="holiday-info-card">
+              <h4>
+                <i className="fas fa-info-circle"></i>
+                About Holidays
+              </h4>
+              <p>Holidays are excluded from working day calculations and will affect task end dates.</p>
+            </div>
+          </div>
+        </div>
+
       </div>
-      </div>
-      
     </div>
   );
 };

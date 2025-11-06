@@ -14,7 +14,7 @@ const ViewProjectEngineers = () => {
   const PEs = employees.filter(e => e.job === 'Project Engineer')
   const { projId } = useParams();
   const navigate = useNavigate()
-
+ 
   console.log(peProjects)
 
   const {
@@ -30,11 +30,23 @@ const ViewProjectEngineers = () => {
   }, [utilitiesSocket])
 
   const [selectedPE, setSelectedPE] = useState(null);
+  const [peCurrentProjects, setPeCurrentProjects] = useState([])
 
-  const handlePESelect = (engineer) => {
-    console.log(engineer)
-    setSelectedPE(engineer);
-  };
+   console.log(selectedPE)
+useEffect(() => {
+  if (selectedPE) {
+    const cp = peProjects.filter(p => p.project_engineer_id === selectedPE.employee_id);
+    setPeCurrentProjects(cp);
+  } else {
+    setPeCurrentProjects([]);
+  }
+}, [selectedPE, peProjects]);
+
+const handlePESelect = (engineer) => {
+  console.log('Selected PE:', engineer);
+  setSelectedPE(engineer);
+  // peCurrentProjects will be updated automatically by the useEffect
+};
 
 const handleSubmit = async () => {
   try {
@@ -154,9 +166,106 @@ const handleSubmit = async () => {
         </div>
       </div>
 
-      <div>
-        Project Engineer Info here
-      </div>      
+<div className='pe-projects-section'>
+  <div className='section-header'>
+    <h3>Current Projects</h3>
+    {selectedPE && (
+      <div className='pe-info-badge'>
+        {selectedPE.first_name} {selectedPE.last_name}
+      </div>
+    )}
+  </div>
+  
+  {selectedPE ? (
+    <div className='current-projects-container'>
+      {peCurrentProjects.length > 0 ? (
+        <>
+          <div className='projects-stats'>
+            <div className='stat-item'>
+              <span className='stat-number'>{peCurrentProjects.length}</span>
+              <span className='stat-label'>Total Projects</span>
+            </div>
+            <div className='stat-item'>
+              <span className='stat-number'>
+                {peCurrentProjects.filter(p => p.status === 'active').length}
+              </span>
+              <span className='stat-label'>Active</span>
+            </div>
+            <div className='stat-item'>
+              <span className='stat-number'>
+                {peCurrentProjects.filter(p => p.status === 'completed').length}
+              </span>
+              <span className='stat-label'>Completed</span>
+            </div>
+          </div>
+          
+          <div className='projects-grid'>
+            {peCurrentProjects.map((project, index) => (
+              <div key={project.project_id || index} className="project-card">
+                <div className='project-card-header'>
+                  <h4 className='project-title'>{project.lift_name}</h4>
+                  <span className={`project-status ${project.status || 'active'}`}>
+                    {project.status || 'Active'}
+                  </span>
+                </div>
+                
+                <div className='project-client'>
+                  <span className='client-label'>Client</span>
+                  <span className='client-name'>{project.client}</span>
+                </div>
+                
+                <div className='project-details'>
+                  <div className='detail-item'>
+                    <span className='detail-label'>Start Date</span>
+                    <span className='detail-value'>
+                      {project.operations_start_date ? 
+                        new Date(project.operations_start_date).toLocaleDateString() : 
+                        'Not set'
+                      }
+                    </span>
+                  </div>
+                  
+                  <div className='detail-item'>
+                    <span className='detail-label'>End Date</span>
+                    <span className='detail-value'>
+                      {project.project_end_date ? 
+                        new Date(project.project_end_date).toLocaleDateString() : 
+                        'Not set'
+                      }
+                    </span>
+                  </div>
+                  
+                  <div className='detail-item'>
+                    <span className='detail-label'>Project ID</span>
+                    <span className='detail-value project-id'>{project.project_id}</span>
+                  </div>
+                </div>
+                
+                {project.description && (
+                  <div className='project-description'>
+                    <p>{project.description}</p>
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+        </>
+      ) : (
+        <div className='empty-state'>
+          <div className='empty-icon'>📋</div>
+          <h4>No Current Projects</h4>
+          <p>{selectedPE.first_name} {selectedPE.last_name} has no assigned projects</p>
+        </div>
+      )}
+    </div>
+  ) : (
+    <div className='selection-prompt'>
+      <div className='prompt-icon'>👨‍💼</div>
+      <h4>Select a Project Engineer</h4>
+      <p>Choose an engineer from the list to view their current projects</p>
+    </div>
+  )}
+</div>     
     </div>
 
       

@@ -7,6 +7,7 @@ import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
+import '../../css/ViewSchedule.css'
 
 import { useReactToPrint } from "react-to-print";
 
@@ -22,12 +23,6 @@ const TestChart = ({projSched, projSchedIsLoading}) => {
     const ganttRef = useRef();
     
     //const schedule = location.state?.schedule || defaultSchedule;
-
-    const [age, setAge] = React.useState('');
-
-    const handleChange = (event) => {
-        setAge(event.target.value);
-    };
 
     const handlePrint = useReactToPrint({
         contentRef,
@@ -109,6 +104,7 @@ const TestChart = ({projSched, projSchedIsLoading}) => {
 
 
     const tasks = useMemo(() => {
+        console.log(projSched)
         try {
             const taskMap = projSched.map(task => {
                 const isParent = task.task_type === "summary";
@@ -160,20 +156,8 @@ const TestChart = ({projSched, projSchedIsLoading}) => {
         // console.log(displayTasks)
     }, [displayTasks])
 
-    const handleViewClick = () => {
-        const tasksToView = displayTasks.filter(t => t.id >= 500)
-        setDisplayTasks(tasksToView)
-    }
 
     // Custom header with today marker
-    const CustomHeader = ({ children }) => {
-        return (
-            <div className="gantt-header-with-today">
-                {children}
-            </div>
-        );
-    };
-
     if (!tasks || tasks.length === 0) {
         return (
             <div className="gantt-container">
@@ -236,32 +220,6 @@ const TestChart = ({projSched, projSchedIsLoading}) => {
             </div>
             
             <div className="filter-controls">
-              <button 
-                className="btn-view"
-                onClick={handleViewClick}
-              >
-                View by Parent
-              </button>
-              
-              {/* Current Task Focus Button */}
-
-              <FormControl className="form-control-professional" size="small">
-                <InputLabel id="parent-select-label">Parent Task</InputLabel>
-                <Select
-                  labelId="parent-select-label"
-                  id="parent-select"
-                  value={age}
-                  label="Parent Task"
-                  onChange={handleChange}
-                >
-                  <MenuItem value="">
-                    <em>None</em>
-                  </MenuItem>
-                  <MenuItem value={10}>Ten</MenuItem>
-                  <MenuItem value={20}>Twenty</MenuItem>
-                  <MenuItem value={30}>Thirty</MenuItem>
-                </Select>
-              </FormControl>
 
               <button 
                 className="btn-view"

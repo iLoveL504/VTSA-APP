@@ -10,7 +10,7 @@ import ViewSchedule from './ViewSchedule.jsx'
 import AccomplishmentReport from './AccomplishmentReport.jsx'
 import TaskList from './TaskList.jsx'
 
-const ProjectProgress = ({ projSched, projSchedIsLoading, taskPhotos}) => {
+const ProjectProgress = ({ projSched, projSchedIsLoading, taskPhotos, currentTask}) => {
     const { projId } = useParams()
     const numId = Number(projId)
     const projects = useStoreState(state => state.projects)
@@ -23,7 +23,7 @@ const ProjectProgress = ({ projSched, projSchedIsLoading, taskPhotos}) => {
 
     return (
         <div className="Content ProjectProgress">
-            <TaskList projSched={projSched} taskPhotos={taskPhotos} />
+            <TaskList projSched={projSched} taskPhotos={taskPhotos} currentTask={currentTask}/>
             <div className="progress-header">
                 <h2>Project Progress - {proj.lift_name}</h2>
                 <div className="tabs">

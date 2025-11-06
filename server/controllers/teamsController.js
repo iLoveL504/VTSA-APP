@@ -14,9 +14,53 @@ export const getTeamPerId = async (req, res) => {
     try {
         const { id } = req.params;
         const results = await teams.getTeamPerId(Number(id));
+        console.log(results)
         res.status(200).json(results);
         
     } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+}
+
+export const assignProjPIC = async (req, res) => {
+    const {id} = req.params
+    const {picId} = req.body
+    try {
+        await teams.assignPIC(Number(id), picId)
+        res.status(200).json({
+            success: true,
+            message: "Project Engineer Assigned"
+        });        
+    } catch (error) {
+        console.log(error)
+        res.status(500).json({ error: error.message });
+    }
+}
+
+export const editTeam = async (req, res) => {
+    try {
+        const { id } = req.params
+        const {editedTeam} = req.body
+        console.log('---------------eidt team -------')
+        console.log(editedTeam)
+        await teams.editTeam(Number(id), editedTeam)
+                res.status(200).json({
+            success: true,
+            message: "Project Engineer Assigned"
+        });
+    } catch (error) {
+        console.log(error)
+        res.status(500).json({ error: error.message });
+    }
+}
+
+export const getCompositionPerId = async (req, res) => {
+    try {
+        const {id} = req.params
+        const results = await teams.getProjectManpowerById(Number(id));
+        console.log(results)
+        res.status(200).json(results);        
+    } catch (err) {
         res.status(500).json({ error: error.message });
     }
 }
@@ -89,6 +133,26 @@ export const getProjectManpower = async (req, res) => {
         res.status(200).json(results);
     } catch (error) {
 
+        console.log(error)
+        res.status(500).json({ error: error.message });
+    }
+}
+
+export const getTncTechProjects = async (req, res) => {
+        try {
+        const results = await teams.tncTechProjects()
+        res.status(200).json(results);
+    } catch (error) {
+
+        console.log(error)
+        res.status(500).json({ error: error.message });
+    }
+}
+export const getqaqcTechProjects = async (req, res) => {
+        try {
+        const results = await teams.qaqcTechProjects()
+        res.status(200).json(results);
+    } catch (error) {
         console.log(error)
         res.status(500).json({ error: error.message });
     }

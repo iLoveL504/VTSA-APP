@@ -1,0 +1,180 @@
+.ProjectTeam {
+    padding: 20px;
+    background: #f8f9fa;
+    border-radius: 8px;
+    margin: 20px 0;
+}
+
+.ProjectTeam h3 {
+    color: #333;
+    margin-bottom: 20px;
+    border-bottom: 2px solid #007bff;
+    padding-bottom: 10px;
+}
+
+.ProjectTeam h4 {
+    color: #555;
+    margin: 15px 0 10px 0;
+}
+
+.ProjectTeam h5 {
+    color: #666;
+    margin: 10px 0 5px 0;
+    font-size: 14px;
+}
+
+/* Team Composition */
+.team-composition {
+    background: white;
+    padding: 15px;
+    border-radius: 6px;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.composition-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 15px;
+    margin-top: 10px;
+}
+
+.role-item {
+    display: flex;
+    flex-direction: column;
+    padding: 10px;
+    background: #f8f9fa;
+    border-radius: 4px;
+    border-left: 4px solid #007bff;
+}
+
+.role-item strong {
+    color: #333;
+    font-size: 12px;
+    text-transform: uppercase;
+    margin-bottom: 5px;
+}
+
+.role-item span {
+    color: #666;
+    font-weight: 500;
+}
+
+/* Installation Team */
+.installation-team {
+    background: white;
+    padding: 15px;
+    border-radius: 6px;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.team-section {
+    margin-bottom: 15px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid #eee;
+}
+
+.team-section:last-child {
+    border-bottom: none;
+    margin-bottom: 0;
+}
+
+.team-member {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 12px;
+    background: #f8f9fa;
+    border-radius: 4px;
+    margin-bottom: 5px;
+}
+
+.team-member.foreman {
+    background: #e3f2fd;
+    border-left: 4px solid #2196f3;
+}
+
+.member-name {
+    font-weight: 500;
+    color: #333;
+}
+
+.member-username, .member-id {
+    font-size: 12px;
+    color: #666;
+}
+
+.team-members-list {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+/* Project Info */
+.project-info {
+    background: white;
+    padding: 15px;
+    border-radius: 6px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.info-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 15px;
+    margin-top: 10px;
+}
+
+.info-item {
+    display: flex;
+    flex-direction: column;
+    padding: 10px;
+    background: #f8f9fa;
+    border-radius: 4px;
+}
+
+.info-item strong {
+    color: #333;
+    font-size: 12px;
+    text-transform: uppercase;
+    margin-bottom: 5px;
+}
+
+.info-item span {
+    color: #666;
+    font-weight: 500;
+}
+
+/* Empty State */
+.empty-state {
+    text-align: center;
+    padding: 40px 20px;
+    color: #666;
+    background: white;
+    border-radius: 6px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.empty-state p {
+    margin: 0;
+    font-style: italic;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .ProjectTeam {
+        padding: 15px;
+    }
+    
+    .composition-grid,
+    .info-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .team-member {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 5px;
+    }
+}

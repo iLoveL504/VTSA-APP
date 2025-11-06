@@ -76,10 +76,19 @@ const RequestHold = ({proj}) => {
                 <div>Project is on hold</div>
             ) : sessionStorage.getItem('roles') === 'Project Engineer' ? (
                 <div className='request-hold-section'>
-                    <h3>Request Hold for project: {proj.client} ({proj.lift_name})</h3>
-                    <button
-                        onClick={handleRequestHold}
-                    >Request Hold</button>
+                    {!proj.request_hold ? (
+                        <>
+                            <h3>Request Hold for project: {proj.client} ({proj.lift_name})</h3>
+                            <button
+                                onClick={handleRequestHold}
+                            >Request Hold</button>
+                        </>
+                    ) : (
+                        <div>
+                            Hold Requested
+                        </div>
+                    )}
+
                 </div>
             ) : sessionStorage.getItem('roles') === 'Project Manager' ? (
                 <div classNmae='approve-hold-section'>

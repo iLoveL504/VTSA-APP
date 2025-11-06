@@ -1,0 +1,298 @@
+/* Button Container Styles */
+.btn-container {
+  background: white;
+  padding: 1.5rem;
+  border-radius: 12px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+  border: 1px solid #e2e8f0;
+  margin-bottom: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+/* View Controls */
+.view-controls {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.btn-view {
+  background: #f8fafc;
+  color: #64748b;
+  border: 2px solid #e2e8f0;
+  padding: 0.75rem 1.5rem;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.9rem;
+}
+
+.btn-view:hover {
+  background: #f1f5f9;
+  border-color: #cbd5e1;
+  color: #374151;
+  transform: translateY(-1px);
+}
+
+.btn-view.active {
+  background: #315a95;
+  color: white;
+  border-color: #315a95;
+  box-shadow: 0 2px 8px rgba(49, 90, 149, 0.3);
+}
+
+.btn-view.active:hover {
+  background: #26467c;
+  border-color: #26467c;
+  transform: translateY(-1px);
+}
+
+/* Filter Controls */
+.filter-controls {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.filter-controls .btn-view {
+  background: linear-gradient(135deg, #059669, #047857);
+  color: white;
+  border: none;
+  padding: 0.75rem 1.5rem;
+}
+
+.filter-controls .btn-view:hover {
+  background: linear-gradient(135deg, #047857, #065f46);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(5, 150, 105, 0.3);
+}
+
+/* Form Control Styling */
+.form-control-professional {
+  min-width: 200px;
+}
+
+.form-control-professional .MuiInputLabel-root {
+  font-weight: 600;
+  color: #374151;
+  transform: translate(14px, 16px) scale(1);
+}
+
+.form-control-professional .MuiInputLabel-root.Mui-focused {
+  color: #315a95;
+  transform: translate(14px, -9px) scale(0.75);
+}
+
+.form-control-professional .MuiOutlinedInput-root {
+  border-radius: 8px;
+}
+
+.form-control-professional .MuiOutlinedInput-notchedOutline {
+  border: 2px solid #e2e8f0;
+}
+
+.form-control-professional .MuiOutlinedInput-root:hover .MuiOutlinedInput-notchedOutline {
+  border-color: #cbd5e1;
+}
+
+.form-control-professional .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline {
+  border-color: #315a95;
+  border-width: 2px;
+}
+
+.form-control-professional .MuiSelect-select {
+  padding: 0.75rem;
+  font-size: 0.9rem;
+  color: #374151;
+  background: white;
+}
+
+/* Current Task Panel */
+.current-task-panel {
+  background: linear-gradient(135deg, #f0f9ff, #e0f2fe);
+  border: 1px solid #bae6fd;
+  border-radius: 8px;
+  padding: 1.25rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.current-task-info {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.95rem;
+}
+
+.current-task-info strong {
+  color: #0369a1;
+  font-weight: 600;
+}
+
+.ongoing-task {
+  background: #dcfce7;
+  color: #166534;
+  padding: 0.4rem 0.8rem;
+  border-radius: 20px;
+  font-weight: 600;
+  font-size: 0.85rem;
+  border: 1px solid #bbf7d0;
+}
+
+.upcoming-task {
+  background: #fef3c7;
+  color: #92400e;
+  padding: 0.4rem 0.8rem;
+  border-radius: 20px;
+  font-weight: 600;
+  font-size: 0.85rem;
+  border: 1px solid #fde68a;
+}
+
+.current-date {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.95rem;
+}
+
+.current-date strong {
+  color: #0369a1;
+  font-weight: 600;
+}
+
+.current-date span {
+  background: white;
+  padding: 0.4rem 0.8rem;
+  border-radius: 6px;
+  border: 1px solid #bae6fd;
+  font-weight: 500;
+  color: #0c4a6e;
+}
+
+/* Print Button Specific Styles */
+.btn-view .fas.fa-print {
+  font-size: 0.9rem;
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+  .btn-container {
+    padding: 1.25rem;
+  }
+  
+  .filter-controls {
+    gap: 0.75rem;
+  }
+  
+  .form-control-professional {
+    min-width: 180px;
+  }
+}
+
+@media (max-width: 768px) {
+  .btn-container {
+    padding: 1rem;
+    gap: 1rem;
+  }
+  
+  .view-controls {
+    justify-content: center;
+  }
+  
+  .filter-controls {
+    justify-content: center;
+  }
+  
+  .current-task-panel {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.75rem;
+  }
+  
+  .current-task-info,
+  .current-date {
+    width: 100%;
+    justify-content: space-between;
+  }
+  
+  .btn-view {
+    padding: 0.6rem 1.25rem;
+    font-size: 0.85rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .view-controls {
+    flex-direction: column;
+    width: 100%;
+  }
+  
+  .view-controls .btn-view {
+    width: 100%;
+    justify-content: center;
+  }
+  
+  .filter-controls {
+    flex-direction: column;
+    width: 100%;
+  }
+  
+  .filter-controls .btn-view {
+    width: 100%;
+    justify-content: center;
+  }
+  
+  .form-control-professional {
+    width: 100%;
+    min-width: auto;
+  }
+  
+  .current-task-info,
+  .current-date {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.25rem;
+  }
+}
+
+/* Loading States */
+.btn-view:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.btn-view:disabled:hover {
+  transform: none;
+  background: #f8fafc;
+  border-color: #e2e8f0;
+  color: #64748b;
+}
+
+/* Icon Styles */
+.btn-view i {
+  font-size: 0.8rem;
+}
+
+/* Focus States for Accessibility */
+.btn-view:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(49, 90, 149, 0.1);
+}
+
+.form-control-professional .MuiOutlinedInput-root:focus-within .MuiOutlinedInput-notchedOutline {
+  border-color: #315a95;
+  box-shadow: 0 0 0 3px rgba(49, 90, 149, 0.1);
+}

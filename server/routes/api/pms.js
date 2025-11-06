@@ -31,18 +31,36 @@ const upload = multer({
 // PMS main clients
 router.get('/clients', PMSController.getAll);
 
+router.get('/clients/:id', PMSController.getClient)
+// reschedule client inspection
+router.put('/update-schedule/:id', PMSController.setInspectionDate)
+
 // Get technicians by island group
-// router.get('/techs/:islandGroup', PMSController.getTechs);
+router.get('/techs', PMSController.getTechs);
+router.get('/designated/:id', PMSController.getDesignatedProjects)
+// Assign technicians
+router.post('/assign/:pmsId', PMSController.assignTechs);
 
-// // Assign technicians
-// router.post('/assign/:pmsId', PMSController.assignTechs);
 
-// // Mark inspection as complete (with photos)
-// router.post(
-//   '/complete/:pmsId',
-//   upload.array('photos', 10),
-//   PMSController.completeInspection
-// );
+
+// Begin PMS Inspection
+router.put('/begin-inspection/:id', PMSController.beginInspection)
+
+//get inspection status complete/ongoing
+router.get('/inspection-status/:id', PMSController.getInspectionStatus)
+
+// Mark inspection as complete (with photos)
+router.post(
+  '/complete/:pmsId',
+  upload.fields([
+    { name: 'service_reports', maxCount: 10 },
+    { name: 'evidence', maxCount: 10 },
+  ]),
+  PMSController.completeInspection
+);
+
+// Get Baby Book for Client
+router.get('/baby-book/:id', PMSController.getBabyBook)
 
 // // Get PMS files (“baby book”)
 // router.get('/files/:pmsId', PMSController.getPMSFiles);

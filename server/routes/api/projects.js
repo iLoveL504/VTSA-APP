@@ -35,7 +35,8 @@ import {
     prepareProjHandover,
     projHandoverDone,
     qaqcPunchlisting,
-    rectifyItems
+    rectifyItems,
+    resumeProj
 } from "../../controllers/projectController.js"
 const router = express.Router()
 import multer from 'multer'
@@ -158,6 +159,9 @@ router.route(`/request-hold/:id`)
 
 router.route(`/approve-hold/:id`)    
     .put(approveProjHold)
+
+router.route(`/resume/:id`)
+    .put(resumeProj)
 
 router.route('/kickoff/:id')
     .put(fillKickOffChecklist)

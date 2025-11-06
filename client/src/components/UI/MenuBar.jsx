@@ -16,7 +16,7 @@ const user = sessionStorage.getItem('roles');
 return (
   <div className={`Menu${!menuToggle ? '' : ' Hidden'}`}>
     {
-        user === "manager" ? <AdminMenu /> :
+        user === "Admin" ? <AdminMenu /> :
         user === "Project Manager" ? <ProjectManagerMenu /> :
         user === "Project Engineer" ? <ProjectEngineerMenu /> :
         user === "Foreman" ? <ForemanMenu /> :

@@ -11,16 +11,17 @@ const QAQCAssignment = ({updateIsLoading}) => {
     const { utilitiesSocket } = useSharedSocket()
     const backendURL = import.meta.env.VITE_BACKEND_URL || "http://localhost:4000";
     const { data: manpower, isLoading: manpowerIsLoading } = useAxiosFetch(`${backendURL}/api/teams/project-manpower`)
+    const { data: qaqcTechs} = useAxiosFetch(`${backendURL}/api/teams/qaqc-techs`)
     const navigate = useNavigate()
     const projects = useStoreState(state => state.projects)
     const employees = useStoreState(state => state.employees)
-    const qaqcTechs = employees.filter(e => e.job === 'QAQC' && e.is_active === 0)
     console.log(manpower)
     const [searchTerm, setSearchTerm] = useState('')
     const [selectedEntry, setSelectedEntry] = useState({})
     const [assignModal, setAssignModal] = useState({ isOpen: false, project: null })
     const [selectedTech, setSelectedTech] = useState('')
     const [assignmentStatus, setAssignmentStatus] = useState('')
+    const [selectedDisplayTech, setSelectedDisplayTech] = useState('')
     console.log(selectedEntry)
     // Filter projects based on search term
     const filteredProjects = useMemo(() => {
@@ -38,6 +39,15 @@ const QAQCAssignment = ({updateIsLoading}) => {
         console.log(filteredProjects)
     }, [filteredProjects])
 
+    useEffect(() => {
+        const findQaqc = qaqcTechs.find(q => q.id === selectedEntry.id)
+        console.log(selectedEntry)
+        console.log(qaqcTechs)
+        console.log(findQaqc)
+        console.log('78888888888888888888888888888888888888')
+        setSelectedDisplayTech(findQaqc)
+    }, [selectedEntry])
+    console.log(selectedDisplayTech)
     const handleCreateClick = () => {
         navigate('create')
     }
@@ -158,7 +168,7 @@ const QAQCAssignment = ({updateIsLoading}) => {
                                 <option value="">Choose a technician...</option>
                                 {qaqcTechs.map(tech => (
                                     <option key={tech.employee_id} value={tech.employee_id}>
-                                        {tech.first_name} {tech.last_name} ({tech.username})
+                                        {tech.full_name} ({tech.qaqc_inspection_date ? `QAQC Inspection Start: ${new Date(tech.qaqc_inspection_date).toLocaleDateString()}` : 'Not Assigned'})
                                     </option>
                                 ))}
                             </select>
@@ -206,9 +216,9 @@ const QAQCAssignment = ({updateIsLoading}) => {
                     <strong>Current Task</strong>
                     <span>{selectedEntry.current_task || 'N/A'}</span>
                     </div>
-                    {selectedEntry.qaqc_pending ? (
+                    {(selectedEntry.qaqc_is_assigned === 0 && selectedEntry.qaqc_pending) ? (
                     <div className="entry-qaqc-assignment">
-                        <h3>QAQC Inspection Required</h3>
+                        <h3>QAQC Assignment Required</h3>
                         <p>This project needs QAQC inspection assigned</p>
                         <button 
                             className="assign-qaqc-btn"
@@ -217,18 +227,18 @@ const QAQCAssignment = ({updateIsLoading}) => {
                             Assign QAQC Inspector
                         </button>
                     </div>
+                    ) : selectedEntry.qaqc_is_ongoing ? (
+                        <div className="entry-qaqc-ongoing">
+                            <strong>QAQC Ongoing</strong>
+                            <span>Assigned to: {selectedDisplayTech?.full_name}</span>
+                            <span>Assigned on: {new Date(selectedEntry.qaqc_inspection_date).toLocaleDateString('en-GB')}</span>
+                        </div>
                     ) : selectedEntry.qaqc_is_assigned ? (
                     <div className="entry-qaqc-assigned">
                         <strong>QAQC Assigned</strong>
-                        <span>Assigned to: {selectedEntry.qaqc ? `${selectedEntry.qaqc.last_name} ${selectedEntry.qaqc.first_name}` : 'Technician'}</span>
+                        <span>Assigned to: {selectedDisplayTech?.full_name ? selectedDisplayTech.full_name : 'nothing'}</span>
                         <span>Assigned on: {new Date(selectedEntry.qaqc_inspection_date).toLocaleDateString('en-GB')}</span>
                     </div>
-                    ) : selectedEntry.qaqc_ongoing ? (
-                        <div className="entry-qaqc-ongoing">
-                            <strong>QAQC Ongoing</strong>
-                            <span>Assigned to: {selectedEntry.qaqc ? `${selectedEntry.qaqc.last_name} ${selectedEntry.qaqc.first_name}` : 'Technician'}</span>
-                            <span>Assigned on: {new Date(selectedEntry.qaqc_inspection_date).toLocaleDateString('en-GB')}</span>
-                        </div>
                     ) : (
                     <div className="entry-no-inspection">
                         <strong>QAQC Status</strong>

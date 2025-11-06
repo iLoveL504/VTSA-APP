@@ -9,23 +9,33 @@ const FinalizeHandover = ({proj}) => {
 
     const initialState = useMemo(() => ({
         photos: [],
+        contractType: 'Monthly',
         handoverDate: new Date().toISOString().split('T')[0] // Default to today
     }), [])
+
+    const contractTypes = [
+        'Monthly',
+        'Quarterly',
+        'Yearly'
+    ]
 
     const validate = (values) => {
         let error = {}
         if (values.photos.length === 0) error.photos = "At least one handover document is required"
         if (!values.handoverDate) error.handoverDate = "Handover date is required"
+        if (values.contractType === '') error.contractType = "Provide Contract Schedule"
         return error
     }
 
     const {
         values,
         handleContractChange,
+        handleInputChange,
+        handleBlur,
         errors,
         updatePhotos
     } = useFormValidate(initialState, validate)
-
+    console.log(values)
     const handleFileUpload = (event, type) => {
         const files = Array.from(event.target.files);
         
@@ -94,21 +104,29 @@ const FinalizeHandover = ({proj}) => {
     }
 
     const confirmNewEntry = async () => {
-        console.log('Final values for PMS Entry:', values);
-        const formData = new FormData()
-        try {
-            values.photos.forEach(p => {
-                formData.append('photos', p)
-            })
-            const response = Axios.put(`/api/projects/complete-handover/${proj.id}`, formData)
-            if (!response?.data.succuess) {
-                window.alert('Something went wrong')
-            }
+        console.log(errors)
+        if (Object.keys(errors).length === 0) {
+            console.log('Final values for PMS Entry:', values);
+            const formData = new FormData()
+            try {
+                values.photos.forEach(p => {
+                    formData.append('photos', p)
+                })
+                formData.append('contract', values.contractType)
+                formData.append('client', proj.client)
+                const response = Axios.put(`/api/projects/complete-handover/${proj.id}`, formData)
+                if (!response?.data.success) {
+                    window.alert('Something went wrong')
+                }
 
-            alert('New PMS Entry created successfully!');
-        } catch (e) {
-            console.log(e)
+                alert('New PMS Entry created successfully!');
+            } catch (e) {
+                console.log(e)
+            }            
+        } else {
+            window.alert('Please fill all required fields')
         }
+
         setShowConfirmation(false);
     }
 
@@ -202,6 +220,25 @@ const FinalizeHandover = ({proj}) => {
                         {new Date().toLocaleDateString('en-GB')}
                     </div>
 
+                         <div className="form-control-professional">
+                        <label htmlFor="contracttType">Equipment Type</label>
+                        <select
+                            id="contractType"
+                            name="contractType"
+                            value={values.equipmentType}
+                            onChange={handleInputChange}
+                            onBlur={handleBlur}
+                            required
+                        >
+                            <option value="">-- Select contract --</option>
+                            {contractTypes.map((type) => (
+                            <option key={type} value={type}>
+                                {type}
+                            </option>
+                            ))}
+                        </select>
+                        {errors.contractType && <p className="error">{errors.contractType}</p>}
+                        </div>
                     {/* Document Upload Section */}
                     <div className="document-upload-card required">
                         <div className="document-header">

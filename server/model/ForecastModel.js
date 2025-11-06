@@ -154,11 +154,14 @@ class ForecastModel {
 
   static async projectFinalizedTeams() {
     const [results] =  await pool.query(`
-        SELECT 
+	SELECT 
           e.employee_id, 
           e.username, 
+          concat(e.last_name, ' ', e.first_name) as \`full_name\`,
           e.job, 
-          sub.project_id
+          e.island_group,
+          sub.project_id,
+          p.lift_name
         FROM employees e
         JOIN (
           SELECT pm.project_id, tm.emp_id AS employee_id
@@ -172,10 +175,29 @@ class ForecastModel {
           FROM project_manpower pm
           LEFT JOIN teams t ON pm.team_id = t.team_id
           LEFT JOIN team_members tm ON t.team_id = tm.foreman_id
-        ) AS sub ON e.employee_id = sub.employee_id;
-      `)
+        ) AS sub ON e.employee_id = sub.employee_id join projects p on p.id = sub.project_id;
 
-      return results
+
+      `)
+      console.log('hihhihi')
+      const projectTeam = results.reduce((acc, val) => {
+        const key = val.project_id
+        if (!acc[key]) {
+          acc[key] = {}
+          acc[key].lift_name = val.lift_name
+          acc[key].team = []
+        }
+        const member = {
+          employee_id: val.employee_id,
+          full_name: val.full_name,
+          job: val.job,
+          island_group: val.island_group
+        }
+        acc[key].team.push(member)
+        return acc
+      }, {})
+      console.log(projectTeam)
+      return projectTeam
   }
 
   

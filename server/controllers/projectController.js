@@ -85,9 +85,11 @@ export const completeTask = async (req, res) => {
 
 export const makeProjectSchedule = async (req, res) => {
     const {id} = req.params
-   
+    console.log('make project schedule controller')
+    console.log(req.body)
+   console.log('here in make project schedule')
     try {
-        const results = await projects.makeProjectSchedule(req.body.tasks, id)
+        const results = await projects.makeProjectSchedule(req.body, id)
         
         //console.log(results)
         res.status(200).json({
@@ -521,11 +523,27 @@ export const approveProjHold = async (req, res) => {
     }
 }
 
+export const resumeProj = async (req, res) => {
+    const {id} = req.params
+    try {
+        const result = await projects.resumeProject(Number(id))
+        console.log('here')
+        res.status(200).json({
+            success: true,
+            message: "approved",
+            result
+        })        
+    } catch (e) {
+        console.error(e);
+        res.status(500).json({ success: false, message: "Error approving" }); 
+    }
+}
+
 export const projHandoverDone = async (req, res) => {
     const {id} = req.params
     console.log(req.files)
     try {
-        await projects.projHandoverDone(id, req.files)
+        await projects.projHandoverDone(id, req.files, req.body)
         res.status(200).json({
             success: true,
             message: "approved"

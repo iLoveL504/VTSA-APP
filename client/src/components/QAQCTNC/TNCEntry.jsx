@@ -38,7 +38,8 @@ const TNCEntry = ({project, setSelectedEntry, onAssignClick}) => {
   }
 
   const tncStatus = getTNCStatus()
-
+  console.log(tncStatus)
+  console.log(isTNCPending)
   return (
     <div 
       className={`ProjectInfo ${tncStatus}`} 
@@ -50,7 +51,7 @@ const TNCEntry = ({project, setSelectedEntry, onAssignClick}) => {
           {needsAssignment && <span className="pending-badge"> ⚡</span>}
         </div>
         <div className="project-client">{project.client}</div>
-        {isTNCPending && (
+        {(isTNCPending && !project.tnc_is_assigned) && (
           <button className="assign-btn" onClick={handleAssignClick}>
             Assign TNC
           </button>

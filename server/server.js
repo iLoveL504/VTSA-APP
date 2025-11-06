@@ -24,6 +24,7 @@ import { fileURLToPath } from 'url';
 import forecastMenNameSpace from "./sockets/forecastMenNameSpace.js";
 import utilitiesNamespace from "./sockets/utilitiesNamespace.js";
 import usersNamespace from "./sockets/usersNamespace.js";
+import messageNamespace from "./sockets/messagesNamespace.js";
 
 const app = express();
 const server = http.createServer(app);
@@ -62,6 +63,7 @@ app.use('/api/pms', pmsRouter);
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 app.use('/uploads', express.static(path.join(__dirname, '../public/data/uploads')));
+app.use('/uploads', express.static(path.join(__dirname, '../public/data/pms_uploads')));
 const clientDist = path.resolve(__dirname, '../client/dist');
 app.use(express.static(clientDist));
 
@@ -82,6 +84,7 @@ app.use((err, req, res, next) => {
 forecastMenNameSpace(io.of("/forecast"))
 utilitiesNamespace(io.of("/utilities"))
 usersNamespace(io.of("/users"))
+messageNamespace(io.of("/messages"))
 
 console.log('hih')
 // Start server

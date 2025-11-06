@@ -4,7 +4,20 @@ const ForemanCompletion = ({ currentTask, values, handleContractChange, handleAp
     return (
         <>
         {
-            !proj.in_tnc && (currentTask.task_parent === 500 || currentTask.task_parent === 600)  ? (
+            (currentTask.task_parent === 500 || currentTask.task_parent === 600)  ? (
+                <>
+                      {proj.qaqc_punchlist ? (
+                        <div className="punchlist-section">
+                        <div className="punchlist-header">
+                            <i className="fas fa-exclamation-triangle"></i>
+                            <h4>Punch List Items to be rectified</h4>
+                        </div>
+                        <div className="punchlist-content">
+                            <i className="fas fa-info-circle"></i>
+                            <span>Please address all items before proceeding with task completion.</span>
+                            </div>
+                        </div>
+                    ) : (<></>)}
                    <div className="completion-section emphasized">
                     <div className="section-header">
                         <h4>
@@ -16,7 +29,7 @@ const ForemanCompletion = ({ currentTask, values, handleContractChange, handleAp
                             <div>
                                 Task Confirmed and is complete
                             </div>
-                        ) : currentTask.task_approval === 1 ? (
+                        ) : !currentTask.task_approval === 1 ? (
                             <div className="task-completed-state">
                                 <div className="completion-success">
                                     <div className="success-message">
@@ -41,6 +54,7 @@ const ForemanCompletion = ({ currentTask, values, handleContractChange, handleAp
                             </div>
                         ) : (
                             <>
+
                                 <div className="file-upload-section">
                                     <div className="upload-header">
                                         <span className="upload-label">Attach Completion Evidence</span>
@@ -68,7 +82,7 @@ const ForemanCompletion = ({ currentTask, values, handleContractChange, handleAp
                                 <button 
                                     className="complete-task-btn primary-action"
                                     onClick={handleApproval(currentTask, values.photos, 'foreman')}
-                                    disabled={values.photos.length === 0}
+                                    disabled={values.photos.length === 0 || proj.qaqc_punchlist}
                                 >
                                     <i className="fas fa-check-circle"></i>
                                     Mark Task Complete
@@ -77,6 +91,7 @@ const ForemanCompletion = ({ currentTask, values, handleContractChange, handleAp
                         )}
                     </div>
                     </div>
+                    </>
             ) : (
                 <div>
                     Project not in mechanical installation yet

@@ -1,26 +1,85 @@
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { Grid } from 'ldrs/react'
 import 'ldrs/react/Grid.css'
 import { useNavigate, useParams } from 'react-router-dom' 
 import { Axios } from '../../api/axios.js'
 import "wx-react-gantt/dist/gantt.css";
 import "../../gantt-custom.css"
+import TaskOverviewSection from '../../components/Project/TaskOverviewSection.jsx'
 
+
+const ResumeProjectModal = ({ isOpen, onClose, onConfirm, project }) => {
+  if (!isOpen) return null;
+
+  return (
+    <div className="modal-overlay" onClick={onClose}>
+      <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+        <div className="modal-header">
+          <h3>Resume Project</h3>
+          <button className="modal-close" onClick={onClose}>×</button>
+        </div>
+        <div className="modal-body">
+          <p>Are you sure you want to resume the project <strong>{project?.lift_name}</strong>?</p>
+          <div className="project-info">
+            <strong>Project:</strong> {project?.lift_name}<br/>
+            <strong>ID:</strong> #{project?.id}<br/>
+            <strong>Current Status:</strong> Pending
+          </div>
+        </div>
+        <div className="modal-footer">
+          <button className="btn-secondary" onClick={onClose}>Cancel</button>
+          <button className="btn-primary" onClick={onConfirm}>Resume Project</button>
+        </div>
+      </div>
+    </div>
+  );
+};
 
 const ProjectDetails = ({
     projectCompleted, currentTask, projectExists, proj, setFormData, formData, teamInfo, projIsLoading, teamIsLoading,
     saveStatus, handleSave, isEditing, errors, handleInputChange, handleNumberInputChange, handleBlur, handleSubmit,
     values, setIsEditing, handleCancel, photos, photosIsLoading, backendURL, setActivePage, currentTaskPhase, currentParentTask,
-    projectedTask, isBehindSchedule
+    projectedTask, isBehindSchedule, onHold, taskIsLoading
 }) => {
-
+    console.log(projectedTask)
+    console.log(currentParentTask)
+    console.log(currentTask)
+    console.log(proj)
     const {projId} = useParams()
-
+    const [isResumeModalOpen, setIsResumeModalOpen] = useState(false)
+     const [isDataFinalized, setIsDataFinalized] = useState(false)
     const handleTaskDetails = () => () => {
         setActivePage('task')
     }
 
+    const handleResumeProject = () => {
+        // Open the modal instead of directly resuming
+        setIsResumeModalOpen(true)
+    }
 
+    useEffect(() => {
+        // Check if all critical data is loaded and conditions are finalized
+        if (!projIsLoading && !taskIsLoading && proj && currentTask !== undefined && onHold !== undefined) {
+            setIsDataFinalized(true)
+        }
+    }, [projIsLoading, taskIsLoading, proj, currentTask, onHold])
+
+    const confirmResumeProject = async () => {
+        // Add your resume project logic here
+        console.log('Resuming project:', proj.id)
+        // Example: API call to update project status
+        const response = await Axios.put(`api/projects/resume/${proj.id}`)
+        if (!response?.data.success) {
+            window.alert('Project is now resumed')
+        } else {
+            window.alert('success')
+            console.log(response.data.result)
+            //window.location.reload()
+        }
+        // Close modal after action
+        setIsResumeModalOpen(false)
+        // You might want to refresh the project data here
+    }
 
     const navigate = useNavigate()
     
@@ -37,7 +96,7 @@ const ProjectDetails = ({
 
 //  || tasksIsLoading || projectExists === 'loading'
 // isLoading || teamIsLoading 
-    if (projIsLoading) {
+    if (projIsLoading || taskIsLoading || !isDataFinalized) {
         return (
                 <div className="Loading">
                     <p>Data is Loading...</p>
@@ -52,179 +111,27 @@ const ProjectDetails = ({
                 {saveStatus === 'error' && <div className="status error">Error updating project</div>}
 
                 
-            
-                <div className="task-overview-section">
-                <h3>Task Overview</h3>
-                {/* Warning is progress is lagging behind*/}
-                {isBehindSchedule && (
-                    <div className="lagging-task-info">
-                        <h2>Lagging behind schedule </h2>
-                        <div className="lagging-task-title">
-                            <strong>Projected Task:</strong> {projectedTask.task_name} 
-                        </div>    
-                        <div className="lagging-task-dates">
-                            {new Date(projectedTask.task_start).toLocaleDateString("en-GB")} - {new Date(currentParentTask.task_end).toLocaleDateString("en-GB")} 
-                            ({projectedTask.task_duration} days) • 
-                        </div>                    
-                    </div>
-                )}
-                    {/* Overarching Task Display - Simple Text */}
-                {currentParentTask && Object.keys(currentParentTask).length > 0 && (
-                    <div className="overarching-task-info">
-                        <div className="overarching-task-title">
-                            <strong>Current Phase:</strong> {currentParentTask.task_name}
-                        </div>
-                        <div className="overarching-task-dates">
-                            {new Date(currentParentTask.task_start).toLocaleDateString("en-GB")} - {new Date(currentParentTask.task_end).toLocaleDateString("en-GB")} 
-                            ({currentParentTask.task_duration} days) • 
-                        </div>
-                    </div>
-                )}
-                {/* QAQC Technician Task Pad*/}
-                {
-                    sessionStorage.getItem('roles') === 'QAQC' ? (
-                        <div className="overarching-task-info">
-                            <h3>QAQC Inspection:</h3>
-                            {proj.qaqc_inspection_reason}
-                            <button onClick={handleTaskDetails()}>
-                                Proceed with QAQC Inspection
-                            </button>
-                        </div>
-                    ) : (
-                        <>
-                        {proj.qaqc_inspection_date !== null && (
-                            <div className="overarching-task-info">
-                                <h3>QAQC Inspection</h3>
-                            </div>                        
-                        )}                
-                        </>
-                    )
-                }
-            {console.log(currentTask)}
-                <div className="task-cards-container">
-                    {
-                        projectCompleted ? (
-                            <div>Project Completed</div>
-                        ) :
-                        projectExists ? (
-                            <>
-                                <div className="task-card current-task-card" onClick={handleTaskDetails()}>
-                                <div className="task-card-header">
-                                    <h4>Current Task</h4>
-                                    <span className="priority-badge">ACTIVE</span>
-                                </div>
-                                {currentTask && Object.keys(currentTask).length > 0 ? (
-                                    <div className="task-card-content">
-                                        <div className="task-name">
-                                            {currentTask.task_name}
-                                            {sessionStorage.getItem('roles') === 'Project Engineer' ? (
-                                            
-                                                <button 
-                                                    className={`complete-btn ${currentTask.task_done === 1 ? 'completed' : ''}`}
-                                                    disabled={currentTask.task_done === 1 || sessionStorage.getItem('roles') !== 'Project Engineer' || currentTask.task_approval === 0} 
-                                                >
-                                                    <i className="fas fa-check"></i>
-                                                    {currentTask.task_done === 1 ? 'Completed' : 
-                                                    sessionStorage.getItem('roles') === 'Project Engineer' ? 'Mark Complete' : 'Pending'}
-                                                </button>                                                
-                                            ) : sessionStorage.getItem('roles') === 'Foreman' ? (
-                                                //Foreman button
-                                                <button 
-                                                    className={`complete-btn ${currentTask.task_done === 1 ? 'completed' : ''}`}
-                                                    disabled={currentTask.task_approval === 1} 
-                                                >
-                                                    <i className="fas fa-check"></i>
-                                                    {currentTask.task_done === 1 ? 'Completed' : currentTask.task_approval === 1 ? 'Confirmation Pending'
-                                                    : 'Task Done'}
-                                                </button>                                               
-                                            ) : (
-                                                //View
-                                                <button 
-                                                    className={`complete-btn ${currentTask.task_done === 1 ? 'completed' : ''}`}
-                                                >
-                                                    <i className="fas fa-check"></i>
-                                                    {currentTask.task_done === 1 ? 'Completed' : 
-                                                    sessionStorage.getItem('roles') === 'Project Engineer' ? 'Mark Complete' : 'Pending'}
-                                                </button> 
-                                            )}
+           
+<TaskOverviewSection
+  onHold={onHold}
+  isBehindSchedule={isBehindSchedule}
+  projectedTask={projectedTask}
+  currentParentTask={currentParentTask}
+  proj={proj}
+  onResumeProject={handleResumeProject}
+  onTaskDetails={handleTaskDetails()}
+  role={sessionStorage.getItem('roles')}
+  // New props
+  projectCompleted={projectCompleted}
+  projectExists={projectExists}
+  currentTask={currentTask}
+  currentTaskPhase={currentTaskPhase}
+  onCreateSchedule={handleCreateSchedule}
+/>
 
-                                        </div>
-                                        <div className="task-dates">
-                                            <div className="task-date">
-                                                <i className="fas fa-play-circle"></i>
-                                                Start: {new Date(currentTask.task_start).toLocaleDateString("en-GB")}
-                                            </div>
-                                            <div className="task-date">
-                                                <i className="fas fa-flag-checkered"></i>
-                                                End: {new Date(currentTask.task_end).toLocaleDateString("en-GB")}
-                                            </div>
-                                            <div className="task-duration">
-                                                <i className="fas fa-clock"></i>
-                                                Duration: {currentTask.task_duration} days
-                                            </div>
-                                        </div>
-                                        <div className="task-progress">
-                                  
-                                            <span>Progress Contribution: {currentTask.task_percent}%</span>
-                                        </div>
-                                    </div>
-                                ) : (
-                                    <div className="task-empty-state">
-                                        <i className="fas fa-check-circle"></i>
-                                        <div className="empty-message">No current tasks scheduled</div>
-                                        <div className="empty-submessage">All tasks are completed or not scheduled yet</div>
-                                    </div>
-                                )}
-                            </div>
 
-                            {/* Parent Task Card */}
-                            <div className="task-card parent-task-card" onClick={handleTaskDetails()}>
-                                <div className="task-card-header">
-                                    <h4>Parent Project</h4>
-                                    <span className="project-badge">OVERVIEW</span>
-                                </div>
-                                {currentTaskPhase && Object.keys(currentTaskPhase).length > 0 ? (
-                                    <div className="task-card-content">
-                                        <div className="task-name">{currentTaskPhase.task_name}</div>
-                                        <div className="task-dates">
-                                            <div className="task-date">
-                                                <i className="fas fa-play-circle"></i>
-                                                Start: {new Date(currentTaskPhase.task_start).toLocaleDateString("en-GB")}
-                                            </div>
-                                            <div className="task-date">
-                                                <i className="fas fa-flag-checkered"></i>
-                                                End: {new Date(currentTaskPhase.task_end).toLocaleDateString("en-GB")}
-                                            </div>
-                                            <div className="task-duration">
-                                                <i className="fas fa-clock"></i>
-                                                Duration: {currentTaskPhase.task_duration} days
-                                            </div>
-                                        </div>
-                                    </div>
-                                ) : (
-                                    <div className="task-empty-state">
-                                        <i className="fas fa-project-diagram"></i>
-                                        <div className="empty-message">No parent project</div>
-                                        <div className="empty-submessage">This task is standalone</div>
-                                    </div>
-                                )}
-                            </div>
-                            </>
-                        ) : (
-                                <div className='no-schedule-card'>
-                                    {
-                                        sessionStorage.getItem('roles') === 'Project Engineer' ? (
-                                            <button onClick={handleCreateSchedule}>Create Schedule</button>
-                                        ) : (<div>Schedule to be created</div>)
-                                    }
-                                    
-                                </div>
-                            )
-                    }
-                </div>
-            </div>
- 
-
+            {!proj.on_hold ? (
+                <>
                 <div className="project-form">
                     
                     <div className="form-section">
@@ -246,9 +153,10 @@ const ProjectDetails = ({
                         <h3>Basic Information</h3>
                         <div className="form-row">
                             <label>Project ID: {values.id}</label>
+                            <label>Client: {values.client}</label>
                             <label>Region: {values.region}</label>
-                            <label>Province: {values['province/municipality']}</label>
-                            <label>City/Municipality: {values.city}</label>
+                            <label>Province: {values['province']}</label>
+                            <label>City/Municipality: {values['city/municipality']}</label>
                             <label>Lift Name:</label>
                             <input
                                 type="text"
@@ -304,10 +212,10 @@ const ProjectDetails = ({
                             <div className="form-row">
                                 <label>Stops:</label>
                                 <input
-                                    type="number"
+                                    type="text"
                                     name="stops"
                                     value={values.stops || ''}
-                                    onChange={handleNumberInputChange}
+                                    onChange={handleInputChange}
                                     disabled={!isEditing}
                                     onBlur={handleBlur}
                                 />
@@ -445,7 +353,19 @@ const ProjectDetails = ({
                         )
                     }
                     
-                </div>
+                </div>      
+  
+                </>
+            ) : (
+                <>
+                </>
+            )}        
+                    <ResumeProjectModal 
+                    isOpen={isResumeModalOpen}
+                    onClose={() => setIsResumeModalOpen(false)}
+                    onConfirm={confirmResumeProject}
+                    project={proj}
+                />       
         </div>
   )
 }

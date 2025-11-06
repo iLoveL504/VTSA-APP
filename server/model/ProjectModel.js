@@ -1,6 +1,7 @@
 import { pool } from '../config/database.js'
 import { UtilitiesModel as utility } from './UtilitiesModel.js';
 import dotenv from 'dotenv'
+import LinkedList from '../../DataStructs/LinkedList.js';
 dotenv.config()
 
 class ProjectModel {
@@ -242,7 +243,10 @@ static async getTaskPhotos(id) {
          await pool.query(`update projects set progress = ?, qaqc_approval = 0, tnc_approval = 0 where id = ?`, [percent, id])
     }
 
-   static async makeProjectSchedule(tasks, id) {
+   static async makeProjectSchedule(data, id) {
+    const {tasks, holidays, isCalendarDays} = data
+    const days = !isCalendarDays ? 'working' : 'calendar'
+    console.log(holidays)
   try {
     const checkQuery = `show tables like 'project_${id}_schedule'`
     const [results] = await pool.query(checkQuery)
@@ -279,7 +283,7 @@ static async getTaskPhotos(id) {
     `;
     await pool.query(createTableQuery);
 
-    // Sort tasks by start date and hierarchy
+    // Sort data by start date and hierar chy
     const sortedTasks = tasks.sort((a, b) => {
       const dateDiff = new Date(a.task_start) - new Date(b.task_start);
       if (dateDiff !== 0) return dateDiff;
@@ -314,11 +318,16 @@ static async getTaskPhotos(id) {
 
       return pool.query(insertQuery, values);
     });
+    console.log('inside holidy inserts')
+    const holidayInserts = holidays.map(h => (
+      pool.query(`insert into project_holidays (project_id, holiday) values (?, ?)`, [id, h])
+    ))
 
     await Promise.all(insertPromises);
-    const initializeQuery = `update project_${id}_schedule set task_actual_current = 1 where task_id = 100`
+    await Promise.all(holidayInserts);
+    const initializeQuery = `update project_${id}_schedule set task_actual_current = 1 where task_id = 101`
     await pool.query(initializeQuery)
-    await pool.query(`update projects set schedule_created = 1 where id = ?`, [id])
+    await pool.query(`update projects set schedule_created = 1, days = ? where id = ?`, [days, id])
     
     return { success: true, message: `Schedule created with ${tasks.length} tasks` };
   } catch (error) {
@@ -329,21 +338,30 @@ static async getTaskPhotos(id) {
 
 
     static async updateProjectStatus(updates) {
-    
     const promises = Object.keys(updates).map(async (key) => {
       const { 
         id, status, start_date, end_date, 
         manufacturing_end_date, tnc_start_date, 
         installation_start_date, foundCurrentTask, 
         phaseName, in_tnc, in_qaqc, currentTask_id, joint_inspection,
-        handover_done
+        handover_done, is_behind, holdDays, isOnHold
       } = updates[key];
+
       if(handover_done) return
+      if(holdDays) {
+        await pool.query(`update projects set days_since_hold = ? where id = ?`, [holdDays, id])
+      }
+      if(isOnHold) {
+        console.log('doint this dang hold query')
+        await pool.query(`update projects set status = 'Pending' where id = ?`, [id])
+        return 
+      }
+
       try {
         // Run main project update
         await pool.query(
           `UPDATE projects 
-          SET created_at = ?, 
+          SET start_date = ?, 
               manufacturing_end_date = ?, 
               project_end_date = ?, 
               status = ?, 
@@ -368,8 +386,10 @@ static async getTaskPhotos(id) {
             id,
           ]
         );
-        console.log(currentTask_id)
 
+        console.log(`proj ${id} is in: ${foundCurrentTask}`)
+        console.log(`proj ${id} is in: ${phaseName}`)
+        console.log(installation_start_date)
         const cleanScheduleQuery = `update project_${id}_schedule set task_actual_current = 0`
         await pool.query(cleanScheduleQuery)
         const projectScheduleQuery = `update project_${id}_schedule set task_actual_current = 1 where task_id = ?`
@@ -380,15 +400,13 @@ static async getTaskPhotos(id) {
         if (in_tnc === 1) {
           // Example: update a related table or log it
           await pool.query(
-            `UPDATE projects SET tnc_pending = 0, tnc_is_assigned = 0, tnc_ongoing = 1 WHERE id = ?`,
+            `UPDATE projects SET tnc_ongoing = 1 WHERE id = ?`,
             [id]
           );
         }
-        console.log('in here')
-        console.log(in_qaqc)
         if (in_qaqc) {
           await pool.query(
-            `UPDATE projects SET qaqc_pending = 0, qaqc_is_assigned = 0, qaqc_ongoing = 1, qaqc_approval = 1 WHERE id = ?`,
+            `UPDATE projects SET qaqc_ongoing = 1, qaqc_approval = 1 WHERE id = ?`,
             [id]
           );
 
@@ -400,11 +418,16 @@ static async getTaskPhotos(id) {
         }
 
         if (joint_inspection){
-          console.log('joint inspection')
           await pool.query( 
-            `update projects set pms_is_assigned = 0, pms_ongoing = 1, pms_approval = 1 where id = ?`,
+            `update projects set pms_ongoing = 1 where id = ?`,
             [id]
           )
+        }
+        if(is_behind){
+          console.log(`project ${id} is behind`)
+          await pool.query(`update projects set is_behind = 1 where id =?`, [id])
+        } else {
+          await pool.query(`update projects set is_behind = 0 where id =?`, [id])
         }
       } catch (err) {
         console.error(`Error updating project ${id}:`, err);
@@ -694,7 +717,7 @@ static async getTaskPhotos(id) {
   }
 
   static async ongoingProjQAQC (projId) {
-    await pool.query(`update projects set qaqc_approval = 1, qaqc_ongoing = 1, qaqc_is_assigned = 0, qaqc_pending = 0 where id = ?`, [projId])
+    await pool.query(`update projects set qaqc_approval = 1, qaqc_ongoing = 1, qaqc_pending = 0 where id = ?`, [projId])
   }
 
 static async completeProjQAQC (projId, data, photos) {
@@ -784,17 +807,17 @@ static async rectifyItems (projId) {
   //TNC Area
   static async requestProjTNC (projId, date) {
     //sets tnc inspection date and renders it in pending status
-    await pool.query(`update projects set tnc_assign_date = ?, tnc_pending = 1, tnc_ongoing = 0 where id = ?`, [date, projId])
+    await pool.query(`update projects set tnc_is_assigned = 0, tnc_assign_date = ?, tnc_pending = 1, tnc_ongoing = 0 where id = ?`, [date, projId])
   }
 
   static async assignProjTNC (projId, tncId) {
     await pool.query(`update project_manpower set tnc_tech_id = ? where project_id = ?`, [tncId, projId])
     console.log('do I run')
-    await pool.query(`update projects set tnc_pending = 0, tnc_is_assigned = 1, tnc_ongoing = 0 where id = ?`, [projId])
+    await pool.query(`update projects set tnc_pending = 1, tnc_is_assigned = 1, tnc_ongoing = 0 where id = ?`, [projId])
   }
 
   static async ongoingProjTNC (projId) {
-    await pool.query(`update projects set tnc_ongoing = 1, tnc_is_assigned = 0, tnc_pending = 0 where id = ?`, [projId])
+    await pool.query(`update projects set tnc_ongoing = 1, tnc_pending = 0 where id = ?`, [projId])
   }
 
   static async approveProjTaskTNC(projId, data, photos){
@@ -881,7 +904,7 @@ static async rectifyItems (projId) {
   //PMS finishes in joint inspection
   static async completePMSJoint (projId, data, photos) {
   const { task_id, task_name, start_date, end_date, task_duration, task_percent} = data
-  
+  console.log('complete pms approval')
     await pool.query(`
         update projects set pms_approval = 0 where id = ?
       `, [projId])
@@ -905,7 +928,128 @@ static async rectifyItems (projId) {
   }
 
   static async approveProjHold (projId) {
-    await pool.query(`update projects set on_hold = 1, request_hold = 0 where id = ?`, [projId])
+    await pool.query(`update projects set on_hold = 1, request_hold = 0, hold_date = curdate() where id = ?`, [projId])
+  }
+
+  // Resuem Project
+  static async resumeProject (projId, data) {
+    const schedQuery = `select * from project_${projId}_schedule`
+    const [schedule] = await pool.query(schedQuery)
+    console.log('so It wen heree')
+        const sortedTasks = schedule.sort((a, b) => {
+        // First, sort by start date as the primary criteria
+        const dateDiff = new Date(a.task_start) - new Date(b.task_start);
+        if (dateDiff !== 0) return dateDiff;
+
+        // For tasks starting at the same time, apply custom ordering
+        // Only reorder the specific concurrent projects (200, 201, 300, 301)
+        const customOrder = {
+            104: 1,  // Submission of PO to Factory (comes first)
+            200: 2,  // Structural/Civil Works
+            201: 3,  // Shaft Construction
+            300: 4,  // Manufacturing and Importation Process
+            301: 5   // Manufacturing and Importation
+        };
+        
+        const orderA = customOrder[a.task_id] || 999; // Default high number for others
+        const orderB = customOrder[b.task_id] || 999;
+        
+        // If both have custom ordering, use that
+        if (orderA !== orderB) {
+            return orderA - orderB;
+        }
+        
+        // For non-concurrent tasks or tasks with same custom order, 
+        // sort by task_id numerically
+        if (a.task_id !== b.task_id) {
+            return a.task_id - b.task_id;
+        }
+        
+        // Summary tasks before regular tasks
+        if (a.task_type === "summary" && b.task_type !== "summary") return -1;
+        if (a.task_type !== "summary" && b.task_type === "summary") return 1;
+        
+        return 0;
+    });
+    const [getData] = await pool.query(`select days, start_date, days_since_hold, current_task_id from projects where id = ?`, [projId])
+    const daysPassed = getData[0].days_since_hold
+    const lastTaskId = getData[0].current_task_id
+    const start_date = getData[0].start_date
+    const days = getData[0].days
+    const holidays = []
+    console.log(getData)
+    console.log('0-------------------------------------0')
+    console.log(start_date)
+    const adjustedSchedule = new LinkedList(new Date(start_date), (days === 'working' ? false : true), holidays)
+    sortedTasks.forEach((t) => adjustedSchedule.insertLast(t))
+    adjustedSchedule.postponeProject(lastTaskId)
+    adjustedSchedule.resumeProject(daysPassed)
+    console.log('0-----------------------------------------------0')
+    
+    const editedSchedule = adjustedSchedule.toArray()
+    console.log(adjustedSchedule.printListData())
+       const checkQuery = `show tables like 'project_${projId}_schedule'`
+    const [results] = await pool.query(checkQuery)
+    if(results.length !== 0) {
+      const deleteQuery = `drop table project_${projId}_schedule`
+      await pool.query(deleteQuery)
+    }
+    // Create the table (with new columns already included)
+    const createTableQuery = `
+      CREATE TABLE IF NOT EXISTS project_${projId}_schedule (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        task_id INT,
+        task_name VARCHAR(255),
+        task_start DATE,
+        task_end DATE,
+        task_duration INT,
+        task_type VARCHAR(255),
+        task_parent INT,
+        task_approval TINYINT(1) DEFAULT 0,
+        task_done TINYINT(1) DEFAULT 0,
+        task_percent INT DEFAULT 0,
+        task_actual_current tinyint default 0,
+
+        -- Added columns
+        section_title VARCHAR(255),
+        item_code VARCHAR(10),
+        description VARCHAR(255),
+        unit VARCHAR(50),
+        wt DECIMAL(5,2) DEFAULT 0.00,
+        pres_acc DECIMAL(5,2) DEFAULT 0.00,
+        prev_acc DECIMAL(5,2) DEFAULT 0.00,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      );
+    `;
+    await pool.query(createTableQuery);
+      const insertPromises = editedSchedule.map(async (t) => {
+      const insertQuery = `
+        INSERT INTO project_${projId}_schedule 
+          (task_id, task_name, task_start, task_end, task_duration, task_type, task_parent, task_percent, section_title, item_code, wt, unit, description)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      `;
+
+      const values = [
+        t.task_id || t.task_id,
+        t.task_name || t.task_name,
+        t.task_start || null,
+        t.task_end || null,
+        t.task_duration || 1,
+        t.task_type || 'task',
+        t.task_parent || null,
+        t.task_percent || 0,
+        t.section_title || null,
+        t.item_code || null,
+        t.wt || 0.00,
+        t.unit || 1,
+        t.task_name
+      ];
+
+      return pool.query(insertQuery, values);
+    });
+    await Promise.all(insertPromises)
+    await pool.query(`update projects set on_hold = 0, request_hold = 0 where id = ?`,[projId])
+
   }
 
   //Handover process
@@ -922,8 +1066,26 @@ static async rectifyItems (projId) {
       
   }
 
-  static async projHandoverDone (projId, photos) {
-    await pool.query(`update projects set handover_done = 1 where id =  ?`, [projId])
+  static async projHandoverDone (projId, photos, data) {
+    const { client, contract } = data
+    console.log (data)
+    await pool.query(`update projects set status = 'Completed', handover_done = 1, handover_date = curdate() where id =  ?`, [projId])
+    //create pms entry
+    await pool.query(`insert into pms_projects(id, contract_type) values (?, ?)`, [projId, contract])
+
+    //get team id
+    const [getId] = await pool.query(`select team_id from project_manpower where project_id = ?`, [projId])
+    const team_id = getId[0].team_id
+
+    //clear team members
+    await pool.query(`delete from team_members where foreman_id = ?`, [team_id])
+
+    //clear project team since it is now in handover
+    await pool.query(`delete from project_manpower where project_id = ?`, [projId])
+
+    const [result] =  await pool.query(`insert into client_baby_book (pms_id, book_name) values (?, ?)`, [projId, client])
+    const insertId = result.insertId
+    await pool.query(`insert into contracts (baby_book_id) values (?)`, [insertId])
       for (const photo of photos) {
       const filePath = "/uploads/" + photo.filename;
       await pool.query(

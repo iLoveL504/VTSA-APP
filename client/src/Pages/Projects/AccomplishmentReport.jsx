@@ -20,7 +20,7 @@ const AccomplishmentReport = ({proj}) => {
     const [additionalSections, setAdditionalSections] = useState([]);
     const {data: accomplishments, isLoading: accomplishmentsIsLoading} = useAxiosFetch(`${backendURL}/api/projects/schedule/${projId}`)
     const [totalContractAmount, setTotalContractAmount] = useState(null);
-  
+    console.log(accomplishments)
 useEffect(() => {
   if (!accomplishmentsIsLoading && accomplishments) {
     console.log(proj);
@@ -77,8 +77,7 @@ useEffect(() => {
         company: 'VTSA INTERNATIONAL INC.',
         reportDate: 'June 24, 2025',
         projectName: 'Project Proxima',
-        projectType: 'Freight Elevator - 4 QTY',
-        preparedBy: 'John Christian Liongco',
+        preparedBy: proj.pe_fullname,
         position: 'Project Engineer'
     });
 
@@ -271,6 +270,12 @@ useEffect(() => {
               }}>
                 Save
               </button>            
+              <button
+                onClick={handlePrint}
+                className="action-btn btn-print"
+              >
+                Print
+              </button>
             </div>
 
           </div>

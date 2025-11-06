@@ -2,7 +2,7 @@ import { useEffect, useState } from "react"
 import useAxiosFetch from "./useAxiosFetch.js"
 import { useStoreState } from "easy-peasy"
 
-const useFindProjectTask = (id) => {
+const useFindProjectTask = (id, proj) => {
     const backendURL = import.meta.env.VITE_BACKEND_URL || 'http://localhost:4000'
     const dateNow = useStoreState(state => state.date)
 
@@ -18,7 +18,7 @@ const useFindProjectTask = (id) => {
     const {data: fetchedData, fetchError: fetchError, isLoading: isLoading} = useAxiosFetch(`${backendURL}/api/projects/schedule/${id}`)
     const [projectCompleted, setProjectCompleted] = useState(false)
     const [isBehindSchedule, setIsBehindSchedule] = useState(false)
-
+    const [onHold, setOnHold] = useState(false)
 
     useEffect(() => {
         if(fetchError) {
@@ -31,11 +31,17 @@ const useFindProjectTask = (id) => {
             console.log('date now: ', dateNow)
             console.log(fetchedData)
             setProjectExists(true)
-
+            console.log(`for project: ${id} I reach here`)
             //find Parent task
-            const foundParentTask = fetchedData.find(t => t.task_type === 'summary' && new Date(dateNow) > new Date(t.task_start) && new Date(dateNow) < new Date(t.task_end))
+            const foundParentTask = fetchedData.find(t => t.task_type === 'summary' && new Date(dateNow) >= new Date(t.task_start) && new Date(dateNow) <= new Date(t.task_end))
                 console.log(foundParentTask)
             if (foundParentTask === undefined) return setProjectCompleted(true)
+            if (proj.on_hold === 1) {
+                setCurrentTask(proj.current_task)
+                setCurrentParentTask(proj.task_phase)
+                return setOnHold(true)
+            }
+
             if(foundParentTask.task_name === 'Structural/Civil Works'){
                 setCurrentParentTask({...foundParentTask, task_name: 'Strucutural/Civil Works and Manufacturing'})
             } else setCurrentParentTask(foundParentTask)
@@ -44,7 +50,8 @@ const useFindProjectTask = (id) => {
             //find current task based on current date
             const foundCurrentTask = fetchedData.find(t => ((t.task_actual_current || t.task_done === 0) && t.task_type === 'task'))
             //find actual current task
-            const foundProjectedCurrentTask = fetchedData.find(t => t.task_type === 'task' && new Date(dateNow) > new Date(t.task_start) && new Date(dateNow) < new Date(t.task_end))
+            const foundProjectedCurrentTask = fetchedData.find(t => t.task_type === 'task' && new Date(dateNow) >= new Date(t.task_start) && new Date(dateNow) <= new Date(t.task_end))
+            console.log(foundProjectedCurrentTask)
             setIsBehindSchedule(foundCurrentTask.task_id !== foundProjectedCurrentTask.task_id)
 
             const foundCurrentTaskPhase = fetchedData.find(t => t.task_id === foundCurrentTask.task_parent)
@@ -68,7 +75,8 @@ const useFindProjectTask = (id) => {
         projectCompleted, 
         currentTaskPhase,
         isBehindSchedule,
-        projectedTask
+        projectedTask,
+        onHold
     }
 }
 

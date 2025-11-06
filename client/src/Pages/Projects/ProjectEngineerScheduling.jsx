@@ -20,10 +20,32 @@ const ProjectEngineerScheduling = ({
     handleSchedulePMS,
     saveStatus,
     includeTncSchedule,
-    proj
+    proj,
+    fetchedData
 }) => {
+    //essential dates
+    const templateSetting = fetchedData.find(t => t.task_name === 'Template Setting')
+    const handover = fetchedData.find(t => t.task_name === 'Final Cleaning / Hand over')
+    const essentialDates = [templateSetting, handover]
+    console.log(essentialDates)
+
+    //const templateSetting = fetchedData.find(t => t.task_name === 'Template Setting')
     return (
-        <div className="scheduling-sections">
+        <>
+            <div
+                className='essential-schedule-notes'
+            >
+                <h3>Important Dates</h3>
+                {essentialDates.map(d => (
+                    <div>
+                        <h4>{d.task_name} - <span>{d.task_done ? 'check' : 'not done'}</span></h4>
+                        <div>{new Date(d.task_start).toLocaleDateString()} - {new Date(d.task_end).toLocaleDateString()}</div>
+                    </div>                
+                ))}
+
+            </div>
+            <div className="scheduling-sections">
+            
             <div className="schedule-section">
             {proj.qaqc_ongoing === 0 ? (
                     <>
@@ -75,7 +97,7 @@ const ProjectEngineerScheduling = ({
 
             {includeTncSchedule && (
                 <div className="schedule-section">
-                    {proj.tnc_assign_date === null ? (
+                    {!proj.tnc_ongoing ? (
                         <>
                             <div className="section-header">
                             <h4>Schedule Testing & Commissioning</h4>
@@ -145,6 +167,8 @@ const ProjectEngineerScheduling = ({
             )}                    
 
         </div>
+        </>
+
     )
 }
 

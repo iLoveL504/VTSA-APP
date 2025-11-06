@@ -32,6 +32,7 @@ const PMSNewEntry = () => {
     const [successModalOpen, setSuccessModalOpen] = useState(false)
 
     useEffect(() => {
+        console.log(projects)
         // Filter projects that have joint inspection scheduled and are pending assignment
         const filtered = projects.filter(p => 
             p.pms_joint_inspection !== null 
@@ -248,42 +249,45 @@ const PMSNewEntry = () => {
                     </div>
 
                     {/* Technician Assignment Section */}
-                    {selectedProject.prepare_handover ? (
+                    {selectedProject.pms_pending && !selectedProject.pms_is_assigned ? (
+                        <>
+                                <div className="assignment-section">
+                                <h5>Assign PMS Technician</h5>
+                                <div className="assignment-form">
+                                    <div className="form-group">
+                                        <label htmlFor="technician-select">Select Technician:</label>
+                                        <FormControl className="form-control-professional" size="small" fullWidth>
+                                            <InputLabel id="qaqc-reason-label">PMS Tech</InputLabel>
+                                            <Select
+                                                labelId="qaqc-reason-label"
+                                                id="qaqc-reason-select"
+                                                value={selectedTech || ''}
+                                                label="PMS Tech"
+                                                onChange={handleSelectedTech}
+                                            >
+                                                {pmsTechs.map((t, index) => (
+                                                    <MenuItem value={t} key={index}>({t.island_group}) {t.last_name} {t.first_name}</MenuItem>
+                                                ))}
+                                            </Select>
+                                        </FormControl>
+                                    </div>
+                                    
+                                    <button
+                                        onClick={handleAssignClick}
+                                        disabled={!selectedTech || assignmentLoading}
+                                        className="assign-button"
+                                    >
+                                        {assignmentLoading ? 'Assigning...' : 'Assign Technician'}
+                                    </button>
+                                </div>
+                            </div>                        
+                        </>
+                        
+                    ) : selectedProject.prepare_handover ? (
                         <FinalizeHandover proj={selectedProject}/>
                     ) : (selectedProject.pms_ongoing || selectedProject.pms_is_assigned) ? (
                         <>Final Joint Inspection is Ongoing</>
-                    ) : (
-                        <div className="assignment-section">
-                        <h5>Assign PMS Technician</h5>
-                        <div className="assignment-form">
-                            <div className="form-group">
-                                <label htmlFor="technician-select">Select Technician:</label>
-                                <FormControl className="form-control-professional" size="small" fullWidth>
-                                    <InputLabel id="qaqc-reason-label">PMS Tech</InputLabel>
-                                    <Select
-                                        labelId="qaqc-reason-label"
-                                        id="qaqc-reason-select"
-                                        value={selectedTech || ''}
-                                        label="PMS Tech"
-                                        onChange={handleSelectedTech}
-                                    >
-                                        {pmsTechs.map((t, index) => (
-                                            <MenuItem value={t} key={index}>({t.island_group}) {t.last_name} {t.first_name}</MenuItem>
-                                        ))}
-                                    </Select>
-                                </FormControl>
-                            </div>
-                            
-                            <button
-                                onClick={handleAssignClick}
-                                disabled={!selectedTech || assignmentLoading}
-                                className="assign-button"
-                            >
-                                {assignmentLoading ? 'Assigning...' : 'Assign Technician'}
-                            </button>
-                        </div>
-                    </div>
-                    )}
+                    ) : (<></>)}
                     
                 </div>
             ) : (
@@ -342,6 +346,7 @@ const PMSNewEntry = () => {
 
                     {/* Project List */}
                     <div className="projects-list">
+                        {console.log(filteredProjects)}
                         {filteredProjects.length > 0 ? (
                             filteredProjects.map(project => (
                                 <div
@@ -377,9 +382,9 @@ const PMSNewEntry = () => {
                                     </div>
                                     <div className="project-status">
                                         <strong>
-                                            {project.prepare_handover ? 'Prepare Handover' : project.pms_ongoing ? 
-                                            'Ongoing' : project.pms_is_assigned ? 
-                                                'Assigned' : 'Pending'}
+                                            {project.prepare_handover ? 'Prepare Handover' : project.pms_pending && !project.pms_is_assigned ? 
+                                            'Assign Technician' : project.pms_is_assigned ? 
+                                                'Assigned' : 'Ongoing'}
                                         </strong>
                                     </div>
                                     <div className="action-cell">
@@ -388,9 +393,9 @@ const PMSNewEntry = () => {
                                             onClick={handleSelect(project)}
                                             className="assign-action-btn"
                                         >
-                                            {project.prepare_handover ? 'Prepare Handover' : project.pms_ongoing ? 
-                                            'Ongoing' : project.pms_is_assigned ? 
-                                                'Assigned' : 'Assign Technician'}
+                                            {project.prepare_handover ? 'Prepare Handover' : project.pms_pending && !project.pms_is_assigned ? 
+                                            'Assign Technician' : project.pms_is_assigned ? 
+                                                'Assigned' : 'Ongoing'}
                                         </button>
                                     </div>
                                 </div>

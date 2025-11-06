@@ -1,15 +1,20 @@
 import React, { useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import '../../css/ProjectManagerDashboard.css'
-//import { useStoreState } from 'easy-peasy';
+import useAxiosFetch from '../../hooks/useAxiosFetch';
+import 'ldrs/react/Grid.css'
 
-const ProjectManagerDashboard = ({ projects, onNewProject }) => {
+const ProjectManagerDashboard = ({ onNewProject }) => {
   const navigate = useNavigate();
- // const dateNow = useStoreState(state => state.dateNow)
+  const backendURL = import.meta.env.VITE_BACKEND_URL || 'http://localhost:4000'
   // Project Manager Dashboard Data - Calculated from all projects
+  const {data: projects, loading: projectsIsLoading} = useAxiosFetch(`${backendURL}/api/projects`)
   const projectManagerData = useMemo(() => {
-    const now = new Date()
-    //const thirtyDaysFromNow = new Date(now.getTime() + 30 * 24 * 60 * 60 * 1000);
+    const now = new Date();
+    const currentMonth = now.getMonth();
+    const currentYear = now.getFullYear();
+    const nextMonth = currentMonth === 11 ? 0 : currentMonth + 1;
+    const nextMonthYear = currentMonth === 11 ? currentYear + 1 : currentYear;
 
     return {
       // Project Statistics
@@ -20,10 +25,31 @@ const ProjectManagerDashboard = ({ projects, onNewProject }) => {
       completedProjects: projects.filter(p => 
         p.status === 'Completed' || p.handover_done
       ).length,
-      projectsBehindSchedule: projects.filter(p => {
+      projectsBehindSchedule: projects.filter(p => p.is_behind).length,
+      
+      // New Categories
+      criticalProjects: projects.filter(p => {
         if (!p.project_end_date || p.status === 'Completed') return false;
-        return new Date(p.project_end_date) < now && p.progress < 100;
-      }).length,
+        const daysUntilDue = Math.ceil((new Date(p.project_end_date) - now) / (1000 * 60 * 60 * 24));
+        return daysUntilDue <= 14 && p.progress < 90;
+      }),
+      
+      laggingProjects: projects.filter(p => p.is_behind === 1 && p.status && !['Completed', 'Handover Done'].includes(p.status) && !p.on_hold),
+      
+      pendingProjects: projects.filter(p => p.on_hold === 1 || p.request_hold === 1),
+      
+      // TNC Projects for this month and next month
+      tncProjectsThisMonth: projects.filter(p => {
+        if (!p.tnc_start_date) return false;
+        const tncDate = new Date(p.project_end_date);
+        return tncDate.getMonth() === currentMonth && tncDate.getFullYear() === currentYear;
+      }),
+      
+      tncProjectsNextMonth: projects.filter(p => {
+        if (!p.tnc_start_date) return false;
+        const tncDate = new Date(p.project_end_date);
+        return tncDate.getMonth() === nextMonth && tncDate.getFullYear() === nextMonthYear;
+      }),
       
       // Financial Overview
       totalContractValue: projects.reduce((sum, p) => 
@@ -47,20 +73,13 @@ const ProjectManagerDashboard = ({ projects, onNewProject }) => {
           progress: project.progress
         })),
       
-      // Projects Needing Attention
-      criticalProjects: projects.filter(p => {
-        if (!p.project_end_date || p.status === 'Completed') return false;
-        const daysUntilDue = Math.ceil((new Date(p.project_end_date) - now) / (1000 * 60 * 60 * 24));
-        return daysUntilDue <= 14 && p.progress < 90;
-      }),
-      
       // Status Distribution
       statusDistribution: {
         'Structural/Manufacturing': projects.filter(p => p.status === 'Structural/Manufacturing').length,
         'Installation': projects.filter(p => p.status === 'Installation').length,
         'Test and Comm': projects.filter(p => p.status === 'Test and Comm').length,
-        'Completed': projects.filter(p => p.status === 'Completed').length,
-        'Preliminaries': projects.filter(p => p.status === 'Preliminaries').length
+        'Preliminaries': projects.filter(p => p.status === 'Preliminaries').length,
+        'Planning': projects.filter(p => p.status === 'Planning').length
       },
       
       // Project Engineer Workload
@@ -111,9 +130,22 @@ const ProjectManagerDashboard = ({ projects, onNewProject }) => {
     navigate('/projects');
   };
 
-  const handleViewGanttChart = () => {
-    navigate('/projects/gantt');
+
+
+  // Helper function to format month name
+  const getMonthName = (dateString) => {
+    const date = new Date(dateString);
+    return date.toLocaleString('default', { month: 'long', year: 'numeric' });
   };
+
+  if(projectsIsLoading) {
+        return (
+                <div className="Loading">
+                    <p>Data is Loading...</p>
+                    <Grid size="60" speed="1.5" color="rgba(84, 176, 210, 1)" />
+                </div>
+        )    
+  }
 
   return (
     <div className="Content ProjectManagerDashboard">
@@ -144,35 +176,35 @@ const ProjectManagerDashboard = ({ projects, onNewProject }) => {
           </div>
         </div>
 
-        {/* <div className="stat-card">
-          <div className="stat-icon" style={{backgroundColor: 'rgba(255, 193, 7, 0.1)'}}>
-            <span style={{color: '#ffc107'}}>📈</span>
-          </div>
-          <div className="stat-content">
-            <h3>{projectManagerData.averageProgress}%</h3>
-            <p>Average Progress</p>
-          </div>
-        </div> */}
-
         <div className="stat-card">
           <div className="stat-icon" style={{backgroundColor: 'rgba(220, 53, 69, 0.1)'}}>
             <span style={{color: '#dc3545'}}>⚠️</span>
           </div>
           <div className="stat-content">
-            <h3>{projectManagerData.projectsBehindSchedule}</h3>
-            <p>Behind Schedule</p>
+            <h3>{projectManagerData.criticalProjects.length}</h3>
+            <p>Critical</p>
           </div>
         </div>
 
-        {/* <div className="stat-card">
-          <div className="stat-icon" style={{backgroundColor: 'rgba(111, 66, 193, 0.1)'}}>
-            <span style={{color: '#6f42c1'}}>💰</span>
+        <div className="stat-card">
+          <div className="stat-icon" style={{backgroundColor: 'rgba(255, 193, 7, 0.1)'}}>
+            <span style={{color: '#ffc107'}}>🔄</span>
           </div>
           <div className="stat-content">
-            <h3>₱{(projectManagerData.totalContractValue / 1000000).toFixed(1)}M</h3>
-            <p>Contract Value</p>
+            <h3>{projectManagerData.laggingProjects.length}</h3>
+            <p>Lagging</p>
           </div>
-        </div> */}
+        </div>
+
+        <div className="stat-card">
+          <div className="stat-icon" style={{backgroundColor: 'rgba(108, 117, 125, 0.1)'}}>
+            <span style={{color: '#6c757d'}}>⏸️</span>
+          </div>
+          <div className="stat-content">
+            <h3>{projectManagerData.pendingProjects.length}</h3>
+            <p>On Hold</p>
+          </div>
+        </div>
 
         <div className="stat-card">
           <div className="stat-icon" style={{backgroundColor: 'rgba(23, 162, 184, 0.1)'}}>
@@ -192,43 +224,71 @@ const ProjectManagerDashboard = ({ projects, onNewProject }) => {
           {projectManagerData.criticalProjects.length > 0 && (
             <div className="content-card critical-alert">
               <div className="card-header">
-                <h3 style={{color: '#dc3545'}}>⚠️ Projects Needing Attention</h3>
+                <h3 style={{color: '#dc3545'}}>⚠️ Critical Projects</h3>
+                <span className="badge critical">{projectManagerData.criticalProjects.length} projects</span>
               </div>
               <div className="projects-list">
                 {projectManagerData.criticalProjects.map(project => (
-                  <div key={project.id} className="project-item critical">
-                    <div className="project-info">
-                      <h4>{project.lift_name}</h4>
-                      <div className="project-meta">
-                        <span className="status-badge critical">Critical</span>
-                        <span className="project-id">#{project.id}</span>
-                        <span className="project-engineer">{project.pe_fullname}</span>
-                      </div>
-                      <p className="project-client">{project.client}</p>
-                      <div className="project-deadline">
-                        <i className="fas fa-exclamation-triangle"></i>
-                        Due: {new Date(project.project_end_date).toLocaleDateString()} 
-                        ({Math.ceil((new Date(project.project_end_date) - new Date()) / (1000 * 60 * 60 * 24))} days)
-                      </div>
-                    </div>
-                    <div className="project-progress">
-                      <div className="progress-bar">
-                        <div 
-                          className="progress-fill critical"
-                          style={{ width: `${project.progress}%` }}
-                        ></div>
-                      </div>
-                      <span>{project.progress}% Complete</span>
-                    </div>
-                    <div className="project-actions">
-                      <button 
-                        className="btn-primary"
-                        onClick={() => handleProjectClick(project.id)}
-                      >
-                        View Details
-                      </button>
-                    </div>
-                  </div>
+                  <ProjectItem key={project.id} project={project} type="critical" onProjectClick={handleProjectClick} />
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Lagging Projects */}
+          {projectManagerData.laggingProjects.length > 0 && (
+            <div className="content-card lagging-alert">
+              <div className="card-header">
+                <h3 style={{color: '#ffc107'}}>🔄 Lagging Projects</h3>
+                <span className="badge lagging">{projectManagerData.laggingProjects.length} projects</span>
+              </div>
+              <div className="projects-list">
+                {projectManagerData.laggingProjects.slice(0, 5).map(project => (
+                  <ProjectItem key={project.id} project={project} type="lagging" onProjectClick={handleProjectClick} />
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Pending Projects (On Hold) */}
+          {projectManagerData.pendingProjects.length > 0 && (
+            <div className="content-card pending-alert">
+              <div className="card-header">
+                <h3 style={{color: '#6c757d'}}>⏸️ Pending Projects (Cannot Proceed to TNC)</h3>
+                <span className="badge pending">{projectManagerData.pendingProjects.length} projects</span>
+              </div>
+              <div className="projects-list">
+                {projectManagerData.pendingProjects.slice(0, 3).map(project => (
+                  <ProjectItem key={project.id} project={project} type="pending" onProjectClick={handleProjectClick} />
+                ))}
+              </div>
+            </div>
+          )}
+          {/* TNC Projects This Month */}
+          {projectManagerData.tncProjectsThisMonth.length > 0 && (
+            <div className="content-card tnc-alert">
+              <div className="card-header">
+                <h3 style={{color: '#17a2b8'}}>🔧 Upcoming Hand overs This Month ({getMonthName(new Date().toISOString())})</h3>
+                <span className="badge tnc">{projectManagerData.tncProjectsThisMonth.length} projects</span>
+              </div>
+              <div className="projects-list">
+                {projectManagerData.tncProjectsThisMonth.map(project => (
+                  <ProjectItem key={project.id} project={project} type="tnc" onProjectClick={handleProjectClick} />
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* TNC Projects Next Month */}
+          {projectManagerData.tncProjectsNextMonth.length > 0 && (
+            <div className="content-card tnc-next-alert">
+              <div className="card-header">
+                <h3 style={{color: '#20c997'}}>🔧 TNC Next Month ({getMonthName(new Date(new Date().getFullYear(), new Date().getMonth() + 1, 1).toISOString())})</h3>
+                <span className="badge tnc-next">{projectManagerData.tncProjectsNextMonth.length} projects</span>
+              </div>
+              <div className="projects-list">
+                {projectManagerData.tncProjectsNextMonth.map(project => (
+                  <ProjectItem key={project.id} project={project} type="tnc-next" onProjectClick={handleProjectClick} />
                 ))}
               </div>
             </div>
@@ -243,43 +303,8 @@ const ProjectManagerDashboard = ({ projects, onNewProject }) => {
               </button>
             </div>
             <div className="projects-list">
-              {projects.slice(0, 5).map(project => (
-                <div key={project.id} className="project-item">
-                  <div className="project-info">
-                    <h4>{project.lift_name}</h4>
-                    <div className="project-meta">
-                      <span className={`status-badge ${project.status?.toLowerCase().replace(' ', '-')}`}>
-                        {project.status}
-                      </span>
-                      <span className="project-id">#{project.id}</span>
-                      <span className="project-engineer">{project.pe_fullname || 'Unassigned'}</span>
-                    </div>
-                    <p className="project-client">{project.client}</p>
-                    {project.project_end_date && (
-                      <div className="project-deadline">
-                        <i className="fas fa-calendar"></i>
-                        Completion: {new Date(project.project_end_date).toLocaleDateString()}
-                      </div>
-                    )}
-                  </div>
-                  <div className="project-progress">
-                    <div className="progress-bar">
-                      <div 
-                        className="progress-fill"
-                        style={{ width: `${project.progress || 0}%` }}
-                      ></div>
-                    </div>
-                    <span>{project.progress || 0}% Complete</span>
-                  </div>
-                  <div className="project-actions">
-                    <button 
-                      className="btn-primary"
-                      onClick={() => handleProjectClick(project.id)}
-                    >
-                      View Details
-                    </button>
-                  </div>
-                </div>
+              {projects.slice(0, 8).map(project => (
+                <ProjectItem key={project.id} project={project} type="normal" onProjectClick={handleProjectClick} />
               ))}
             </div>
           </div>
@@ -382,7 +407,7 @@ const ProjectManagerDashboard = ({ projects, onNewProject }) => {
                 <i className="fas fa-plus"></i>
                 <span>New Project</span>
               </button>
-              <button className="quick-action-btn" onClick={handleViewGanttChart}>
+              {/* <button className="quick-action-btn" onClick={handleViewGanttChart}>
                 <i className="fas fa-chart-line"></i>
                 <span>Gantt Chart</span>
               </button>
@@ -393,7 +418,7 @@ const ProjectManagerDashboard = ({ projects, onNewProject }) => {
               <button className="quick-action-btn">
                 <i className="fas fa-cog"></i>
                 <span>Settings</span>
-              </button>
+              </button> */}
             </div>
           </div>
 
@@ -415,6 +440,121 @@ const ProjectManagerDashboard = ({ projects, onNewProject }) => {
             </div>
           </div>
         </div>
+      </div>
+    </div>
+  );
+};
+
+// Project Item Component for reusability
+const ProjectItem = ({ project, type, onProjectClick }) => {
+  const getDaysUntilTNC = () => {
+    if (!project.tnc_start_date) return null;
+    const tncDate = new Date(project.tnc_start_date);
+    const now = new Date();
+    const diffTime = tncDate - now;
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    return diffDays;
+  };
+
+  const getTypeStyles = () => {
+    switch (type) {
+      case 'critical':
+        return {
+          background: '#fff5f5',
+          borderColor: '#fecaca',
+          borderLeft: '4px solid #dc3545'
+        };
+      case 'lagging':
+        return {
+          background: '#fffbf0',
+          borderColor: '#ffeeba',
+          borderLeft: '4px solid #ffc107'
+        };
+      case 'pending':
+        return {
+          background: '#f8f9fa',
+          borderColor: '#e9ecef',
+          borderLeft: '4px solid #6c757d'
+        };
+      case 'tnc':
+        return {
+          background: '#f0f9ff',
+          borderColor: '#b3e0ff',
+          borderLeft: '4px solid #17a2b8'
+        };
+      case 'tnc-next':
+        return {
+          background: '#f0fff4',
+          borderColor: '#c6f6d5',
+          borderLeft: '4px solid #20c997'
+        };
+      default:
+        return {
+          background: '#f8f9fa',
+          borderColor: '#e9ecef'
+        };
+    }
+  };
+
+  return (
+    <div className="project-item" style={getTypeStyles()}>
+      <div className="project-info">
+        <h4>{project.lift_name}</h4>
+        <div className="project-meta">
+          <span className={`status-badge ${type}`}>
+            {type === 'critical' ? 'Critical' : 
+             type === 'lagging' ? 'Lagging' :
+             type === 'pending' ? 'On Hold' :
+             type === 'tnc' ? 'TNC This Month' :
+             type === 'tnc-next' ? 'TNC Next Month' : project.status}
+          </span>
+          <span className="project-id">#{project.id}</span>
+          <span className="project-engineer">{project.pe_fullname || 'Unassigned'}</span>
+        </div>
+        <p className="project-client">{project.client}</p>
+        
+        {/* TNC Date Display for TNC projects */}
+        {(type === 'tnc' || type === 'tnc-next') && project.tnc_start_date && (
+          <div className="project-deadline">
+            <i className="fas fa-calendar-check"></i>
+            TNC Start: {new Date(project.tnc_start_date).toLocaleDateString()}
+            {getDaysUntilTNC() > 0 && (
+              <span className="days-remaining"> ({getDaysUntilTNC()} days)</span>
+            )}
+          </div>
+        )}
+        
+        {/* Regular deadline display for other projects */}
+        {!['tnc', 'tnc-next'].includes(type) && project.project_end_date && (
+          <div className="project-deadline">
+            <i className="fas fa-calendar"></i>
+            Completion: {new Date(project.project_end_date).toLocaleDateString()}
+            {type === 'critical' && (
+              <span className="days-remaining">
+                ({Math.ceil((new Date(project.project_end_date) - new Date()) / (1000 * 60 * 60 * 24))} days)
+              </span>
+            )}
+          </div>
+        )}
+      </div>
+      
+      <div className="project-progress">
+        <div className="progress-bar">
+          <div 
+            className={`progress-fill ${type}`}
+            style={{ width: `${project.progress || 0}%` }}
+          ></div>
+        </div>
+        <span>{project.progress || 0}% Complete</span>
+      </div>
+      
+      <div className="project-actions">
+        <button 
+          className="btn-primary"
+          onClick={() => onProjectClick(project.id)}
+        >
+          View Details
+        </button>
       </div>
     </div>
   );

@@ -78,16 +78,15 @@ const TNCCompletion = ({
     <div className="completion-section emphasized">
       <div className="section-header">
         <h4>
-          {proj.tnc_is_assigned === 1
-            ? "Begin TNC Inspection"
-            : proj.tnc_ongoing === 1
-              ? "Ongoing TNC Inspection"
-              : "TNC Inspection Status"}
+          {!proj.tnc_ongoing 
+            ? "TNC Inspection to begin shortly"
+              : "Ongoing TNC Inspection"
+             }
         </h4>
       </div>
 
       <div className="completion-content">
-        {proj?.tnc_is_assigned === 1 ? (
+        {!proj.tnc_ongoing ? (
           <div>
             <button
               className="begin-inspection-btn primary-action"
@@ -108,14 +107,6 @@ const TNCCompletion = ({
                     : "Please upload at least the photo evidence for this TNC task."}
                 </p>
               </div>
-
-              <div className="documents-grid">
-                {/* EVIDENCE PICTURES */}
-                <div className="document-upload-card">
-                  <div className="document-header">
-                    <span className="document-label">Evidence Pictures</span>
-                    <span className="upload-required">* Required</span>
-                  </div>
                 <button
                   className="complete-task-btn primary-action"
                   onClick={handleTaskComplete(currentTask, 'tnc')}
@@ -124,6 +115,15 @@ const TNCCompletion = ({
                   <i className="fas fa-clipboard-check"></i>
                   Mark TNC Inspection Complete
                 </button>
+              <div className="documents-grid">
+                
+                {/* EVIDENCE PICTURES */}
+                <div className="document-upload-card">
+                  <div className="document-header">
+                    <span className="document-label">Evidence Pictures</span>
+                    <span className="upload-required">* Required</span>
+                  </div>
+
                   <div className="upload-area document-upload">
                     <input
                       type="file"

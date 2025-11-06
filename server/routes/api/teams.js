@@ -9,7 +9,12 @@ import {
         getTeamsWithNoProject,
         getNotAssignedPE,
         assignTeam,
-        getProjectManpower
+        getProjectManpower,
+        getCompositionPerId,
+        editTeam,
+        assignProjPIC,
+        getTncTechProjects,
+        getqaqcTechProjects
     } from '../../controllers/teamsController.js'
 
 router.route('/')
@@ -18,8 +23,22 @@ router.route('/')
 router.route('/latest-team')
     .get(getLastTeamId)
 
+router.route('/tnc-techs')
+    .get(getTncTechProjects)
+router.route('/qaqc-techs')
+    .get(getqaqcTechProjects)
+
+router.route('/edit/:id')
+    .post(editTeam)
+
+router.route('/assign-pic/:id')
+    .put(assignProjPIC)
+
 router.route('/project-manpower')
     .get(getProjectManpower)
+
+router.route('/project-manpower/:id')
+    .get(getCompositionPerId)
 
 router.route('/team-designation/:id')   
     .get(getTeamDesignation)

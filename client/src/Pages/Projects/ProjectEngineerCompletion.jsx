@@ -40,7 +40,8 @@ const ProjectEngineerCompletion = ({ currentTask, handleTaskComplete, proj, valu
     };
     return requiredApprovals.every(role => checks[role]);
   }, [currentTask, proj, requiredApprovals]);
-
+  
+  console.log(proj)
   // Identify which roles are still pending
   const pendingApprovals = requiredApprovals.filter(role => {
     if (role === 'Foreman' && currentTask.task_approval !== 1) return true;
@@ -96,9 +97,18 @@ console.log(isUploadComplete())
   return (
     <>
     {console.log(proj)}
-    {proj.qaqc_punchlist ? (
-      <div>Punch list items to be rectified:</div>
-    ) : (<></>)}
+      {proj.qaqc_punchlist ? (
+        <div className="punchlist-section">
+          <div className="punchlist-header">
+            <i className="fas fa-exclamation-triangle"></i>
+            <h4>Punch List Items to be rectified</h4>
+          </div>
+          <div className="punchlist-content">
+              <i className="fas fa-info-circle"></i>
+              <span>Please address all items before proceeding with task completion.</span>
+            </div>
+        </div>
+      ) : (<></>)}
       <div className="completion-section emphasized">
         <div className="section-header">
           <h4>
@@ -193,6 +203,7 @@ console.log(isUploadComplete())
                   </>
                 ) : (
                   <>
+                  {console.log(pendingApprovals)}
                     <i className="fas fa-clock"></i>
                     Waiting for {pendingApprovals.join(', ')} Approval and Evidence Uplaod
                   </>

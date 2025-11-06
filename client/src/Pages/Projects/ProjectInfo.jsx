@@ -12,12 +12,12 @@ import ProjectDetails from './ProjectDetails.jsx'
 import ProjectProgress from './ProjectProgress.jsx'
 import RequestQAQC from './RequestQAQC.jsx'
 import '../../css/ProjectPage.css'
-import tasks from '../../data/TasksData'
+import tasks from '../../../../data/TasksData.js'
 import ProjectDocuments from './ProjectDocuments.jsx'
 import PMS_Entry from './PMS_Entry.jsx'
 import TaskDetails from './TaskDetails.jsx'
 import RequestHold from './RequestHold.jsx'
-
+import ProjectTeam from './ProjectTeam.jsx'
 
 const ConfirmationModal = ({ isOpen, onClose, onConfirm, title, message, confirmText = "Confirm", cancelText = "Cancel", type}) => {
   if (!isOpen) return null;
@@ -57,6 +57,7 @@ const ProjectInfo = () => {
     const projects = useStoreState(state => state.projects)
     const {data: proj, isLoading: projIsLoading} = useAxiosFetch(`${backendURL}/api/projects/${projId}`)
     const {data: photos, isLoading: photosIsLoading} = useAxiosFetch(`${backendURL}/api/projects/photos/${projId}`)
+    const {data: teamTechs} = useAxiosFetch(`${backendURL}/api/teams/project-manpower/${projId}`)
     const { data: projSched, isLoading: projSchedIsLoading } = useAxiosFetch(`${backendURL}/api/projects/schedule/${projId}`);
     const { data: taskPhotos } = useAxiosFetch(`${backendURL}/api/projects/task-photos/${projId}`)
     const [isEditing, setIsEditing] = useState(false)
@@ -70,15 +71,15 @@ const ProjectInfo = () => {
         fetchedData, 
         projectCompleted,
         projectedTask,
-        isBehindSchedule
-    } = useFindProjectTask(projId)
+        isBehindSchedule,
+        onHold
+    } = useFindProjectTask(projId, proj)
     const isProjectsReady = Array.isArray(projects) && projects.length > 0;
     const fetchUrl = proj && isProjectsReady ? `${backendURL}/api/teams/${proj.id}` : null;
     const {data: teamInfo, isLoading: teamIsLoading} = useAxiosFetch(fetchUrl);
-    console.log(currentTask)
     // Get user role from session storage with debugging
     const [role, setRole] = useState(null)
-
+    
     console.log(isBehindSchedule)
     
     useEffect(() => {
@@ -154,6 +155,9 @@ const ProjectInfo = () => {
         setActivePage(`progress`)
     }
 
+    const teamsOnClick = () => {
+        setActivePage(`teams`)
+    }
 
     const documentsOnClick = () => {
         setActivePage(`documents`)
@@ -191,6 +195,12 @@ const ProjectInfo = () => {
                                 className={activePage === 'progress' ? 'active' : ''}
                             >
                                 Progress
+                            </div>
+                            <div 
+                                onClick={teamsOnClick}
+                                className={activePage === 'documents' ? 'active' : ''}
+                            >
+                                Team
                             </div>
                             <div 
                                 onClick={documentsOnClick}
@@ -245,6 +255,7 @@ const ProjectInfo = () => {
                     currentTaskPhase={currentTaskPhase}
                     projectedTask={projectedTask}
                     isBehindSchedule={isBehindSchedule}
+                    onHold={onHold}
                 />
             }
             {
@@ -255,11 +266,16 @@ const ProjectInfo = () => {
                     projSched={projSched} 
                     projSchedIsLoading={projSchedIsLoading}
                     taskPhotos={taskPhotos}
+                    currentTask={currentTask}
                 />
             }
             {
                 activePage === 'documents' &&
                 <ProjectDocuments/>
+            }
+            {
+                activePage === 'teams' &&
+                <ProjectTeam teamInfo={teamInfo} proj={proj} teamTechs={teamTechs} projId={projId} />
             }
             {
                 activePage === 'pms_entry' &&
@@ -295,7 +311,6 @@ const ProjectInfo = () => {
                 >
                     <i className="fas fa-file-alt"></i>
                     Make Daily Project Report
-                    {console.log(role)}
                 </button>
             
 

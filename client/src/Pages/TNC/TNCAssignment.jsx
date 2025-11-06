@@ -5,14 +5,16 @@ import TNCList from '../../components/QAQCTNC/TNCList.jsx'
 import { useSharedSocket } from '../../Context/SocketContext.js';
 import '../../css/TNCPage.css'
 import { Axios } from '../../api/axios.js'
+import useAxiosFetch from '../../hooks/useAxiosFetch.js';
 
 const TNCAssignment = ({updateIsLoading}) => {
+    const backendURL = import.meta.env.VITE_BACKEND_URL || 'https://localhost:4000';
     const { utilitiesSocket } = useSharedSocket()
     const navigate = useNavigate()
     const projects = useStoreState(state => state.projects)
     const employees = useStoreState(state => state.employees)
-    const tncTechs = employees.filter(e => e.job === 'TNC Technician' && e.is_active === 0)
-    
+    const {data: tncTechs} = useAxiosFetch(`${backendURL}/api/teams/tnc-techs`)
+
     console.log(tncTechs)
     const [searchTerm, setSearchTerm] = useState('')
     const [selectedEntry, setSelectedEntry] = useState({})
@@ -148,7 +150,7 @@ const TNCAssignment = ({updateIsLoading}) => {
                                 <option value="">Choose a technician...</option>
                                 {tncTechs.map(tech => (
                                     <option key={tech.employee_id} value={tech.employee_id}>
-                                        {tech.first_name} {tech.last_name} ({tech.username})
+                                        {tech.full_name} ({tech.lift_name ? `Current TNC End Date ${tech.lift_name}`: 'No Project Assigned'})
                                     </option>
                                 ))}
                             </select>
@@ -196,7 +198,7 @@ const TNCAssignment = ({updateIsLoading}) => {
                     <strong>Current Task</strong>
                     <span>{selectedEntry.current_task || 'N/A'}</span>
                     </div>
-                    {selectedEntry.tnc_pending ? (
+                    {(selectedEntry.tnc_pending && !selectedEntry.tnc_is_assigned) ? (
                     <div className="entry-tnc-assignment">
                         <h3>TNC Inspection Required</h3>
                         <p>This project needs TNC inspection assigned</p>

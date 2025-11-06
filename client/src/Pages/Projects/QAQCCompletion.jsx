@@ -18,13 +18,6 @@ const QAQCCompletion = ({
     console.log(utilitiesSocket.connected)
     console.log('hiii')
     
-    const beginInspection = () => {
-        console.log('emit');
-        utilitiesSocket.emit('begin_qaqc_inspection', Number(projId), (response) => {
-            console.log('Server acknowledged:', response);
-            window.location.reload();
-        });
-    };
 
     const qaqcChecklists = {
         'Template Setting': 'Checklist Prior Template Setting',
@@ -109,22 +102,22 @@ const QAQCCompletion = ({
         {console.log(proj)}
         <div className="completion-section emphasized">
             <div className="section-header">
-                <h4>
+                {/* <h4>
                     {proj.qaqc_is_assigned === 1 ? "Begin Inspection" : 
                      proj.qaqc_ongoing === 1 ? `Ongoing QAQC Inspection for ${proj.qaqc_inspection_reason}` : "Inspection Status"}
+                </h4> */}
+                <h4>
+                    {!proj.qaqc_ongoing 
+                        ? "QAQC Inspection to begin shortly"
+                        : "Ongoing QAQC Inspection"
+                    }        
                 </h4>
             </div>
             
             <div className="completion-content">
-                {proj?.qaqc_is_assigned === 1 ? (
+                {!proj.qaqc_ongoing ? (
                     <div>
-                        <button 
-                            className="begin-inspection-btn primary-action"
-                            onClick={beginInspection}
-                        >
-                            <i className="fas fa-play-circle"></i>
-                            Begin QAQC Inspection
-                        </button>
+
                     </div>
                 ) : proj?.qaqc_ongoing === 1 ? (
                     <>
@@ -272,15 +265,9 @@ const QAQCCompletion = ({
             </div>
             
             <div className="completion-content">
-                {proj?.qaqc_is_assigned === 1 ? (
+                {!proj.qaqc_ongoing ? (
                     <div>
-                        <button 
-                            className="begin-inspection-btn primary-action"
-                            onClick={beginInspection}
-                        >
-                            <i className="fas fa-play-circle"></i>
-                            Begin QAQC Inspection
-                        </button>
+     
                     </div>
                 ) : proj?.qaqc_ongoing === 1 ? (
                     <>

@@ -1,0 +1,301 @@
+.PMSInspections {
+    padding: 2rem;
+    max-width: 1000px;
+    margin: 0 auto;
+}
+
+.inspections-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+    padding-bottom: 1rem;
+    border-bottom: 2px solid #e2e8f0;
+}
+
+.inspections-header h1 {
+    color: #315a95;
+    margin: 0;
+}
+
+.inspections-summary {
+    display: flex;
+    gap: 2rem;
+}
+
+.summary-item {
+    text-align: center;
+    padding: 1rem;
+    background: #f8fafc;
+    border-radius: 8px;
+    min-width: 100px;
+}
+
+.summary-item .count {
+    display: block;
+    font-size: 2rem;
+    font-weight: bold;
+    color: #315a95;
+}
+
+.summary-item .label {
+    font-size: 0.9rem;
+    color: #64748b;
+}
+
+.inspections-container {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+}
+
+.inspection-section {
+    margin-bottom: 0;
+}
+
+.PMSInspections .section-title {
+    font-size: 1.5rem;
+    margin-bottom: 1rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 2px solid;
+}
+
+.section-title.today {
+    color: #059669;
+    border-bottom-color: #059669;
+}
+
+.section-title.overdue {
+    color: #dc2626;
+    border-bottom-color: #dc2626;
+}
+
+.section-title.tomorrow {
+    color: #d97706;
+    border-bottom-color: #d97706;
+}
+
+.section-title.upcoming {
+    color: #2563eb;
+    border-bottom-color: #2563eb;
+}
+
+.inspections-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.inspection-card {
+    background: white;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 1.5rem;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+}
+
+.inspection-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 1rem;
+    gap: 1rem;
+}
+
+.card-title-section {
+    flex: 1;
+}
+
+.lift-name {
+    margin: 0 0 0.5rem 0;
+    color: #1e293b;
+    font-size: 1.3rem;
+    font-weight: 600;
+}
+
+.client-info {
+    color: #374151;
+    font-size: 1rem;
+}
+
+.status-badge {
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    white-space: nowrap;
+}
+
+.status-badge.ongoing {
+    background: #dbeafe;
+    color: #1e40af;
+}
+
+.status-badge.overdue {
+    background: #fee2e2;
+    color: #dc2626;
+}
+
+.status-badge.today {
+    background: #dcfce7;
+    color: #059669;
+}
+
+.status-badge.upcoming {
+    background: #fef3c7;
+    color: #d97706;
+}
+
+.card-content {
+    margin-bottom: 1.5rem;
+}
+
+.inspection-details {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.detail-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+}
+
+.detail-item {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.detail-item .label {
+    color: #64748b;
+    font-weight: 500;
+    font-size: 0.9rem;
+}
+
+.detail-item .value {
+    color: #1e293b;
+    font-weight: 600;
+    font-size: 1rem;
+}
+
+.card-actions {
+    text-align: center;
+}
+
+.begin-btn {
+    background: linear-gradient(135deg, #315a95, #4a7cc2);
+    color: white;
+    border: none;
+    padding: 0.75rem 1.5rem;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    width: 100%;
+    font-size: 1rem;
+}
+
+.begin-btn:hover:not(:disabled) {
+    background: linear-gradient(135deg, #26467c, #3b6ab8);
+    transform: translateY(-1px);
+}
+
+.begin-btn:disabled {
+    background: #cbd5e0;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.begin-btn.disabled {
+    background: #94a3b8;
+}
+
+.empty-state {
+    text-align: center;
+    padding: 4rem 2rem;
+    color: #64748b;
+}
+
+.empty-icon {
+    font-size: 4rem;
+    margin-bottom: 1rem;
+}
+
+.empty-state h3 {
+    color: #475569;
+    margin-bottom: 0.5rem;
+}
+
+.status-message {
+    padding: 1rem;
+    border-radius: 8px;
+    margin-bottom: 1rem;
+    text-align: center;
+    font-weight: 600;
+}
+
+.status-message.error {
+    background: #fee2e2;
+    color: #dc2626;
+    border: 1px solid #fecaca;
+}
+
+.loading-spinner {
+    text-align: center;
+    padding: 3rem;
+    color: #64748b;
+    font-size: 1.1rem;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .PMSInspections {
+        padding: 1rem;
+    }
+    
+    .inspections-header {
+        flex-direction: column;
+        gap: 1rem;
+        align-items: flex-start;
+    }
+    
+    .inspections-summary {
+        width: 100%;
+        justify-content: space-between;
+    }
+    
+    .card-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1rem;
+    }
+    
+    .detail-row {
+        grid-template-columns: 1fr;
+        gap: 0.75rem;
+    }
+    
+    .status-badge {
+        align-self: flex-start;
+    }
+}
+
+@media (max-width: 480px) {
+    .inspections-summary {
+        flex-direction: column;
+        gap: 1rem;
+    }
+    
+    .summary-item {
+        min-width: auto;
+    }
+}

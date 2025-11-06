@@ -26,10 +26,12 @@ const TaskDetails = ({currentTask, currentParentTask, currentTaskPhase, proj, Co
     const QAQCCoordinator = employees.find(e => e.job === 'QAQC Coordinator')
     const ProjectManager = employees.find(e => e.job === 'Project Manager')
     const TNCCoordinator = employees.find(e => e.job === 'TNC Coordinator')
+    const PMSCoordinator = employees.find(e => e.job === 'PMS Coordinator')
     const QAQCCoordinatorId = QAQCCoordinator.employee_id
     const ProjectManagerId = ProjectManager.employee_id
     const TNCCoordinatorId = TNCCoordinator.employee_id
-    
+    const PMSCoordinatorId = PMSCoordinator.employee_id
+
     const role = sessionStorage.getItem('roles')
     const [qaqcDate, setQaqcDate] = useState(new Date())
     const [tncDate, setTncDate] = useState(new Date())
@@ -37,7 +39,7 @@ const TaskDetails = ({currentTask, currentParentTask, currentTaskPhase, proj, Co
     const [qaqcChecklistType, setQaqcChecklistType] = useState('')
     const [tncChecklistType, setTncChecklistType] = useState('')
     const [pmsDate, setPmsDate] = useState(new Date())
-    
+    console.log(proj)
     const [confirmationModal, setConfirmationModal] = useState({
         isOpen: false,
         type: '',
@@ -212,7 +214,7 @@ const TaskDetails = ({currentTask, currentParentTask, currentTaskPhase, proj, Co
         formData.append('end_date', end_date)
         formData.append('task_duration', task_duration)
         formData.append('task_percent', task_percent)
-        
+        const Ids = [proj.project_engineer_id]
 
         const response = await Axios.put(`/api/projects/task/approval/${projId}`, formData, {
             headers: {
@@ -223,6 +225,26 @@ const TaskDetails = ({currentTask, currentParentTask, currentTaskPhase, proj, Co
         if (response?.data.success) {
             window.alert('task pending for completion')
         }
+        await new Promise((resolve, reject) => {
+            const timeout = setTimeout(() => {
+                reject(new Error("Socket emit timeout"));
+            }, 5000); 
+
+            utilitiesSocket.emit("new_notification", {
+                subject: 'Task Pending for completion',
+                body: `${currentTask.task_name} pending for completion for ${proj.lift_name} (Client: ${proj.client})`,
+                Ids
+            }, (ack) => {
+                clearTimeout(timeout);
+                if (ack?.success) {
+                    utilitiesSocket.emit("refresh_project_data");
+                    resolve();
+                } else {
+                reject(new Error("Server failed to process notification."));
+                }
+            });
+        });
+        window.location.reload()
       } catch (e) {
         console.log(e);
       }
@@ -258,6 +280,7 @@ const TaskDetails = ({currentTask, currentParentTask, currentTaskPhase, proj, Co
                     }
                     await Axios.put(`/api/projects/schedule/${projId}`, payload)
                 if (currentTask.task_name === 'Final Cleaning / Hand over') {
+                    const Ids = [PMSCoordinatorId, ProjectManagerId]
                     console.log('handover procedure')
                     console.log(completionModal.photos)
                     const formData = new FormData()
@@ -275,8 +298,28 @@ const TaskDetails = ({currentTask, currentParentTask, currentTaskPhase, proj, Co
                     formData.append('end_date', end_date)
                     formData.append('task_duration', task_duration)
                     formData.append('task_percent', task_percent)
-
+                    
                     await Axios.put(`api/projects/prepare-handover/${projId}`, formData)
+
+                    await new Promise((resolve, reject) => {
+                        const timeout = setTimeout(() => {
+                            reject(new Error("Socket emit timeout"));
+                        }, 5000); 
+
+                        utilitiesSocket.emit("new_notification", {
+                            subject: 'Prepare Handover',
+                            body: `Prepare handover for ${proj.lift_name} (Client: ${proj.client})`,
+                            Ids
+                        }, (ack) => {
+                            clearTimeout(timeout);
+                            if (ack?.success) {
+                                utilitiesSocket.emit("refresh_project_data");
+                                resolve();
+                            } else {
+                                reject(new Error("Server failed to process notification."));
+                            }
+                        });
+                    });
                 }
             } else if (type === 'qaqc') {
                 const formData = new FormData()
@@ -415,7 +458,7 @@ const TaskDetails = ({currentTask, currentParentTask, currentTaskPhase, proj, Co
                 utilitiesSocket.emit("new_notification", {
                     subject: 'Request for Inspection',
                     body: `Inspection to be conducted for ${proj.lift_name} (Client: ${proj.client})
-                     at ${payload.scheduled_date}${confirmationModal.type === 'qaqc' ? `for ${payload.reason}` : ''}`,
+                     at ${payload.scheduled_date}${confirmationModal.type === 'qaqc' ? ` for ${payload.reason}` : ''}`,
                     Ids
                 }, (ack) => {
                     clearTimeout(timeout);
@@ -657,6 +700,7 @@ const TaskDetails = ({currentTask, currentParentTask, currentTaskPhase, proj, Co
                     saveStatus={saveStatus}
                     proj={proj}
                     includeTncSchedule={includeTncSchedule}
+                    fetchedData={fetchedData}
                 />
             )}
 
@@ -678,6 +722,7 @@ const TaskDetails = ({currentTask, currentParentTask, currentTaskPhase, proj, Co
                     saveStatus={saveStatus}
                     proj={proj}
                     includeTncSchedule={includeTncSchedule}
+                    fetchedData={fetchedData}
                 />
             )}
         </div>

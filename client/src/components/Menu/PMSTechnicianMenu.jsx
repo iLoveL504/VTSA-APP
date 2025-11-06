@@ -22,19 +22,18 @@ const PMSTechnicianMenu = () => {
                 Dashboard
             </li>
           </Link>
-          <Link to="/projects">
-            <li>
-                <MdHomeRepairService style={{ color: 'white' }}/>
-                Projects
-            </li>
-          </Link>
-          <Link to="/baby-book">
+          <Link to="/pms/inspections">
             <li>
                 <IoIosDocument style={{ color: 'white' }}/>
                 PMS Inspection
             </li>
           </Link>
-            
+          <Link to="/projects">
+            <li>
+                <MdHomeRepairService style={{ color: 'white' }}/>
+                Project Joint Inspection
+            </li>
+          </Link>            
           
         </ul>
 
