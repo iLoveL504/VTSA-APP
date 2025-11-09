@@ -4,7 +4,7 @@ const ForemanCompletion = ({ currentTask, values, handleContractChange, handleAp
     return (
         <>
         {
-            (currentTask.task_parent === 500 || currentTask.task_parent === 600)  ? (
+            (currentTask.task_parent >= 500 || currentTask.task_parent >= 600)  ? (
                 <>
                       {proj.qaqc_punchlist ? (
                         <div className="punchlist-section">

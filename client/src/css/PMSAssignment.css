@@ -37,7 +37,7 @@
 
 .Content.PMSAssignment .project-table-header .header-row {
   display: grid;
-  grid-template-columns: 2fr 1fr 1.5fr 1.5fr 1fr 1fr 1fr;
+  grid-template-columns: 2fr 1fr 1.5fr 1.5fr 1fr 1fr 1fr 1fr;
   align-items: center;
   padding: 1rem;
   gap: 1rem;
@@ -164,7 +164,7 @@
 /* Project Entry */
 .Content.PMSAssignment .ProjectInfo {
   display: grid;
-  grid-template-columns: 2fr 1fr 1.5fr 1.5fr 1fr 1fr 1fr;
+  grid-template-columns: 2fr 1fr 1.5fr 1.5fr 1fr 1fr 1fr 1fr;
   align-items: center;
   padding: 1rem;
   gap: 1rem;

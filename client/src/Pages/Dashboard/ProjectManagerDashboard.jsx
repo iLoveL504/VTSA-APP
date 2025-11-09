@@ -3,8 +3,9 @@ import { useNavigate } from 'react-router-dom';
 import '../../css/ProjectManagerDashboard.css'
 import useAxiosFetch from '../../hooks/useAxiosFetch';
 import 'ldrs/react/Grid.css'
+import { Grid } from 'ldrs/react'
 
-const ProjectManagerDashboard = ({ onNewProject }) => {
+const ProjectManagerDashboard = ({ onNewProject, clearProjectData, clearProjectTasks }) => {
   const navigate = useNavigate();
   const backendURL = import.meta.env.VITE_BACKEND_URL || 'http://localhost:4000'
   // Project Manager Dashboard Data - Calculated from all projects
@@ -123,6 +124,8 @@ const ProjectManagerDashboard = ({ onNewProject }) => {
   }, [projects]);
 
   const handleProjectClick = (projectId) => {
+    clearProjectTasks()
+    clearProjectData()
     navigate(`/projects/${projectId}`);
   };
 
@@ -303,7 +306,7 @@ const ProjectManagerDashboard = ({ onNewProject }) => {
               </button>
             </div>
             <div className="projects-list">
-              {projects.slice(0, 8).map(project => (
+              {projects.slice(0, 15).map(project => (
                 <ProjectItem key={project.id} project={project} type="normal" onProjectClick={handleProjectClick} />
               ))}
             </div>

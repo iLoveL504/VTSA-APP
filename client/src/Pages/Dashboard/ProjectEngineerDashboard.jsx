@@ -5,7 +5,7 @@ import {useStoreState} from 'easy-peasy'
 import useAxiosFetch from '../../hooks/useAxiosFetch';
 import 'ldrs/react/Grid.css'
 
-const ProjectEngineerDashboard = () => {
+const ProjectEngineerDashboard = ({userId, clearProjectData, clearProjectTasks}) => {
   const backendURL = import.meta.env.VITE_BACKEND_URL || 'http://localhost:4000'
   const navigate = useNavigate();
   const {data: projects, loading: projectsIsLoading} = useAxiosFetch(`${backendURL}/api/projects`)
@@ -234,6 +234,8 @@ const ProjectEngineerDashboard = () => {
                     type="critical" 
                     onProjectClick={handleProjectClick}
                     onUpdateTask={handleUpdateTask}
+                    clearProjectData={clearProjectData}
+                    clearProjectTasks={clearProjectTasks}
                   />
                 ))}
               </div>
@@ -254,6 +256,8 @@ const ProjectEngineerDashboard = () => {
                     project={project} 
                     type="pending" 
                     onProjectClick={handleProjectClick}
+                    clearProjectData={clearProjectData}
+                    clearProjectTasks={clearProjectTasks}
                   />
                 ))}
               </div>
@@ -278,6 +282,8 @@ const ProjectEngineerDashboard = () => {
                     onProjectClick={handleProjectClick}
                     onUpdateTask={handleUpdateTask}
                     onManageTeam={handleManageTeam}
+                    clearProjectData={clearProjectData}
+                    clearProjectTasks={clearProjectTasks}
                   />
                 ))}
             </div>
@@ -362,7 +368,11 @@ const ProjectEngineerDashboard = () => {
               <h3>Quick Actions</h3>
             </div>
             <div className="quick-actions">
-              <button className="quick-action-btn" onClick={() => navigate('/projects')}>
+              <button className="quick-action-btn" onClick={() => {
+                clearProjectTasks()
+                clearProjectData()
+                navigate('/projects')
+              }}>
                 <i className="fas fa-list"></i>
                 <span>View All Projects</span>
               </button>
@@ -408,7 +418,7 @@ const ProjectEngineerDashboard = () => {
 };
 
 // Project Item Component
-const ProjectItem = ({ project, type, onProjectClick, onManageTeam }) => {
+const ProjectItem = ({ project, type, onProjectClick, onManageTeam, clearProjectData, clearProjectTasks }) => {
   const getDaysUntilDeadline = () => {
     if (!project.project_end_date) return null;
     const deadline = new Date(project.project_end_date);
@@ -507,18 +517,14 @@ const ProjectItem = ({ project, type, onProjectClick, onManageTeam }) => {
       <div className="project-actions">
         <button 
           className="btn-primary btn-sm"
-          onClick={() => onProjectClick(project.id)}
+          onClick={() => {
+            clearProjectTasks()
+            clearProjectData()
+            onProjectClick(project.id)
+          }}
         >
           View
         </button>
-        {onManageTeam && project.has_team === 1 && type !== 'pending' && (
-          <button 
-            className="btn-outline btn-sm"
-            onClick={() => onManageTeam(project.id)}
-          >
-            Manage Team
-          </button>
-        )}
       </div>
     </div>
   );

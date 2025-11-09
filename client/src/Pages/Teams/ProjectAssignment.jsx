@@ -188,10 +188,18 @@ const ProjectAssignment = () => {
             window.location.reload()
             setEditingProjectId(null);
         } else {
-            // Start editing
-            const projInstallationTeam = [...installationTeams[projectId].team, ...teamsNoProject]
-            setEditTeamSelection(projInstallationTeam)
-            setEditedTeam(installationTeams[projectId].team)
+            // Start editing    
+           console.log(installationTeams[projectId] === undefined)
+            if(installationTeams[projectId] === undefined) {
+                setEditTeamSelection(teamsNoProject)
+                setEditedTeam([])
+            } else {
+                console.log(installationTeams)
+                 console.log(Object.keys(installationTeams).length === 0)
+                const projInstallationTeam = [...installationTeams[projectId].team, ...teamsNoProject]
+                setEditTeamSelection(projInstallationTeam)
+                setEditedTeam(installationTeams[projectId].team)                
+            }
             setEditingProjectId(projectId);
         }
     };
@@ -596,7 +604,7 @@ const ProjectAssignment = () => {
                                             <div className="role-header">
                                                 <span className="role-title">Foreman</span>
                                                 <span className="role-count">
-                                                    {editedTeam.filter(t => t.job === 'Foreman').length}/1
+                                                    {editedTeam.filter(t => t.job === 'Foreman').length}
                                                 </span>
                                             </div>
                                             <div className="role-members">

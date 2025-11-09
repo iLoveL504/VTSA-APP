@@ -61,13 +61,21 @@ const PMSEntry = ({ project, setSelectedEntry, onAssignClick }) => {
             {/* Column 5: Next Inspection Date */}
             <div className="inspection-date">
                 {project.pms_inspection_date ? (
+                    <div>{new Date(project.last_inspection_date).toLocaleDateString('en-GB')}</div>
+                ) : (
+                    <div>-</div>
+                )}
+            </div>
+            {/* Column 6: Next Inspection Date */}
+            <div className="inspection-date">
+                {project.pms_inspection_date ? (
                     <div>{new Date(project.pms_inspection_date).toLocaleDateString('en-GB')}</div>
                 ) : (
                     <div>-</div>
                 )}
             </div>
             
-            {/* Column 6: Free PMS */}
+            {/* Column 7: Free PMS */}
             <div className="free-pms">
                 {isFreePMS ? (
                     <span className="free-badge">Free PMS</span>
@@ -76,22 +84,9 @@ const PMSEntry = ({ project, setSelectedEntry, onAssignClick }) => {
                 )}
             </div>
             
-            {/* Column 7: Actions */}
+            {/* Column 8: Actions */}
             <div className="actions">
-                {canAssign && (
-                    <button className="assign-action-btn" onClick={handleAssignClick}>
-                        Assign
-                    </button>
-                )}
-                {project.pms_status === 'PMS Inspection Assigned' && (
-                    <span className="assigned-text">Assigned</span>
-                )}
-                {project.pms_status === 'PMS Inspection Ongoing' && (
-                    <span className="ongoing-text">In Progress</span>
-                )}
-                {project.pms_status === 'No PMS Scheduled' && (
-                    <span className="no-pms-text">Not Scheduled</span>
-                )}
+                {project.callback_date ? project.callback_date : '-'}
             </div>
         </div>
     );

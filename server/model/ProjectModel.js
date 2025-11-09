@@ -246,7 +246,6 @@ static async getTaskPhotos(id) {
    static async makeProjectSchedule(data, id) {
     const {tasks, holidays, isCalendarDays} = data
     const days = !isCalendarDays ? 'working' : 'calendar'
-    console.log(holidays)
   try {
     const checkQuery = `show tables like 'project_${id}_schedule'`
     const [results] = await pool.query(checkQuery)
@@ -318,7 +317,6 @@ static async getTaskPhotos(id) {
 
       return pool.query(insertQuery, values);
     });
-    console.log('inside holidy inserts')
     const holidayInserts = holidays.map(h => (
       pool.query(`insert into project_holidays (project_id, holiday) values (?, ?)`, [id, h])
     ))
@@ -352,7 +350,6 @@ static async getTaskPhotos(id) {
         await pool.query(`update projects set days_since_hold = ? where id = ?`, [holdDays, id])
       }
       if(isOnHold) {
-        console.log('doint this dang hold query')
         await pool.query(`update projects set status = 'Pending' where id = ?`, [id])
         return 
       }
@@ -387,9 +384,6 @@ static async getTaskPhotos(id) {
           ]
         );
 
-        console.log(`proj ${id} is in: ${foundCurrentTask}`)
-        console.log(`proj ${id} is in: ${phaseName}`)
-        console.log(installation_start_date)
         const cleanScheduleQuery = `update project_${id}_schedule set task_actual_current = 0`
         await pool.query(cleanScheduleQuery)
         const projectScheduleQuery = `update project_${id}_schedule set task_actual_current = 1 where task_id = ?`
@@ -412,7 +406,6 @@ static async getTaskPhotos(id) {
 
           const [qaqcId] = await pool.query(`select qaqc_id from project_manpower where project_id = ?`, [id])
           const Ids = qaqcId.map(q => q.qaqc_id)
-          console.log(Ids)
           
           await utility.changeUserStatus(Ids, 'active')
         }
@@ -424,7 +417,6 @@ static async getTaskPhotos(id) {
           )
         }
         if(is_behind){
-          console.log(`project ${id} is behind`)
           await pool.query(`update projects set is_behind = 1 where id =?`, [id])
         } else {
           await pool.query(`update projects set is_behind = 0 where id =?`, [id])
@@ -466,8 +458,6 @@ static async getTaskPhotos(id) {
 
     static async retrieveProjectReport(id) {
         const [results] = await pool.query(`select dr.*, drp.photo_url from project_daily_report dr join daily_report_photos drp on dr.id = drp.report_id where project_id = ?`, [id])
-        console.log(results)
-        console.log('------------------------------')
         return results
     }
 
@@ -564,7 +554,6 @@ static async getTaskPhotos(id) {
       [id]
     );
 
-    console.log(rows)
     if (rows.length === 0) {
         await pool.query('insert into kickoff_checklist (id, project_name) values (?, ?)', [id, ''])
         const here = await pool.query(`SELECT * FROM kickoff_checklist WHERE id = ? LIMIT 1`, [id])
@@ -678,7 +667,6 @@ static async getTaskPhotos(id) {
     const { task_id, task_name, start_date, end_date, task_duration, task_percent} = data
     const query = `update project_${projId}_schedule set task_approval = 1 where task_id = ?;`
     await pool.query(query, [task_id])
-    console.log('safda')
 
     for (const photo of photos) {
       const filePath = "/uploads/" + photo.filename;
@@ -710,7 +698,6 @@ static async getTaskPhotos(id) {
   static async assignProjQAQC (data) {
     const {projId, qaqcId} = data
     await pool.query(`update project_manpower set qaqc_id = ? where project_id = ?`, [qaqcId, projId])
-    console.log('do I run')
     await pool.query(`update projects set qaqc_pending = 0, qaqc_is_assigned = 1, qaqc_ongoing = 0 where id = ?`, [projId])
     await this.addQAQCInspectionRecord(projId, data)
 
@@ -723,7 +710,6 @@ static async getTaskPhotos(id) {
 static async completeProjQAQC (projId, data, photos) {
   const { inspection_id, checklist } = data;
   const { documents, evidence } = photos
-  console.log('here at projQAQC')
   // get a connection for transaction
   const conn = await pool.getConnection();
   try {
@@ -769,7 +755,6 @@ static async completeProjQAQC (projId, data, photos) {
 
     const [qaqcId] = await pool.query(`select qaqc_id from project_manpower where project_id = ?`, [projId])
     const Ids = qaqcId.map(q => q.qaqc_id)
-    console.log(Ids)
     
     await utility.changeUserStatus(Ids, 'Inactive')
 
@@ -785,7 +770,6 @@ static async completeProjQAQC (projId, data, photos) {
 }
 
 static async qaqcPunchlisting (projId, photos) {
-  console.log(photos)
   const {punchlist, evidence} = photos
   const [result] = await pool.query(`select current_qaqc_id from projects where id = ?`, [projId])
   const inspectionId = result[0].current_qaqc_id
@@ -800,7 +784,6 @@ static async qaqcPunchlisting (projId, photos) {
 }
 
 static async rectifyItems (projId) {
-  console.log('rectify')
   await pool.query(`update projects set qaqc_punchlist = 0 where id = ?`, [projId])
 }
 
@@ -812,7 +795,6 @@ static async rectifyItems (projId) {
 
   static async assignProjTNC (projId, tncId) {
     await pool.query(`update project_manpower set tnc_tech_id = ? where project_id = ?`, [tncId, projId])
-    console.log('do I run')
     await pool.query(`update projects set tnc_pending = 1, tnc_is_assigned = 1, tnc_ongoing = 0 where id = ?`, [projId])
   }
 
@@ -824,10 +806,8 @@ static async rectifyItems (projId) {
     const { task_id, task_name, start_date, end_date, task_duration, task_percent, checklist_type} = data
     const query = `update project_${projId}_schedule set task_approval = 1 where task_id = ?;`
     await pool.query(query, [task_id])
-    console.log('safda')
 
     const {evidence, documents} = photos
-    console.log(evidence)
 
     if(evidence !== null) {
       if(evidence.length !== 0) {
@@ -897,14 +877,12 @@ static async rectifyItems (projId) {
   static async approveProjPMS (projId, pmsId) {
     console.log(`[${projId}, ${pmsId}]`)
     const results = await pool.query(`update projects set pms_pending = 0, pms_ongoing = 0, pms_is_assigned = 1 where id = ?`, [projId])
-    console.log(results)
     await pool.query(`update project_manpower set pms_id = ? where project_id = ?`, [pmsId, projId])
   }
 
   //PMS finishes in joint inspection
   static async completePMSJoint (projId, data, photos) {
   const { task_id, task_name, start_date, end_date, task_duration, task_percent} = data
-  console.log('complete pms approval')
     await pool.query(`
         update projects set pms_approval = 0 where id = ?
       `, [projId])
@@ -935,7 +913,6 @@ static async rectifyItems (projId) {
   static async resumeProject (projId, data) {
     const schedQuery = `select * from project_${projId}_schedule`
     const [schedule] = await pool.query(schedQuery)
-    console.log('so It wen heree')
         const sortedTasks = schedule.sort((a, b) => {
         // First, sort by start date as the primary criteria
         const dateDiff = new Date(a.task_start) - new Date(b.task_start);
@@ -977,17 +954,12 @@ static async rectifyItems (projId) {
     const start_date = getData[0].start_date
     const days = getData[0].days
     const holidays = []
-    console.log(getData)
-    console.log('0-------------------------------------0')
-    console.log(start_date)
     const adjustedSchedule = new LinkedList(new Date(start_date), (days === 'working' ? false : true), holidays)
     sortedTasks.forEach((t) => adjustedSchedule.insertLast(t))
     adjustedSchedule.postponeProject(lastTaskId)
     adjustedSchedule.resumeProject(daysPassed)
-    console.log('0-----------------------------------------------0')
     
     const editedSchedule = adjustedSchedule.toArray()
-    console.log(adjustedSchedule.printListData())
        const checkQuery = `show tables like 'project_${projId}_schedule'`
     const [results] = await pool.query(checkQuery)
     if(results.length !== 0) {
@@ -1025,8 +997,8 @@ static async rectifyItems (projId) {
       const insertPromises = editedSchedule.map(async (t) => {
       const insertQuery = `
         INSERT INTO project_${projId}_schedule 
-          (task_id, task_name, task_start, task_end, task_duration, task_type, task_parent, task_percent, section_title, item_code, wt, unit, description)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+          (task_id, task_name, task_start, task_end, task_duration, task_done, task_actual_current, task_type, task_parent, task_percent, section_title, item_code, wt, unit, description)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
       `;
 
       const values = [
@@ -1035,6 +1007,8 @@ static async rectifyItems (projId) {
         t.task_start || null,
         t.task_end || null,
         t.task_duration || 1,
+        t.task_done,
+        t.task_actual_current,
         t.task_type || 'task',
         t.task_parent || null,
         t.task_percent || 0,
@@ -1048,6 +1022,7 @@ static async rectifyItems (projId) {
       return pool.query(insertQuery, values);
     });
     await Promise.all(insertPromises)
+    
     await pool.query(`update projects set on_hold = 0, request_hold = 0 where id = ?`,[projId])
 
   }
@@ -1068,11 +1043,12 @@ static async rectifyItems (projId) {
 
   static async projHandoverDone (projId, photos, data) {
     const { client, contract } = data
-    console.log (data)
     await pool.query(`update projects set status = 'Completed', handover_done = 1, handover_date = curdate() where id =  ?`, [projId])
     //create pms entry
     await pool.query(`insert into pms_projects(id, contract_type) values (?, ?)`, [projId, contract])
-
+    await pool.query(`
+        update pms_projects set free_pms_end = DATE_ADD(handover_date, INTERVAL 1 YEAR) where id = ?
+      `, [projId])
     //get team id
     const [getId] = await pool.query(`select team_id from project_manpower where project_id = ?`, [projId])
     const team_id = getId[0].team_id

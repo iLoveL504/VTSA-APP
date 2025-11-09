@@ -78,6 +78,7 @@ export const PMSController = {
           success: true,
           message: "approved"
       })
+      console.log('here')
     } catch (err) {
         console.error(err);
         res.status(500).json({ success: false, message: "Error approving" }); 

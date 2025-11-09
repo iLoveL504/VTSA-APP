@@ -1,17 +1,46 @@
-import React from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
 import useAxiosFetch from '../hooks/useAxiosFetch'
-import {useParams} from 'react-router-dom'
+import {useParams, useNavigate} from 'react-router-dom'
 import '../css/ClientBabyBook.css'
+import { ServerIcon } from 'lucide-react'
+import { useStoreActions } from 'easy-peasy'
 
 const ClientBabyBook = () => {
+    const navigate = useNavigate()
     const {clientId} = useParams()
     console.log(clientId)
+    const setServiceReports = useStoreActions(actions => actions.setServiceReports)
+    const [babyBook, setBabyBook] = useState()
+    
     const backendURL = import.meta.env.VITE_BACKEND_URL || 'https://localhost:4000';
-    const { data: babyBook } = useAxiosFetch(`${backendURL}/api/pms/baby-book/${clientId}`)
+    const { data: babyBookData } = useAxiosFetch(`${backendURL}/api/pms/baby-book/${clientId}`)
     const { data: projectData } = useAxiosFetch(`${backendURL}/api/pms/clients/${clientId}`)
     console.log(projectData)
     console.log(babyBook)
 
+    useEffect(() => {
+        setBabyBook(babyBookData)
+        setServiceReports(babyBookData.service_reports)
+    }, [babyBookData])
+
+const inspectionHistory = useMemo(() => {
+    console.log(babyBook === undefined)
+    
+    // Add proper null/undefined checks
+    if (babyBook && babyBook.service_reports && Array.isArray(babyBook.service_reports)) {
+        // Fixed the arrow function syntax - added return statement
+        const inspectionByIds = Array.from(
+            new Map(
+                babyBook.service_reports.map(s => [s.inspection_history_id, s])
+            ).values()
+        )
+        return inspectionByIds            
+    }
+    
+    // Return empty array as fallback
+    return []
+}, [babyBook])
+    console.log(inspectionHistory)
     // Function to get file type from URL
     const getFileType = (url) => {
         if (!url) return 'unknown';
@@ -102,15 +131,32 @@ const ClientBabyBook = () => {
     return (
         <div className="baby-book-container">
             {/* Header Section */}
-            <div className="baby-book-header">
+            <div className="baby-book-header" style={{textAlign: 'left'}}>
                 <h1>Baby Book - {projectData.lift_name || 'Project Documents'}</h1>
-                <div className="contract-info">
-                    <h3>Contract Information</h3>
-                    <p><strong>Contract Amount:</strong> {formatCurrency(projectData.contract_amount)}</p>
-                    <p><strong>Client:</strong> {projectData.client || 'N/A'}</p>
-                    <p><strong>Status:</strong> {projectData.status || 'N/A'}</p>
-                    <p><strong>Location:</strong> {[projectData['city/municipality'], projectData.province, projectData.region].filter(Boolean).join(', ') || 'N/A'}</p>
+                <div className="contract-info" style={{textAlign:'left'}}>
+                    <h3>Client Information</h3>
+                    <div className="contract-info-grid">
+                        <div style={{
+                            textAlign:'left'
+                        }}>
+                            <p><strong>Contract Amount:</strong> {formatCurrency(projectData.contract_amount)}</p>
+                            <p><strong>Client:</strong> {projectData.client || 'N/A'}</p>
+                            <p><strong>Location:</strong> {[projectData['city/municipality'], projectData.province, projectData.region].filter(Boolean).join(', ') || 'N/A'}</p>         
+                            <p><strong>PMS Contract:</strong> {projectData.pms_contract || 'N/A'}</p>            
+                        </div>
+                        <div style={{
+                            textAlign:'left'
+                        }}>
+                            
+                            <p><strong>PMS Cycle:</strong> {projectData.contract_type || 'N/A'}</p>                            
+                            <p><strong>Handover Date:</strong> {new Date(projectData.handover_date).toLocaleDateString() || 'N/A'}</p>
+                            <p><strong>Free PMS End:</strong> {new Date(projectData.free_pms_end).toLocaleDateString() || 'N/A'}</p>
+                        </div>                
+                    </div>
                 </div>
+                <h3>Inspection Dates</h3>
+                <p><strong>Last Inspection:</strong>{new Date(projectData.last_inspection_date).toLocaleDateString()}</p>
+                <p><strong>Upcoming Inspection:</strong>{new Date(projectData.pms_inspection_date).toLocaleDateString()}</p>
             </div>
             
             {/* Handover Documents Section */}
@@ -150,50 +196,25 @@ const ClientBabyBook = () => {
             <div className="documents-section">
                 <h2>Service Reports</h2>
                 {babyBook.service_reports && babyBook.service_reports.length > 0 ? (
-                    <div className="service-reports-grouped">
-                        {Object.keys(groupedServiceReports).map((groupId) => {
-                            const group = groupedServiceReports[groupId];
-                            return (
-                                <div key={`inspection-group-${groupId}`} className="inspection-group">
-                                    <div className="inspection-group-header">
-                                        <h3>
-                                            Inspection #{group.inspection_id || 'N/A'} - {group.lift_name || 'Service Report'}
-                                        </h3>
-                                        <p className="inspection-date">
-                                            Date Conducted: {formatDate(group.date_conducted)}
-                                        </p>
-                                    </div>
-                                    <div className="documents-grid">
-                                        {group.reports.map((report, index) => {
-                                            const fileType = getFileType(report.doc_url);
-                                            return (
-                                                <div key={`report-${report.id}-${index}`} className="document-card">
-                                                    <div className="document-icon">
-                                                        {getFileIcon(fileType)}
-                                                    </div>
-                                                    <div className="document-info">
-                                                        <h4>{report.inspection_document_name || 'Service Report Document'}</h4>
-                                                        <p className="document-details">
-                                                            {report.lift_name || 'Service Report'}
-                                                        </p>
-                                                        <p className="document-type">{fileType.toUpperCase()} File</p>
-                                                    </div>
-                                                    <a 
-                                                        href={`${backendURL}${report.doc_url}`} 
-                                                        target="_blank" 
-                                                        rel="noopener noreferrer"
-                                                        className="view-button"
-                                                    >
-                                                        View Report
-                                                    </a>
-                                                </div>
-                                            );
-                                        })}
-                                    </div>
+                    <>
+                        <div className="project-table-header">
+                            <div className="table-row header-row">
+                                <div className="table-cell">Project & Client</div>
+                                <div className="table-cell">Date Conducted</div>
+                                <div className="table-cell">Inspection ID</div>
+                            </div>
+                        </div>
+
+                        <div className='ServiceList'>
+                            {inspectionHistory.map((service, index) => (
+                                <div className='ProjectInfo' onClick={() => navigate(`service-report/${service.inspection_history_id}`)}>
+                                    <div className='proj-name'>{service.lift_name}</div>
+                                    <div>{new Date(service.date_conducted).toLocaleDateString()}</div>
+                                    <div>{service.inspection_history_id}</div>
                                 </div>
-                            );
-                        })}
-                    </div>
+                            ))}
+                        </div>
+                    </>
                 ) : (
                     <p className="no-documents">No service reports available.</p>
                 )}

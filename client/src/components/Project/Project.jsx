@@ -2,6 +2,7 @@ import React from 'react'
 import Box from '@mui/material/Box';
 import LinearProgress from '@mui/material/LinearProgress';
 import { useNavigate } from 'react-router-dom'
+import { useStoreActions } from 'easy-peasy';
 
 const summaryMap = {
     'Installation': 'Installation',
@@ -14,7 +15,11 @@ const summaryMap = {
 
 const Project = ({project}) => {
   const navigate = useNavigate()
+  const clearProjectTasks = useStoreActions(actions => actions.clearProjectTasks)
+  const clearProjectData = useStoreActions(actions => actions.clearProjectData)
   const handleClick = async () => {
+    clearProjectData()
+    clearProjectTasks()
     navigate(`/projects/${project.id}`)
   }
   

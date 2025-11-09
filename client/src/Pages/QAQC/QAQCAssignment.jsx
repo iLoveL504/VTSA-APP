@@ -16,6 +16,7 @@ const QAQCAssignment = ({updateIsLoading}) => {
     const projects = useStoreState(state => state.projects)
     const employees = useStoreState(state => state.employees)
     console.log(manpower)
+    console.log(qaqcTechs)
     const [searchTerm, setSearchTerm] = useState('')
     const [selectedEntry, setSelectedEntry] = useState({})
     const [assignModal, setAssignModal] = useState({ isOpen: false, project: null })
@@ -39,8 +40,8 @@ const QAQCAssignment = ({updateIsLoading}) => {
         console.log(filteredProjects)
     }, [filteredProjects])
 
-    useEffect(() => {
-        const findQaqc = qaqcTechs.find(q => q.id === selectedEntry.id)
+    useEffect(() => {   
+        const findQaqc = qaqcTechs.find(q => q.project_id === selectedEntry.id)
         console.log(selectedEntry)
         console.log(qaqcTechs)
         console.log(findQaqc)
@@ -235,6 +236,7 @@ const QAQCAssignment = ({updateIsLoading}) => {
                         </div>
                     ) : selectedEntry.qaqc_is_assigned ? (
                     <div className="entry-qaqc-assigned">
+                        {console.log(selectedDisplayTech === undefined)}
                         <strong>QAQC Assigned</strong>
                         <span>Assigned to: {selectedDisplayTech?.full_name ? selectedDisplayTech.full_name : 'nothing'}</span>
                         <span>Assigned on: {new Date(selectedEntry.qaqc_inspection_date).toLocaleDateString('en-GB')}</span>

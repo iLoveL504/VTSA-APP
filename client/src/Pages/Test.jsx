@@ -40,7 +40,7 @@ const Test1 = () => {
     task_duration: task.duration || task.task_duration || 1,
     task_type: task.type || task.task_type || 'task',
     task_parent: task.parent || task.task_parent || 0,
-    task_percent: task.percent_progress || task.task_percent || 0,
+    task_percent: task.percent_progress,
     section_title: task.section_title || 'General',
     wt: task.wt || 0.00,
     section_id: task.section_id || Math.floor(Math.random() * 900) + 100,
@@ -66,12 +66,15 @@ const Test1 = () => {
     task_end: task.task_end,
     task_duration: task.task_duration,
     task_type: task.task_type,
-    task_parent: task.task_parent
+    task_parent: task.task_parent,
+    percent_progress: task.task_percent,
+    item_code: task.item_code
   });
 
   const [linkedList, setLinkedList] = useState(() => {
-    const ll = new LinkedList(startDate, false);
+    const ll = new LinkedList(startDate, false, holidays);
     tasks.forEach((t) => {
+      console.log(t)
       ll.insertLast(mapTaskToLinkedList(t));
     });
     return ll;
@@ -119,6 +122,7 @@ const Test1 = () => {
 
   const taskOnClick = (t) => {
     setSelectedTaskID(t.id);
+    console.log(t)
   };
 
   // Convert linked list to array and map field names for display
@@ -126,19 +130,21 @@ const Test1 = () => {
     linkedList.toArray().map(mapTaskFromLinkedList), 
     [linkedList]
   );
-
+  
   useEffect(() => {
     itemRefs.current.forEach((ref) => {
       if (ref?.el) {
         ref.el.classList.remove("task-selected");
       }
     });
-
+   
     if (selectedTaskID) {
       const selectedRef = itemRefs.current.find((ir) => ir.t.id === selectedTaskID);
+      console.log(itemRefs.current)
       if (selectedRef?.el) {
         selectedRef.el.classList.add("task-selected");
         selectedRef.el.scrollIntoView({ behavior: "smooth", block: "center" });
+        console.log(selectedRef)
       }
     }
   }, [selectedTaskID, listArray]);
@@ -155,7 +161,7 @@ const Test1 = () => {
   useEffect(() => {
     setLinkedList((prevLL) => {
       const currentTasks = prevLL.toArray();
-      const newLL = new LinkedList(startDate, isCalendarDays);
+      const newLL = new LinkedList(startDate, isCalendarDays, holidays);
       currentTasks.forEach(task => newLL.insertLast(task));
       return newLL;
     });
@@ -180,7 +186,7 @@ const Test1 = () => {
     if (selectedIndex === -1) return;
 
     // Create a temporary linked list from current data
-    const tempLL = new LinkedList(startDate);
+    const tempLL = new LinkedList(startDate, isCalendarDays, holidays);
     listArray.forEach((task) => tempLL.insertLast(mapTaskToLinkedList(task)));
     
     // Generate a new unique ID for this parent
@@ -207,7 +213,7 @@ const Test1 = () => {
     };
 
     // Rebuild the linked list with the new task inserted
-    const newLinkedList = new LinkedList(startDate);
+    const newLinkedList = new LinkedList(startDate, isCalendarDays, holidays);
 
     listArray.forEach((task, index) => {
       const taskToInsert = mapTaskToLinkedList(task);
@@ -250,7 +256,7 @@ const Test1 = () => {
     const selectedIndex = getTaskIndex(selectedTaskID);
     if (selectedIndex === -1) return;
 
-    const newLinkedList = new LinkedList(startDate, isCalendarDays);
+    const newLinkedList = new LinkedList(startDate, isCalendarDays, holidays);
     
     listArray.forEach((task, index) => {
       if (index === selectedIndex) {
@@ -280,12 +286,21 @@ const Test1 = () => {
 
     if (!window.confirm("Are you sure you want to delete this task?")) return;
 
-    const newLinkedList = new LinkedList(startDate);
+    const newLinkedList = new LinkedList(startDate, isCalendarDays, holidays);
 
     listArray.forEach((task, index) => {
-      if (index !== selectedIndex) {
+      console.log(task)
+      if (index === selectedIndex) {
+        if (task.task_type === 'summary') {
+          window.alert('Cannot delete a summary')
+          
+          newLinkedList.insertLast(mapTaskToLinkedList(task));
+          return
+        }
+      } else  {
         newLinkedList.insertLast(mapTaskToLinkedList(task));
       }
+      
     });
  
     setLinkedList(newLinkedList);
@@ -307,7 +322,7 @@ const Test1 = () => {
       }
     });
   };
-
+  console.log(linkedList.toArray())
   return (
     <div className="Content SchedulePage">
       <div className='schedule-area'>
@@ -445,6 +460,7 @@ const Test1 = () => {
                         paddingLeft: `${indentLevel * 20}px`,
                         cursor: 'pointer'
                       }}
+                      ref={(el) => itemRefs.current[index] = {t: task, el: el}}
                     >
                       <td className="col-order">
                         <div className="task-order">

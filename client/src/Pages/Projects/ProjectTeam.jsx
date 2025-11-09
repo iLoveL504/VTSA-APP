@@ -6,29 +6,38 @@ import { Axios } from '../../api/axios'
 const ProjectTeam = ({teamInfo, proj, teamTechs, projId}) => {
     const[teamMIds, setTeamMIds] = useState([])
     const[pic, setPIC] = useState(null)
+    
     console.log(teamTechs)
     console.log(teamInfo)
-    // Get Foreman
-    const Foreman = teamInfo[0]
+    
+    // ADD GUARDS: Safe access to arrays
+    const teamInfoArray = Array.isArray(teamInfo) ? teamInfo : [];
+    const teamTechsArray = Array.isArray(teamTechs) ? teamTechs : [];
+    
+    // Get Foreman safely
+    const Foreman = teamInfoArray.length > 0 ? teamInfoArray[0] : null;
+    
     console.log(teamMIds)
-    // Get unique team composition
-    const teamComposition = teamTechs[0] || null;
-    console.log(teamInfo)
-    // Group team members by job role
+    
+    // Get unique team composition safely
+    const teamComposition = teamTechsArray.length > 0 ? teamTechsArray[0] : null;
+    
+    console.log(teamInfoArray)
+
+    // Group team members by job role SAFELY
     const groupedTeamMembers = {};
- if (teamTechs && teamTechs.length > 0) {
-    teamTechs.forEach(member => {
-        const job = member.job || 'Unassigned'; // fallback if null/undefined
-        if (!groupedTeamMembers[job]) {
-            groupedTeamMembers[job] = [];
-        }
-        groupedTeamMembers[job].push(member);
-    });
-}
+    if (teamTechsArray.length > 0) {
+        teamTechsArray.forEach(member => {
+            const job = member.job || 'Unassigned';
+            if (!groupedTeamMembers[job]) {
+                groupedTeamMembers[job] = [];
+            }
+            groupedTeamMembers[job].push(member);
+        });
+    }
 
     const handlePICChange = (e) => {
         const value = e.target.value
-        
         console.log(value)
         setPIC(value)
     }
@@ -46,28 +55,39 @@ const ProjectTeam = ({teamInfo, proj, teamTechs, projId}) => {
         } catch (err) {
             console.error(err)
         }
-
     }
 
     useEffect(() => {
-        if (teamInfo.length !== 0) {
-            const eIds = teamInfo.map(t => {
+        if (teamInfoArray.length > 0) {
+            const eIds = teamInfoArray.map(t => {
                 return {
                     id: t.emp_id,
                     fullname: t.e_fullname,
                     job: t.job
                 }
             })
-            const fId = teamInfo[0].foreman_id
-            const fname = teamInfo[0].Foreman
+            const fId = teamInfoArray[0].foreman_id
+            const fname = teamInfoArray[0].Foreman
             const ids = [...eIds, {id: fId, fullname: fname, job: 'Foreman'}]
-            setPIC(proj.project_PIC)
+            setPIC(proj?.project_PIC || null)
             setTeamMIds(ids)            
         }
-
-    }, [teamInfo])
+    }, [teamInfoArray, proj])
 
     console.log(groupedTeamMembers)
+
+    // ADD LOADING STATE
+    if (!teamInfo && !teamTechs) {
+        return (
+            <div className='ProjectTeam'>
+                <div className="loading-state">
+                    <Grid size="60" speed="1.5" color="#315a95"></Grid>
+                    <p>Loading team information...</p>
+                </div>
+            </div>
+        )
+    }
+
     return (
         <div className='ProjectTeam'>
             <h3>Project Team Composition</h3>
@@ -98,27 +118,28 @@ const ProjectTeam = ({teamInfo, proj, teamTechs, projId}) => {
             {/* Installation Team */}
             <div className="installation-team">
                 <h4>Installation Team</h4>
+                
                 {/* Project In Charge */}
                 <div className='team-section'>
                     <h5>Project In Charge</h5>
                     <div>
-                  <label htmlFor="equipmentType">Project In Charge</label>
-                    <select
-                        id="equipmentType"
-                        name="equipmentType"
-                        value={pic || ''}
-                        onChange={handlePICChange}
-                        required
-                    >
-                        <option value=""></option>
-                        {teamMIds.map((type) => (
-                        <option key={`M-${type.id}`} value={type.id} >
-                            {type.fullname}
-                        </option>
-                        ))}
-                    </select>                    
-                </div>
-                <button onClick={handleSavePIC}>Save Project In-Charge</button>
+                        <label htmlFor="equipmentType">Project In Charge</label>
+                        <select
+                            id="equipmentType"
+                            name="equipmentType"
+                            value={pic || ''}
+                            onChange={handlePICChange}
+                            required
+                        >
+                            <option value=""></option>
+                            {Array.isArray(teamMIds) && teamMIds.map((type) => (
+                                <option key={`M-${type.id}`} value={type.id}>
+                                    {type.fullname}
+                                </option>
+                            ))}
+                        </select>                    
+                    </div>
+                    <button onClick={handleSavePIC}>Save Project In-Charge</button>
                 </div>
                 
                 {/* Foreman */}
@@ -131,34 +152,35 @@ const ProjectTeam = ({teamInfo, proj, teamTechs, projId}) => {
                         </div>
                     </div>
                 )}
+                
                 {/* Skilled Installers */}
-                <div className="team-section">
-                    <h5>Skilled Installer(s)</h5>
-                    {teamInfo.filter(m => m.job === 'Skilled Installer').map((m) => {
-                    return (
-                            <div className="team-members-list">
+                {teamInfoArray.filter(m => m.job === 'Skilled Installer').length > 0 && (
+                    <div className="team-section">
+                        <h5>Skilled Installer(s)</h5>
+                        {teamInfoArray.filter(m => m.job === 'Skilled Installer').map((m, index) => (
+                            <div key={index} className="team-members-list">
                                 <div className="member-name">{m.e_fullname}</div> 
                             </div>
-                    );
-                })}
-                </div>
+                        ))}
+                    </div>
+                )}
+                
                 {/* Installers by Job Type */}
-                <div className="team-section">
-                    <h5>Skilled Installer(s)</h5>
-                    {teamInfo.filter(m => m.job === 'Installer').map((m) => {
-                    return (
-                            <div className="team-members-list">
+                {teamInfoArray.filter(m => m.job === 'Installer').length > 0 && (
+                    <div className="team-section">
+                        <h5>Installers</h5>
+                        {teamInfoArray.filter(m => m.job === 'Installer').map((m, index) => (
+                            <div key={index} className="team-members-list">
                                 <div className="member-name">{m.e_fullname}</div>
                             </div>
-                    );
-                })}
-                </div>                
-
+                        ))}
+                    </div>
+                )}
 
             </div>
 
             {/* Empty State */}
-            {(!teamTechs || teamTechs.length === 0) && (!teamInfo || teamInfo.length === 0) && (
+            {(teamTechsArray.length === 0 && teamInfoArray.length === 0) && (
                 <div className="empty-state">
                     <p>No team information available for this project.</p>
                 </div>

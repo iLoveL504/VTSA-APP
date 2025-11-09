@@ -1,5 +1,6 @@
 import tasksLite from '../data/TasksDataTesting.js'
 import TaskDataTesting from '../data/TasksDataTesting.js'
+import tasks from '../data/TasksData.js'
 
 /**
  * addWorkingDays:
@@ -23,7 +24,7 @@ const addWorkingDays = (start, days, isGovernment = false, holidays = []) => {
     } else {
       const day = date.getDay();
       const isHoliday = holidays.includes(date.toDateString());
-      if (day !== 0 && !isHoliday) { // skip Sundays and holidays for private projects
+      if (day !== 0 && !isHoliday && day !== 6) { // skip Sundays and holidays for private projects
         added++;
       }
     }
@@ -113,36 +114,49 @@ class LinkedList {
   }
 
   // POSTPONE FEATURE: Resume project after postponement with specified delay days
-  resumeProject(postponedDays) {
-    if (!this.postponed) {
-      console.log("Project is not postponed");
-      return false;
-    }
-
-    if (typeof postponedDays !== 'number' || postponedDays < 0) {
-      console.error("Invalid postponed days. Must be a non-negative number.");
-      return false;
-    }
-
-    console.log(`Resuming project asadfasdffter ${postponedDays} days postponement`);
-
-    // Find the task where postponement started
-    const postponedTask = this.postponedFromTask;
-    if (!postponedTask) {
-      console.error("Cannot find postponed task");
-      return false;
-    }
-
-    // Add postponement days to all tasks starting from the postponed task
-    this.addPostponementDelay(postponedTask, postponedDays);
-
-    // Reset postponed state
-    this.postponed = false;
-    this.postponedFromTask = null;
-    this.postponedStartDate = null;
-
-    return true;
+// POSTPONE FEATURE: Resume project after postponement with specified resume date
+resumeProject(resumeDate) {
+  if (!this.postponed) {
+    console.log("Project is not postponed");
+    return false;
   }
+
+  if (!(resumeDate instanceof Date) || isNaN(resumeDate.getTime())) {
+    console.error("Invalid resume date. Must be a valid Date object.");
+    return false;
+  }
+
+  // Normalize resume date to midnight
+  resumeDate.setHours(0, 0, 0, 0);
+
+  console.log(`Resuming project on ${resumeDate.toDateString()}`);
+
+  // Find the task where postponement started
+  const postponedTask = this.postponedFromTask;
+  if (!postponedTask) {
+    console.error("Cannot find postponed task");
+    return false;
+  }
+
+  // Calculate actual delay based on the resume date and postponed task's original end date
+  const postponedTaskEnd = new Date(postponedTask.data.task_end);
+  postponedTaskEnd.setHours(0, 0, 0, 0);
+  
+  // Calculate how many working days to delay from the postponed task's original end
+  const delayDays = this.calculateDuration(postponedTaskEnd, resumeDate, this.isGovernment);
+
+  console.log(`Calculated delay: ${delayDays} working days from ${postponedTaskEnd.toDateString()} to ${resumeDate.toDateString()}`);
+
+  // Add postponement delay to all tasks starting from the postponed task
+  this.addPostponementDelay(postponedTask, delayDays);
+
+  // Reset postponed state
+  this.postponed = false;
+  this.postponedFromTask = null;
+  this.postponedStartDate = null;
+
+  return true;
+}
 
   // Add postponement delay to tasks from a specific node onwards
   addPostponementDelay(fromNode, delayDays) {
@@ -412,11 +426,11 @@ class LinkedList {
 }
 
 // Example usage with postponement feature
-const holidays = ['2025-06-03'];
+const holidays = ['2025-06-03', '2025-06-4'];
 const privateLL = new LinkedList(new Date("2025-06-01"), false, holidays);
 
 // Map the test data to use database field names
-const mappedTestData = TaskDataTesting.map(task => ({
+const mappedTestData = tasks.map(task => ({
   task_id: task.id,
   task_name: task.text,
   task_start: task.start,
@@ -437,7 +451,7 @@ console.log("\n=== AFTER POSTPONEMENT (before resume) ===");
 privateLL.printListData();
 
 // Resume project - dates will adjust automatically
-privateLL.resumeProject(8);
+privateLL.resumeProject(new Date('2025-06-18'));
 
 console.log("\n=== AFTER RESUME (dates adjusted) ===");
 privateLL.printListData();

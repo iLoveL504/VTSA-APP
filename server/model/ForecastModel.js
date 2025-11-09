@@ -131,11 +131,21 @@ class ForecastModel {
     //will throw an error if lacking and halt execution
     tallyJobs(jobs)
     
-    const insertPromises = installers.map(async(i) => {
-      
-      return pool.query(`insert into team_members (foreman_id, emp_id) values (?, ?)`, [foremanId, i])
-    })
-
+  const insertPromises = installers.map(async (installerId) => {
+    console.log(`Inserting: foreman_id=${foremanId}, emp_id=${installerId}, project_id=${id}`);
+    
+    try {
+      const result = await pool.query(
+        `INSERT INTO team_members (foreman_id, emp_id, project_id) VALUES (?, ?, ?)`, 
+        [foremanId, installerId, id]
+      );
+      console.log('Insert successful for installer:', installerId);
+      return result;
+    } catch (error) {
+      console.error('Insert failed for installer:', installerId, 'Error:', error.message);
+      throw error;
+    }
+  });
     await Promise.all(insertPromises)
 
     await utility.changeUserStatus([...installers, foremanId], 'active')

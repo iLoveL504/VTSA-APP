@@ -38,8 +38,6 @@ const TNCEntry = ({project, setSelectedEntry, onAssignClick}) => {
   }
 
   const tncStatus = getTNCStatus()
-  console.log(tncStatus)
-  console.log(isTNCPending)
   return (
     <div 
       className={`ProjectInfo ${tncStatus}`} 

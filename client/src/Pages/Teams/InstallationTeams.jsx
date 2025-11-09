@@ -18,7 +18,7 @@ const InstallationTeams = ({ teamsByGroup, isLoading, error }) => {
 
 
   const formatDate = (dateString) => {
-    return new Date(dateString).toLocaleDateString('en-US', {
+    return new Date(dateString).toLocaleDateString('en-GB', {
       year: 'numeric',
       month: 'short',
       day: 'numeric'
@@ -87,9 +87,7 @@ const x = Object.entries(teamsByGroup)
 
       <div className="teams-grid">
         {}
-        {Object.entries(teamsByGroup).filter((t) => 
-            t[1][0].status === 'Installation' ||  t[1][0].status === 'Test and Comm' 
-        ).map(([teamId, teamMembers]) => {
+        {Object.entries(teamsByGroup).map(([teamId, teamMembers]) => {
           const firstMember = teamMembers[0];     
           //const foreman = teamMembers.find(member => member.job === 'Foreman');
           const skilledInstallers = teamMembers.filter(member => member.job === 'Skilled Installer');

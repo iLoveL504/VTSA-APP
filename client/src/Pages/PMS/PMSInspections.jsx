@@ -56,7 +56,8 @@ function getTomorrowDate() {
     const handleBeginInspection = async (inspection) => {
         try {
             setActionStatus('starting')
-            const response = await Axios.post(`/api/pms/begin-inspection/${inspection.id}`)
+            console.log(inspection)
+            const response = await Axios.put(`/api/pms/begin-inspection/${inspection.id}`)
             
             if (response.data.success) {
                 setActionStatus('success')

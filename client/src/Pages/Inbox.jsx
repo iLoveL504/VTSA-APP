@@ -145,13 +145,13 @@ const Inbox = () => {
 
                 {/* Search */}
                 <div className="inbox-search">
-                    <i className="fas fa-search"></i>
-                    <input
-                        type="text"
-                        placeholder={`Search ${activeTab === 'inbox' ? 'messages' : 'sent messages'}...`}
-                        value={searchTerm}
-                        onChange={(e) => setSearchTerm(e.target.value)}
-                    />
+                        <i className="fas fa-search"></i>
+                        <input
+                            type="text"
+                            placeholder={`Search ${activeTab === 'inbox' ? 'messages' : 'sent messages'}...`}
+                            value={searchTerm}
+                            onChange={(e) => setSearchTerm(e.target.value)}
+                        />                    
                 </div>
 
                 {/* Messages List */}

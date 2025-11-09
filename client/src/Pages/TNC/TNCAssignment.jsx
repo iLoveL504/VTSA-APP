@@ -21,6 +21,7 @@ const TNCAssignment = ({updateIsLoading}) => {
     const [assignModal, setAssignModal] = useState({ isOpen: false, project: null })
     const [selectedTech, setSelectedTech] = useState('')
     const [assignmentStatus, setAssignmentStatus] = useState('')
+    const [selectedDisplayTech, setSelectedDisplayTech] = useState('')
     console.log(selectedEntry)
     // Filter projects based on search term
     const filteredProjects = useMemo(() => {
@@ -33,6 +34,16 @@ const TNCAssignment = ({updateIsLoading}) => {
         project.status?.toLowerCase().includes(term)
         )
     }, [projects, searchTerm])
+
+useEffect(() => {   
+    console.log('selectedEntry:', selectedEntry);
+    console.log('tncTechs:', tncTechs);
+    
+    const findTnc = tncTechs?.find(t => t.project_id === selectedEntry.id);
+    console.log('findTnc result:', findTnc);
+    
+    setSelectedDisplayTech(findTnc);
+}, [selectedEntry, tncTechs]); 
 
     useEffect(() => {
         console.log(filteredProjects)
@@ -198,7 +209,8 @@ const TNCAssignment = ({updateIsLoading}) => {
                     <strong>Current Task</strong>
                     <span>{selectedEntry.current_task || 'N/A'}</span>
                     </div>
-                    {(selectedEntry.tnc_pending && !selectedEntry.tnc_is_assigned) ? (
+                    {console.log(selectedEntry)}
+                    {(selectedEntry.tnc_pending && selectedEntry.tnc_is_assigned === 0) ? (
                     <div className="entry-tnc-assignment">
                         <h3>TNC Inspection Required</h3>
                         <p>This project needs TNC inspection assigned</p>
@@ -209,17 +221,19 @@ const TNCAssignment = ({updateIsLoading}) => {
                             Assign TNC Inspector
                         </button>
                     </div>
+                    ) : selectedEntry.tnc_ongoing ? (
+                    <div className="entry-tnc-assigned">
+                        {console.log(selectedDisplayTech === undefined)}
+                        <strong>TNC Ongoing</strong>
+                        <div>Assigned to: {selectedDisplayTech?.full_name || 'Technician'}</div>
+                        <div>Assigned on: {new Date(selectedDisplayTech?.tnc_start_date).toLocaleDateString('en-GB')}</div>
+                    </div>
+
                     ) : selectedEntry.tnc_is_assigned ? (
                     <div className="entry-tnc-assigned">
                         <strong>TNC Assigned</strong>
-                        <span>Assigned to: {selectedEntry.tnc_technician_name || 'Technician'}</span>
-                        <span>Assigned on: {new Date(selectedEntry.tnc_assign_date).toLocaleDateString('en-GB')}</span>
-                    </div>
-                    ) : selectedEntry.tnc_ongoing === 1 ? (
-                    <div className="entry-tnc-assigned">
-                        <strong>TNC Ongoing</strong>
-                        <span>Assigned to: {selectedEntry.tnc_technician_name || 'Technician'}</span>
-                        <span>Assigned on: {new Date(selectedEntry.tnc_assign_date).toLocaleDateString('en-GB')}</span>
+                        <div>Assigned to: {selectedDisplayTech?.full_name}</div>
+                        <div>Assigned on: {new Date(selectedDisplayTech?.tnc_start_date).toLocaleDateString('en-GB')}</div>
                     </div>
                     ) : (
                     <div className="entry-no-inspection">

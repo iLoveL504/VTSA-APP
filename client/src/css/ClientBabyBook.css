@@ -46,7 +46,7 @@
     color: #2c3e50;
     margin-bottom: 20px;
     font-size: 2rem;
-    border-bottom: 3px solid #3498db;
+    border-bottom: 3px solid #2873c3;
     padding-bottom: 10px;
 }
 
@@ -54,7 +54,13 @@
     background: #f8f9fa;
     padding: 20px;
     border-radius: 8px;
-    border-left: 4px solid #27ae60;
+    border-left: 4px solid #2761ae;
+    margin-bottom: 1rem;
+}
+
+.contract-info-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
 }
 
 .contract-info h3 {
@@ -149,7 +155,7 @@
 
 .view-button {
     display: inline-block;
-    background: #3498db;
+    background: #2162b1;
     color: white;
     padding: 10px 15px;
     text-decoration: none;

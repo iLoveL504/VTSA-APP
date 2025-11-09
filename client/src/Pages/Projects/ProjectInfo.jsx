@@ -1,6 +1,6 @@
 import { useParams, useNavigate } from 'react-router-dom'
-import { useState, useEffect } from 'react' // Added useEffect
-import { useStoreState } from 'easy-peasy'
+import { useState, useEffect } from 'react'
+import { useStoreState, useStoreActions } from 'easy-peasy'
 import useAxiosFetch from '../../hooks/useAxiosFetch'
 import 'ldrs/react/Grid.css'
 import { Axios } from '../../api/axios.js'
@@ -46,47 +46,116 @@ const ConfirmationModal = ({ isOpen, onClose, onConfirm, title, message, confirm
   );
 };
 
-
-
 const ProjectInfo = () => {
     const navigate = useNavigate()
-    const backendURL = import.meta.env.VITE_BACKEND_URL || "http://localhost:4000";
-    const [activePage, setActivePage] = useState('details')
     const { projId } = useParams()
     const numId = Number(projId)
+    
+    // EasyPeasy store state and actions - CORRECTED DESTRUCTURING
+    const {
+      projectData: proj,
+      projectPhotos: photos,
+      projectTeamTechs: teamTechs,
+      projectSchedule: projSched,
+      taskPhotos,
+      teamInfo,
+      isLoading,
+      error,
+
+      currentTask,
+      currentParentTask,
+      currentTaskPhase,
+      projectedTask,
+      projectExists,
+      projectCompleted,
+      isBehindSchedule,
+      onHold,
+      tasksIsLoading,
+      fetchedData
+    } = useStoreState(state => state); // Remove .projectStore since it's directly in root
+    console.log(currentTask)
+    const {
+      fetchAllProjectData,
+      fetchTeamInfo,
+      clearProjectData,
+      setProjectData,
+      setProjectPhotos,
+      setProjectTeamTechs,
+      setProjectSchedule,
+      setTaskPhotos,
+      setTeamInfo,
+      setLoading,
+      setError,
+
+        findProjectTasks,
+      clearProjectTasks
+    } = useStoreActions(actions => actions); // Remove .projectStore since it's directly in root
+
     const projects = useStoreState(state => state.projects)
-    const {data: proj, isLoading: projIsLoading} = useAxiosFetch(`${backendURL}/api/projects/${projId}`)
-    const {data: photos, isLoading: photosIsLoading} = useAxiosFetch(`${backendURL}/api/projects/photos/${projId}`)
-    const {data: teamTechs} = useAxiosFetch(`${backendURL}/api/teams/project-manpower/${projId}`)
-    const { data: projSched, isLoading: projSchedIsLoading } = useAxiosFetch(`${backendURL}/api/projects/schedule/${projId}`);
-    const { data: taskPhotos } = useAxiosFetch(`${backendURL}/api/projects/task-photos/${projId}`)
+    const [activePage, setActivePage] = useState('details')
     const [isEditing, setIsEditing] = useState(false)
     const [formData, setFormData] = useState({})
-    const {currentTask, 
-        currentParentTask, 
-        currentTaskPhase, 
-        isLoading: currentIsLoading, 
-        fetchError: tasksFetchError, 
-        projectExists, 
-        fetchedData, 
-        projectCompleted,
-        projectedTask,
-        isBehindSchedule,
-        onHold
-    } = useFindProjectTask(projId, proj)
-    const isProjectsReady = Array.isArray(projects) && projects.length > 0;
-    const fetchUrl = proj && isProjectsReady ? `${backendURL}/api/teams/${proj.id}` : null;
-    const {data: teamInfo, isLoading: teamIsLoading} = useAxiosFetch(fetchUrl);
-    // Get user role from session storage with debugging
-    const [role, setRole] = useState(null)
     
+    // const { 
+    //     currentParentTask, 
+    //     currentTaskPhase, 
+    //     isLoading: currentIsLoading, 
+    //     fetchError: tasksFetchError, 
+    //     projectExists, 
+    //     fetchedData, 
+    //     projectCompleted,
+    //     projectedTask,
+    //     isBehindSchedule,
+    //     onHold
+    // } = useFindProjectTask(projId, proj)
+
+    const isProjectsReady = Array.isArray(projects) && projects.length > 0;
+    const [role, setRole] = useState(null)
+    console.log(fetchedData)
     console.log(isBehindSchedule)
     
     useEffect(() => {
         const userRole = sessionStorage.getItem('roles');
-        //console.log('Current role from sessionStorage:', userRole);
         setRole(userRole);
     }, []);
+
+    // Consolidated useEffect for all data fetching
+    useEffect(() => {
+      if (projId) {
+        // Check if we already have the data to avoid refetching
+        if (!proj || Object.keys(proj).length === 0) {
+          fetchAllProjectData(projId);
+        }
+      }
+
+      // Cleanup function - clear data when component unmounts
+      return () => {
+        // Only clear if we're actually leaving the project page
+        // You might want to remove this or handle it differently
+         //clearProjectData();
+      };
+    }, [projId, fetchAllProjectData, proj]);
+
+    // Fetch team info when project data is available
+    useEffect(() => {
+      if (proj && proj.id && isProjectsReady) {
+        fetchTeamInfo({ projId, projData: proj });
+      }
+    }, [proj, projId, isProjectsReady, fetchTeamInfo]);
+
+    useEffect(() => {
+      if (proj && proj.id) {
+        findProjectTasks({ projectId: projId, projectData: proj });
+      }
+    }, [proj, projId, findProjectTasks]);
+
+    // Initialize form data when project data loads
+    useEffect(() => {
+      if (proj && Object.keys(proj).length > 0) {
+        setFormData(proj);
+        setValues(proj);
+      }
+    }, [proj]);
 
     const validate = (values) => {
         let errors = {}
@@ -136,7 +205,10 @@ const ProjectInfo = () => {
             setSaveStatus('success')
             setTimeout(() => setSaveStatus(''), 2000)
             setIsEditing(false)
-            window.location.reload()
+            
+            // Refresh project data after save
+            fetchAllProjectData(projId);
+            
         } catch (error) {
             console.error('Error updating project:', error)
             setSaveStatus('error')
@@ -167,19 +239,42 @@ const ProjectInfo = () => {
         setActivePage('hold')
     }
 
-    // Function to handle daily report button click
     const handleDailyReportClick = () => {
-        //console.log('Daily report button clicked for project:', projId);
-        // You can implement navigation logic here
         navigate(`report`)
     }
 
-    //console.log('Rendering ProjectInfo - Role:', role, 'Should display button:', role === 'Foreman');
+    // Show loading state
+    if (isLoading && !proj) {
+      return (
+        <div className="Content ProjectPage">
+          <div className="loading-state">
+            <l-grid size="60" speed="1.5" color="#315a95"></l-grid>
+            <p>Loading project data...</p>
+          </div>
+        </div>
+      );
+    }
+
+    // Show error state
+    if (error && !proj) {
+      return (
+        <div className="Content ProjectPage">
+          <div className="error-state">
+            <i className="fas fa-exclamation-triangle"></i>
+            <h3>Error Loading Project</h3>
+            <p>{error}</p>
+            <button onClick={() => fetchAllProjectData(projId)}>
+              Retry
+            </button>
+          </div>
+        </div>
+      );
+    }
 
     return (
         <div className="Content ProjectPage">
             <div className="project-header">
-                <h2>{values.lift_name}</h2>
+                <h2>{values.lift_name || proj?.lift_name}</h2>
                     <div className="action-buttons">
                         <div 
                             onClick={() => setActivePage('details')}
@@ -198,7 +293,7 @@ const ProjectInfo = () => {
                             </div>
                             <div 
                                 onClick={teamsOnClick}
-                                className={activePage === 'documents' ? 'active' : ''}
+                                className={activePage === 'teams' ? 'active' : ''}
                             >
                                 Team
                             </div>
@@ -216,8 +311,6 @@ const ProjectInfo = () => {
                             </div>                        
                             </>
                         )}
-
-
                     </div>
             </div>
             
@@ -227,16 +320,16 @@ const ProjectInfo = () => {
                     projectCompleted={projectCompleted}
                     currentTask={currentTask}
                     currentParentTask={currentParentTask}
-                    currentIsLoading={currentIsLoading}
-                    tasksFetchError={tasksFetchError}
+                    currentIsLoading={tasksIsLoading} // Use tasksIsLoading from store
+                    tasksFetchError={null} // You can handle errors in the store if needed
                     projectExists={projectExists}
-                    fetchedData={fetchedData}
+                    fetchedData={projSched} // Use projectSchedule from store
                     proj={proj}
                     setFormData={setFormData}
-                    projIsLoading={projIsLoading}
+                    projIsLoading={isLoading}
                     formData={formData}
                     teamInfo={teamInfo}
-                    teamIsLoading={teamIsLoading}
+                    teamIsLoading={isLoading}
                     saveStatus={saveStatus}
                     handleSave={handleSave}
                     isEditing={isEditing}
@@ -249,8 +342,8 @@ const ProjectInfo = () => {
                     setIsEditing={setIsEditing}
                     handleCancel={handleCancel}
                     photos={photos}
-                    photosIsLoading={photosIsLoading}
-                    backendURL={backendURL}
+                    photosIsLoading={isLoading}
+                    backendURL={import.meta.env.VITE_BACKEND_URL || "http://localhost:4000"}
                     setActivePage={setActivePage}
                     currentTaskPhase={currentTaskPhase}
                     projectedTask={projectedTask}
@@ -264,7 +357,7 @@ const ProjectInfo = () => {
                     allTaskDates={tasks} 
                     projId={projId} 
                     projSched={projSched} 
-                    projSchedIsLoading={projSchedIsLoading}
+                    projSchedIsLoading={isLoading}
                     taskPhotos={taskPhotos}
                     currentTask={currentTask}
                 />
@@ -301,23 +394,15 @@ const ProjectInfo = () => {
                 />
             }
             
-            {/* Floating Daily Report Button - Test without role restriction first */}
-            
-     
-                <button 
-                    className="floating-daily-report-btn" 
-                    onClick={handleDailyReportClick}
-                    style={{ display: role === 'Foreman' ? 'flex' : 'none' }}
-                >
-                    <i className="fas fa-file-alt"></i>
-                    Make Daily Project Report
-                </button>
-            
-
-            {/* Keep this for testing - will help see if button renders at all */}
-            {/* <div style={{ position: 'fixed', bottom: '100px', right: '20px', background: 'red', color: 'white', padding: '10px', zIndex: 1001 }}>
-                Debug: Role = {role}, Show = {role === 'Foreman' ? 'YES' : 'NO'}
-            </div> */}
+            {/* Floating Daily Report Button */}
+            <button 
+                className="floating-daily-report-btn" 
+                onClick={handleDailyReportClick}
+                style={{ display: role === 'Foreman' ? 'flex' : 'none' }}
+            >
+                <i className="fas fa-file-alt"></i>
+                Make Daily Project Report
+            </button>
         </div>
     )
 }

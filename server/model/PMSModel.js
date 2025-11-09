@@ -19,10 +19,12 @@ static async getAllPMS() {
             p.project_end_date,
             p.handover_date,
             p.handover_done,
+            
             CASE
                 WHEN pp.free_pms = 1 THEN 'Free PMS'
                 ELSE 'PMS with contract'
             END AS pms_contract,
+            pp.free_pms_end,
             pp.contract_type,
             pp.last_inspection_date,
             pp.pms_inspection_date,
@@ -30,6 +32,7 @@ static async getAllPMS() {
             pp.inspection_assigned,
             pp.inspection_ongoing,
             pp.inspection_id,
+            pp.callback_date,
             CASE 
                 WHEN pp.inspection_ongoing = 1 THEN 'PMS Inspection Ongoing'
                 WHEN pp.inspection_assigned = 1 THEN 'PMS Inspection Assigned'
@@ -109,12 +112,15 @@ static async getAllPMS() {
                 WHEN pp.free_pms = 1 THEN 'Free PMS'
                 else 'PMS with contract'
             END as pms_contract,
+            pp.free_pms_end,
+            pp.contract_type,
             pp.last_inspection_date,
             pp.pms_inspection_date,
             pp.inspection_pending,
             pp.inspection_assigned,
             pp.inspection_ongoing,
             pp.inspection_id,
+            pp.callback_date,
             -- Status calculation based on PMS inspection flags
             CASE 
                 WHEN pp.inspection_ongoing = 1 THEN 'PMS Inspection Ongoing'
@@ -145,22 +151,22 @@ static async getAllPMS() {
         const [rows] = await pool.query(
         `select p.id, concat(p.lift_name, ' ', p.client) as \`project_name\`, concat(p.region, ', ', p.province, ', ', p.\`city\/municipality\`) as \`project_location\`, pp.pms_inspection_date, 
             pp.free_pms, cbb.book_name, c.id as \`contract_id\`, pp.inspection_ongoing, 
-            e.employee_id, concat(e.last_name, ' ', e.first_name) as \`full_name\`, e.job
+            e.employee_id, concat(e.last_name, ' ', e.first_name) as \`full_name\`, e.job, e.island_group
             from projects p 
             join pms_projects pp on p.id = pp.id
             left join client_baby_book cbb on pp.id = cbb.pms_id
             left join contracts c on c.baby_book_id = cbb.id
             left join pms_inspection_team pt on pt.pms_id = pp.id
-            left join employees e on e.employee_id = pt.pms_technician_id
+            right join employees e on e.employee_id = pt.pms_technician_id where e.job = 'PMS Technician'
 ; `
         );
         console.log('before')
         const teams = rows.reduce((acc, val) => {
-            if (!val.employee_id) return acc
             const key = val.full_name
             if(!acc[key]){
                 acc[key] = {}
                 acc[key].projects = []
+                acc[key].island_group = val.island_group
             }
 
             const projInfo = {
@@ -173,7 +179,19 @@ static async getAllPMS() {
             acc[key].projects.push(projInfo)
             return acc
         }, {})
-        // console.log('after')
+
+        const sortedTeam = Object.entries(teams).map(t => {
+            console.log('inside object entries')
+            console.log(t[1])
+            if (t[1].projects[0].project_id === null) {
+                t[1].projects = []
+                return t
+            } else {
+                return t
+            }
+        })
+
+        console.log(sortedTeam)
         // console.log(teams)
 
         // const [technicianTally] = await pool.query(`
@@ -184,7 +202,7 @@ static async getAllPMS() {
 
         const data ={teams}
 
-        return teams;
+        return sortedTeam;
     }
 
     // ==========================

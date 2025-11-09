@@ -210,7 +210,6 @@ const NavBar = ({ invertMenuToggle }) => {
         <div className="Profile-Icon">
           <CgProfile size={30} style={{ color: 'white', marginLeft: "40px" }} />
           <p>{user.fullName}</p>
-          <span>({user.roles}) <small>display role for demo purposes</small></span>
         </div>        
       </div>
       {/* MESSAGES ICON */}

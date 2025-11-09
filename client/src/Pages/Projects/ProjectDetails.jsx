@@ -39,12 +39,8 @@ const ProjectDetails = ({
     projectCompleted, currentTask, projectExists, proj, setFormData, formData, teamInfo, projIsLoading, teamIsLoading,
     saveStatus, handleSave, isEditing, errors, handleInputChange, handleNumberInputChange, handleBlur, handleSubmit,
     values, setIsEditing, handleCancel, photos, photosIsLoading, backendURL, setActivePage, currentTaskPhase, currentParentTask,
-    projectedTask, isBehindSchedule, onHold, taskIsLoading
+    projectedTask, isBehindSchedule, onHold, taskIsLoading, currentIsLoading 
 }) => {
-    console.log(projectedTask)
-    console.log(currentParentTask)
-    console.log(currentTask)
-    console.log(proj)
     const {projId} = useParams()
     const [isResumeModalOpen, setIsResumeModalOpen] = useState(false)
      const [isDataFinalized, setIsDataFinalized] = useState(false)
@@ -84,11 +80,10 @@ const ProjectDetails = ({
     const navigate = useNavigate()
     
     useEffect(() => {
-        if (proj !== undefined) {
+        if (proj && Object.keys(proj).length > 0) {
             setFormData(proj)
-            // setIsLoading(false)
         }
-    }, [proj, formData, teamInfo, projIsLoading, setFormData, photos, photosIsLoading])
+    }, [proj, setFormData])
 
     const handleCreateSchedule = () => {
         navigate(`/projects/${projId}/custom`) 
@@ -96,12 +91,21 @@ const ProjectDetails = ({
 
 //  || tasksIsLoading || projectExists === 'loading'
 // isLoading || teamIsLoading 
-    if (projIsLoading || taskIsLoading || !isDataFinalized) {
+    if (projIsLoading || currentIsLoading) {
         return (
-                <div className="Loading">
-                    <p>Data is Loading...</p>
-                    <Grid size="60" speed="1.5" color="rgba(84, 176, 210, 1)" />
-                </div>
+            <div className="Loading">
+                <p>Data is Loading...</p>
+                <Grid size="60" speed="1.5" color="rgba(84, 176, 210, 1)" />
+            </div>
+        )
+    }
+    // SIMPLIFIED: Check if we have the essential data
+    if (!proj || Object.keys(proj).length === 0) {
+
+        return (
+            <div className="Loading">
+                <p>No project data available</p>
+            </div>
         )
     }
 
@@ -127,6 +131,7 @@ const ProjectDetails = ({
   currentTask={currentTask}
   currentTaskPhase={currentTaskPhase}
   onCreateSchedule={handleCreateSchedule}
+  taskIsLoading={taskIsLoading}
 />
 
 

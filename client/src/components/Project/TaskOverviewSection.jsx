@@ -1,5 +1,5 @@
 import React from 'react';
-
+import { Grid } from 'ldrs/react'
 // 🕒 Utility
 const formatLocalDate = (isoString) => {
   if (!isoString) return "N/A";
@@ -230,6 +230,7 @@ const TaskCardsContainer = ({
   onTaskDetails,
   onCreateSchedule
 }) => {
+  console.log(projectExists)
   if (projectCompleted) {
     return <div>Project Completed</div>;
   }
@@ -272,8 +273,19 @@ const TaskOverviewSection = ({
   projectExists,
   currentTask,
   currentTaskPhase,
-  onCreateSchedule
+  onCreateSchedule,
+  taskIsLoading
 }) => {
+    if (taskIsLoading) {
+
+        return (
+                <div className="Loading">
+                    <p>Data is Loading...</p>
+                    <Grid size="60" speed="1.5" color="rgba(84, 176, 210, 1)" />
+                </div>
+        )
+    }
+
   return (
     <div className="task-overview-section">
       <h3>{onHold ? 'Project is pending' : 'Task Overview'}</h3>

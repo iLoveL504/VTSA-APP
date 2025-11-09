@@ -6,6 +6,7 @@
 .inbox-container {
     display: grid;
     grid-template-columns: 400px 1fr;
+    grid-template-rows: auto 10% 10% 1fr;
     height: calc(100vh - 80px);
     background: white;
     border-radius: 8px;
@@ -85,11 +86,13 @@
 
 /* Search */
 .inbox-search {
-    grid-column: 1;
+    display: flex;
+    height: 100%;
     padding: 1rem 2rem;
     border-right: 1px solid #e9ecef;
     background: white;
     position: relative;
+   
 }
 
 .inbox-search i {

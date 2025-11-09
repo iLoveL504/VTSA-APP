@@ -43,6 +43,7 @@ import InspectionPage from './Pages/PMS/InspectionPage.jsx'
 import ClientBabyBook from './Pages/ClientBabyBook.jsx'
 import {useSharedSocket} from './Context/SocketContext.js'
 import Inbox from './Pages/Inbox.jsx'
+import ServiceReportPage from './Pages/PMS/ServiceReportPage.jsx'
 
 function App() {
   const backendURL = import.meta.env.VITE_BACKEND_URL || 'https://localhost:4000';
@@ -204,6 +205,7 @@ useEffect(() => {
           <Route path="baby-book"  >
             <Route index element={<BabyBook />} />
             <Route path=':clientId' element={<ClientBabyBook />} />
+            <Route path=':clientId/service-report/:inspectionId' element={<ServiceReportPage />} />
           </Route>
         </Route>
         

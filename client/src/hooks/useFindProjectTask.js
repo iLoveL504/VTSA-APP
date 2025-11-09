@@ -19,6 +19,7 @@ const useFindProjectTask = (id, proj) => {
     const [projectCompleted, setProjectCompleted] = useState(false)
     const [isBehindSchedule, setIsBehindSchedule] = useState(false)
     const [onHold, setOnHold] = useState(false)
+    const [noTask, setNoTask] = useState(false)
 
     useEffect(() => {
         if(fetchError) {
@@ -27,13 +28,20 @@ const useFindProjectTask = (id, proj) => {
             console.log('no schedule')
             return
         }
+        
         if(!isLoading && fetchedData){
+            if(Object.keys(fetchedData).length === 0) {
+                console.log('project has no schedule yet')
+                setProjectExists(false)
+                setNoTask(true)
+                return
+            }
             console.log('date now: ', dateNow)
             console.log(fetchedData)
             setProjectExists(true)
             console.log(`for project: ${id} I reach here`)
             //find Parent task
-            const foundParentTask = fetchedData.find(t => t.task_type === 'summary' && new Date(dateNow) >= new Date(t.task_start) && new Date(dateNow) <= new Date(t.task_end))
+            const foundParentTask = fetchedData.find(t => t.task_type === 'summary' && new Date(dateNow) >= new Date(t.task_start) && new Date(dateNow) < new Date(t.task_end))
                 console.log(foundParentTask)
             if (foundParentTask === undefined) return setProjectCompleted(true)
             if (proj.on_hold === 1) {
@@ -50,7 +58,7 @@ const useFindProjectTask = (id, proj) => {
             //find current task based on current date
             const foundCurrentTask = fetchedData.find(t => ((t.task_actual_current || t.task_done === 0) && t.task_type === 'task'))
             //find actual current task
-            const foundProjectedCurrentTask = fetchedData.find(t => t.task_type === 'task' && new Date(dateNow) >= new Date(t.task_start) && new Date(dateNow) <= new Date(t.task_end))
+            const foundProjectedCurrentTask = fetchedData.find(t => t.task_type === 'task' && new Date(dateNow) >= new Date(t.task_start) && new Date(dateNow) < new Date(t.task_end))
             console.log(foundProjectedCurrentTask)
             setIsBehindSchedule(foundCurrentTask.task_id !== foundProjectedCurrentTask.task_id)
 

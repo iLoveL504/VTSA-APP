@@ -9,9 +9,11 @@ const ProjectEngineerCompletion = ({ currentTask, handleTaskComplete, proj, valu
     'Final Testing / Hand over': ['QAQC', 'TNC', 'PMS'], // Explicitly included
   };
   console.log(approvalRequirements)
+  console.log(currentTask)
   // Determine required approvals
   const requiredApprovals = useMemo(() => {
-    if (!(currentTask?.task_parent === 600 || currentTask?.task_parent === 500)) {
+    console.log(currentTask)
+    if (!(currentTask?.task_parent >= 600 || currentTask?.task_parent >= 500)) {
       console.log('not installation')
       if (proj.qaqc_approval) {
         return ['QAQC']

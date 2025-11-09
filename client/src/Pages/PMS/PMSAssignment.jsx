@@ -300,7 +300,7 @@ const PMSAssignment = ({ updateIsLoading }) => {
                             <button 
                                 onClick={handleAssignConfirm} 
                                 className="btn-confirm"
-                                disabled={assignmentStatus === 'assigning' || assignmentStatus === 'success' || !newInspectionDate || selectedTechs.length === 0}
+                                disabled={assignmentStatus === 'assigning' || assignmentStatus === 'success' || selectedTechs.length === 0}
                             >
                                 {assignmentStatus === 'assigning' ? 'Assigning...' : `Assign`}
                             </button>
@@ -475,14 +475,15 @@ const PMSAssignment = ({ updateIsLoading }) => {
                 <div className="tech-tally-section">
                     <h3>Technician Project Tally</h3>
                     <div className="tally-cards">
-                        {Object.entries(pmsTeams).map(([techName, data]) => (
+                        {console.log(pmsTeams.map(t => t))}
+                        {pmsTeams.map(([techName, data, no_project]) => (
                             <div key={techName} className="tally-card">
                                 <div className="tally-header">
-                                    <h4>{techName}</h4>
-                                    <span className="project-count">{data.projects.length} project{data.projects.length !== 1 ? 's' : ''}</span>
+                                    <h4>{techName} <span>({data.island_group})</span></h4>
+                                    <span className="project-count">{data.projects?.length > 0 ? data.projects?.length : 'No'} project{data.projects?.length !== 1 ? 's' : ''}</span>
                                 </div>
                                 <div className="tally-projects">
-                                    {data.projects.map((project, index) => (
+                                    {data.projects?.map((project, index) => (
                                         <div key={index} className="project-item">
                                             <div className="project-name">{project.project_name}</div>
                                             <div className="project-details">
@@ -555,9 +556,10 @@ const PMSAssignment = ({ updateIsLoading }) => {
                     <div className="table-cell">Product Type</div>
                     <div className="table-cell">Location</div>
                     <div className="table-cell">PMS Status</div>
+                    <div className="table-cell">Last Inspection</div>
                     <div className="table-cell">Next Inspection</div>
                     <div className="table-cell">Free PMS</div>
-                    <div className="table-cell">Actions</div>
+                    <div className="table-cell">Callback</div>
                 </div>
             </div>
 

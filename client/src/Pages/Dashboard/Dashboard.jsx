@@ -1,6 +1,6 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useStoreState } from 'easy-peasy';
+import { useStoreState, useStoreActions } from 'easy-peasy';
 import ProjectManagerDashboard from './ProjectManagerDashboard';
 import ProjectEngineerDashboard from './ProjectEngineerDashboard';
 import '../../css/Dashboard.css';
@@ -11,7 +11,8 @@ const Dashboard = () => {
   const employees = useStoreState(state => state.employees);
   const role = sessionStorage.getItem('roles');
   const userId = sessionStorage.getItem('user_id');
-
+  const clearProjectData = useStoreActions(actions => actions.clearProjectData)
+  const clearProjectTasks = useStoreActions(actions => actions.clearProjectTasks)
 
   console.log(projects)
   const handleNewProject = () => {
@@ -27,6 +28,8 @@ const Dashboard = () => {
           projects={projects} 
           employees={employees}
           onNewProject={handleNewProject}
+          clearProjectData={clearProjectData}
+          clearProjectTasks={clearProjectTasks}
         />;
       
       case 'Project Engineer':
@@ -34,6 +37,8 @@ const Dashboard = () => {
           projects={projects}
           userId={userId}
           onNewProject={handleNewProject}
+          clearProjectData={clearProjectData}
+          clearProjectTasks={clearProjectTasks}
         />;
       
       default:

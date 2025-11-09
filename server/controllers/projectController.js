@@ -61,7 +61,7 @@ export const getProjectSchedule = async (req, res) => {
     console.log('--------------------')
     try {
         const results = await projects.getProjectSchedule(Number(id))
-         if (results.length === 0) return res.status(404).json({message: "not found", scheduleExists: false})
+         if (results.length === 0) return res.status(200).json({})
      
         res.json(results)
     } catch (e) {

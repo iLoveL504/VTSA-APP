@@ -130,7 +130,7 @@ const TestChart = ({projSched, projSchedIsLoading}) => {
                     styles: {
                         progressColor: isCurrent ? "#ff6b35" : (isParent ? "#1e3a8a" : "#15803d"),
                         progressSelectedColor: isCurrent ? "#ff8c42" : (isParent ? "#1d4ed8" : "#166534"),
-                        backgroundColor: isCurrent ? "#fff3cd" : (isParent ? "#1a579eff" : "#63b6cbff"),
+                        backgroundColor: isCurrent ? "#447516ff" : (isParent ? "#1a579eff" : "#63b6cbff"),
                         backgroundSelectedColor: isCurrent ? "#ffeaa7" : undefined,
                         fontSize: isParent ? "15px" : "13px",
                         fontWeight: isParent ? "600" : "400",

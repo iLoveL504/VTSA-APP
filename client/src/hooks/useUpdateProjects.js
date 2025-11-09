@@ -45,13 +45,13 @@ const useUpdateProjects = (projectIDs) => {
           const foundParentTask = tasks.find(
             t => t.task_type === 'summary' &&
             new Date(dateNow) >= new Date(t.task_start) &&
-            new Date(dateNow) <= new Date(t.task_end)
+            new Date(dateNow) < new Date(t.task_end)
           )
 
           const ct = tasks.find(
             t => t.task_type === 'task' &&
             new Date(dateNow) >= new Date(t.task_start) &&
-            new Date(dateNow) <= new Date(t.task_end)
+            new Date(dateNow) < new Date(t.task_end)
           )
 
           const actualTask = tasks.find(

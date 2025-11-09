@@ -16,7 +16,7 @@ const TaskList = ({ projSched, taskPhotos, currentTask }) => {
     }
 
     const formatDate = (dateString) => {
-        return new Date(dateString).toLocaleDateString('en-US', {
+        return new Date(dateString).toLocaleDateString('en-GB', {
             year: 'numeric',
             month: 'short',
             day: 'numeric'

@@ -86,7 +86,7 @@ class TeamModel {
 
         await pool.query(`delete from team_members where foreman_id = ?`, [foremanId])
         const insertPromises = installers.map(i => (
-            pool.query(`insert into team_members (foreman_id, emp_id) values (?, ?)`, [foremanId, i])
+            pool.query(`insert into team_members (foreman_id, emp_id, project_id) values (?, ?, ?)`, [foremanId, i, id])
         ))
 
         await Promise.all(insertPromises)
@@ -172,7 +172,7 @@ class TeamModel {
 
     static async tncTechProjects() {
         const [result] = await pool.query(`
-            select tnc.employee_id, concat(tnc.last_name, ' ', tnc.first_name) as \`full_name\`, p.lift_name,
+            select tnc.employee_id, concat(tnc.last_name, ' ', tnc.first_name) as \`full_name\`, p.id \`project_id\`, p.lift_name,
             p.tnc_start_date, p.project_end_date from project_manpower pm
             right join employees tnc on tnc.employee_id = pm.tnc_tech_id
             left join projects p on p.id = pm.project_id where tnc.job = 'TNC Technician';
@@ -183,7 +183,7 @@ class TeamModel {
     }
     static async qaqcTechProjects() {
         const [result] = await pool.query(`
- select qaqc.employee_id, concat(qaqc.last_name, ' ', qaqc.first_name) as \`full_name\`, p.id, p.lift_name,
+ select qaqc.employee_id, concat(qaqc.last_name, ' ', qaqc.first_name) as \`full_name\`, p.id as \`project_id\`, p.lift_name,
             p.qaqc_inspection_date from project_manpower pm
             right join employees qaqc on qaqc.employee_id = pm.qaqc_id
             left join projects p on p.id = pm.project_id where qaqc.job = 'QAQC';
