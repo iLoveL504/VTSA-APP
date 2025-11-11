@@ -22,7 +22,6 @@ const PMSEntry = ({ project, setSelectedEntry }) => {
 
     const statusClass = getStatusClass();
     const isFreePMS = project.pms_contract === 'Free PMS';
-    console.log(project)
     return (
         <div 
             className={`ProjectInfo pms-${statusClass}`} 
@@ -77,10 +76,12 @@ const PMSEntry = ({ project, setSelectedEntry }) => {
                     <span className="paid-badge">Paid</span>
                 )}
             </div>
-            
-            {/* Column 8: Actions */}
-            <div className="actions">
-                {project.callback_date ? project.callback_date : '-'}
+            <div className='callback-date'>
+                <div>{project.callback_date ? (
+                    new Date(project.callback_date).toLocaleDateString()
+                ) : (
+                    '-'
+                )}</div>
             </div>
         </div>
     );

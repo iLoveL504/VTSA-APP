@@ -44,6 +44,7 @@ import ClientBabyBook from './Pages/ClientBabyBook.jsx'
 import {useSharedSocket} from './Context/SocketContext.js'
 import Inbox from './Pages/Inbox.jsx'
 import ServiceReportPage from './Pages/PMS/ServiceReportPage.jsx'
+import CallbackPage from './Pages/PMS/CallbackPage.jsx'
 
 function App() {
   const backendURL = import.meta.env.VITE_BACKEND_URL || 'https://localhost:4000';
@@ -175,7 +176,9 @@ useEffect(() => {
             <Route path="new-entry" element={<PMSNewEntry updateIsLoading={updateIsLoading}/>} />
             <Route path="inspections" element={<PMSInspections />} />
             <Route path="inspections/:clientId" element={<InspectionPage />} />
+            <Route path="inspections/callback/:clientId" element={<CallbackPage />} />
             <Route path=":projId" element={<PMSPage />} />
+
           </Route>
 
           <Route path="notification">

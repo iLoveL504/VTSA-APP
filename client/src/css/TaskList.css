@@ -1,13 +1,15 @@
 /* TaskList.css */
 .Content.TaskList {
     padding: 2rem;
-    max-width: 1400px;
+    max-width: 1600px;
     margin: 0 auto;
 }
 
 .Content.TaskList .task-list-container {
     display: grid;
-    grid-template-columns: 1fr 1.5fr;
+    grid-template-columns: 1fr 1fr;
+    width: 100%;
+    max-width: 1600px;
     gap: 2rem;
     height: calc(100vh - 200px);
 }

@@ -133,14 +133,6 @@ const x = Object.entries(teamsByGroup)
                     </div>
 
                     <div className="personnel-section">
-                      <h4>Testing and Commissioning Technician</h4>
-                      <div className="personnel-item">
-                        <span className="personnel-name">{firstMember.tnc_username || 'Not yet assigned'}</span>
-                        <span className="personnel-role">Technician</span>
-                      </div>
-                    </div>
-
-                    <div className="personnel-section">
                       <h4>Team Leadership</h4>
                       {firstMember.Foreman && (
                         <div className="personnel-item">

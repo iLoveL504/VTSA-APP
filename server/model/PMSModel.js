@@ -178,6 +178,7 @@ static async getAllPMS() {
                 acc[key] = {}
                 acc[key].projects = []
                 acc[key].island_group = val.island_group
+                acc[key].employee_id = val.employee_id
             }
 
             const projInfo = {
@@ -190,7 +191,8 @@ static async getAllPMS() {
             acc[key].projects.push(projInfo)
             return acc
         }, {})
-
+        console.log('---------------teams---------------')
+        console.log(teams)
         const sortedTeam = Object.entries(teams).map(t => {
             console.log('inside object entries')
             console.log(t[1])
@@ -228,7 +230,7 @@ static async getAllPMS() {
             from projects p 
             join pms_projects pp on p.id = pp.id
             left join client_baby_book cbb on pp.id = cbb.pms_id
-            left join contracts c on c.baby_book_id = cbb.id
+            left join contracts c on c.baby_book_id = cbb.pms_id
             left join pms_inspection_team pt on pt.pms_id = pp.id
             left join employees e on e.employee_id = pt.pms_technician_id where e.employee_id = ?
             `, [techId])
@@ -254,12 +256,10 @@ static async getAllPMS() {
     // ==========================
     //  ASSIGN TECHNICIANS
     // ==========================
-    static async assignTechnicians(pmsId, technicianIds) {
+    static async assignTechnicians(pmsId, technicianIds, date) {
         console.log(technicianIds)
         console.log(pmsId)
 
-        //refresh inspectionId (no id generated until inspection is conducted)
-        await pool.query(`update pms_projects set inspection_id = null where id = ?`, [pmsId])
         //If it returns 0 it assigns otherwise edit clear technician_ids to make room for team
         const [exists] = await pool.query(`SELECT COUNT(pms_technician_id) FROM pms_inspection_team WHERE pms_id = ?;`, [pmsId])
         const edit = exists.length > 0 ? true : false
@@ -278,13 +278,13 @@ static async getAllPMS() {
         );
 
         await Promise.all(inserts);
-
+        
         // // Update PMS project status to "assigned"
         await pool.query(
             `UPDATE pms_projects 
-            SET inspection_assigned = 1 
+            SET inspection_assigned = 1, pms_inspection_date = ?
             WHERE id = ?`,
-            [pmsId]
+            [date, pmsId]
         );
 
         // return { message: 'Technicians successfully assigned.' };
@@ -292,7 +292,11 @@ static async getAllPMS() {
 
     static async ongoingPMS (pmsId) {
         await pool.query(`update pms_projects set inspection_ongoing = 1 where id = ?`, [pmsId])
-        const [results] =  await pool.query(`insert into pms_history (pms_id) values (?)`, [pmsId])
+
+        //Get current contract id
+        const [contract] = await pool.query(`select id from contracts where baby_book_id = ? and current_contract = 1`, [pmsId])
+        const contractId = contract[0].id
+        const [results] =  await pool.query(`insert into pms_history (pms_id, contract_id) values (?, ?)`, [pmsId, contractId])
         const insertId = results.insertId
         await pool.query(`update pms_projects set inspection_id = ? where id = ?`, [insertId, pmsId])
     }
@@ -456,6 +460,44 @@ static async getAllPMS() {
         await pool.query(`
                 update pms_projects set pms_inspection_date = ? where id = ?
             `, [date, pmsId])
+    }
+
+    static async scheduleCallback (pmsId, technicianIds, date) {
+        console.log('here to schedule callbak')
+        await pool.query(`
+                update pms_projects set callback_date = ? where id = ?
+            `, [date, pmsId])
+
+        //check if a callback is assigned/scheduled
+        const [check] = await pool.query(`select * from callback_inspection_team where client_id = ?`, [pmsId])
+
+        //delete if there is assigned
+        if (check.length > 0) await pool.query(`delete from callback_inspection_team where client_id = ?`, [pmsId])
+
+        const insertPromises = technicianIds.map(t => (
+            pool.query(`insert into callback_inspection_team (pms_tech_id, client_id) values (?, ?)`, [t, pmsId])
+        ))
+
+        await Promise.all(insertPromises)
+    }
+
+    //Get all callback clients
+    static async callbackDesignation (techId) {
+        console.log(`Employee ${techId} logged in and is asking for callback designations`)
+        const [results] = await pool.query(`
+               select p.id, concat(p.lift_name, ' ', p.client) as \`project_name\`, concat(p.region, ', ', p.province, ', ', p.\`city\/municipality\`) as \`project_location\`, pp.callback_date, 
+                pp.free_pms, cbb.book_name, c.id as \`contract_id\`, 
+                e.employee_id, concat(e.last_name, ' ', e.first_name) as \`full_name\`, e.job
+                from projects p 
+                join pms_projects pp on p.id = pp.id
+                left join client_baby_book cbb on pp.id = cbb.pms_id
+                left join contracts c on c.baby_book_id = cbb.pms_id
+                left join callback_inspection_team pt on pt.client_id = pp.id
+                left join employees e on e.employee_id = pt.pms_tech_id 
+                where e.employee_id = ?
+            `, [techId])
+
+        return results
     }
     
     //static async markInspectionComplete(pmsId, reportDetails) {

@@ -703,6 +703,26 @@
   background: linear-gradient(135deg, #fff 0%, #f0fff4 100%);
 }
 
+/* Incoming Projects Styles */
+.Content.ProjectManagerDashboard .content-card.incoming-alert {
+  border-left: 4px solid #6f42c1;
+  background: linear-gradient(135deg, #fff 0%, #f8f9fa 100%);
+}
+
+.Content.ProjectManagerDashboard .badge.incoming {
+  background: #e9ecef;
+  color: #6f42c1;
+}
+
+.Content.ProjectManagerDashboard .status-badge.incoming {
+  background: #e9ecef;
+  color: #6f42c1;
+}
+
+.Content.ProjectManagerDashboard .progress-fill.incoming {
+  background: linear-gradient(90deg, #6f42c1, #8c68cd);
+}
+
 /* Badge Styles */
 .Content.ProjectManagerDashboard .badge {
   padding: 4px 12px;

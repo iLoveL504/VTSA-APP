@@ -38,10 +38,13 @@ router.put('/update-schedule/:id', PMSController.setInspectionDate)
 // Get technicians by island group
 router.get('/techs', PMSController.getTechs);
 router.get('/designated/:id', PMSController.getDesignatedProjects)
+// Technician Callbacks
+router.get('/designation-callback/:techId', PMSController.callbackDesignations)
+
 // Assign technicians
 router.post('/assign/:pmsId', PMSController.assignTechs);
 
-
+router.post('/callback/:clientId', PMSController.scheduleCallback)
 
 // Begin PMS Inspection
 router.put('/begin-inspection/:id', PMSController.beginInspection)

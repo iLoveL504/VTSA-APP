@@ -6,52 +6,87 @@ import '../../css/PMSInspections.css'
 import { Grid } from 'ldrs/react'
 import { useStoreState } from 'easy-peasy'
 
-
 const PMSInspections = () => {
     const techId = sessionStorage.getItem('id')
     const backendURL = import.meta.env.VITE_BACKEND_URL || 'http://localhost:4000'
     const { data: inspections, isLoading } = useAxiosFetch(`${backendURL}/api/pms/designated/${techId}`)
+    const { data: callbacks, isLoading: callbacksIsLoading } = useAxiosFetch(`${backendURL}/api/pms/designation-callback/${techId}`)
     const [actionStatus, setActionStatus] = useState('')
     const dateNow = useStoreState(state => state.date)
+    console.log(callbacks)
+
     // Categorize inspections by date
-const categorizedInspections = useMemo(() => {
-    if (!inspections) return {}
+    const categorizedInspections = useMemo(() => {
+        if (!inspections) return {}
 
-    // Get today's date in local timezone (no UTC shift)
-    const now = new Date(dateNow)
-    const todayLocal = new Date(now.getTime() - now.getTimezoneOffset() * 60000)
-    const today = todayLocal.toISOString().split('T')[0]
+        // Get today's date in local timezone (no UTC shift)
+        const now = new Date(dateNow)
+        const todayLocal = new Date(now.getTime() - now.getTimezoneOffset() * 60000)
+        const today = todayLocal.toISOString().split('T')[0]
 
-    const getLocalDate = (dateString) => {
-        const d = new Date(dateString)
-        const local = new Date(d.getTime() - d.getTimezoneOffset() * 60000)
-        return local.toISOString().split('T')[0]
-    }
-
-    return inspections.reduce((acc, inspection) => {
-        const inspectionDate = getLocalDate(inspection.pms_inspection_date)
-        console.log(today)
-        console.log(inspectionDate)
-        if (inspectionDate < today) {
-            acc.overdue = [...(acc.overdue || []), inspection]
-        } else if (inspectionDate === today) {
-            acc.today = [...(acc.today || []), inspection]
-        } else if (inspectionDate === getTomorrowDate()) {
-            acc.tomorrow = [...(acc.tomorrow || []), inspection]
-        } else {
-            acc.upcoming = [...(acc.upcoming || []), inspection]
+        const getLocalDate = (dateString) => {
+            const d = new Date(dateString)
+            const local = new Date(d.getTime() - d.getTimezoneOffset() * 60000)
+            console.log(local.toLocaleDateString())
+            return local.toISOString().split('T')[0]
         }
-        return acc
-    }, {})
-}, [inspections, dateNow])
+
+        return inspections.reduce((acc, inspection) => {
+            const inspectionDate = getLocalDate(inspection.pms_inspection_date)
+            console.log(today)
+            console.log(inspectionDate)
+            if (inspectionDate < today) {
+                acc.overdue = [...(acc.overdue || []), inspection]
+            } else if (inspectionDate === today) {
+                acc.today = [...(acc.today || []), inspection]
+            } else if (inspectionDate === getTomorrowDate()) {
+                acc.tomorrow = [...(acc.tomorrow || []), inspection]
+            } else {
+                acc.upcoming = [...(acc.upcoming || []), inspection]
+            }
+            return acc
+        }, {})
+    }, [inspections, dateNow])
+
+    // Categorize callbacks by date
+    const categorizedCallbacks = useMemo(() => {
+        if (!callbacks) return {}
+
+        // Get today's date in local timezone (no UTC shift)
+        const now = new Date(dateNow)
+        const todayLocal = new Date(now)
+        const today = todayLocal.toLocaleDateString()
+
+        const getLocalDate = (dateString) => {
+            const d = new Date(dateString)
+            const local = new Date(d)
+            return local.toLocaleDateString()
+        }
+        console.log(getTomorrowDate())
+        return callbacks.reduce((acc, callback) => {
+            const callbackDate = getLocalDate(callback.callback_date)
+            if (callbackDate < today) {
+                acc.overdue = [...(acc.overdue || []), callback]
+            } else if (callbackDate === today) {
+                acc.today = [...(acc.today || []), callback]
+            } else if (callbackDate === getTomorrowDate()) {
+                acc.tomorrow = [...(acc.tomorrow || []), callback]
+            } else {
+                acc.upcoming = [...(acc.upcoming || []), callback]
+            }
+            return acc
+        }, {})
+    }, [callbacks, dateNow])
 
     console.log(categorizedInspections)
-function getTomorrowDate() {
-    const tomorrow = new Date()
-    tomorrow.setDate(tomorrow.getDate() + 1)
-    const local = new Date(tomorrow.getTime() - tomorrow.getTimezoneOffset() * 60000)
-    return local.toISOString().split('T')[0]
-}
+    console.log(categorizedCallbacks)
+
+    function getTomorrowDate() {
+        const tomorrow = new Date()
+        tomorrow.setDate(tomorrow.getDate() + 1)
+        const local = new Date(tomorrow)
+        return local.toLocaleDateString()
+    }
 
     const handleBeginInspection = async (inspection) => {
         try {
@@ -72,10 +107,35 @@ function getTomorrowDate() {
         }
     }
 
+    const handleBeginCallback = async (callback) => {
+        try {
+            setActionStatus('starting')
+            console.log(callback)
+            const response = await Axios.put(`/api/pms/begin-callback/${callback.id}`)
+            
+            if (response.data.success) {
+                setActionStatus('success')
+                // Refresh the page or update local state
+                window.location.reload()
+            } else {
+                setActionStatus('Failed to begin callback')
+            }
+        } catch (error) {
+            console.error('Error starting callback:', error)
+            setActionStatus('Error starting callback')
+        }
+    }
+
     const canBeginInspection = (inspection) => {
         const today = new Date().toISOString().split('T')[0]
         const inspectionDate = new Date(inspection.pms_inspection_date).toISOString().split('T')[0]
         return inspectionDate <= today && !inspection.inspection_ongoing
+    }
+
+    const canBeginCallback = (callback) => {
+        const today = new Date().toISOString().split('T')[0]
+        const callbackDate = new Date(callback.callback_date).toISOString().split('T')[0]
+        return callbackDate <= today && !callback.inspection_ongoing
     }
 
     const getStatusBadge = (inspection) => {
@@ -83,9 +143,10 @@ function getTomorrowDate() {
             return <span className="status-badge ongoing">In Progress</span>
         }
         
-        const today = new Date().toISOString().split('T')[0]
-        const inspectionDate = new Date(inspection.pms_inspection_date).toISOString().split('T')[0]
-        
+        const today = new Date().toLocaleDateString()
+        const inspectionDate = new Date(inspection.pms_inspection_date).toLocaleDateString()
+        console.log(today)
+        console.log(inspectionDate)
         if (inspectionDate < today) {
             return <span className="status-badge overdue">Overdue</span>
         } else if (inspectionDate === today) {
@@ -94,8 +155,26 @@ function getTomorrowDate() {
             return <span className="status-badge upcoming">Scheduled</span>
         }
     }
+    console.log('hiii')
+    const getCallbackStatusBadge = (callback) => {
+        if (callback.inspection_ongoing) {
+            return <span className="status-badge ongoing">In Progress</span>
+        }
+        
+        const today = new Date().toLocaleDateString()
+        const callbackDate = new Date(callback.callback_date).toLocaleDateString()
+                console.log(today)
+        console.log(callbackDate)
+        if (callbackDate < today) {
+            return <span className="status-badge overdue">Overdue</span>
+        } else if (callbackDate === today) {
+            return <span className="status-badge today">Due Today</span>
+        } else {
+            return <span className="status-badge upcoming">Scheduled</span>
+        }
+    }
 
-    if (isLoading) {
+    if (isLoading || callbacksIsLoading) {
         return (
             <div className="Loading">
                 <p>Data is Loading...</p>
@@ -111,17 +190,21 @@ function getTomorrowDate() {
                 <div className="inspections-summary">
                     <div className="summary-item">
                         <span className="count">{inspections?.length || 0}</span>
-                        <span className="label">Total Assigned</span>
+                        <span className="label">Regular PMS</span>
+                    </div>
+                    <div className="summary-item">
+                        <span className="count">{callbacks?.length || 0}</span>
+                        <span className="label">Callbacks</span>
                     </div>
                     <div className="summary-item">
                         <span className="count">
-                            {categorizedInspections.today?.length || 0}
+                            {(categorizedInspections.today?.length || 0) + (categorizedCallbacks.today?.length || 0)}
                         </span>
                         <span className="label">Due Today</span>
                     </div>
                     <div className="summary-item">
                         <span className="count">
-                            {categorizedInspections.overdue?.length || 0}
+                            {(categorizedInspections.overdue?.length || 0) + (categorizedCallbacks.overdue?.length || 0)}
                         </span>
                         <span className="label">Overdue</span>
                     </div>
@@ -135,92 +218,186 @@ function getTomorrowDate() {
             )}
 
             <div className="inspections-container">
-                {/* Today's Inspections */}
-                {categorizedInspections.today && categorizedInspections.today.length > 0 && (
-                    <section className="inspection-section">
-                        <h2 className="section-title today">Today's Inspections</h2>
-                        <div className="inspections-list">
-                            {categorizedInspections.today.map(inspection => (
-                                <InspectionCard 
-                                    key={inspection.id}
-                                    inspection={inspection}
-                                    onBeginInspection={handleBeginInspection}
-                                    getStatusBadge={getStatusBadge}
-                                    canBeginInspection={canBeginInspection}
-                                    actionStatus={actionStatus}
-                                    clientId={inspection.id}
-                                />
-                            ))}
-                        </div>
+                {/* Callback Inspections Section */}
+                {callbacks && callbacks.length > 0 && (
+                    <section className="callback-section">
+                        <h2 className="section-title callback">Callback Inspections</h2>
+                        
+                        {/* Today's Callbacks */}
+                        {categorizedCallbacks.today && categorizedCallbacks.today.length > 0 && (
+                            <div className="callback-subsection">
+                                <h3 className="subsection-title today">Today's Callbacks</h3>
+                                <div className="inspections-list">
+                                    {categorizedCallbacks.today.map(callback => (
+                                        <CallbackCard 
+                                            key={callback.id}
+                                            callback={callback}
+                                            onBeginCallback={handleBeginCallback}
+                                            getStatusBadge={getCallbackStatusBadge}
+                                            canBeginCallback={canBeginCallback}
+                                            actionStatus={actionStatus}
+                                            clientId={callback.id}
+                                        />
+                                    ))}
+                                </div>
+                            </div>
+                        )}
+
+                        {/* Overdue Callbacks */}
+                        {categorizedCallbacks.overdue && categorizedCallbacks.overdue.length > 0 && (
+                            <div className="callback-subsection">
+                                <h3 className="subsection-title overdue">Overdue Callbacks</h3>
+                                <div className="inspections-list">
+                                    {categorizedCallbacks.overdue.map(callback => (
+                                        <CallbackCard 
+                                            key={callback.id}
+                                            callback={callback}
+                                            onBeginCallback={handleBeginCallback}
+                                            getStatusBadge={getCallbackStatusBadge}
+                                            canBeginCallback={canBeginCallback}
+                                            actionStatus={actionStatus}
+                                            clientId={callback.id}
+                                        />
+                                    ))}
+                                </div>
+                            </div>
+                        )}
+
+                        {/* Tomorrow's Callbacks */}
+                        {categorizedCallbacks.tomorrow && categorizedCallbacks.tomorrow.length > 0 && (
+                            <div className="callback-subsection">
+                                <h3 className="subsection-title tomorrow">Tomorrow's Callbacks</h3>
+                                <div className="inspections-list">
+                                    {categorizedCallbacks.tomorrow.map(callback => (
+                                        <CallbackCard 
+                                            key={callback.id}
+                                            callback={callback}
+                                            onBeginCallback={handleBeginCallback}
+                                            getStatusBadge={getCallbackStatusBadge}
+                                            canBeginCallback={canBeginCallback}
+                                            actionStatus={actionStatus}
+                                            clientId={callback.id}
+                                        />
+                                    ))}
+                                </div>
+                            </div>
+                        )}
+
+                        {/* Upcoming Callbacks */}
+                        {categorizedCallbacks.upcoming && categorizedCallbacks.upcoming.length > 0 && (
+                            <div className="callback-subsection">
+                                <h3 className="subsection-title upcoming">Upcoming Callbacks</h3>
+                                <div className="inspections-list">
+                                    {categorizedCallbacks.upcoming.map(callback => (
+                                        <CallbackCard 
+                                            key={callback.id}
+                                            callback={callback}
+                                            onBeginCallback={handleBeginCallback}
+                                            getStatusBadge={getCallbackStatusBadge}
+                                            canBeginCallback={canBeginCallback}
+                                            actionStatus={actionStatus}
+                                            clientId={callback.id}
+                                        />
+                                    ))}
+                                </div>
+                            </div>
+                        )}
                     </section>
                 )}
 
-                {/* Overdue Inspections */}
-                {categorizedInspections.overdue && categorizedInspections.overdue.length > 0 && (
-                    <section className="inspection-section">
-                        <h2 className="section-title overdue">Overdue Inspections</h2>
-                        <div className="inspections-list">
-                            {categorizedInspections.overdue.map(inspection => (
-                                <InspectionCard 
-                                    key={inspection.id}
-                                    inspection={inspection}
-                                    onBeginInspection={handleBeginInspection}
-                                    getStatusBadge={getStatusBadge}
-                                    canBeginInspection={canBeginInspection}
-                                    actionStatus={actionStatus}
-                                    clientId={inspection.id}
-                                />
-                            ))}
-                        </div>
-                    </section>
-                )}
+                {/* Regular Inspections Section */}
+                {inspections && inspections.length > 0 && (
+                    <section className="regular-section">
+                        <h2 className="section-title regular">Regular PMS Inspections</h2>
+                        
+                        {/* Today's Inspections */}
+                        {categorizedInspections.today && categorizedInspections.today.length > 0 && (
+                            <div className="inspection-subsection">
+                                <h3 className="subsection-title today">Today's Inspections</h3>
+                                <div className="inspections-list">
+                                    {categorizedInspections.today.map(inspection => (
+                                        <InspectionCard 
+                                            key={inspection.id}
+                                            inspection={inspection}
+                                            onBeginInspection={handleBeginInspection}
+                                            getStatusBadge={getStatusBadge}
+                                            canBeginInspection={canBeginInspection}
+                                            actionStatus={actionStatus}
+                                            clientId={inspection.id}
+                                        />
+                                    ))}
+                                </div>
+                            </div>
+                        )}
 
-                {/* Tomorrow's Inspections */}
-                {categorizedInspections.tomorrow && categorizedInspections.tomorrow.length > 0 && (
-                    <section className="inspection-section">
-                        <h2 className="section-title tomorrow">Tomorrow's Inspections</h2>
-                        <div className="inspections-list">
-                            {categorizedInspections.tomorrow.map(inspection => (
-                                <InspectionCard 
-                                    key={inspection.id}
-                                    inspection={inspection}
-                                    onBeginInspection={handleBeginInspection}
-                                    getStatusBadge={getStatusBadge}
-                                    canBeginInspection={canBeginInspection}
-                                    actionStatus={actionStatus}
-                                    clientId={inspection.id}
-                                />
-                            ))}
-                        </div>
-                    </section>
-                )}
+                        {/* Overdue Inspections */}
+                        {categorizedInspections.overdue && categorizedInspections.overdue.length > 0 && (
+                            <div className="inspection-subsection">
+                                <h3 className="subsection-title overdue">Overdue Inspections</h3>
+                                <div className="inspections-list">
+                                    {categorizedInspections.overdue.map(inspection => (
+                                        <InspectionCard 
+                                            key={inspection.id}
+                                            inspection={inspection}
+                                            onBeginInspection={handleBeginInspection}
+                                            getStatusBadge={getStatusBadge}
+                                            canBeginInspection={canBeginInspection}
+                                            actionStatus={actionStatus}
+                                            clientId={inspection.id}
+                                        />
+                                    ))}
+                                </div>
+                            </div>
+                        )}
 
-                {/* Upcoming Inspections */}
-                {categorizedInspections.upcoming && categorizedInspections.upcoming.length > 0 && (
-                    <section className="inspection-section">
-                        <h2 className="section-title upcoming">Upcoming Inspections</h2>
-                        <div className="inspections-list">
-                            {categorizedInspections.upcoming.map(inspection => (
-                                <InspectionCard 
-                                    key={inspection.id}
-                                    inspection={inspection}
-                                    onBeginInspection={handleBeginInspection}
-                                    getStatusBadge={getStatusBadge}
-                                    canBeginInspection={canBeginInspection}
-                                    actionStatus={actionStatus}
-                                    clientId={inspection.id}
-                                />
-                            ))}
-                        </div>
+                        {/* Tomorrow's Inspections */}
+                        {categorizedInspections.tomorrow && categorizedInspections.tomorrow.length > 0 && (
+                            <div className="inspection-subsection">
+                                <h3 className="subsection-title tomorrow">Tomorrow's Inspections</h3>
+                                <div className="inspections-list">
+                                    {categorizedInspections.tomorrow.map(inspection => (
+                                        <InspectionCard 
+                                            key={inspection.id}
+                                            inspection={inspection}
+                                            onBeginInspection={handleBeginInspection}
+                                            getStatusBadge={getStatusBadge}
+                                            canBeginInspection={canBeginInspection}
+                                            actionStatus={actionStatus}
+                                            clientId={inspection.id}
+                                        />
+                                    ))}
+                                </div>
+                            </div>
+                        )}
+
+                        {/* Upcoming Inspections */}
+                        {categorizedInspections.upcoming && categorizedInspections.upcoming.length > 0 && (
+                            <div className="inspection-subsection">
+                                <h3 className="subsection-title upcoming">Upcoming Inspections</h3>
+                                <div className="inspections-list">
+                                    {categorizedInspections.upcoming.map(inspection => (
+                                        <InspectionCard 
+                                            key={inspection.id}
+                                            inspection={inspection}
+                                            onBeginInspection={handleBeginInspection}
+                                            getStatusBadge={getStatusBadge}
+                                            canBeginInspection={canBeginInspection}
+                                            actionStatus={actionStatus}
+                                            clientId={inspection.id}
+                                        />
+                                    ))}
+                                </div>
+                            </div>
+                        )}
                     </section>
                 )}
             </div>
 
-            {(!inspections || inspections.length === 0) && (
+            {(!inspections || inspections.length === 0) && (!callbacks || callbacks.length === 0) && (
                 <div className="empty-state">
                     <div className="empty-icon">📋</div>
                     <h3>No PMS Inspections Assigned</h3>
-                    <p>You don't have any PMS inspections scheduled at the moment.</p>
+                    <p>You don't have any PMS inspections or callbacks scheduled at the moment.</p>
                 </div>
             )}
         </div>
@@ -290,6 +467,78 @@ const InspectionCard = ({ inspection, onBeginInspection, getStatusBadge, canBegi
                     </button>
                 )}
                 <button onClick={() => navigate(`${clientId}`)}>
+                    Details
+                </button>
+            </div>
+        </div>
+    )
+}
+
+// Callback Card Component
+const CallbackCard = ({ callback, onBeginCallback, getStatusBadge, canBeginCallback, actionStatus, clientId }) => {
+    const formatDate = (dateString) => {
+        return new Date(dateString).toLocaleDateString('en-GB', {
+            weekday: 'short',
+            year: 'numeric',
+            month: 'short',
+            day: 'numeric'
+        })
+    }
+    const navigate = useNavigate()
+        
+    return (
+        <div className="inspection-card callback-card">
+            <div className="card-header">
+                <div className="card-title-section">
+                    <h3 className="lift-name">{callback.project_name}</h3>
+                    <div className="client-info">
+                        <strong>{callback.book_name}</strong>
+                        <span className="callback-badge">Callback</span>
+                    </div>
+                </div>
+                {getStatusBadge(callback)}
+            </div>
+            
+            <div className="card-content">
+                <div className="inspection-details">
+                    <div className="detail-row">
+                        <div className="detail-item">
+                            <span className="label">Project Name:</span>
+                            <span className="value">{callback.project_name}</span>
+                        </div>
+                        <div className="detail-item">
+                            <span className="label">Location:</span>
+                            <span className="value">{callback.project_location}</span>
+                        </div>
+                    </div>
+                    <div className="detail-row">
+                        <div className="detail-item">
+                            <span className="label">Scheduled Date:</span>
+                            <span className="value">{formatDate(callback.callback_date)}</span>
+                        </div>
+                        <div className="detail-item">
+                            <span className="label">Contract Type:</span>
+                            <span className="value">{callback.free_pms ? 'Free PMS' : 'Paid PMS'}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div className="card-actions">
+                {canBeginCallback(callback) ? (
+                    <button 
+                        className="begin-btn callback-btn"
+                        onClick={() => onBeginCallback(callback)}
+                        disabled={actionStatus === 'starting'}
+                    >
+                        {actionStatus === 'starting' ? 'Starting...' : 'Begin Callback'}
+                    </button>
+                ) : (
+                    <button className="begin-btn disabled" disabled>
+                        {callback.inspection_ongoing ? 'Callback Started' : 'Not Yet Available'}
+                    </button>
+                )}
+                <button onClick={() => navigate(`callback/${clientId}`)}>
                     Details
                 </button>
             </div>

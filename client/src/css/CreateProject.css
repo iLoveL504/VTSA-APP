@@ -152,7 +152,6 @@
   font-weight: 500;
   margin-top: 0.25rem;
   margin-left: 0.5rem;
-  animation: slideIn 0.2s ease;
 }
 
 @keyframes slideIn {

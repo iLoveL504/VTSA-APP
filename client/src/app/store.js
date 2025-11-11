@@ -178,6 +178,7 @@ export default createStore({
         state.serviceReports = payload
     }),
   currentProj: null,
+  currentProjId: null,
   projectData: {},
   projectPhotos: [],
   projectTeamTechs: [],
@@ -189,6 +190,9 @@ export default createStore({
 
   // Actions
 // CORRECTED ACTIONS - Use action() wrapper for all of them
+setCurrentProjId: action((state, payload) => {
+  state.currentProjId = payload
+}),
 setCurrentProj: action((state, payload) => {
   state.currentProj = payload
 }),

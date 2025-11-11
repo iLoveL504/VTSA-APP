@@ -9,7 +9,7 @@ const ProjectManagerDashboard = ({ onNewProject, clearProjectData, clearProjectT
   const navigate = useNavigate();
   const backendURL = import.meta.env.VITE_BACKEND_URL || 'http://localhost:4000'
   // Project Manager Dashboard Data - Calculated from all projects
-  const {data: projects, loading: projectsIsLoading} = useAxiosFetch(`${backendURL}/api/projects`)
+  const {data: projects, isLoading: projectsIsLoading} = useAxiosFetch(`${backendURL}/api/projects`)
   const projectManagerData = useMemo(() => {
     const now = new Date();
     const currentMonth = now.getMonth();
@@ -38,7 +38,7 @@ const ProjectManagerDashboard = ({ onNewProject, clearProjectData, clearProjectT
       laggingProjects: projects.filter(p => p.is_behind === 1 && p.status && !['Completed', 'Handover Done'].includes(p.status) && !p.on_hold),
       
       pendingProjects: projects.filter(p => p.on_hold === 1 || p.request_hold === 1),
-      
+      incomingProjects: projects.filter(p => p.status === 'Incoming' && !p.handover_done),
       // TNC Projects for this month and next month
       tncProjectsThisMonth: projects.filter(p => {
         if (!p.tnc_start_date) return false;
@@ -141,14 +141,11 @@ const ProjectManagerDashboard = ({ onNewProject, clearProjectData, clearProjectT
     return date.toLocaleString('default', { month: 'long', year: 'numeric' });
   };
 
-  if(projectsIsLoading) {
-        return (
-                <div className="Loading">
-                    <p>Data is Loading...</p>
-                    <Grid size="60" speed="1.5" color="rgba(84, 176, 210, 1)" />
-                </div>
-        )    
-  }
+  // if(projectsIsLoading) {
+  //       return (
+
+  //       )    
+  // }
 
   return (
     <div className="Content ProjectManagerDashboard">
@@ -210,6 +207,16 @@ const ProjectManagerDashboard = ({ onNewProject, clearProjectData, clearProjectT
         </div>
 
         <div className="stat-card">
+          <div className="stat-icon" style={{backgroundColor: 'rgba(108, 117, 125, 0.1)'}}>
+            <span style={{color: '#6c757d'}}>📥</span>
+          </div>
+          <div className="stat-content">
+            <h3>{projectManagerData.incomingProjects.length}</h3>
+            <p>Incoming</p>
+          </div>
+        </div>
+
+        <div className="stat-card">
           <div className="stat-icon" style={{backgroundColor: 'rgba(23, 162, 184, 0.1)'}}>
             <span style={{color: '#17a2b8'}}>✅</span>
           </div>
@@ -222,118 +229,144 @@ const ProjectManagerDashboard = ({ onNewProject, clearProjectData, clearProjectT
 
       <div className="dashboard-content">
         {/* Left Column - Project Overview */}
+        {console.log(projectsIsLoading)}
         <div className="main-content">
-          {/* Critical Projects Alert */}
-          {projectManagerData.criticalProjects.length > 0 && (
-            <div className="content-card critical-alert">
-              <div className="card-header">
-                <h3 style={{color: '#dc3545'}}>⚠️ Critical Projects</h3>
-                <span className="badge critical">{projectManagerData.criticalProjects.length} projects</span>
-              </div>
-              <div className="projects-list">
-                {projectManagerData.criticalProjects.map(project => (
-                  <ProjectItem key={project.id} project={project} type="critical" onProjectClick={handleProjectClick} />
-                ))}
-              </div>
-            </div>
-          )}
-
-          {/* Lagging Projects */}
-          {projectManagerData.laggingProjects.length > 0 && (
-            <div className="content-card lagging-alert">
-              <div className="card-header">
-                <h3 style={{color: '#ffc107'}}>🔄 Lagging Projects</h3>
-                <span className="badge lagging">{projectManagerData.laggingProjects.length} projects</span>
-              </div>
-              <div className="projects-list">
-                {projectManagerData.laggingProjects.slice(0, 5).map(project => (
-                  <ProjectItem key={project.id} project={project} type="lagging" onProjectClick={handleProjectClick} />
-                ))}
-              </div>
-            </div>
-          )}
-
-          {/* Pending Projects (On Hold) */}
-          {projectManagerData.pendingProjects.length > 0 && (
-            <div className="content-card pending-alert">
-              <div className="card-header">
-                <h3 style={{color: '#6c757d'}}>⏸️ Pending Projects (Cannot Proceed to TNC)</h3>
-                <span className="badge pending">{projectManagerData.pendingProjects.length} projects</span>
-              </div>
-              <div className="projects-list">
-                {projectManagerData.pendingProjects.slice(0, 3).map(project => (
-                  <ProjectItem key={project.id} project={project} type="pending" onProjectClick={handleProjectClick} />
-                ))}
-              </div>
-            </div>
-          )}
-          {/* TNC Projects This Month */}
-          {projectManagerData.tncProjectsThisMonth.length > 0 && (
-            <div className="content-card tnc-alert">
-              <div className="card-header">
-                <h3 style={{color: '#17a2b8'}}>🔧 Upcoming Hand overs This Month ({getMonthName(new Date().toISOString())})</h3>
-                <span className="badge tnc">{projectManagerData.tncProjectsThisMonth.length} projects</span>
-              </div>
-              <div className="projects-list">
-                {projectManagerData.tncProjectsThisMonth.map(project => (
-                  <ProjectItem key={project.id} project={project} type="tnc" onProjectClick={handleProjectClick} />
-                ))}
-              </div>
-            </div>
-          )}
-
-          {/* TNC Projects Next Month */}
-          {projectManagerData.tncProjectsNextMonth.length > 0 && (
-            <div className="content-card tnc-next-alert">
-              <div className="card-header">
-                <h3 style={{color: '#20c997'}}>🔧 TNC Next Month ({getMonthName(new Date(new Date().getFullYear(), new Date().getMonth() + 1, 1).toISOString())})</h3>
-                <span className="badge tnc-next">{projectManagerData.tncProjectsNextMonth.length} projects</span>
-              </div>
-              <div className="projects-list">
-                {projectManagerData.tncProjectsNextMonth.map(project => (
-                  <ProjectItem key={project.id} project={project} type="tnc-next" onProjectClick={handleProjectClick} />
-                ))}
-              </div>
-            </div>
-          )}
-
-          {/* All Projects Overview */}
-          <div className="content-card">
-            <div className="card-header">
-              <h3>All Projects Overview</h3>
-              <button className="view-all-btn" onClick={handleViewAllProjects}>
-                View All Projects
-              </button>
-            </div>
-            <div className="projects-list">
-              {projects.slice(0, 15).map(project => (
-                <ProjectItem key={project.id} project={project} type="normal" onProjectClick={handleProjectClick} />
-              ))}
-            </div>
-          </div>
-
-          {/* Project Status Distribution */}
-          <div className="content-card">
-            <div className="card-header">
-              <h3>Project Status Distribution</h3>
-            </div>
-            <div className="status-distribution">
-              {Object.entries(projectManagerData.statusDistribution).map(([status, count]) => (
-                <div key={status} className="status-item">
-                  <span className="status-name">{status}</span>
-                  <div className="status-bar-container">
-                    <div 
-                      className="status-bar"
-                      style={{ 
-                        width: `${(count / projectManagerData.totalProjects) * 100}%` 
-                      }}
-                    ></div>
-                  </div>
-                  <span className="status-count">{count}</span>
+          {projectsIsLoading ? (
+                            <div className="Loading">
+                    <p>Data is Loading...</p>
+                    <Grid size="60" speed="1.5" color="rgba(84, 176, 210, 1)" />
                 </div>
-              ))}
-            </div>
-          </div>
+          ) : (
+            <>
+              {projectManagerData.criticalProjects.length > 0 && (
+                <div className="content-card critical-alert">
+                  <div className="card-header">
+                    <h3 style={{color: '#dc3545'}}>⚠️ Critical Projects</h3>
+                    <span className="badge critical">{projectManagerData.criticalProjects.length} projects</span>
+                  </div>
+                  <div className="projects-list">
+                    {projectManagerData.criticalProjects.map(project => (
+                      <ProjectItem key={project.id} project={project} type="critical" onProjectClick={handleProjectClick} />
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Lagging Projects */}
+              {projectManagerData.laggingProjects.length > 0 && (
+                <div className="content-card lagging-alert">
+                  <div className="card-header">
+                    <h3 style={{color: '#ffc107'}}>🔄 Lagging Projects</h3>
+                    <span className="badge lagging">{projectManagerData.laggingProjects.length} projects</span>
+                  </div>
+                  <div className="projects-list">
+                    {projectManagerData.laggingProjects.slice(0, 5).map(project => (
+                      <ProjectItem key={project.id} project={project} type="lagging" onProjectClick={handleProjectClick} />
+                    ))}
+                  </div>
+                </div>
+              )}
+              {/* Incoming Projects */}
+            {projectManagerData.incomingProjects.length > 0 && (
+              <div className="content-card incoming-alert">
+                <div className="card-header">
+                  <h3 style={{color: '#6f42c1'}}>📥 Incoming Projects</h3>
+                  <span className="badge incoming">{projectManagerData.incomingProjects.length} projects</span>
+                </div>
+                <div className="projects-list">
+                  {projectManagerData.incomingProjects.map(project => (
+                    <ProjectItem key={project.id} project={project} type="incoming" onProjectClick={handleProjectClick} />
+                  ))}
+                </div>
+              </div>
+            )}
+
+              {/* Pending Projects (On Hold) */}
+              {projectManagerData.pendingProjects.length > 0 && (
+                <div className="content-card pending-alert">
+                  <div className="card-header">
+                    <h3 style={{color: '#6c757d'}}>⏸️ Pending Projects (Cannot Proceed to TNC)</h3>
+                    <span className="badge pending">{projectManagerData.pendingProjects.length} projects</span>
+                  </div>
+                  <div className="projects-list">
+                    {projectManagerData.pendingProjects.slice(0, 3).map(project => (
+                      <ProjectItem key={project.id} project={project} type="pending" onProjectClick={handleProjectClick} />
+                    ))}
+                  </div>
+                </div>
+              )}
+              {/* TNC Projects This Month */}
+              {projectManagerData.tncProjectsThisMonth.length > 0 && (
+                <div className="content-card tnc-alert">
+                  <div className="card-header">
+                    <h3 style={{color: '#17a2b8'}}>🔧 Upcoming Hand overs This Month ({getMonthName(new Date().toISOString())})</h3>
+                    <span className="badge tnc">{projectManagerData.tncProjectsThisMonth.length} projects</span>
+                  </div>
+                  <div className="projects-list">
+                    {projectManagerData.tncProjectsThisMonth.map(project => (
+                      <ProjectItem key={project.id} project={project} type="tnc" onProjectClick={handleProjectClick} />
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* TNC Projects Next Month */}
+              {projectManagerData.tncProjectsNextMonth.length > 0 && (
+                <div className="content-card tnc-next-alert">
+                  <div className="card-header">
+                    <h3 style={{color: '#20c997'}}>🔧 TNC Next Month ({getMonthName(new Date(new Date().getFullYear(), new Date().getMonth() + 1, 1).toISOString())})</h3>
+                    <span className="badge tnc-next">{projectManagerData.tncProjectsNextMonth.length} projects</span>
+                  </div>
+                  <div className="projects-list">
+                    {projectManagerData.tncProjectsNextMonth.map(project => (
+                      <ProjectItem key={project.id} project={project} type="tnc-next" onProjectClick={handleProjectClick} />
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* All Projects Overview */}
+              <div className="content-card">
+                <div className="card-header">
+                  <h3>All Projects Overview</h3>
+                  <button className="view-all-btn" onClick={handleViewAllProjects}>
+                    View All Projects
+                  </button>
+                </div>
+                <div className="projects-list">
+                  {projects.slice(0, 15).map(project => (
+                    <ProjectItem key={project.id} project={project} type="normal" onProjectClick={handleProjectClick} />
+                  ))}
+                </div>
+              </div>
+
+              {/* Project Status Distribution */}
+              <div className="content-card">
+                <div className="card-header">
+                  <h3>Project Status Distribution</h3>
+                </div>
+                <div className="status-distribution">
+                  {Object.entries(projectManagerData.statusDistribution).map(([status, count]) => (
+                    <div key={status} className="status-item">
+                      <span className="status-name">{status}</span>
+                      <div className="status-bar-container">
+                        <div 
+                          className="status-bar"
+                          style={{ 
+                            width: `${(count / projectManagerData.totalProjects) * 100}%` 
+                          }}
+                        ></div>
+                      </div>
+                      <span className="status-count">{count}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>          
+            </>            
+          )}
+
+          {/* Critical Projects Alert */}
+
         </div>
 
         {/* Right Column - Analytics & Quick Actions */}
@@ -490,6 +523,12 @@ const ProjectItem = ({ project, type, onProjectClick }) => {
           background: '#f0fff4',
           borderColor: '#c6f6d5',
           borderLeft: '4px solid #20c997'
+        };
+      case 'incoming':
+        return {
+          background: '#f8f9fa',
+          borderColor: '#e9ecef',
+          borderLeft: '4px solid #6f42c1'
         };
       default:
         return {

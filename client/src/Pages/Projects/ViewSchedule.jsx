@@ -260,7 +260,7 @@ const TestChart = ({projSched, projSchedIsLoading, holidays }) => {
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
                     {/* Holidays Section */}
                     <div>
-                        <h3 style={{ marginBottom: '10px' }}>📅 Project Holidays</h3>
+                        <h3 style={{ marginBottom: '10px' }}>Project Holidays</h3>
                         {holidays && holidays.length > 0 ? (
                             <div>
                                 {Object.entries(groupedHolidays).map(([month, monthHolidays]) => (
@@ -271,12 +271,12 @@ const TestChart = ({projSched, projSchedIsLoading, holidays }) => {
                                                 <span 
                                                     key={index}
                                                     style={{
-                                                        background: '#fff',
-                                                        border: '1px solid #ffa500',
+                                                        background: '#50b1edff',
+                                                        border: '1px solid #50b1edff',
                                                         padding: '4px 8px',
                                                         borderRadius: '12px',
                                                         fontSize: '12px',
-                                                        color: '#ffa500'
+                                                        color: '#ffffffff'
                                                     }}
                                                 >
                                                     {holiday.formatted}
@@ -295,7 +295,7 @@ const TestChart = ({projSched, projSchedIsLoading, holidays }) => {
                     <div>
                         {/* Query here to be added where it checks if project is in installation */}
                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
-                            <h3>📋 Installation Start Date</h3>
+                            <h3>Installation Start Date</h3>
                             {!isEditingInstallation && (
                                 <button 
                                     onClick={startEditInstallation}

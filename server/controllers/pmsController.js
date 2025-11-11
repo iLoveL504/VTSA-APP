@@ -90,7 +90,8 @@ export const PMSController = {
     try {
       const { pmsId } = req.params;
       const { technicianIds } = req.body;
-      await PMSModel.assignTechnicians(pmsId, technicianIds);
+      const { inspection_date } = req.body
+      await PMSModel.assignTechnicians(pmsId, technicianIds, inspection_date);
         res.status(200).json({
             success: true,
             message: "approved"
@@ -185,4 +186,30 @@ export const PMSController = {
       res.status(400).json({ error: err.message });
     }
   },
+
+  async scheduleCallback(req, res) {
+    try {
+      const {clientId} = req.params
+      const { technicianIds } = req.body
+      const { inspection_date } = req.body
+      await PMSModel.scheduleCallback(Number(clientId), technicianIds, inspection_date)
+        res.status(200).json({
+            success: true,
+            message: "approved"
+        })
+    } catch (err) {
+      res.status(400).json({ error: err.message });      
+    }
+  },
+
+  async callbackDesignations(req, res) {
+    try {
+      const {techId} = req.params
+      const results = await PMSModel.callbackDesignation(Number(techId))
+      res.status(200).json(results)
+    } catch (err) {
+      console.log(err)
+      res.status(400).json({ error: err.message });
+    }
+  }
 };

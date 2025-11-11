@@ -110,7 +110,6 @@ class LinkedList {
     this.postponed = true;
     this.postponedFromTask = taskNode;
     this.postponedStartDate = new Date(); // Record when postponement started
-    console.log(`Project pd from task "${taskNode.data.task_name}"`);
     return true;
   }
 
@@ -118,7 +117,6 @@ class LinkedList {
 // POSTPONE FEATURE: Resume project after postponement with specified resume date
 resumeProject(resumeDate) {
   if (!this.postponed) {
-    console.log("Project is not postponed");
     return false;
   }
 
@@ -363,7 +361,6 @@ resumeProject(resumeDate) {
   }
 
   adjustInstallationStart(startDate) {
-    console.log('-------------------------------------------')
     if (!(startDate instanceof Date) || isNaN(startDate.getTime())) {
       console.error("Invalid resume date. Must be a valid Date object.");
       return false
@@ -414,7 +411,6 @@ resumeProject(resumeDate) {
   
   // Adjust planning buffer
   planningBuffer.data.task_duration = diff
-  console.log(planningBuffer.data.task_duration)
   planningBuffer.data.task_end = new Date(installationNode.data.task_start)
   
   // Update the parent (this should now work correctly)
@@ -514,9 +510,9 @@ resumeProject(resumeDate) {
     while (current) {
       const s = current.data.task_start;
       const e = current.data.task_end;
-      console.log(
-        `${current.data.task_id} ${current.data.task_name} | start: ${s ? s.toDateString() : "?"} | end(excl): ${e ? e.toDateString() : "?"} | dur: ${current.data.task_duration} | percent: ${current.data.task_percent ? current.data.task_percent : 0}%`
-      );
+      // console.log(
+      //   `${current.data.task_id} ${current.data.task_name} | start: ${s ? s.toDateString() : "?"} | end(excl): ${e ? e.toDateString() : "?"} | dur: ${current.data.task_duration} | percent: ${current.data.task_percent ? current.data.task_percent : 0}%`
+      // );
       current = current.next;
     }
   }

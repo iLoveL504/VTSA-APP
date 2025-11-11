@@ -9,8 +9,8 @@ const AdminEmployee = ({ employee, onEdit, onDelete }) => {
             <p>{employee.username}</p>
             <p>{employee.job}</p>
             <p>{formatDate(employee.hire_date)}</p>
-            <div className={`Status ${!employee.is_active ? 'Inactive' : 'Active'}`}>
-                <p>{!employee.is_active ? 'Available' : 'In Project'}</p>
+            <div className={`Status ${!employee.in_house ? 'Inactive' : 'Active'}`}>
+                <p>{employee.in_house ? 'In House' : 'No'}</p>
             </div>
             <div className="actions">
                 <button 

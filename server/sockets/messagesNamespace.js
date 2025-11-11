@@ -36,11 +36,11 @@ export default function messageNamespace(msp) {
 
     // ✅ Send Message
 // ✅ Send Message - Fixed version
-socket.on("send_message", async (data) => {
+socket.on("send_message", async (data, callback) => {
   try {
     const { sender_id, content, recipients } = data;
     const result = await messages.sendMessage({ sender_id, content, recipients });
-    
+    callback({success: true})
     // Notify sender
     socket.emit("send_message_done", result);
     
@@ -56,6 +56,7 @@ socket.on("send_message", async (data) => {
     socket.emit("fetch_sent_done", updatedSent);
     
   } catch (err) {
+    callback({success: false})
     console.error("❌ Send message error:", err);
     socket.emit("send_message_error", { error: err.message });
   }

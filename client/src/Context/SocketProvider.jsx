@@ -1,6 +1,6 @@
 import { SocketContext } from './SocketContext'
 import { useSocket } from '../hooks/useSocket.js'
-import { useStoreActions } from 'easy-peasy'
+import { useStoreActions, useStoreState } from 'easy-peasy'
 
 export const SocketProvider = ({ children }) => {
   const setForecastData = useStoreActions(action => action.setForecastData)
@@ -14,6 +14,12 @@ export const SocketProvider = ({ children }) => {
 
   const setInbox = useStoreActions(action => action.setInbox)
   const setSentMessages = useStoreActions(action => action.setSentMessages)
+  const currentProj = useStoreState(state => state.currentProj)
+  const currentProjId = useStoreState(state => state.currentProjId)
+  //store actions to update projects
+  const fetchAllProjectData = useStoreActions(action => action.fetchAllProjectData)
+  const findProjectTasks = useStoreActions(action => action.findProjectTasks)
+
 
   const forecastSocket = useSocket("/forecast", {
     forecast_done: (data) => setForecastData(data.map(d => ({ ...d, group: 'forecasted' }))),
@@ -42,6 +48,12 @@ export const SocketProvider = ({ children }) => {
     notification_update_done: (data) => {
       console.log('New notifications:', data);
       setNotifications(data)
+    },
+    update_task: () => {
+      console.log('updating task')
+      console.log('projid: ', currentProjId)
+      fetchAllProjectData(currentProjId)
+      findProjectTasks({ projectId: currentProjId, projectData: currentProj })
     }
   })
 

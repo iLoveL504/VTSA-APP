@@ -60,7 +60,6 @@ const ProjectInfo = () => {
       isLoading,
       holidays,
       error,
-
       currentTask,
       currentParentTask,
       currentTaskPhase,
@@ -72,14 +71,16 @@ const ProjectInfo = () => {
       tasksIsLoading,
       fetchedData
     } = useStoreState(state => state); // Remove .projectStore since it's directly in root
-    console.log(currentTask)
     const {
       fetchAllProjectData,
       fetchTeamInfo,
-        findProjectTasks,
+      findProjectTasks,
+      setCurrentProjId,
+      setCurrentProj,
+      clearProjectData,
+      clearProjectTasks
     } = useStoreActions(actions => actions); // Remove .projectStore since it's directly in root
 
-    const projects = useStoreState(state => state.projects)
     const [activePage, setActivePage] = useState('details')
     const [isEditing, setIsEditing] = useState(false)
     const [formData, setFormData] = useState({})
@@ -97,53 +98,61 @@ const ProjectInfo = () => {
     //     onHold
     // } = useFindProjectTask(projId, proj)
 
-    const isProjectsReady = Array.isArray(projects) && projects.length > 0;
     const [role, setRole] = useState(null)
-    console.log(fetchedData)
-    console.log(isBehindSchedule)
+    const [isLoaded, setIsLoaded] = useState(false)
     
     useEffect(() => {
         const userRole = sessionStorage.getItem('roles');
         setRole(userRole);
+        clearProjectData()
+        clearProjectTasks()
     }, []);
 
+    useEffect(() => {
+      if(proj) {
+        setCurrentProj(proj)
+        setCurrentProjId(projId)
+      }
+    }, [proj])
+
     // Consolidated useEffect for all data fetching
-    useEffect(() => {
-      if (projId) {
-        // Check if we already have the data to avoid refetching
-        if (!proj || Object.keys(proj).length === 0) {
-          fetchAllProjectData(projId);
-        }
+// Consolidated useEffect for all data fetching
+useEffect(() => {
+  const fetchAllData = async () => {
+    if (!projId) return;
+
+    try {
+      // Fetch main project data if not already loaded
+      if (!proj || Object.keys(proj).length === 0) {
+        await fetchAllProjectData(projId);
       }
 
-      // Cleanup function - clear data when component unmounts
-      return () => {
-        // Only clear if we're actually leaving the project page
-        // You might want to remove this or handle it differently
-         //clearProjectData();
-      };
-    }, [projId, fetchAllProjectData, proj]);
-
-    // Fetch team info when project data is available
-    useEffect(() => {
-      if (proj && proj.id && isProjectsReady) {
-        fetchTeamInfo({ projId, projData: proj });
-      }
-    }, [proj, projId, isProjectsReady, fetchTeamInfo]);
-
-    useEffect(() => {
+      // Once project data is available, fetch dependent data
       if (proj && proj.id) {
-        findProjectTasks({ projectId: projId, projectData: proj });
+        // Fetch team info and project tasks in parallel
+        await Promise.all([
+          fetchTeamInfo({ projId, projData: proj }),
+          findProjectTasks({ projectId: projId, projectData: proj })
+        ]);
       }
-    }, [proj, projId, findProjectTasks]);
 
-    // Initialize form data when project data loads
-    useEffect(() => {
-      if (proj && Object.keys(proj).length > 0) {
-        setFormData(proj);
-        setValues(proj);
-      }
-    }, [proj]);
+      // Set loaded state after all data is fetched
+      setIsLoaded(true);
+
+    } catch (error) {
+      console.error('Error fetching project data:', error);
+      setIsLoaded(true); // Still set loaded to true to avoid infinite loading
+    }
+  };
+
+  fetchAllData();
+
+  // Cleanup function
+  return () => {
+    console.log('leaving project info');
+
+  };
+}, [projId, proj, fetchAllProjectData, fetchTeamInfo, findProjectTasks]);
 
     const validate = (values) => {
         let errors = {}
@@ -231,8 +240,16 @@ const ProjectInfo = () => {
         navigate(`report`)
     }
 
+    const handleRefreshClick = () => {
+      console.log('refreshing project data')
+
+      fetchAllProjectData(projId);
+      findProjectTasks({ projectId: projId, projectData: proj })
+    }
+
     // Show loading state
-    if (isLoading && !proj) {
+    if ((isLoading || tasksIsLoading) && !proj) {
+      console.log('-----------------------------------66666666666666666666666666666')
       return (
         <div className="Content ProjectPage">
           <div className="loading-state">
@@ -260,7 +277,9 @@ const ProjectInfo = () => {
     }
 
     return (
+        
         <div className="Content ProjectPage">
+          
             <div className="project-header">
                 <h2>{values.lift_name || proj?.lift_name}</h2>
                     <div className="action-buttons">
@@ -301,23 +320,21 @@ const ProjectInfo = () => {
                         )}
                     </div>
             </div>
-            
+            <button onClick={handleRefreshClick}>
+              Refresh Data
+            </button>
             {
                 activePage === 'details' && 
                 <ProjectDetails 
                     projectCompleted={projectCompleted}
                     currentTask={currentTask}
                     currentParentTask={currentParentTask}
-                    currentIsLoading={tasksIsLoading} // Use tasksIsLoading from store
-                    tasksFetchError={null} // You can handle errors in the store if needed
                     projectExists={projectExists}
                     fetchedData={projSched} // Use projectSchedule from store
                     proj={proj}
                     setFormData={setFormData}
-                    projIsLoading={isLoading}
                     formData={formData}
                     teamInfo={teamInfo}
-                    teamIsLoading={isLoading}
                     saveStatus={saveStatus}
                     handleSave={handleSave}
                     isEditing={isEditing}
@@ -337,6 +354,7 @@ const ProjectInfo = () => {
                     projectedTask={projectedTask}
                     isBehindSchedule={isBehindSchedule}
                     onHold={onHold}
+                    isLoaded={isLoaded}
                 />
             }
             {

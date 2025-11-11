@@ -28,7 +28,7 @@ const AdminMenu = () => {
                 Users
             </li>
           </Link>
-          <Link to="/projects">
+          {/* <Link to="/projects">
             <li>
                 <GoProjectRoadmap style={{ color: 'white' }}/>
                 Projects
@@ -52,7 +52,7 @@ const AdminMenu = () => {
                 Baby Book
             </li>
           </Link>
-            
+             */}
           
         </ul>
 

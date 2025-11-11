@@ -90,5 +90,10 @@ export default function utilitiesNamespace (usp) {
 
             }
         })  
+        socket.on('update_task_status', () => {
+            console.log('I AM UPDATING MY SHIIII')
+            socket.broadcast.emit('update_task') // To all except sender
+            socket.emit('update_task')
+        })
     })
 }

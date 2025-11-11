@@ -87,8 +87,8 @@
   padding: 1rem;
   background: #f8f9fa;
   cursor: pointer;
-  display: flex;
-  justify-content: space-between;
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
   align-items: center;
 }
 
@@ -112,7 +112,9 @@
 }
 
 .team-meta {
-  text-align: right;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .team-dates span {
@@ -123,6 +125,7 @@
 
 .team-expand-icon {
   color: #6c757d;
+  text-align: right;
 }
 
 .team-card-content {

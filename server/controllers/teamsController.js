@@ -14,7 +14,6 @@ export const getTeamPerId = async (req, res) => {
     try {
         const { id } = req.params;
         const results = await teams.getTeamPerId(Number(id));
-        console.log(results)
         res.status(200).json(results);
         
     } catch (error) {
@@ -42,7 +41,6 @@ export const editTeam = async (req, res) => {
         const { id } = req.params
         const {editedTeam} = req.body
         console.log('---------------eidt team -------')
-        console.log(editedTeam)
         await teams.editTeam(Number(id), editedTeam)
                 res.status(200).json({
             success: true,
@@ -58,7 +56,6 @@ export const getCompositionPerId = async (req, res) => {
     try {
         const {id} = req.params
         const results = await teams.getProjectManpowerById(Number(id));
-        console.log(results)
         res.status(200).json(results);        
     } catch (err) {
         res.status(500).json({ error: error.message });
@@ -112,7 +109,6 @@ export const assignTeam = async (req, res) => {
         id
     } = req.body
     console.log('here in assign team')
-    console.log(req.body)
     try {
     
         const results = await teams.assignTeam(Number(projId), Number(id))

@@ -1,11 +1,12 @@
 import React, {useMemo, useEffect} from 'react'
 import Project from './Project'
 import useAxiosFetch from '../../hooks/useAxiosFetch'
+import { useStoreState } from 'easy-peasy'
 
 import { Grid } from 'ldrs/react'
 
 const ProjectList = ({onHold, searchTerm}) => {
-
+  const currentProjId = useStoreState(state => state.currentProjId)
   const backendURL = import.meta.env.VITE_BACKEND_URL || 'http://localhost:4000'
   const empId = sessionStorage.getItem('id')
   const role = sessionStorage.getItem('roles')
@@ -13,7 +14,7 @@ const ProjectList = ({onHold, searchTerm}) => {
     role
   }
   const {data: projects} = useAxiosFetch(`${backendURL}/api/projects`)
-  console.log(projects)
+  console.log(currentProjId)
   const {data: designatedProject, isLoading: designatedIsLoading} = useAxiosFetch(`${backendURL}/api/employees/${empId}/designated-project`, filter)
     // Filter projects based on search term
   const filteredProjects = useMemo(() => {

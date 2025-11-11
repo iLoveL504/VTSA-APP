@@ -186,6 +186,7 @@ const TaskDetails = ({currentTask, currentParentTask, currentTaskPhase, proj, Co
             console.log(
                 Object.fromEntries(formData.entries())
             );
+            utilitiesSocket.emit('update_task_status')
             
         } catch (e) {
             console.log(e)
@@ -244,7 +245,8 @@ const TaskDetails = ({currentTask, currentParentTask, currentTaskPhase, proj, Co
                 }
             });
         });
-        window.location.reload()
+        utilitiesSocket.emit('update_task_status')
+       // window.location.reload()
       } catch (e) {
         console.log(e);
       }
@@ -320,6 +322,7 @@ const TaskDetails = ({currentTask, currentParentTask, currentTaskPhase, proj, Co
                             }
                         });
                     });
+                    
                 }
             } else if (type === 'qaqc') {
                 const formData = new FormData()
@@ -423,7 +426,8 @@ const TaskDetails = ({currentTask, currentParentTask, currentTaskPhase, proj, Co
 
             }
             setCompletionModal({ isOpen: false, task: null });   
-            window.location.reload()
+            utilitiesSocket.emit('update_task_status')
+            //window.location.reload()
         } catch (e) {
             console.log(e)
         } 

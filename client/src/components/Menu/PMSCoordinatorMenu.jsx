@@ -34,16 +34,10 @@ const PMSCoordinatorMenu = () => {
                 PMS Assignment
             </li>
           </Link>
-          <Link to="/teams">
-            <li>
-                <RiTeamFill style={{ color: 'white' }}/>
-                Teams
-            </li>
-          </Link>
           <Link to="/baby-book">
             <li>
                 <IoIosDocument style={{ color: 'white' }}/>
-                Baby Book
+                Reports
             </li>
           </Link>
             

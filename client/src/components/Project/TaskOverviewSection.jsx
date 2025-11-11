@@ -274,17 +274,26 @@ const TaskOverviewSection = ({
   currentTask,
   currentTaskPhase,
   onCreateSchedule,
-  taskIsLoading
 }) => {
-    if (taskIsLoading) {
 
-        return (
-                <div className="Loading">
-                    <p>Data is Loading...</p>
-                    <Grid size="60" speed="1.5" color="rgba(84, 176, 210, 1)" />
-                </div>
-        )
-    }
+// const isReady =
+//   isLoaded &&
+//   proj &&
+//   projectExists !== undefined &&
+//   projectCompleted !== undefined &&
+//   currentTask !== null &&
+//   currentParentTask !== null;
+
+
+//     if (!isReady) {
+
+//         return (
+//                 <div className="Loading">
+//                     <p>Data is Loading...</p>
+//                     <Grid size="60" speed="1.5" color="rgba(84, 176, 210, 1)" />
+//                 </div>
+//         )
+//     }
 
   return (
     <div className="task-overview-section">

@@ -112,7 +112,6 @@ export const completeTask = async (req, res) => {
 export const makeProjectSchedule = async (req, res) => {
     const {id} = req.params
     console.log('make project schedule controller')
-    console.log(req.body)
    console.log('here in make project schedule')
     try {
         const results = await projects.makeProjectSchedule(req.body, id)

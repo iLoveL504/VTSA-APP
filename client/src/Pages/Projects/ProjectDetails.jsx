@@ -36,10 +36,10 @@ const ResumeProjectModal = ({ isOpen, onClose, onConfirm, project }) => {
 };
 
 const ProjectDetails = ({
-    projectCompleted, currentTask, projectExists, proj, setFormData, teamInfo, projIsLoading, teamIsLoading,
+    projectCompleted, currentTask, projectExists, proj, setFormData, teamInfo, teamIsLoading,
     saveStatus, handleSave, isEditing, errors, handleInputChange, handleNumberInputChange, handleBlur, handleSubmit,
     values, setIsEditing, handleCancel, photos, backendURL, setActivePage, currentTaskPhase, currentParentTask,
-    projectedTask, isBehindSchedule, onHold, taskIsLoading, currentIsLoading 
+    projectedTask, isBehindSchedule, onHold, isLoaded
 }) => {
     const {projId} = useParams()
     const [isResumeModalOpen, setIsResumeModalOpen] = useState(false)
@@ -85,7 +85,16 @@ const ProjectDetails = ({
 
 //  || tasksIsLoading || projectExists === 'loading'
 // isLoading || teamIsLoading 
-    if (projIsLoading || currentIsLoading) {
+const isReady =
+  isLoaded &&
+  proj &&
+  projectExists !== undefined &&
+  projectCompleted !== undefined &&
+  currentTask !== null &&
+  currentParentTask !== null;
+
+    if (!isLoaded || !isReady) {
+        console.log(isLoaded)
         return (
             <div className="Loading">
                 <p>Data is Loading...</p>
@@ -93,8 +102,9 @@ const ProjectDetails = ({
             </div>
         )
     }
+
     // SIMPLIFIED: Check if we have the essential data
-    if (!proj || Object.keys(proj).length === 0) {
+    if ((!proj || Object.keys(proj).length === 0 && !isLoaded)) {
 
         return (
             <div className="Loading">
@@ -102,9 +112,9 @@ const ProjectDetails = ({
             </div>
         )
     }
-
     return (
         <div className="Content ProjectDetails">
+            {console.log('delay is in project details')}
             {saveStatus === 'success' && <div className="status success">Project updated successfully!</div>}
                 {saveStatus === 'error' && <div className="status error">Error updating project</div>}
 
@@ -125,7 +135,7 @@ const ProjectDetails = ({
   currentTask={currentTask}
   currentTaskPhase={currentTaskPhase}
   onCreateSchedule={handleCreateSchedule}
-  taskIsLoading={taskIsLoading}
+  isLoaded={isLoaded}
 />
 
 

@@ -18,6 +18,10 @@ const Inbox = () => {
         content: ''
     })
     const [searchTerm, setSearchTerm] = useState('')
+    const [recipientSearch, setRecipientSearch] = useState('')
+    const [isSending, setIsSending] = useState(false)
+    const [sendStatus, setSendStatus] = useState(null)
+
     useEffect(() => {
         if (messagesSocket && user) {
             console.log('User ID:', user.employee_id)       
@@ -27,8 +31,6 @@ const Inbox = () => {
         }
         console.log('Sent Messages:', sentMessages)
     }, [messagesSocket, user])
-
-
 
     const handleMarkAsRead = (messageId) => {
         messagesSocket.emit('mark_as_read', {
@@ -43,17 +45,33 @@ const Inbox = () => {
             return
         }
 
+        setIsSending(true)
+        setSendStatus(null)
+
         messagesSocket.emit('send_message', {
             sender_id: user.employee_id,
             content: newMessage.content,
             recipients: newMessage.recipients
         }, (ack) => {
+            setIsSending(false)
+            
             if (ack?.success) {
+                setSendStatus({ type: 'success', message: 'Message sent successfully!' })
                 setNewMessage({ recipients: [], content: '' })
-                setIsComposeOpen(false)
+                
+                // Close modal after success
+                setTimeout(() => {
+                    setIsComposeOpen(false)
+                    setSendStatus(null)
+                }, 1500)
+                
+                // Refresh sent messages
                 messagesSocket.emit('fetch_sent', user.employee_id)
             } else {
-                alert(ack?.error || 'Failed to send message')
+                setSendStatus({ 
+                    type: 'error', 
+                    message: ack?.error || 'Failed to send message. Please try again.' 
+                })
             }
         })
     }
@@ -68,11 +86,25 @@ const Inbox = () => {
     }
 
     const handleSelectAllRecipients = () => {
-        const allEmployeeIds = employees?.map(emp => emp.employee_id) || []
+        const filteredEmployees = getFilteredEmployees()
+        const allFilteredIds = filteredEmployees.map(emp => emp.employee_id)
+        
         setNewMessage(prev => ({
             ...prev,
-            recipients: prev.recipients.length === allEmployeeIds.length ? [] : allEmployeeIds
+            recipients: prev.recipients.length === allFilteredIds.length ? [] : allFilteredIds
         }))
+    }
+
+    const getFilteredEmployees = () => {
+        if (!employees) return []
+        
+        return employees.filter(employee => {
+            const fullName = `${employee.first_name} ${employee.last_name}`.toLowerCase()
+            const job = employee.job?.toLowerCase() || ''
+            const search = recipientSearch.toLowerCase()
+            
+            return fullName.includes(search) || job.includes(search)
+        })
     }
 
     const formatDate = (dateString) => {
@@ -85,8 +117,6 @@ const Inbox = () => {
     }
 
     const getDisplayMessages = () => {
-        console.log(inbox)
-        console.log(sentMessages)
         const messages = activeTab === 'inbox' ? inbox : sentMessages
         return messages.filter(msg => 
             msg.content.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -101,14 +131,13 @@ const Inbox = () => {
         if (activeTab === 'inbox') {
             return message.sender_name?.split(' ').map(n => n[0]).join('') || 'U'
         } else {
-            // For sent messages, use the first letter of the first recipient
-            console.log(message)
-             const firstRecipient = message.recipients?.join(',')[0]?.trim() || 'R'
-             return firstRecipient.split(' ').map(n => n[0]).join('')
+            const firstRecipient = message.recipients?.join(',')[0]?.trim() || 'R'
+            return firstRecipient.split(' ').map(n => n[0]).join('')
         }
     }
 
     const displayMessages = getDisplayMessages()
+    const filteredEmployees = getFilteredEmployees()
 
     return (
         <div className='Content Inbox'>
@@ -145,13 +174,13 @@ const Inbox = () => {
 
                 {/* Search */}
                 <div className="inbox-search">
-                        <i className="fas fa-search"></i>
-                        <input
-                            type="text"
-                            placeholder={`Search ${activeTab === 'inbox' ? 'messages' : 'sent messages'}...`}
-                            value={searchTerm}
-                            onChange={(e) => setSearchTerm(e.target.value)}
-                        />                    
+                    <i className="fas fa-search"></i>
+                    <input
+                        type="text"
+                        placeholder={`Search ${activeTab === 'inbox' ? 'messages' : 'sent messages'}...`}
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                    />                    
                 </div>
 
                 {/* Messages List */}
@@ -260,6 +289,7 @@ const Inbox = () => {
                                 <button 
                                     className="close-btn"
                                     onClick={() => setIsComposeOpen(false)}
+                                    disabled={isSending}
                                 >
                                     <i className="fas fa-times"></i>
                                 </button>
@@ -267,33 +297,57 @@ const Inbox = () => {
 
                             <div className="compose-recipients">
                                 <label>To:</label>
+                                
+                                {/* Recipient Search */}
+                                <div className="recipient-search">
+                                    <i className="fas fa-search"></i>
+                                    <input
+                                        type="text"
+                                        placeholder="Search recipients by name or job..."
+                                        value={recipientSearch}
+                                        onChange={(e) => setRecipientSearch(e.target.value)}
+                                    />
+                                </div>
+                                
                                 <div className="recipients-selector">
                                     <button 
                                         className="select-all-btn"
                                         onClick={handleSelectAllRecipients}
+                                        disabled={isSending}
                                     >
-                                        {newMessage.recipients.length === employees?.length 
+                                        {newMessage.recipients.length === filteredEmployees.length 
                                             ? 'Deselect All' 
                                             : 'Select All'
                                         }
+                                        <span className="selected-count">
+                                            ({newMessage.recipients.length} selected)
+                                        </span>
                                     </button>
                                     <div className="recipients-list">
-                                        {employees?.map(employee => (
-                                            <div 
-                                                key={employee.employee_id}
-                                                className={`recipient-option ${newMessage.recipients.includes(employee.employee_id) ? 'selected' : ''}`}
-                                                onClick={() => handleRecipientToggle(employee.employee_id)}
-                                            >
-                                                <input
-                                                    type="checkbox"
-                                                    checked={newMessage.recipients.includes(employee.employee_id)}
-                                                    onChange={() => {}}
-                                                />
-                                                <span className="recipient-name">
-                                                    {employee.last_name} {employee.first_name} ({employee.job})
-                                                </span>
+                                        {filteredEmployees.length === 0 ? (
+                                            <div className="no-recipients">
+                                                No recipients found matching "{recipientSearch}"
                                             </div>
-                                        ))}
+                                        ) : (
+                                            filteredEmployees.map(employee => (
+                                                <div 
+                                                    key={employee.employee_id}
+                                                    className={`recipient-option ${newMessage.recipients.includes(employee.employee_id) ? 'selected' : ''}`}
+                                                    onClick={() => !isSending && handleRecipientToggle(employee.employee_id)}
+                                                >
+                                                    <input
+                                                        type="checkbox"
+                                                        checked={newMessage.recipients.includes(employee.employee_id)}
+                                                        onChange={() => {}}
+                                                        disabled={isSending}
+                                                    />
+                                                    <span className="recipient-name">
+                                                        {employee.last_name} {employee.first_name} 
+                                                        <span className="recipient-job">({employee.job})</span>
+                                                    </span>
+                                                </div>
+                                            ))
+                                        )}
                                     </div>
                                 </div>
                             </div>
@@ -307,23 +361,42 @@ const Inbox = () => {
                                         content: e.target.value
                                     }))}
                                     rows="6"
+                                    disabled={isSending}
                                 />
                             </div>
+
+                            {/* Send Status */}
+                            {sendStatus && (
+                                <div className={`send-status ${sendStatus.type}`}>
+                                    <i className={`fas ${sendStatus.type === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle'}`}></i>
+                                    {sendStatus.message}
+                                </div>
+                            )}
 
                             <div className="compose-actions">
                                 <button 
                                     className="cancel-btn"
                                     onClick={() => setIsComposeOpen(false)}
+                                    disabled={isSending}
                                 >
                                     Cancel
                                 </button>
                                 <button 
                                     className="send-btn"
                                     onClick={handleSendMessage}
-                                    disabled={!newMessage.content.trim() || newMessage.recipients.length === 0}
+                                    disabled={!newMessage.content.trim() || newMessage.recipients.length === 0 || isSending}
                                 >
-                                    <i className="fas fa-paper-plane"></i>
-                                    Send Message
+                                    {isSending ? (
+                                        <>
+                                            <i className="fas fa-spinner fa-spin"></i>
+                                            Sending...
+                                        </>
+                                    ) : (
+                                        <>
+                                            <i className="fas fa-paper-plane"></i>
+                                            Send Message
+                                        </>
+                                    )}
                                 </button>
                             </div>
                         </div>

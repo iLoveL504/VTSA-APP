@@ -114,7 +114,7 @@ const Users = ({empIsLoading}) => {
                 <p>Username</p>
                 <p>Role</p>
                 <p>Hire Date</p>
-                <p>Status</p>
+                <p>In House</p>
                 <p>Actions</p>
             </div>
 
