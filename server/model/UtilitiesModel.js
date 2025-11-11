@@ -33,6 +33,13 @@ static async setContractAmount(projId, amount) {
     await pool.query(`update projects set contract_amount = ? where id = ?`, [amount, projId])
 }
 
+static async setContractContinuation(projId, approve_proposal) {
+    console.log('setting amount...')
+    await pool.query(`update pms_projects set approve_proposal = ? where id = ?`, [approve_proposal, projId])
+}
+
+
+
 }
 
 export { UtilitiesModel }

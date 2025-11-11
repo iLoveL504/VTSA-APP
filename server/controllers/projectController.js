@@ -69,6 +69,32 @@ export const getProjectSchedule = async (req, res) => {
         res.status(500).json({ message: "Internal Server Error" });        
     }
 }
+
+export const projectHolidays = async (req, res) => {
+    const {id} = req.params
+    try {
+        const results = await projects.holidaysPerProject(Number(id))
+        res.status(200).json(results)
+    } catch (err) {
+        console.error("Error making project schedule:", e);
+        res.status(500).json({ message: "Internal Server Error" });         
+    }
+}
+
+export const adjustInstallation = async (req, res) => {
+    const {id} = req.params
+    try {
+        await projects.adjustInstallationStart(Number(id), req.body)
+        res.status(200).json({
+            success: true,
+            message: "Project saved successfully!",
+        });
+    } catch (err) {
+        console.error("Error making project schedule:", err);
+        res.status(500).json({ message: "Internal Server Error" });         
+    }
+}
+
 export const completeTask = async (req, res) => {
     const { taskUpdates } = req.body
     const { percentCompleted } = req.body
@@ -487,7 +513,6 @@ export const getTaskPhotos = async (req, res) => {
     try {
         const results = await projects.getTaskPhotos(Number(id))
         console.log('line 307')
-        console.log(results)
         res.status(200).json(results)
     } catch (e) {
         console.error(e)

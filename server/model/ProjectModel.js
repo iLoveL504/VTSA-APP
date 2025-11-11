@@ -217,6 +217,130 @@ static async getProjectSchedule(id) {
     return sortedTasks;
 }
 
+  // Get Project Holidays
+  static async holidaysPerProject (projId) {
+    const [result] = await pool.query(`select holiday from project_holidays where project_id = ?`, [projId])
+    const holidays = result.map(r => new Date(r.holiday).toLocaleDateString())
+    return holidays
+  }
+
+//adjust intsallation start
+static async adjustInstallationStart(projId, data) {
+  const { date } = data
+  console.log(data)
+  const getScheduleQuery = `select * from project_${projId}_schedule`
+  const [schedule] = await pool.query(getScheduleQuery)
+  const holidays = await this.holidaysPerProject(Number(projId))
+  //project schedule parameters
+  const [schedParams] = await pool.query(`select days, start_date from projects where id = ?`, [projId])
+  const start_date = schedParams[0].start_date
+  const isCalendarDays = schedParams[0].days === 'calendar' ? true : false
+  const adjustedSchedule = new LinkedList(new Date(start_date), isCalendarDays, holidays)
+        const sortedTasks = schedule.sort((a, b) => {
+        // First, sort by start date as the primary criteria
+        const dateDiff = new Date(a.task_start) - new Date(b.task_start);
+        if (dateDiff !== 0) return dateDiff;
+
+        // For tasks starting at the same time, apply custom ordering
+        // Only reorder the specific concurrent projects (200, 201, 300, 301)
+        const customOrder = {
+            104: 1,  // Submission of PO to Factory (comes first)
+            200: 2,  // Structural/Civil Works
+            201: 3,  // Shaft Construction
+            300: 4,  // Manufacturing and Importation Process
+            301: 5   // Manufacturing and Importation
+        };
+        
+        const orderA = customOrder[a.task_id] || 999; // Default high number for others
+        const orderB = customOrder[b.task_id] || 999;
+        
+        // If both have custom ordering, use that
+        if (orderA !== orderB) {
+            return orderA - orderB;
+        }
+        
+        // For non-concurrent tasks or tasks with same custom order, 
+        // sort by task_id numerically
+        if (a.task_id !== b.task_id) {
+            return a.task_id - b.task_id;
+        }
+        
+        // Summary tasks before regular tasks
+        if (a.task_type === "summary" && b.task_type !== "summary") return -1;
+        if (a.task_type !== "summary" && b.task_type === "summary") return 1;
+        
+        return 0;
+    });
+    adjustedSchedule.importTasksWithDates(schedule)
+    adjustedSchedule.printListData()
+    adjustedSchedule.adjustInstallationStart(new Date(date))
+    adjustedSchedule.printListData()
+  
+      const editedSchedule = adjustedSchedule.toArray()
+      const checkQuery = `show tables like 'project_${projId}_schedule'`
+    const [results] = await pool.query(checkQuery)
+    if(results.length !== 0) {
+      const deleteQuery = `drop table project_${projId}_schedule`
+      await pool.query(deleteQuery)
+    }
+    const createTableQuery = `
+      CREATE TABLE IF NOT EXISTS project_${projId}_schedule (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        task_id INT,
+        task_name VARCHAR(255),
+        task_start DATE,
+        task_end DATE,
+        task_duration INT,
+        task_type VARCHAR(255),
+        task_parent INT,
+        task_approval TINYINT(1) DEFAULT 0,
+        task_done TINYINT(1) DEFAULT 0,
+        task_percent INT DEFAULT 0,
+        task_actual_current tinyint default 0,
+
+        -- Added columns
+        section_title VARCHAR(255),
+        item_code VARCHAR(10),
+        description VARCHAR(255),
+        unit VARCHAR(50),
+        wt DECIMAL(5,2) DEFAULT 0.00,
+        pres_acc DECIMAL(5,2) DEFAULT 0.00,
+        prev_acc DECIMAL(5,2) DEFAULT 0.00,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      );
+    `;
+    await pool.query(createTableQuery);
+      const insertPromises = editedSchedule.map(async (t) => {
+      const insertQuery = `
+        INSERT INTO project_${projId}_schedule 
+          (task_id, task_name, task_start, task_end, task_duration, task_done, task_actual_current, task_type, task_parent, task_percent, section_title, item_code, wt, unit, description)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      `;
+
+      const values = [
+        t.task_id || t.task_id,
+        t.task_name || t.task_name,
+        t.task_start || null,
+        t.task_end || null,
+        t.task_duration || 1,
+        t.task_done,
+        t.task_actual_current,
+        t.task_type || 'task',
+        t.task_parent || null,
+        t.task_percent || 0,
+        t.section_title || null,
+        t.item_code || null,
+        t.wt || 0.00,
+        t.unit || 1,
+        t.task_name
+      ];
+
+      return pool.query(insertQuery, values);
+    });
+    await Promise.all(insertPromises)
+
+}
+
 static async getTaskPhotos(id) {
   const [results] = await pool.query('select * from task_photos where project_id = ?', [id])
   return results
@@ -955,7 +1079,7 @@ static async rectifyItems (projId) {
     const days = getData[0].days
     const holidays = []
     const adjustedSchedule = new LinkedList(new Date(start_date), (days === 'working' ? false : true), holidays)
-    sortedTasks.forEach((t) => adjustedSchedule.insertLast(t))
+    adjustedSchedule.importTasksWithDates(sortedTasks)
     adjustedSchedule.postponeProject(lastTaskId)
     adjustedSchedule.resumeProject(daysPassed)
     
@@ -1054,7 +1178,7 @@ static async rectifyItems (projId) {
     const team_id = getId[0].team_id
 
     //clear team members
-    await pool.query(`delete from team_members where foreman_id = ?`, [team_id])
+    await pool.query(`delete from team_members where project_id = ?`, [projId])
 
     //clear project team since it is now in handover
     await pool.query(`delete from project_manpower where project_id = ?`, [projId])

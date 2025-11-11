@@ -80,5 +80,15 @@ export default function utilitiesNamespace (usp) {
                 console.error('Error during inspection:', error);
             }
         })
+        socket.on('proposal-approve', async (data) => {
+            const {clientId, approveProposal} = data
+            try {
+                await utilities.setContractContinuation(Number(clientId), approveProposal)
+                console.log('set continuation')
+             
+            } catch (e) {
+
+            }
+        })  
     })
 }

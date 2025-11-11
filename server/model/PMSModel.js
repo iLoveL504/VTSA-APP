@@ -45,13 +45,23 @@ static async getAllPMS() {
         LEFT JOIN 
             pms_projects pp ON p.id = pp.id
         WHERE 
-            p.handover_done = 1
+            p.handover_done = 1 and p.archived = 0
         ORDER BY 
             pp.pms_inspection_date ASC, 
             p.id ASC;
     `);
         console.log('in get pms')
+
+        //If client refuses proposal, set client to be archived
+        
+
     for (const r of rows) {
+        if (new Date() === new Date(r.free_pms_end)) {
+            if (!r.approve_proposal) {
+                await pool.query(`update projects set archived = 1 where id = ?`, [r.id])
+            }
+        }
+
         console.log(`${r.id} has: ${(r.pms_inspection_date === null && r.last_inspection_date === null)}`)
         if (r.pms_inspection_date === null) {
             console.log('meron ba')
@@ -115,6 +125,7 @@ static async getAllPMS() {
             pp.free_pms_end,
             pp.contract_type,
             pp.last_inspection_date,
+            pp.approve_proposal,
             pp.pms_inspection_date,
             pp.inspection_pending,
             pp.inspection_assigned,
@@ -135,7 +146,7 @@ static async getAllPMS() {
         LEFT JOIN 
             pms_projects pp ON p.id = pp.id
         WHERE 
-            p.handover_done = 1 and p.id = ?
+            p.handover_done = 1 and p.id = ? and p.archived = 0
         ORDER BY 
             pp.pms_inspection_date ASC, 
             p.id ASC;
@@ -417,7 +428,7 @@ static async getAllPMS() {
             select p.id, p.lift_name, pp.free_pms, ph.id as \`inspection_history_id\`, ph.report_details, ph.date_conducted, c.id as \`contract_id\`, pid.inspection_document_name, pid.doc_url
             from projects p join pms_projects pp on p.id = pp.id
             join client_baby_book cbb on cbb.pms_id = pp.id
-            join contracts c on c.baby_book_id = cbb.id
+            join contracts c on c.baby_book_id = cbb.pms_id
             join pms_history ph on ph.pms_id = pp.id
             join pms_inspection_documents pid on pid.contract_id = c.id
             where p.id = ?;   

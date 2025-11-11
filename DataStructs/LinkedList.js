@@ -1,6 +1,7 @@
 import tasksLite from '../data/TasksDataTesting.js'
 import TaskDataTesting from '../data/TasksDataTesting.js'
 import tasks from '../data/TasksData.js'
+import dayjs from 'dayjs'
 
 /**
  * addWorkingDays:
@@ -24,7 +25,7 @@ const addWorkingDays = (start, days, isGovernment = false, holidays = []) => {
     } else {
       const day = date.getDay();
       const isHoliday = holidays.includes(date.toDateString());
-      if (day !== 0 && !isHoliday && day !== 6) { // skip Sundays and holidays for private projects
+      if (day !== 0 && !isHoliday && day !== 6) { // skip Sundays, Saturdays and holidays for private projects
         added++;
       }
     }
@@ -253,6 +254,42 @@ resumeProject(resumeDate) {
     }
   }
 
+  importTasksWithDates(tasks) {
+    // Sort tasks to maintain proper order
+    const sorted = tasks.sort((a, b) => {
+      const dateDiff = new Date(a.task_start) - new Date(b.task_start);
+      if (dateDiff !== 0) return dateDiff;
+      return a.task_id - b.task_id;
+    });
+
+    // Import tasks preserving their original dates
+    sorted.forEach(task => {
+      const node = new Node({ ...task });
+      
+      // Ensure dates are proper Date objects
+      if (node.data.task_start) {
+        node.data.task_start = new Date(node.data.task_start);
+        node.data.task_start.setHours(0, 0, 0, 0);
+      }
+      if (node.data.task_end) {
+        node.data.task_end = new Date(node.data.task_end);
+        node.data.task_end.setHours(0, 0, 0, 0);
+      }
+
+      if (!this.head) {
+        this.head = node;
+      } else {
+        let current = this.head;
+        while (current.next) current = current.next;
+        current.next = node;
+      }
+      this.size++;
+    });
+
+    // Update parent durations after import
+    this.updateAllParentDurations();
+  }
+
   // Insert at index (0-based). Maintains exclusive-end semantics and updates following nodes start/end.
   insertAt(data, index) {
     if (!data.task_id) {
@@ -323,6 +360,66 @@ resumeProject(resumeDate) {
       prev = current;
       current = current.next;
     }
+  }
+
+  adjustInstallationStart(startDate) {
+    console.log('-------------------------------------------')
+    if (!(startDate instanceof Date) || isNaN(startDate.getTime())) {
+      console.error("Invalid resume date. Must be a valid Date object.");
+      return false
+    }
+    let installationNode = this.findTaskByID(500)
+    let current = installationNode.next
+    let prev = installationNode
+
+    while(current) {
+
+      //One time thing set beginning installation start date of new installation start date
+      if (current.data.task_id === 501) {
+       current.data.task_start = new Date(startDate)
+        current.data.task_end = addWorkingDays(current.data.task_start, current.data.task_duration || 0, this.isGovernment, this.holidays)
+        
+      } else {
+
+        if (prev.data.task_type === 'summary') {
+          if (current.data.task_parent === prev.data.task_id) {
+            current.data.task_start = new Date(prev.data.task_start);
+          } else {
+            // otherwise continue after prev.end
+            current.data.task_start = new Date(prev.data.task_end);
+          }        
+        } else {
+            // otherwise continue after prev.end
+            current.data.task_start = new Date(prev.data.task_end);
+          }     
+        current.data.task_end = addWorkingDays(current.data.task_start, current.data.task_duration || 0, this.isGovernment, this.holidays)   
+      }
+
+      //console.log(current.data.task_id)
+      this.updateParentDuration(current.data.task_parent)
+      // console.log(`${prev.data.task_id} START: ${prev.data.task_start}`)
+      // console.log(`${prev.data.task_id} END: ${prev.data.task_end}`)
+      prev = current
+       current = current.next
+
+
+    }
+    const planningBuffer = this.findTaskByID(404)
+  // FIX: Use working days calculation instead of calendar days
+  const diff = this.calculateDuration(
+    planningBuffer.data.task_start, 
+    installationNode.data.task_start, 
+    this.isGovernment
+  )
+  
+  // Adjust planning buffer
+  planningBuffer.data.task_duration = diff
+  console.log(planningBuffer.data.task_duration)
+  planningBuffer.data.task_end = new Date(installationNode.data.task_start)
+  
+  // Update the parent (this should now work correctly)
+  this.updateParentDuration(planningBuffer.data.task_parent)
+    //console.log(installationNode)
   }
 
   // Update parent duration/start/end derived from its children
@@ -418,7 +515,7 @@ resumeProject(resumeDate) {
       const s = current.data.task_start;
       const e = current.data.task_end;
       console.log(
-        `${current.data.task_id} ${current.data.task_name} | start: ${s ? s.toDateString() : "?"} | end(excl): ${e ? e.toDateString() : "?"} | dur: ${current.data.task_duration}`
+        `${current.data.task_id} ${current.data.task_name} | start: ${s ? s.toDateString() : "?"} | end(excl): ${e ? e.toDateString() : "?"} | dur: ${current.data.task_duration} | percent: ${current.data.task_percent ? current.data.task_percent : 0}%`
       );
       current = current.next;
     }
@@ -445,13 +542,14 @@ mappedTestData.forEach((t) => privateLL.insertLast(t));
 console.log("=== INITIAL SCHEDULE ===");
 privateLL.printListData();
 
-privateLL.postponeProject(103);
+console.log(privateLL.adjustInstallationStart(new Date('2025-11-15')))
+// privateLL.postponeProject(103);
 
-console.log("\n=== AFTER POSTPONEMENT (before resume) ===");
-privateLL.printListData();
+// console.log("\n=== AFTER POSTPONEMENT (before resume) ===");
+// privateLL.printListData();
 
-// Resume project - dates will adjust automatically
-privateLL.resumeProject(new Date('2025-06-18'));
+// // Resume project - dates will adjust automatically
+// privateLL.resumeProject(new Date('2025-06-18'));
 
 console.log("\n=== AFTER RESUME (dates adjusted) ===");
 privateLL.printListData();

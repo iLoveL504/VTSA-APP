@@ -36,7 +36,9 @@ import {
     projHandoverDone,
     qaqcPunchlisting,
     rectifyItems,
-    resumeProj
+    resumeProj,
+    projectHolidays,
+    adjustInstallation
 } from "../../controllers/projectController.js"
 const router = express.Router()
 import multer from 'multer'
@@ -94,6 +96,12 @@ router.route('/task-photos/:id')
 router.route('/report/:id')
     .post(upload.array('photos', 5), sendDailyReport)
     .get(getDailyReport)
+
+router.route('/holidays/:id')
+    .get(projectHolidays)
+
+router.route('/installation-adjust/:id')
+    .put(adjustInstallation)
 
 router.route('/schedule/:id')
     .get(getProjectSchedule)
