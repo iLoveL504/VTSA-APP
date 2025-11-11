@@ -437,7 +437,7 @@ static async getAllPMS() {
                 select p.id, p.lift_name, pp.free_pms, cd.*
                 from projects p join pms_projects pp on p.id = pp.id
                 join client_baby_book cbb on cbb.pms_id = pp.id
-                join contracts c on c.baby_book_id = cbb.id
+                join contracts c on c.baby_book_id = cbb.pms_id
                 join contract_documents cd on cd.contract_id = c.id where p.id = ?;
             `, [id])
         const [contract_photo] = await pool.query(`
