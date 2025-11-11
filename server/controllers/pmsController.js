@@ -51,6 +51,7 @@ export const PMSController = {
       const techs = await PMSModel.getAvailableTechnicians();
       res.json(techs);
     } catch (err) {
+      console.log(err)
       res.status(500).json({ error: err.message });
     }
   },

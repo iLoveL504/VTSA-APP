@@ -166,7 +166,7 @@ static async getAllPMS() {
             from projects p 
             join pms_projects pp on p.id = pp.id
             left join client_baby_book cbb on pp.id = cbb.pms_id
-            left join contracts c on c.baby_book_id = cbb.id
+            left join contracts c on c.baby_book_id = cbb.pms_id
             left join pms_inspection_team pt on pt.pms_id = pp.id
             right join employees e on e.employee_id = pt.pms_technician_id where e.job = 'PMS Technician'
 ; `

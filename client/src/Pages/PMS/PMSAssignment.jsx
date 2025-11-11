@@ -11,9 +11,9 @@ const PMSAssignment = ({ updateIsLoading }) => {
     const backendURL = import.meta.env.VITE_BACKEND_URL || 'http://localhost:4000'
     const navigate = useNavigate();
     const { data: pmsProjects } = useAxiosFetch(`${backendURL}/api/pms/clients`)
-    const { data: pmsTeams } = useAxiosFetch(`${backendURL}/api/pms/techs`)
+    const { data: pmsTeams, error:pmsError } = useAxiosFetch(`${backendURL}/api/pms/techs`)
     const employees = useStoreState(state => state.employees);
-    
+    console.log(pmsError)
     console.log('hello')
     console.log(pmsProjects)
     const [searchTerm, setSearchTerm] = useState('');
