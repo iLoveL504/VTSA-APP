@@ -47,13 +47,13 @@ const useUpdateProjects = (projectIDs) => {
             new Date(dateNow) >= new Date(t.task_start) &&
             new Date(dateNow) < new Date(t.task_end)
           )
-
+          // based on date (projected)
           const ct = tasks.find(
             t => t.task_type === 'task' &&
             new Date(dateNow) >= new Date(t.task_start) &&
             new Date(dateNow) < new Date(t.task_end)
           )
-
+          //based on done = 1
           const actualTask = tasks.find(
             t => t.task_type === 'task' && (!t.task_done || t.task_actual_current)
           )
@@ -108,6 +108,7 @@ const useUpdateProjects = (projectIDs) => {
           const foundCurrentTask = ct.task_name
           const handover_done = project.handover_done
           const is_behind = actualTaskId !== currentTask_id
+          console.log(actualTaskId)
           console.log(foundCurrentTask)
           payload[`project${project.id}`] = {
             id: project.id,

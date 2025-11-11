@@ -5,7 +5,7 @@ import {useStoreState} from 'easy-peasy'
 import useAxiosFetch from '../../hooks/useAxiosFetch';
 import 'ldrs/react/Grid.css'
 
-const ProjectEngineerDashboard = ({userId, clearProjectData, clearProjectTasks}) => {
+const ProjectEngineerDashboard = ({clearProjectData, clearProjectTasks}) => {
   const backendURL = import.meta.env.VITE_BACKEND_URL || 'http://localhost:4000'
   const navigate = useNavigate();
   const {data: projects, loading: projectsIsLoading} = useAxiosFetch(`${backendURL}/api/projects`)
@@ -418,7 +418,7 @@ const ProjectEngineerDashboard = ({userId, clearProjectData, clearProjectTasks})
 };
 
 // Project Item Component
-const ProjectItem = ({ project, type, onProjectClick, onManageTeam, clearProjectData, clearProjectTasks }) => {
+const ProjectItem = ({ project, type, onProjectClick, clearProjectData, clearProjectTasks }) => {
   const getDaysUntilDeadline = () => {
     if (!project.project_end_date) return null;
     const deadline = new Date(project.project_end_date);

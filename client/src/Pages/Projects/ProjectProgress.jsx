@@ -11,7 +11,8 @@ import AccomplishmentReport from './AccomplishmentReport.jsx'
 import TaskList from './TaskList.jsx'
 import { Grid } from 'ldrs/react'
 
-const ProjectProgress = ({ projSched, projSchedIsLoading, taskPhotos, currentTask}) => {
+const ProjectProgress = ({ projSched, projSchedIsLoading, taskPhotos, currentTask, holidays }) => {
+    console.log(holidays)
     const { projId } = useParams()
     const numId = Number(projId)
     const projects = useStoreState(state => state.projects)
@@ -75,6 +76,7 @@ const ProjectProgress = ({ projSched, projSchedIsLoading, taskPhotos, currentTas
                     <ViewSchedule 
                         projSched={projSched || []} 
                         projSchedIsLoading={projSchedIsLoading} 
+                        holidays={holidays}
                     />
                 )}
                 {activeTab === 'accomplishment' && <AccomplishmentReport proj={proj}/>}

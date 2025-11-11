@@ -177,17 +177,21 @@ export default createStore({
     setServiceReports: action((state, payload) => {
         state.serviceReports = payload
     }),
-      projectData: {},
+  currentProj: null,
+  projectData: {},
   projectPhotos: [],
   projectTeamTechs: [],
   projectSchedule: [],
   taskPhotos: [],
   teamInfo: {},
-  isLoading: false,
   error: null,
+  holidays: [],
 
   // Actions
 // CORRECTED ACTIONS - Use action() wrapper for all of them
+setCurrentProj: action((state, payload) => {
+  state.currentProj = payload
+}),
 setProjectData: action((state, payload) => {
   state.projectData = payload;
 }),
@@ -206,6 +210,9 @@ setTaskPhotos: action((state, payload) => {
 setTeamInfo: action((state, payload) => {
   state.teamInfo = payload;
 }),
+setHolidays: action((state, payload) => {
+  state.holidays = payload
+}),
 setLoading: action((state, payload) => {
   state.isLoading = payload;
 }),
@@ -214,7 +221,7 @@ setError: action((state, payload) => {
 }),
   
   // Thunk action to fetch all project data
-  fetchAllProjectData: thunk(async (actions, projId, { getState }) => {
+  fetchAllProjectData: thunk(async (actions, projId) => {
     const backendURL = import.meta.env.VITE_BACKEND_URL || "http://localhost:4000";
     console.log(projId)
     console.log('here in store')
@@ -229,13 +236,15 @@ setError: action((state, payload) => {
         photosRes,
         teamTechsRes,
         scheduleRes,
-        taskPhotosRes
+        taskPhotosRes,
+        holidays
       ] = await Promise.all([
         Axios.get(`${backendURL}/api/projects/${projId}`),
         Axios.get(`${backendURL}/api/projects/photos/${projId}`),
         Axios.get(`${backendURL}/api/teams/project-manpower/${projId}`),
         Axios.get(`${backendURL}/api/projects/schedule/${projId}`),
-        Axios.get(`${backendURL}/api/projects/task-photos/${projId}`)
+        Axios.get(`${backendURL}/api/projects/task-photos/${projId}`),
+        Axios.get(`${backendURL}/api/projects/holidays/${projId}`)
       ]);
       console.log(projectRes)
       // Update state with all data
@@ -244,6 +253,7 @@ setError: action((state, payload) => {
       actions.setProjectTeamTechs(teamTechsRes.data);
       actions.setProjectSchedule(scheduleRes.data);
       actions.setTaskPhotos(taskPhotosRes.data);
+      actions.setHolidays(holidays.data)
 
     } catch (error) {
       console.error('Error fetching project data:', error);
@@ -254,7 +264,7 @@ setError: action((state, payload) => {
   }),
 
   // Thunk action to fetch team info (depends on project data)
-  fetchTeamInfo: thunk(async (actions, { projId, projData }, { getState }) => {
+  fetchTeamInfo: thunk(async (actions, { projData }) => {
     const backendURL = import.meta.env.VITE_BACKEND_URL || "http://localhost:4000";
     
     if (!projData || !projData.id) return;

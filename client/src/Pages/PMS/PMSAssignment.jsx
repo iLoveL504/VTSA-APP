@@ -476,7 +476,7 @@ const PMSAssignment = ({ updateIsLoading }) => {
                     <h3>Technician Project Tally</h3>
                     <div className="tally-cards">
                         {console.log(pmsTeams.map(t => t))}
-                        {pmsTeams.map(([techName, data, no_project]) => (
+                        {pmsTeams.map(([techName, data]) => (
                             <div key={techName} className="tally-card">
                                 <div className="tally-header">
                                     <h4>{techName} <span>({data.island_group})</span></h4>

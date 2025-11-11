@@ -36,14 +36,13 @@ const ResumeProjectModal = ({ isOpen, onClose, onConfirm, project }) => {
 };
 
 const ProjectDetails = ({
-    projectCompleted, currentTask, projectExists, proj, setFormData, formData, teamInfo, projIsLoading, teamIsLoading,
+    projectCompleted, currentTask, projectExists, proj, setFormData, teamInfo, projIsLoading, teamIsLoading,
     saveStatus, handleSave, isEditing, errors, handleInputChange, handleNumberInputChange, handleBlur, handleSubmit,
-    values, setIsEditing, handleCancel, photos, photosIsLoading, backendURL, setActivePage, currentTaskPhase, currentParentTask,
+    values, setIsEditing, handleCancel, photos, backendURL, setActivePage, currentTaskPhase, currentParentTask,
     projectedTask, isBehindSchedule, onHold, taskIsLoading, currentIsLoading 
 }) => {
     const {projId} = useParams()
     const [isResumeModalOpen, setIsResumeModalOpen] = useState(false)
-     const [isDataFinalized, setIsDataFinalized] = useState(false)
     const handleTaskDetails = () => () => {
         setActivePage('task')
     }
@@ -53,12 +52,7 @@ const ProjectDetails = ({
         setIsResumeModalOpen(true)
     }
 
-    useEffect(() => {
-        // Check if all critical data is loaded and conditions are finalized
-        if (!projIsLoading && !taskIsLoading && proj && currentTask !== undefined && onHold !== undefined) {
-            setIsDataFinalized(true)
-        }
-    }, [projIsLoading, taskIsLoading, proj, currentTask, onHold])
+
 
     const confirmResumeProject = async () => {
         // Add your resume project logic here

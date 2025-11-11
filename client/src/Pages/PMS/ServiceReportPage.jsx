@@ -1,6 +1,6 @@
 import React from 'react'
 import { useParams } from 'react-router-dom'
-import { useStoreState, useStoreActions } from 'easy-peasy'
+import { useStoreState } from 'easy-peasy'
 import '../../css/ServiceReportPage.css'
 
 const ServiceReportPage = () => {

@@ -1,11 +1,9 @@
 import { useParams, useNavigate } from 'react-router-dom'
 import { useState, useEffect } from 'react'
 import { useStoreState, useStoreActions } from 'easy-peasy'
-import useAxiosFetch from '../../hooks/useAxiosFetch'
 import 'ldrs/react/Grid.css'
 import { Axios } from '../../api/axios.js'
 import useFormValidate from '../../hooks/useFormValidate'
-import useFindProjectTask from '../../hooks/useFindProjectTask.js'
 import "wx-react-gantt/dist/gantt.css";
 import "../../gantt-custom.css"
 import ProjectDetails from './ProjectDetails.jsx'
@@ -60,6 +58,7 @@ const ProjectInfo = () => {
       taskPhotos,
       teamInfo,
       isLoading,
+      holidays,
       error,
 
       currentTask,
@@ -77,18 +76,7 @@ const ProjectInfo = () => {
     const {
       fetchAllProjectData,
       fetchTeamInfo,
-      clearProjectData,
-      setProjectData,
-      setProjectPhotos,
-      setProjectTeamTechs,
-      setProjectSchedule,
-      setTaskPhotos,
-      setTeamInfo,
-      setLoading,
-      setError,
-
         findProjectTasks,
-      clearProjectTasks
     } = useStoreActions(actions => actions); // Remove .projectStore since it's directly in root
 
     const projects = useStoreState(state => state.projects)
@@ -360,6 +348,7 @@ const ProjectInfo = () => {
                     projSchedIsLoading={isLoading}
                     taskPhotos={taskPhotos}
                     currentTask={currentTask}
+                    holidays={holidays}
                 />
             }
             {

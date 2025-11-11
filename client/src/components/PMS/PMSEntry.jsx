@@ -1,14 +1,9 @@
 import React from 'react';
 
-const PMSEntry = ({ project, setSelectedEntry, onAssignClick }) => {
+const PMSEntry = ({ project, setSelectedEntry }) => {
     const handleSelect = (project) => (e) => {
         if (e.target.closest('.assign-btn')) return;
         setSelectedEntry(project);
-    };
-
-    const handleAssignClick = (e) => {
-        e.stopPropagation();
-        onAssignClick(project);
     };
 
     const getStatusClass = () => {
@@ -27,8 +22,7 @@ const PMSEntry = ({ project, setSelectedEntry, onAssignClick }) => {
 
     const statusClass = getStatusClass();
     const isFreePMS = project.pms_contract === 'Free PMS';
-    const canAssign = project.pms_status === 'PMS Inspection Pending' || project.pms_status === 'Free PMS Available';
-
+    console.log(project)
     return (
         <div 
             className={`ProjectInfo pms-${statusClass}`} 
@@ -60,7 +54,7 @@ const PMSEntry = ({ project, setSelectedEntry, onAssignClick }) => {
             
             {/* Column 5: Next Inspection Date */}
             <div className="inspection-date">
-                {project.pms_inspection_date ? (
+                {project.last_inspection_date !== null ? (
                     <div>{new Date(project.last_inspection_date).toLocaleDateString('en-GB')}</div>
                 ) : (
                     <div>-</div>
