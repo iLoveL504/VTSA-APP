@@ -240,12 +240,6 @@ useEffect(() => {
         navigate(`report`)
     }
 
-    const handleRefreshClick = () => {
-      console.log('refreshing project data')
-
-      fetchAllProjectData(projId);
-      findProjectTasks({ projectId: projId, projectData: proj })
-    }
 
     // Show loading state
     if ((isLoading || tasksIsLoading) && !proj) {
@@ -320,9 +314,6 @@ useEffect(() => {
                         )}
                     </div>
             </div>
-            <button onClick={handleRefreshClick}>
-              Refresh Data
-            </button>
             {
                 activePage === 'details' && 
                 <ProjectDetails 
