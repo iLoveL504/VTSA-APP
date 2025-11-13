@@ -39,6 +39,7 @@ const NavBar = ({ invertMenuToggle }) => {
 
   const handleNotificationClick = (notif) => {
     console.log('Clicked:', notif)
+    navigate(`/notification/${notif.notification_id}`)
   }
 
   const handleMessageClick = (msg) => {

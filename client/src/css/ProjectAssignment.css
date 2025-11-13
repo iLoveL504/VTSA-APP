@@ -674,7 +674,7 @@
   font-size: 0.9rem;
 }
 
-.stat-count {
+.ProjectAssignment .stat-count {
   background: #315a95;
   color: white;
   padding: 0.25rem 0.75rem;
@@ -753,7 +753,7 @@
     padding: 1rem;
 }
 
-.modal-content {
+.ProjectAssignment .modal-content {
     background: white;
     border-radius: 12px;
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);

@@ -2,10 +2,21 @@ import { pool } from '../config/database.js'
 import { UtilitiesModel as utility } from './UtilitiesModel.js';
 import dotenv from 'dotenv'
 import LinkedList from '../../DataStructs/LinkedList.js';
+import dayjs from 'dayjs'
 dotenv.config()
+
+const summaryMap = {
+  'Mechanical Installation': 'Installation',
+  'Preliminaries': 'Preliminaries',
+  'Structural/Civil Works': 'Structural/Manufacturing',
+  'Manufacturing and Importation': 'Structural/Manufacturing',
+  'Planning For Mobilization And Execution': 'Planning',
+  'Testing and Commissioning': 'Test and Comm'
+};
 
 class ProjectModel {
     static async findById(id){
+        console.log(`Line 18: ${typeof id}`)
         const [results] = await pool.query(
             `           SELECT 
           p.*, 
@@ -15,7 +26,7 @@ class ProjectModel {
       FROM projects p
       LEFT JOIN project_manpower pm 
           ON p.id = pm.project_id 
-          left join employees e on e.employee_id = pm.project_engineer_id where p.handover_done = 0 and p.id = ?`,
+          left join employees e on e.employee_id = pm.project_engineer_id where p.handover_done = 0 and p.archived = 0 and p.id = ?`,
             [id]
         )
         return results[0]
@@ -30,20 +41,296 @@ class ProjectModel {
         return results
     }
 
-    static async getAllProjects(){
+static async getAllProjects() {
+    try {
+        // First get all projects
         const [results] = await pool.query(`
            SELECT 
-          p.*, 
-          pm.project_engineer_id,
-          e.username AS project_engineer,
-          concat(e.last_name, ' ', e.first_name) as 'pe_fullname'
-      FROM projects p
-      LEFT JOIN project_manpower pm 
-          ON p.id = pm.project_id 
-          left join employees e on e.employee_id = pm.project_engineer_id where p.handover_done = 0;
-        `)
-        return results
+              p.*, 
+              pm.project_engineer_id,
+              e.username AS project_engineer,
+              concat(e.last_name, ' ', e.first_name) as 'pe_fullname'
+          FROM projects p
+          LEFT JOIN project_manpower pm 
+              ON p.id = pm.project_id 
+              left join employees e on e.employee_id = pm.project_engineer_id 
+          WHERE p.handover_done = 0;
+        `);
+
+        // Update statuses for projects with schedules
+        const projectsWithSchedule = results.filter(p => p.schedule_created === 1);
+        if (projectsWithSchedule.length > 0) {
+            await this.updateProjectStatusesBatch(projectsWithSchedule);
+            
+            // Re-fetch the projects to get updated statuses
+            const [updatedResults] = await pool.query(`
+               SELECT 
+                  p.*, 
+                  pm.project_engineer_id,
+                  e.username AS project_engineer,
+                  concat(e.last_name, ' ', e.first_name) as 'pe_fullname'
+              FROM projects p
+              LEFT JOIN project_manpower pm 
+                  ON p.id = pm.project_id 
+                  left join employees e on e.employee_id = pm.project_engineer_id 
+              WHERE p.handover_done = 0;
+            `);
+            
+            return updatedResults;
+        }
+        console.log('got all results easy peasy')
+        return results;
+    } catch (error) {
+        console.error('Error in getAllProjects:', error);
+        throw error;
     }
+}
+
+static async updateProjectStatusesBatch(projects) {
+    const currentDate = new Date().toISOString().split('T')[0]; // Use current date
+    
+    for (const project of projects) {
+        if (project.schedule_created !== 1) continue;
+        console.log(project.id)
+        try {
+            // Get project schedule
+            const tasks = await this.getProjectSchedule(project.id);
+            if (!tasks || tasks.length === 0) continue;
+            
+            // Calculate status (similar to your client-side logic)
+            const statusInfo = await this.calculateProjectStatus(project, tasks, currentDate);
+            
+            // Update project in database
+            await this.updateSingleProjectStatus(project.id, statusInfo);
+            
+        } catch (error) {
+            console.error(`Error updating status for project ${project.id}:`, error);
+        }
+    }
+}
+
+static async calculateProjectStatus(project, tasks, currentDate) {
+    const now = new Date(currentDate);
+    
+    // ---- HOLD DAYS ----
+    let holdDays = null;
+    const isOnHold = !!project.on_hold;
+    if (project.hold_date) {
+        const holdDate = new Date(project.hold_date);
+        holdDays = Math.floor((now - holdDate) / (1000 * 60 * 60 * 24));
+    }
+    let willResume = false
+    if (isOnHold) {
+      console.log(`project ${project.id} is inside onHold`)
+      const today = dayjs().startOf('day') // local midnight
+      const resume = dayjs(project.resume_date).startOf('day')
+
+console.log() //
+      console.log(new Date() === new Date(project.resume_date))
+      willResume = (project.will_resume && today.isSame(resume)) ? true : false
+      console.log(`project ${project.id} will resume: ${willResume}`)
+      if (!willResume) {
+        return {
+            status: 'Pending',
+            isOnHold: true,
+            holdDays,
+            current_task: project.current_task,
+            task_phase: project.task_phase,
+            willResume
+        };        
+      } else {
+        return {
+            status: 'Testing and Comm',
+            isOnHold: true,
+            holdDays,
+            current_task: project.current_task,
+            current_task_id: 601,
+            task_phase: 'Testing and Commissioning',
+            willResume          
+        }
+      }
+    }
+    
+    // ---- CURRENT TASKS ----
+    const foundParentTask = tasks.find(
+        t => t.task_type === 'summary' &&
+        now >= new Date(t.task_start) &&
+        now <= new Date(t.task_end)
+    );
+    
+    const projectedTask = tasks.find(
+        t => t.task_type === 'task' &&
+        now >= new Date(t.task_start) &&
+        now <= new Date(t.task_end)
+    );
+    
+    const actualTask = tasks.find(
+        t => t.task_type === 'task' && (!t.task_done || t.task_actual_current)
+    );
+    
+    if (!actualTask || !projectedTask || !foundParentTask) {
+        return {
+            status: 'Unknown',
+            current_task: project.current_task,
+            task_phase: project.task_phase,
+            is_behind: false
+        };
+    }
+    
+    // ---- TASK DATES ----
+    const findDate = (name, key = 'task_start') => {
+        const task = tasks.find(t => t.task_name === name);
+        if (!task || !task[key]) return null;
+        
+        // Convert to ISO string and extract date part only
+        const dateValue = new Date(task[key]);
+        return isNaN(dateValue.getTime()) ? null : dateValue.toISOString().split('T')[0];
+    };
+    
+    const installation_start_date = findDate('Mechanical Installation', 'task_start');
+    const end_date = findDate('Final Cleaning / Hand over', 'task_end');
+    const start_date = findDate('Preliminaries', 'task_start');
+    const tnc_start_date = findDate('Testing and Commissioning', 'task_start');
+    const manufacturing_end_date = findDate('Manufacturing and Importation Process', 'task_end');
+    
+    // ---- STATUS FLAGS ----
+    const in_tnc = project.tnc_assign_date ? 
+        (new Date(project.tnc_assign_date) <= now ? 1 : 0) : 0;
+    
+    const in_qaqc = project.qaqc_inspection_date ? 
+        (new Date(project.qaqc_inspection_date) <= now) : false;
+    
+    const joint_inspection = project.pms_joint_inspection ? 
+        (new Date(project.pms_joint_inspection) <= now) : false;
+    
+    // ---- STATUS CALCULATION ----
+    const phaseName = foundParentTask ? 
+        (summaryMap[foundParentTask.task_name] || foundParentTask.task_name) : 
+        'Unknown Phase';
+    
+    const foundCurrentTask = actualTask.task_name;
+    const is_behind = actualTask.task_id !== projectedTask.task_id;
+    console.log('---------------line 214---------------')
+    console.log(`project ${project.id} is in ${foundCurrentTask}`)
+    // Resuming Project
+    
+    
+    return {
+        status: summaryMap[foundParentTask.task_name] || 'N/A',
+        start_date,
+        end_date,
+        manufacturing_end_date,
+        tnc_start_date,
+        installation_start_date,
+        current_task: foundCurrentTask,
+        task_phase: phaseName,
+        phase_full_name: foundParentTask.task_name,
+        in_tnc,
+        in_qaqc: in_qaqc ? 1 : 0,
+        joint_inspection: joint_inspection ? 1 : 0,
+        current_task_id: actualTask.task_id,
+        is_behind: is_behind ? 1 : 0,
+        holdDays,
+        isOnHold: false,
+        willResume,
+    };
+}
+
+static async updateSingleProjectStatus(projectId, statusInfo) {
+    const {
+        status,
+        start_date,
+        end_date,
+        manufacturing_end_date,
+        tnc_start_date,
+        installation_start_date,
+        current_task,
+        task_phase,
+        phase_full_name,
+        in_tnc,
+        in_qaqc,
+        joint_inspection,
+        current_task_id,
+        is_behind,
+        holdDays,
+        isOnHold,
+        willResume,
+    } = statusInfo;
+    // console.log(`project ${projectId} will resume: ${willResume}`)
+    if (isOnHold && !willResume) {
+        await pool.query(
+            `UPDATE projects SET status = 'Pending', days_since_hold = ? WHERE id = ?`,
+            [holdDays, projectId]
+        );
+        return;
+    }
+    
+    // Update current task in schedule
+    if (current_task_id) {
+        await pool.query(
+            `UPDATE project_${projectId}_schedule SET task_actual_current = 0 WHERE task_actual_current = 1`
+        );
+        await pool.query(
+            `UPDATE project_${projectId}_schedule SET task_actual_current = 1 WHERE task_id = ?`,
+            [current_task_id]
+        );
+    }
+    // console.log(`project ${projectId} will resume: `, willResume, `Task Phase: ${task_phase} Full Name: ${phase_full_name}`)
+    // console.log(projectId)
+    // Resume Project
+    if (willResume) {
+      await pool.query(`update projects set on_hold = 0, will_resume = 0, 
+        resume_date = null, request_resume = 0, request_hold = 0, status = ? where id = ?`, [task_phase, projectId])
+    }
+
+    // Update project main data
+    await pool.query(
+        `UPDATE projects SET 
+            start_date = ?,
+            manufacturing_end_date = ?,
+            project_end_date = ?,
+            status = ?,
+            tnc_start_date = ?,
+            installation_start_date = ?,
+            current_task = ?,
+            task_phase = ?,
+            in_tnc = ?,
+            current_task_id = ?,
+            is_behind = ?,
+            days_since_hold = ?
+        WHERE id = ?`,
+        [
+            start_date,
+            manufacturing_end_date,
+            end_date,
+            status,
+            tnc_start_date,
+            installation_start_date,
+            current_task,
+            phase_full_name,
+            in_tnc,
+            current_task_id,
+            is_behind,
+            holdDays,
+            projectId
+        ]
+    );
+    console.log(`project ${projectId} is in ${current_task}`)
+    // Handle QAQC and TNC flags
+    if (in_qaqc) {
+        await pool.query(
+            `UPDATE projects SET qaqc_ongoing = 1, qaqc_approval = 1 WHERE id = ?`,
+            [projectId]
+        );
+    }
+    
+    if (joint_inspection) {
+        await pool.query(
+            `UPDATE projects SET pms_ongoing = 1 WHERE id = ?`,
+            [projectId]
+        );
+    }
+}
 
     static async getContractPhoto(id) {
       const [results] = await pool.query(`
@@ -219,6 +506,7 @@ static async getProjectSchedule(id) {
 
   // Get Project Holidays
   static async holidaysPerProject (projId) {
+      console.log(`Line 486: ${projId}`)
     const [result] = await pool.query(`select holiday from project_holidays where project_id = ?`, [projId])
     const holidays = result.map(r => new Date(r.holiday).toLocaleDateString())
     return holidays
@@ -273,7 +561,7 @@ static async adjustInstallationStart(projId, data) {
     });
     adjustedSchedule.importTasksWithDates(schedule)
     adjustedSchedule.printListData()
-    adjustedSchedule.adjustInstallationStart(new Date(date))
+    adjustedSchedule.adjustInstallationStart(projId, new Date(date))
     adjustedSchedule.printListData()
   
       const editedSchedule = adjustedSchedule.toArray()
@@ -342,11 +630,14 @@ static async adjustInstallationStart(projId, data) {
 }
 
 static async getTaskPhotos(id) {
+  console.log(`Line 608: ${id}`)
   const [results] = await pool.query('select * from task_photos where project_id = ?', [id])
   return results
 }
 
     static async completeTask(updates, percent, id) {
+      console.log('here in complete task')
+      console.log(updates)
         if (updates.length === 0) {
             throw new Error("Nothing to update");
         }
@@ -465,8 +756,8 @@ static async getTaskPhotos(id) {
         id, status, start_date, end_date, 
         manufacturing_end_date, tnc_start_date, 
         installation_start_date, foundCurrentTask, 
-        phaseName, in_tnc, in_qaqc, currentTask_id, joint_inspection,
-        handover_done, is_behind, holdDays, isOnHold
+        phaseName, in_tnc, in_qaqc, actualTaskId, joint_inspection,
+        handover_done, is_behind, holdDays, isOnHold, currentTask_id
       } = updates[key];
 
       if(handover_done) return
@@ -503,7 +794,7 @@ static async getTaskPhotos(id) {
             foundCurrentTask,
             phaseName,
             in_tnc,
-            currentTask_id,
+            actualTaskId,
             id,
           ]
         );
@@ -1025,16 +1316,26 @@ static async rectifyItems (projId) {
   }
 
   //Hold
-  static async requestProjHold (projId) {
-    await pool.query(`update projects set request_hold = 1 where id = ?`, [projId])
+  static async requestProjHold (projId, hold_reason) {
+    await pool.query(`update projects set request_hold = 1, hold_reason = ? where id = ?`, [hold_reason, projId])
   }
 
   static async approveProjHold (projId) {
-    await pool.query(`update projects set on_hold = 1, request_hold = 0, hold_date = curdate() where id = ?`, [projId])
+    await pool.query(`update projects set on_hold = 1, request_hold = 0, 
+      hold_date = curdate(), tnc_is_assigned = 0, tnc_ongoing = 0, qaqc_is_assigned = 0,
+      qaqc_ongoing = 0 where id = ?`, [projId])
+    await pool.query(`delete from team_members where project_id = ?`, [projId])
+
+    //clear project team since it is now in handover
+    await pool.query(`update project_manpower set team_id = null, qaqc_id = null, pms_id = null, tnc_tech_id = null where project_id = ?`, [projId])
+  }
+  //Resume Process
+  static async requestProjResume (projId, date) {
+    await pool.query(`update projects set request_resume = 1, resume_date = ? where id = ?`, [date, projId])
   }
 
   // Resuem Project
-  static async resumeProject (projId, data) {
+  static async resumeProject (projId, resume_date) {
     const schedQuery = `select * from project_${projId}_schedule`
     const [schedule] = await pool.query(schedQuery)
         const sortedTasks = schedule.sort((a, b) => {
@@ -1080,8 +1381,10 @@ static async rectifyItems (projId) {
     const holidays = []
     const adjustedSchedule = new LinkedList(new Date(start_date), (days === 'working' ? false : true), holidays)
     adjustedSchedule.importTasksWithDates(sortedTasks)
-    adjustedSchedule.postponeProject(lastTaskId)
-    adjustedSchedule.resumeProject(daysPassed)
+    console.log('last task_id-------------------------------------------------', lastTaskId)
+    adjustedSchedule.postponeProject(601)
+    console.log('--------------------resuming project-----------------------')
+    adjustedSchedule.resumeProject(new Date(resume_date))
     
     const editedSchedule = adjustedSchedule.toArray()
        const checkQuery = `show tables like 'project_${projId}_schedule'`
@@ -1147,7 +1450,7 @@ static async rectifyItems (projId) {
     });
     await Promise.all(insertPromises)
     
-    await pool.query(`update projects set on_hold = 0, request_hold = 0 where id = ?`,[projId])
+    await pool.query(`update projects set will_resume = 1, resume_date = ? where id = ?`,[resume_date, projId])
 
   }
 

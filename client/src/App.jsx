@@ -1,4 +1,4 @@
-import { useEffect, useMemo } from 'react'
+import { useEffect, useState } from 'react'
 import Layout from './Pages/Layout'
 import Dashboard from './Pages/Dashboard/Dashboard.jsx'
 import Technician from './Pages/Technician/Technician.jsx'
@@ -23,7 +23,6 @@ import Test1 from './Pages/Test.jsx'
 import KickOffChecklist from './Pages/Documents/KickOffChecklist.jsx'
 import TestJspreadsheet from './Pages/Tests/TestJspreadsheet.jsx'
 import TestChart from './Pages/Tests/TestChart.jsx'
-import useUpdateProjects from './hooks/useUpdateProjects.js'
 import ProjectDocuments from './Pages/Projects/ProjectDocuments.jsx'
 import DailyReportDetails from './Pages/Projects/DailyReportDetails.jsx'
 import HandOverChecklist from './Pages/Documents/HandOverChecklist.jsx'
@@ -58,33 +57,40 @@ const { data: empData, isLoading: empIsLoading } =
 const { data: pmsData } =
   useAxiosFetch(`${backendURL}/api/pms/clients`);
 
-const { data: projData } =
-  useAxiosFetch(`${backendURL}/api/projects`);
 const { data: notifData } =
   useAxiosFetch(`${backendURL}/api/notifications`);
   console.log(empIsLoading)
   //const isLoggedIn = useStoreState(state => state.isLoggedIn)
   const setEmployees = useStoreActions(actions => actions.setEmployees)
-  const setProjects = useStoreActions(actions => actions.setProjects)
   const setUser = useStoreActions(actions => actions.setUser)
   const user = useStoreState(state => state.user)
   const setNotifications = useStoreActions(actions => actions.setNotifications)
   const projects = useStoreState(state => state.projects)
   const setPMSProjects = useStoreActions(actions => actions.setPMSProjects)
+  const fetchProjects = useStoreActions(actions => actions.fetchProjects)
+  const fetchDesignatedProjects = useStoreActions(action => action.fetchDesignatedProjects)
+  const updateFilteredProjectStatuses = useStoreActions(actions => actions.updateFilteredProjectStatuses);
+
+  const [empId, setEmpId] = useState(null)
   // array of project ids
-  const projectIDs = useMemo(() => {
-    if(projects.length != 0) {
-   
-      let ids = projects.filter(p => {if(p.schedule_created === 1) return p.id})
-    
-      return ids
-    }
-  }, [projects])
   // hook for project status batch update
-  const {lodaing: updateIsLoading} = useUpdateProjects(projectIDs)
+  //const {lodaing: updateIsLoading} = useUpdateProjects(projectIDs)
 
-  // add event listeners to socket hook
 
+  useEffect(() => {
+    if (projects.length > 0) {
+      updateFilteredProjectStatuses();
+    }
+  }, [projects, updateFilteredProjectStatuses]);
+
+  
+  useEffect(() => {
+    if (empId) {
+      console.log(`EmpId now: ${empId}`)
+      fetchDesignatedProjects(empId)      
+    }
+
+  }, [empId])
 
   useEffect(() => {
     // Handle login state and user data
@@ -96,6 +102,7 @@ const { data: notifData } =
         roles: sessionStorage.getItem('roles'),
         employee_id: sessionStorage.getItem('id')
       });
+      setEmpId(sessionStorage.getItem('id'))
     }
     console.log(user)
     //console.log(dateNow);
@@ -118,8 +125,8 @@ useEffect(() => {
 }, [pmsData, setPMSProjects])
 
 useEffect(() => {
-  if (projData) setProjects(projData)
-}, [projData, setProjects])
+  fetchProjects()
+}, [])
 
 useEffect(() => {
   if (notifData) {
@@ -151,7 +158,7 @@ useEffect(() => {
           </Route>
 
           <Route path="projects">
-            <Route index element={<Projects updateIsLoading={updateIsLoading}/>} />
+            <Route index element={<Projects/>} />
             
             <Route path="create" element={<CreateProject />} />
             <Route path=":projId" element={<ProjectInfo />} />
@@ -172,8 +179,8 @@ useEffect(() => {
           
           <Route path="testsheet" element={<TestJspreadsheet />} />
           <Route path="PMS">
-            <Route index element={<PMSAssignment updateIsLoading={updateIsLoading}/>} />
-            <Route path="new-entry" element={<PMSNewEntry updateIsLoading={updateIsLoading}/>} />
+            <Route index element={<PMSAssignment />} />
+            <Route path="new-entry" element={<PMSNewEntry />} />
             <Route path="inspections" element={<PMSInspections />} />
             <Route path="inspections/:clientId" element={<InspectionPage />} />
             <Route path="inspections/callback/:clientId" element={<CallbackPage />} />
@@ -190,12 +197,12 @@ useEffect(() => {
             
           </Route>
           <Route path="QAQC">
-            <Route index element={<QAQCAssignment updateIsLoading={updateIsLoading} />} />
+            <Route index element={<QAQCAssignment />} />
             
           </Route>
 
           <Route path="TNC">
-            <Route index element={<TNCAssignment updateIsLoading={updateIsLoading} />} />
+            <Route index element={<TNCAssignment />} />
           </Route>
 
           <Route path="inbox">

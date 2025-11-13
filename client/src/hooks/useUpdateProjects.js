@@ -68,7 +68,10 @@ const useUpdateProjects = (projectIDs) => {
           const actualTaskId = actualTask.task_id
           const currentTask_id = ct.task_id
           const phase = tasks.find(t => t.task_id === ct.task_parent)
-          console.log(`${project.id}`, `is in ${ct.task_name}`)
+          console.log(`------------------update project-----------------------`)
+          console.log(`${project.id}`, `is in ${actualTask.task_name}`)
+          console.log(`${project.id}`, `projected is in ${ct.task_name}`)
+
           // ---- FIND SPECIFIC TASK DATES (safe lookups) ----
           const findDate = (name, key = 'task_start') => {
             const task = tasks.find(t => t.task_name === name)
@@ -105,9 +108,11 @@ const useUpdateProjects = (projectIDs) => {
           // ---- STATUS ----
           let phaseName = phase ? phase.task_name : 'Unknown Phase'
           if (project.progress === 90) phaseName === 'Testing and Commissioning'
-          const foundCurrentTask = ct.task_name
+          const foundCurrentTask = actualTask.task_name
           const handover_done = project.handover_done
           const is_behind = actualTaskId !== currentTask_id
+          console.log(`${project.id}`, `projected is behind ${is_behind}`)
+          console.log(`----------------------project update --------------------------`)
           console.log(actualTaskId)
           console.log(foundCurrentTask)
           payload[`project${project.id}`] = {
@@ -123,11 +128,12 @@ const useUpdateProjects = (projectIDs) => {
             in_qaqc,
             phaseName,
             joint_inspection,
-            currentTask_id,
+            actualTaskId,
             handover_done,
             is_behind,
             holdDays,
-            isOnHold
+            isOnHold,
+            currentTask_id
           }
         }
 

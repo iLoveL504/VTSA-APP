@@ -3,13 +3,21 @@ import { ProjectModel as projects } from '../model/ProjectModel.js'
 
 
 export const getProjects = async (req, res) => {
-    const results = await projects.getAllProjects()
-    res.json(results)
+    try {
+        console.log('I get projects')
+        const results = await projects.getAllProjects()
+        res.json(results)
+    } catch (err) {
+        console.log(err)
+    }
+
 }
 
 export const findProject = async (req, res) => {
-  
-    const results = await projects?.findById(Number(req.params.id))
+    const {id} = req.params
+    console.log('find project line 18')
+    console.log(id)
+    const results = await projects?.findById(Number(id))
     //console.log(results)
     res.json(results)
 }
@@ -58,7 +66,6 @@ const updateStatus = async (req, res) => {
 
 export const getProjectSchedule = async (req, res) => {
     const { id } = req.params
-    console.log('--------------------')
     try {
         const results = await projects.getProjectSchedule(Number(id))
          if (results.length === 0) return res.status(200).json({})
@@ -76,7 +83,7 @@ export const projectHolidays = async (req, res) => {
         const results = await projects.holidaysPerProject(Number(id))
         res.status(200).json(results)
     } catch (err) {
-        console.error("Error making project schedule:", e);
+        console.error("Error making project schedule:", err);
         res.status(500).json({ message: "Internal Server Error" });         
     }
 }
@@ -139,8 +146,9 @@ export const updateProjectStatus = async (req, res) => {
 }
 
 export const getDailyReport = async (req, res) => {
+    const {id} = req.params
     try {
-        const results = await projects.retrieveProjectReport(Number(req.params.id))
+        const results = await projects.retrieveProjectReport(Number(id))
         res.status(200).json(
             results
         );
@@ -150,10 +158,10 @@ export const getDailyReport = async (req, res) => {
 }
 
 export const sendDailyReport = async (req, res) => {
-
+    const {id} = req.params
     try {
         console.log('fsfsfs')
-        await projects.submitProjectReport(req.body, req.files, Number(req.params.id))
+        await projects.submitProjectReport(req.body, req.files, Number(id))
         res.status(200).json({
             success: true,
             message: "Report saved successfully!",
@@ -311,8 +319,6 @@ export const ongoingProjQAQC = async (req, res) => {
 
 export const completeProjQAQC = async (req, res) => {
     const {id} = req.params
-    console.log(req.files)
-    console.log(req.body)
     console.log('in complete qaqc')
     try {
         await projects.completeProjQAQC(Number(id), req.body, req.files)
@@ -403,7 +409,6 @@ export const ongoingProjTNC = async (req, res) => {
 }
 
 export const approveProjTaskTNC = async (req, res) => {
-    console.log('hihih')
     const { id } = req.params
     try {
         console.log(req.body)
@@ -521,8 +526,9 @@ export const getTaskPhotos = async (req, res) => {
 
 export const requestProjHold = async (req, res) => {
     const {id} = req.params
+    const {hold_reason} = req.body
     try {
-        await projects.requestProjHold(Number(id))
+        await projects.requestProjHold(Number(id), hold_reason)
         res.status(200).json({
             success: true,
             message: "approved"
@@ -547,10 +553,26 @@ export const approveProjHold = async (req, res) => {
     }
 }
 
+export const requestProjResume = async (req, res) => {
+    const {id} = req.params
+    const {resume_date} = req.body
+    try {
+        await projects.requestProjResume(Number(id), resume_date)
+        res.status(200).json({
+            success: true,
+            message: "approved"
+        })
+    } catch (e) {
+        console.error(e);
+        res.status(500).json({ success: false, message: "Error approving" });    
+    }
+}
+
 export const resumeProj = async (req, res) => {
     const {id} = req.params
+    const {resume_date} = req.body
     try {
-        const result = await projects.resumeProject(Number(id))
+        const result = await projects.resumeProject(Number(id), resume_date)
         console.log('here')
         res.status(200).json({
             success: true,

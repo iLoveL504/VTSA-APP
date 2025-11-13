@@ -2,13 +2,11 @@ import React, { useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import '../../css/ProjectEngineerDashboard.css';
 import {useStoreState} from 'easy-peasy'
-import useAxiosFetch from '../../hooks/useAxiosFetch';
 import 'ldrs/react/Grid.css'
 
 const ProjectEngineerDashboard = ({clearProjectData, clearProjectTasks}) => {
-  const backendURL = import.meta.env.VITE_BACKEND_URL || 'http://localhost:4000'
   const navigate = useNavigate();
-  const {data: projects, loading: projectsIsLoading} = useAxiosFetch(`${backendURL}/api/projects`)
+  const {projects, isLoading: projectsIsLoading} = useStoreState(state => state)
   const currentUser = useStoreState(state => state.user)
 
   // Filter projects assigned to the current project engineer

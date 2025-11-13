@@ -115,6 +115,7 @@ class LinkedList {
 
   // POSTPONE FEATURE: Resume project after postponement with specified delay days
 // POSTPONE FEATURE: Resume project after postponement with specified resume date
+// POSTPONE FEATURE: Resume project after postponement with specified resume date
 resumeProject(resumeDate) {
   if (!this.postponed) {
     return false;
@@ -137,17 +138,18 @@ resumeProject(resumeDate) {
     return false;
   }
 
-  // Calculate actual delay based on the resume date and postponed task's original end date
-  const postponedTaskEnd = new Date(postponedTask.data.task_end);
-  postponedTaskEnd.setHours(0, 0, 0, 0);
+  // Calculate the offset between original start and new resume date
+  const originalStart = new Date(postponedTask.data.task_start);
+  originalStart.setHours(0, 0, 0, 0);
   
-  // Calculate how many working days to delay from the postponed task's original end
-  const delayDays = this.calculateDuration(postponedTaskEnd, resumeDate, this.isGovernment);
+  // Calculate the offset in calendar days (not working days)
+  const timeDiff = resumeDate.getTime() - originalStart.getTime();
+  const calendarDayOffset = Math.round(timeDiff / (1000 * 60 * 60 * 24));
 
-  console.log(`Calculated delay: ${delayDays} working days from ${postponedTaskEnd.toDateString()} to ${resumeDate.toDateString()}`);
+  console.log(`Calendar day offset: ${calendarDayOffset} days`);
 
-  // Add postponement delay to all tasks starting from the postponed task
-  this.addPostponementDelay(postponedTask, delayDays);
+  // Apply the offset to all tasks from the postponed task onwards
+  this.applyDateOffset(postponedTask, calendarDayOffset);
 
   // Reset postponed state
   this.postponed = false;
@@ -155,6 +157,30 @@ resumeProject(resumeDate) {
   this.postponedStartDate = null;
 
   return true;
+}
+
+// Apply calendar day offset to tasks from a specific node onwards
+applyDateOffset(fromNode, dayOffset) {
+  let current = fromNode;
+  
+  while (current) {
+    // Apply offset to both start and end dates
+    if (current.data.task_start) {
+      const newStart = new Date(current.data.task_start);
+      newStart.setDate(newStart.getDate() + dayOffset);
+      current.data.task_start = newStart;
+    }
+    if (current.data.task_end) {
+      const newEnd = new Date(current.data.task_end);
+      newEnd.setDate(newEnd.getDate() + dayOffset);
+      current.data.task_end = newEnd;
+    }
+    
+    current = current.next;
+  }
+
+  // Update parent durations after the offset
+  this.updateAllParentDurations();
 }
 
   // Add postponement delay to tasks from a specific node onwards
@@ -510,9 +536,9 @@ resumeProject(resumeDate) {
     while (current) {
       const s = current.data.task_start;
       const e = current.data.task_end;
-      // console.log(
-      //   `${current.data.task_id} ${current.data.task_name} | start: ${s ? s.toDateString() : "?"} | end(excl): ${e ? e.toDateString() : "?"} | dur: ${current.data.task_duration} | percent: ${current.data.task_percent ? current.data.task_percent : 0}%`
-      // );
+      console.log(
+        `${current.data.task_id} ${current.data.task_name} | start: ${s ? s.toDateString() : "?"} | end(excl): ${e ? e.toDateString() : "?"} | dur: ${current.data.task_duration} | percent: ${current.data.percent_progress ? current.data.percent_progress : 0}%`
+      );
       current = current.next;
     }
   }
@@ -530,7 +556,8 @@ const mappedTestData = tasks.map(task => ({
   task_end: task.end,
   task_duration: task.duration,
   task_type: task.type,
-  task_parent: task.parent
+  task_parent: task.parent,
+  percent_progress: task.percent_progress
 }));
 
 mappedTestData.forEach((t) => privateLL.insertLast(t));
@@ -538,14 +565,14 @@ mappedTestData.forEach((t) => privateLL.insertLast(t));
 console.log("=== INITIAL SCHEDULE ===");
 privateLL.printListData();
 
-console.log(privateLL.adjustInstallationStart(new Date('2025-11-15')))
-// privateLL.postponeProject(103);
+// console.log(privateLL.adjustInstallationStart(new Date('2025-11-15')))
+privateLL.postponeProject(601);
 
-// console.log("\n=== AFTER POSTPONEMENT (before resume) ===");
-// privateLL.printListData();
+console.log("\n=== AFTER POSTPONEMENT (before resume) ===");
+privateLL.printListData();
 
 // // Resume project - dates will adjust automatically
-// privateLL.resumeProject(new Date('2025-06-18'));
+privateLL.resumeProject(new Date());
 
 console.log("\n=== AFTER RESUME (dates adjusted) ===");
 privateLL.printListData();

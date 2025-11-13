@@ -1,0 +1,599 @@
+.Content.TaskDetails .scheduling-sections {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+/* Individual Schedule Section */
+.Content.TaskDetails .schedule-section {
+  background: white;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 1.5rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.Content.TaskDetails .schedule-section:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+  transform: translateY(-2px);
+}
+
+.Content.TaskDetails .schedule-section::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, #315a95, #4a7cc2);
+}
+
+/* Section Header */
+.Content.TaskDetails .schedule-section .section-header {
+  margin-bottom: 1.25rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 2px solid #f1f5f9;
+}
+
+.Content.TaskDetails .schedule-section .section-header h4 {
+  color: #1e293b;
+  margin: 0;
+  font-size: 1.1rem;
+  font-weight: 700;
+  line-height: 1.4;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+/* Schedule Content */
+.Content.TaskDetails .schedule-content {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+/* Schedule Input Group */
+.Content.TaskDetails .schedule-input-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+/* Mantine Date Picker Customization */
+.Content.TaskDetails .date-picker {
+  width: 100%;
+}
+
+.Content.TaskDetails .date-picker .mantine-DatePickerInput-label {
+  font-weight: 600;
+  color: #374151;
+  margin-bottom: 0.5rem;
+  font-size: 0.9rem;
+}
+
+.Content.TaskDetails .date-picker .mantine-DatePickerInput-input {
+  border: 2px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 0.75rem;
+  font-size: 0.9rem;
+  transition: all 0.2s ease;
+  background: white;
+}
+
+.Content.TaskDetails .date-picker .mantine-DatePickerInput-input:focus {
+  border-color: #315a95;
+  box-shadow: 0 0 0 3px rgba(49, 90, 149, 0.1);
+  outline: none;
+}
+
+.Content.TaskDetails .date-picker .mantine-DatePickerInput-input:hover {
+  border-color: #cbd5e1;
+}
+
+/* Material-UI Form Control Customization */
+.Content.TaskDetails .form-control-professional {
+  width: 100%;
+}
+
+.Content.TaskDetails .form-control-professional .MuiInputLabel-root {
+  font-weight: 600;
+  color: #374151;
+  transform: translate(14px, 16px) scale(1);
+}
+
+.Content.TaskDetails .form-control-professional .MuiInputLabel-root.Mui-focused {
+  color: #315a95;
+  transform: translate(14px, -9px) scale(0.75);
+}
+
+.Content.TaskDetails .form-control-professional .MuiOutlinedInput-root {
+  border-radius: 8px;
+}
+
+.Content.TaskDetails .form-control-professional .MuiOutlinedInput-notchedOutline {
+  border: 2px solid #e2e8f0;
+}
+
+.Content.TaskDetails .form-control-professional .MuiOutlinedInput-root:hover .MuiOutlinedInput-notchedOutline {
+  border-color: #cbd5e1;
+}
+
+.Content.TaskDetails .form-control-professional .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline {
+  border-color: #315a95;
+  border-width: 2px;
+}
+
+.Content.TaskDetails .form-control-professional .MuiSelect-select {
+  padding: 0.75rem;
+  font-size: 0.9rem;
+  color: #374151;
+}
+
+/* Schedule Button */
+.Content.TaskDetails .schedule-btn {
+  background: linear-gradient(135deg, #315a95, #4a7cc2);
+  color: white;
+  border: none;
+  padding: 0.875rem 1.5rem;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  width: 100%;
+  margin-top: 0.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  position: relative;
+  overflow: hidden;
+}
+
+.Content.TaskDetails .schedule-btn::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  transition: left 0.5s;
+}
+
+.Content.TaskDetails .schedule-btn:hover:not(:disabled) {
+  background: linear-gradient(135deg, #26467c, #3b6ab8);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(49, 90, 149, 0.3);
+}
+
+.Content.TaskDetails .schedule-btn:hover:not(:disabled)::before {
+  left: 100%;
+}
+
+.Content.TaskDetails .schedule-btn:disabled {
+  background: #9ca3af;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+.Content.TaskDetails .schedule-btn:disabled::before {
+  display: none;
+}
+
+/* Status Messages for Ongoing Sections */
+.Content.TaskDetails .schedule-section > div:not(.section-header):not(.schedule-content) {
+  background: #f8fafc;
+  padding: 1.5rem;
+  border-radius: 8px;
+  border: 1px solid #e2e8f0;
+  text-align: center;
+  color: #64748b;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  min-height: 120px;
+}
+
+.Content.TaskDetails .schedule-section > div:not(.section-header):not(.schedule-content)::before {
+  font-size: 1.2rem;
+}
+
+/* Specific status icons */
+.Content.TaskDetails .schedule-section > div:contains('Ongoing')::before {
+  content: '⏳';
+}
+
+.Content.TaskDetails .schedule-section > div:contains('PMS Technician')::before {
+  content: '👨‍🔧';
+}
+
+.Content.TaskDetails .schedule-section > div:contains('PMS Inspection')::before {
+  content: '🔍';
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+  .Content.TaskDetails .scheduling-sections {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 768px) {
+  .Content.TaskDetails .essential-schedule-notes {
+    padding: 1.25rem;
+    margin-bottom: 1.5rem;
+  }
+  
+  .Content.TaskDetails .essential-schedule-notes h3 {
+    font-size: 1.1rem;
+  }
+  
+  .Content.TaskDetails .essential-schedule-notes > div {
+    padding: 0.875rem;
+  }
+  
+  .Content.TaskDetails .schedule-section {
+    padding: 1.25rem;
+  }
+  
+  .Content.TaskDetails .schedule-section .section-header h4 {
+    font-size: 1rem;
+  }
+  
+  .Content.TaskDetails .schedule-content {
+    gap: 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .Content.TaskDetails .essential-schedule-notes {
+    padding: 1rem;
+  }
+  
+  .Content.TaskDetails .essential-schedule-notes > div {
+    padding: 0.75rem;
+  }
+  
+  .Content.TaskDetails .essential-schedule-notes h4 {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.25rem;
+  }
+  
+  .Content.TaskDetails .schedule-section {
+    padding: 1rem;
+  }
+  
+  .Content.TaskDetails .schedule-input-group {
+    gap: 0.5rem;
+  }
+}
+
+/* Loading States */
+.Content.TaskDetails .schedule-section.loading {
+  opacity: 0.7;
+  pointer-events: none;
+}
+
+.Content.TaskDetails .schedule-section.loading::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(255, 255, 255, 0.8);
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Success States */
+.Content.TaskDetails .schedule-section.success {
+  border-color: #10b981;
+  box-shadow: 0 2px 8px rgba(16, 185, 129, 0.2);
+}
+
+.Content.TaskDetails .schedule-section.success::before {
+  background: linear-gradient(90deg, #10b981, #34d399);
+}
+
+/* Error States */
+.Content.TaskDetails .schedule-section.error {
+  border-color: #ef4444;
+  box-shadow: 0 2px 8px rgba(239, 68, 68, 0.2);
+}
+
+.Content.TaskDetails .schedule-section.error::before {
+  background: linear-gradient(90deg, #ef4444, #f87171);
+}
+  
+  .Content.TaskDetails .upload-area {
+    padding: 1.5rem;
+  }
+  
+  .Content.TaskDetails .complete-task-btn.primary-action {
+    width: 100%;
+    justify-content: center;
+  }
+
+
+@media (max-width: 480px) {
+  .Content.TaskDetails .section-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+  
+  .Content.TaskDetails .context-item {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.25rem;
+  }
+  
+  .Content.TaskDetails .timeline-item {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.25rem;
+  }
+}
+
+/* Enhanced CSS for robust scheduling component */
+
+/* Status Badges */
+.TaskDetails .status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0.75rem;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  margin-left: auto;
+}
+
+.status-completed {
+  background: #ecfdf5;
+  color: #065f46;
+  border: 1px solid #a7f3d0;
+}
+
+.status-ongoing {
+  background: #fef3c7;
+  color: #92400e;
+  border: 1px solid #fcd34d;
+}
+
+.status-scheduled {
+  background: #dbeafe;
+  color: #1e40af;
+  border: 1px solid #93c5fd;
+}
+
+/* Spinner for ongoing status */
+.spinner {
+  width: 16px;
+  height: 16px;
+  border: 2px solid transparent;
+  border-top: 2px solid currentColor;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+.button-spinner {
+  width: 16px;
+  height: 16px;
+  border: 2px solid transparent;
+  border-top: 2px solid currentColor;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Enhanced Essential Dates */
+.essential-schedule-notes {
+  background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 1.5rem;
+  margin-bottom: 2rem;
+  position: relative;
+  overflow: hidden;
+}
+
+.essential-schedule-notes::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 4px;
+  height: 100%;
+  background: linear-gradient(180deg, #315a95, #4a7cc2);
+}
+
+.essential-schedule-notes h3 {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: #1e293b;
+  margin: 0 0 1rem 0;
+  font-size: 1.25rem;
+  font-weight: 700;
+}
+
+.essential-date-item {
+  background: white;
+  padding: 1rem;
+  border-radius: 8px;
+  border: 1px solid #e2e8f0;
+  margin-bottom: 0.75rem;
+  transition: all 0.2s ease;
+}
+
+.essential-date-item:hover {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  transform: translateY(-1px);
+}
+
+.essential-date-item:last-child {
+  margin-bottom: 0;
+}
+
+.essential-date-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.5rem;
+}
+
+.essential-date-header h4 {
+  margin: 0;
+  color: #374151;
+  font-size: 0.95rem;
+  font-weight: 600;
+}
+
+.essential-date-range {
+  color: #64748b;
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+/* Date Helper Text */
+.date-helper-text {
+  font-size: 0.75rem;
+  color: #6b7280;
+  margin-top: 0.5rem;
+  font-style: italic;
+}
+
+/* Ongoing Status Sections */
+.ongoing-status {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 2rem 1rem;
+  background: #f8fafc;
+  border-radius: 8px;
+  border: 2px dashed #e2e8f0;
+  min-height: 140px;
+}
+
+.status-description {
+  margin-top: 1rem;
+  color: #64748b;
+  font-size: 0.9rem;
+  line-height: 1.4;
+}
+
+/* Section Subtitle */
+.section-subtitle {
+  font-size: 0.85rem;
+  color: #64748b;
+  margin-top: 0.25rem;
+  font-weight: 500;
+}
+
+/* Enhanced Date Picker States */
+.Content.TaskDetails .date-picker .mantine-DatePickerInput-input:disabled {
+  background-color: #f9fafb;
+  border-color: #d1d5db;
+  color: #6b7280;
+  cursor: not-allowed;
+}
+
+/* Loading state for buttons */
+.schedule-btn.loading {
+  pointer-events: none;
+  opacity: 0.7;
+}
+
+/* Enhanced button disabled state */
+.schedule-btn:disabled:not(.loading) {
+  background: #9ca3af !important;
+  cursor: not-allowed;
+  transform: none !important;
+  box-shadow: none !important;
+}
+
+/* Weekend day styling in calendar */
+.mantine-DatePickerInput-weekendCell {
+  color: #dc2626;
+  font-weight: 600;
+}
+
+/* Project type indicator */
+.project-type-indicator {
+  display: inline-block;
+  padding: 0.25rem 0.5rem;
+  background: #dbeafe;
+  color: #1e40af;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  margin-left: 0.5rem;
+}
+
+.project-type-working .project-type-indicator {
+  background: #dcfce7;
+  color: #166534;
+}
+
+/* Responsive enhancements */
+@media (max-width: 768px) {
+  .essential-date-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+  
+  .status-badge {
+    margin-left: 0;
+    align-self: flex-start;
+  }
+  
+  .ongoing-status {
+    padding: 1.5rem 1rem;
+  }
+}
+
+/* Focus states for accessibility */
+.Content.TaskDetails .schedule-btn:focus-visible {
+  outline: 2px solid #315a95;
+  outline-offset: 2px;
+}
+
+.Content.TaskDetails .date-picker .mantine-DatePickerInput-input:focus-visible {
+  outline: 2px solid #315a95;
+  outline-offset: 2px;
+}
+
+/* Print styles */
+@media print {
+  .schedule-btn,
+  .date-picker,
+  .form-control-professional {
+    display: none !important;
+  }
+  
+  .essential-schedule-notes,
+  .schedule-section {
+    break-inside: avoid;
+  }
+}

@@ -1,7 +1,7 @@
 import React, {useMemo, useEffect} from 'react'
 import TNCEntry from './TNCEntry'
 import useAxiosFetch from '../../hooks/useAxiosFetch'
-
+import { useStoreState } from 'easy-peasy'
 import { Grid } from 'ldrs/react'
 
 const TNCList = ({searchTerm, setSelectedEntry, onAssignClick}) => {
@@ -12,7 +12,7 @@ const TNCList = ({searchTerm, setSelectedEntry, onAssignClick}) => {
   const filter = {
     role
   }
-  const {data: projects} = useAxiosFetch(`${backendURL}/api/projects`)
+  const {projects} = useStoreState(state => state)
   console.log(projects)
   const {data: designatedProject, isLoading: designatedIsLoading} = useAxiosFetch(`${backendURL}/api/employees/${empId}/designated-project`, filter)
     // Filter projects based on search term

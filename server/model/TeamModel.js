@@ -50,7 +50,6 @@ class TeamModel {
     }
 
     static async getTeamPerId(id) {
-        console.log('sfad',id)
         if (id === undefined || id === null) {
             throw new Error('ID parameter is required');
         }
@@ -68,7 +67,6 @@ class TeamModel {
              WHERE p.id = ?`,
             [id]
         );
-        console.log('blah');
         return results;
     }
 

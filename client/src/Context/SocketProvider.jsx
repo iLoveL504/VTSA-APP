@@ -14,12 +14,16 @@ export const SocketProvider = ({ children }) => {
 
   const setInbox = useStoreActions(action => action.setInbox)
   const setSentMessages = useStoreActions(action => action.setSentMessages)
+
+  //user state
+  const user = useStoreState(state => state.user)
   const currentProj = useStoreState(state => state.currentProj)
   const currentProjId = useStoreState(state => state.currentProjId)
   //store actions to update projects
   const fetchAllProjectData = useStoreActions(action => action.fetchAllProjectData)
   const findProjectTasks = useStoreActions(action => action.findProjectTasks)
-
+const silentRefreshProjects = useStoreActions(action => action.silentRefreshProjects)
+const silentRefreshDesignatedProjects = useStoreActions(action => action.silentRefreshDesignatedProjects)
 
   const forecastSocket = useSocket("/forecast", {
     forecast_done: (data) => setForecastData(data.map(d => ({ ...d, group: 'forecasted' }))),
@@ -52,9 +56,19 @@ export const SocketProvider = ({ children }) => {
     update_task: () => {
       console.log('updating task')
       console.log('projid: ', currentProjId)
+
+      console.log(`user role ---- ${user.roles}`)
+      console.log('I will refresh project data')
       fetchAllProjectData(currentProjId)
       findProjectTasks({ projectId: currentProjId, projectData: currentProj })
-    }
+    },
+      refresh_projects: () => {
+        // Use silent refreshes instead
+        silentRefreshProjects()
+        console.log('🔄 Silent refreshing designated projects')
+        silentRefreshDesignatedProjects(user.employee_id)
+      }
+
   })
 
   const usersSocket = useSocket("/users", {

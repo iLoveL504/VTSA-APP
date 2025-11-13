@@ -4,6 +4,7 @@ import FormControl from "@mui/material/FormControl"
 import InputLabel from "@mui/material/InputLabel"
 import MenuItem from "@mui/material/MenuItem"
 import Select from "@mui/material/Select"
+import '../../css/ProjectEngineerScheduling.css'
 
 const ProjectEngineerScheduling = ({ 
     qaqcDate, 
@@ -27,8 +28,8 @@ const ProjectEngineerScheduling = ({
     const templateSetting = fetchedData.find(t => t.task_name === 'Template Setting')
     const handover = fetchedData.find(t => t.task_name === 'Final Cleaning / Hand over')
     const essentialDates = [templateSetting, handover]
-    console.log(essentialDates)
-
+    console.log('proj: -------------------')
+    console.log(`Project days type: ${proj.days}`)
     //const templateSetting = fetchedData.find(t => t.task_name === 'Template Setting')
     return (
         <>
@@ -60,6 +61,10 @@ const ProjectEngineerScheduling = ({
                                         value={qaqcDate}
                                         onChange={setQaqcDate}
                                         className="date-picker"
+                                        minDate={new Date()}
+                                        excludeDate={(date) => {
+                                            return (proj.days === 'working' && (new Date(date).getDay() === 0 || new Date(date).getDay() === 6))
+                                        }}
                                     />
                                 </div>
                                 <div className="schedule-input-group">
@@ -83,7 +88,7 @@ const ProjectEngineerScheduling = ({
                                     onClick={handleScheduleQAQC}
                                     disabled={saveStatus === 'saving'}
                                 >
-                                    Schedule QAQC Inspection
+                                    Schedule QAQC Inspectionfsd
                                 </button>
                             </div>  
                     </>
@@ -110,6 +115,10 @@ const ProjectEngineerScheduling = ({
                                         value={tncDate}
                                         onChange={setTncDate}
                                         className="date-picker"
+                                        minDate={new Date()}
+                                        excludeDate={(date) => {
+                                            return (proj.days === 'working' && (new Date(date).getDay() === 0 || new Date(date).getDay() === 6))
+                                        }}
                                     />
                                 </div>
                                 <button 
@@ -145,6 +154,10 @@ const ProjectEngineerScheduling = ({
                                         value={pmsDate}
                                         onChange={setPmsDate}
                                         className="date-picker"
+                                        minDate={new Date()}
+                                        excludeDate={(date) => {
+                                            return (proj.days === 'working' && (new Date(date).getDay() === 0 || new Date(date).getDay() === 6))
+                                        }}
                                     />
                                 </div>
                                 <button 

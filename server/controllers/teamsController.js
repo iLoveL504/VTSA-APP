@@ -58,7 +58,7 @@ export const getCompositionPerId = async (req, res) => {
         const results = await teams.getProjectManpowerById(Number(id));
         res.status(200).json(results);        
     } catch (err) {
-        res.status(500).json({ error: error.message });
+        res.status(500).json({ error: err.message });
     }
 }
 

@@ -372,7 +372,7 @@
   animation: fadeIn 0.2s ease;
 }
 
-.modal-content {
+.CreateProject .modal-content {
   background: white;
   border-radius: 16px;
   padding: 0;

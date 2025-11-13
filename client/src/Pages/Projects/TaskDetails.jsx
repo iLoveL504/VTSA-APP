@@ -423,10 +423,10 @@ const TaskDetails = ({currentTask, currentParentTask, currentTaskPhase, proj, Co
                 files.forEach((file) => formData.append("photos", file));
 
                 await Axios.post(`/api/projects/pms/complete/${projId}`, formData)
-
             }
             setCompletionModal({ isOpen: false, task: null });   
             utilitiesSocket.emit('update_task_status')
+            utilitiesSocket.emit('refresh_all_projects')
             //window.location.reload()
         } catch (e) {
             console.log(e)
@@ -476,7 +476,8 @@ const TaskDetails = ({currentTask, currentParentTask, currentTaskPhase, proj, Co
             });
             window.alert("Request for Inspection sent")
             setSaveStatus('success')
-            
+            utilitiesSocket.emit('update_task_status')
+            utilitiesSocket.emit('refresh_all_projects')
         } catch (error) {
             console.error(`Error scheduling ${confirmationModal.type.toUpperCase()}:`, error)
             setSaveStatus('error')

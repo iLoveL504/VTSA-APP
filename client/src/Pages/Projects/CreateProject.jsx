@@ -9,6 +9,7 @@ import FormControl from "@mui/material/FormControl";
 import Select from "@mui/material/Select";
 import philippines from 'philippines'
 import '../../css/CreateProject.css'
+import { useSharedSocket } from "../../Context/SocketContext.js";
 
 const regionToIslandGroup = {
   // Luzon
@@ -133,6 +134,7 @@ const SuccessMessage = ({ isOpen, projectName, onClose }) => {
 };
 
 const CreateProject = () => {
+  const {utilitiesSocket} = useSharedSocket()
   const navigate = useNavigate();
   const {projId} = useParams()
     console.log(philippines)
@@ -389,6 +391,7 @@ const handleConfirm = async () => {
     if (response.data?.success) {
       setShowSuccess(true);
       setIsSubmitting(false);
+      utilitiesSocket.emit('refresh_all_projects')
       setTimeout(() => {
         navigate(`/projects/${response.data?.projectId.id}/team`);
       }, 3000);

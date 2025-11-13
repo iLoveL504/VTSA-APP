@@ -38,7 +38,8 @@ import {
     rectifyItems,
     resumeProj,
     projectHolidays,
-    adjustInstallation
+    adjustInstallation,
+    requestProjResume
 } from "../../controllers/projectController.js"
 const router = express.Router()
 import multer from 'multer'
@@ -167,6 +168,9 @@ router.route(`/request-hold/:id`)
 
 router.route(`/approve-hold/:id`)    
     .put(approveProjHold)
+
+router.route(`/request-resume/:id`)
+    .put(requestProjResume)
 
 router.route(`/resume/:id`)
     .put(resumeProj)

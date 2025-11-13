@@ -6,7 +6,7 @@ import useAxiosFetch from '../../hooks/useAxiosFetch';
 import PMSList from '../../components/PMS/PMSList';
 import { Axios } from '../../api/axios';
 
-const PMSAssignment = ({ updateIsLoading }) => {
+const PMSAssignment = () => {
     const {utilitiesSocket} = useSharedSocket()
     const backendURL = import.meta.env.VITE_BACKEND_URL || 'http://localhost:4000'
     const navigate = useNavigate();
@@ -489,7 +489,6 @@ const PMSAssignment = ({ updateIsLoading }) => {
                             <PMSList 
                                 projects={filteredProjects}
                                 searchTerm={searchTerm} 
-                                updateIsLoading={updateIsLoading} 
                                 setSelectedEntry={setSelectedEntry}
                                 onAssignClick={handleAssignClick}
                                 onCallbackClick={handleCallbackClick}

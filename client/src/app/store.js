@@ -1,5 +1,17 @@
 import { createStore, action, thunk, computed } from "easy-peasy"
 import {Axios} from '../api/axios.js'
+import dayjs from 'dayjs'
+// Add this near the top of your store file, after the imports
+const summaryMap = {
+  'Mechanical Installation': 'Installation',
+  'Preliminaries': 'Preliminaries',
+  'Structural/Civil Works': 'Structural/Manufacturing',
+  'Manufacturing and Importation': 'Structural/Manufacturing',
+  'Planning For Mobilization And Execution': 'Planning',
+  'Testing and Commissioning': 'Test and Comm'
+};
+
+
 //YYYY-MM-DD for testing
 // const d = new Date('2025-10-10')
 //always current date
@@ -31,11 +43,41 @@ export default createStore({
     setDate: action((state, payload) => {
         state.date = payload
     }),
+    designatedProjects: [],
+    setDesignatedProjects: action((state, payload) => {
+      state.designatedProjects = payload
+    }),
+    designatedIsLoading: false,
+    setDesignatedIsLoading: action((state, payload) => {
+      state.designatedIsLoading = payload
+    }),
+    fetchDesignatedProjects: thunk(async (actions, payload, { getState }) => {
+      const state = getState()
+      const backendURL = import.meta.env.VITE_BACKEND_URL || "http://localhost:4000";
+      try {
+        actions.setDesignatedIsLoading(true)
+        console.log(payload)
+        console.log('---------------refreshing designated----------------------')
+        const desProj = await Axios.get(`${backendURL}/api/employees/${payload}/designated-project`, {
+  params: { role: state.user.roles }
+})
+
+        console.log(desProj)
+        actions.setDesignatedProjects(desProj.data)
+      } catch (err) {
+        console.log(err)
+      } finally {
+        actions.setDesignatedIsLoading(false)
+        console.log('---------------refreshing designated----------------------')
+      }
+   
+     
+    }),
     projectManagerId: [],
     pmsCoordinatorId: [],
     tncCoordinatorId: [],
     qaqcCoordinatorId: [],
-    user: { username: null, roles: null, fullName: null },
+    user: { username: null, roles: null, fullName: null, employee_id: null },
     setUser: action((state, payload) => {
         state.user.username = payload.username
         state.user.roles = payload.roles
@@ -135,6 +177,16 @@ export default createStore({
     projects: [],
     setProjects: action((state, payload) => {
         state.projects = Array.isArray(payload) ? payload : []
+    }),
+    fetchProjects: thunk( async (actions) => {
+      const backendURL = import.meta.env.VITE_BACKEND_URL || "http://localhost:4000";
+      try {
+        const projs = await Axios.get(`${backendURL}/api/projects`)
+        actions.setProjects(projs.data)
+      } catch (err) {
+        console.log(err)
+      }
+
     }),
     searchSetProject: thunk((_, payload, helpers) => {
         const { getState } = helpers;
@@ -306,6 +358,7 @@ onHold: false,
 noTask: false,
 tasksIsLoading: false,
 fetchedData: null,
+noCurrentTask: false,
 
 // Add these actions
 setCurrentTask: action((state, payload) => {
@@ -316,6 +369,9 @@ setCurrentParentTask: action((state, payload) => {
 }),
 setCurrentTaskPhase: action((state, payload) => {
   state.currentTaskPhase = payload;
+}),
+setNoCurrentTask: action((state, payload) => {
+  state.noCurrentTask = payload
 }),
 setProjectedTask: action((state, payload) => {
   state.projectedTask = payload;
@@ -382,7 +438,7 @@ findProjectTasks: thunk(async (actions, { projectId, projectData }, { getState }
       return;
     }
     
-    if (projectData?.on_hold === 1) {
+    if (projectData?.on_hold) {
       actions.setCurrentTask(projectData.current_task);
       actions.setCurrentParentTask(projectData.task_phase);
       actions.setOnHold(true);
@@ -453,5 +509,207 @@ clearProjectTasks: action((state) => {
   state.onHold = false;
   state.noTask = false;
   state.tasksIsLoading = false;
+}),
+// Add these to your store model, right before the closing bracket
+
+// Project status update functionality
+projectStatuses: {},
+isUpdatingStatuses: false,
+
+// Actions for project status updates
+setProjectStatuses: action((state, payload) => {
+  state.projectStatuses = payload;
+}),
+setIsUpdatingStatuses: action((state, payload) => {
+  state.isUpdatingStatuses = payload;
+}),
+
+// Thunk to update project statuses (replaces useUpdateProjects hook)
+updateProjectStatuses: thunk(async (actions, payload, { getState }) => {
+  const backendURL = import.meta.env.VITE_BACKEND_URL || 'http://localhost:4000';
+  const state = getState();
+  
+  if (!payload || !payload.length) return;
+
+  let allStatuses = {};
+  
+  try {
+    actions.setIsUpdatingStatuses(true);
+    
+    for (let i = 0; i < payload.length; i++) {
+      const project = payload[i];
+      
+      // Only process projects with schedule created
+      if (project.schedule_created !== 1) continue;
+      
+      const response = await Axios.get(`${backendURL}/api/projects/schedule/${project.id}`);
+      if (!response || !response.data) continue;
+      
+      const tasks = response.data;
+      
+      // ---- HOLD DAYS ----
+      let holdDays = null;
+      const isOnHold = !!project.on_hold;
+      if (project.hold_date) {
+        const date = dayjs(project.hold_date);
+        const now = dayjs(state.date);
+        holdDays = now.diff(date, 'd');
+      }
+      
+      // ---- CURRENT TASKS ----
+      const foundParentTask = tasks.find(
+        t => t.task_type === 'summary' &&
+        new Date(state.date) >= new Date(t.task_start) &&
+        new Date(state.date) < new Date(t.task_end)
+      );
+      
+      const ct = tasks.find(
+        t => t.task_type === 'task' &&
+        new Date(state.date) >= new Date(t.task_start) &&
+        new Date(state.date) < new Date(t.task_end)
+      );
+      
+      const actualTask = tasks.find(
+        t => t.task_type === 'task' && (!t.task_done || t.task_actual_current)
+      );
+      
+      if (!actualTask || !ct || !foundParentTask) {
+        console.warn(`⚠️ Missing task for project ${project.id}`, {
+          actualTask, ct, foundParentTask
+        });
+        continue;
+      }
+      
+      const actualTaskId = actualTask.task_id;
+      const currentTask_id = ct.task_id;
+      const phase = tasks.find(t => t.task_id === ct.task_parent);
+      
+      console.log(`------------------update project-----------------------`);
+      console.log(`${project.id}`, `is in ${actualTask.task_name}`);
+      console.log(`${project.id}`, `projected is in ${ct.task_name}`);
+      
+      // ---- FIND SPECIFIC TASK DATES ----
+      const findDate = (name, key = 'task_start') => {
+        const task = tasks.find(t => t.task_name === name);
+        return task ? task[key]?.split('T')[0] : null;
+      };
+      
+      const installation_start_date = findDate('Mechanical Installation', 'task_start');
+      const end_date = findDate('Final Cleaning / Hand over', 'task_end');
+      const start_date = findDate('Preliminaries', 'task_start');
+      const tnc_start_date = findDate('Testing and Commissioning', 'task_start');
+      const manufacturing_end_date = findDate('Manufacturing and Importation Process', 'task_end');
+      
+      // ---- QAQC, TNC, JOINT INSPECTION FLAGS ----
+      const now = new Date(state.date);
+      let in_tnc = 0;
+      if (project.tnc_assign_date) {
+        in_tnc = new Date(project.tnc_assign_date) <= now ? 1 : 0;
+      }
+      
+      let in_qaqc = false;
+      if (project.qaqc_inspection_date) {
+        const inspectionDate = new Date(project.qaqc_inspection_date);
+        inspectionDate.setHours(0, 0, 0, 0);
+        now.setHours(0, 0, 0, 0);
+        in_qaqc = inspectionDate <= now;
+      }
+      
+      let joint_inspection = false;
+      if (project.pms_joint_inspection) {
+        joint_inspection = new Date(project.pms_joint_inspection) <= now;
+      }
+      
+      console.log(`${project.id}`, foundParentTask.task_name);
+      
+      // ---- STATUS ----
+      let phaseName = phase ? phase.task_name : 'Unknown Phase';
+      if (project.progress === 90) phaseName = 'Testing and Commissioning';
+      const foundCurrentTask = actualTask.task_name;
+      const handover_done = project.handover_done;
+      const is_behind = actualTaskId !== currentTask_id;
+      
+      console.log(`${project.id}`, `projected is behind ${is_behind}`);
+      console.log(`----------------------project update --------------------------`);
+      console.log(actualTaskId);
+      console.log(foundCurrentTask);
+      
+      allStatuses[project.id] = {
+        id: project.id,
+        status: summaryMap[foundParentTask.task_name] || 'N/A',
+        end_date,
+        start_date,
+        manufacturing_end_date,
+        tnc_start_date,
+        installation_start_date,
+        foundCurrentTask,
+        in_tnc,
+        in_qaqc,
+        phaseName,
+        joint_inspection,
+        actualTaskId,
+        handover_done,
+        is_behind,
+        holdDays,
+        isOnHold,
+        currentTask_id
+      };
+    }
+    
+    // Batch update to backend
+    if (Object.keys(allStatuses).length > 0) {
+      const response = await Axios.put(`${backendURL}/api/projects/update-status`, allStatuses);
+      console.log('✅ Project status updated', response.data);
+      
+      if (response.data.success === true) {
+        actions.setProjectStatuses(allStatuses);
+        
+      }
+    } else {
+      console.warn('⚠️ No valid project payload to update.');
+    }
+    
+  } catch (error) {
+    console.error('❌ Error updating project statuses:', error);
+  } finally {
+    actions.setIsUpdatingStatuses(false);
+  }
+}),
+
+// Helper action to trigger status updates for filtered projects
+updateFilteredProjectStatuses: thunk(async (actions, payload, { getState }) => {
+  const state = getState();
+  
+  // Get projects with schedule created
+  const projectsWithSchedule = state.projects.filter(p => p.schedule_created === 1);
+  
+  if (projectsWithSchedule.length > 0) {
+    await actions.updateProjectStatuses(projectsWithSchedule);
+  }
+}),
+silentRefreshDesignatedProjects: thunk(async (actions, payload, { getState }) => {
+  const state = getState()
+  const backendURL = import.meta.env.VITE_BACKEND_URL || "http://localhost:4000";
+  try {
+    console.log('🔄 Silent refresh of designated projects')
+    const desProj = await Axios.get(`${backendURL}/api/employees/${payload}/designated-project`, {
+      params: { role: state.user.roles }
+    })
+    actions.setDesignatedProjects(desProj.data)
+  } catch (err) {
+    console.log('❌ Silent refresh failed:', err)
+  }
+}),
+
+// Add silent refresh for projects too
+silentRefreshProjects: thunk(async (actions) => {
+  const backendURL = import.meta.env.VITE_BACKEND_URL || "http://localhost:4000";
+  try {
+    console.log('🔄 Silent refresh of all projects')
+    const projs = await Axios.get(`${backendURL}/api/projects`)
+    actions.setProjects(projs.data)
+  } catch (err) {
+    console.log('❌ Silent refresh failed:', err)
+  }
 }),
 })

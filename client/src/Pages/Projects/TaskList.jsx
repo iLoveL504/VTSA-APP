@@ -130,7 +130,7 @@ const TaskList = ({ projSched, taskPhotos, currentTask }) => {
                                 </div>
                                 
                                 <div className="task-meta">
-                                    <span className="task-dates">
+                                    <span className={`task-dates${task.task_parent === null ? '-parent' : ''}`}>
                                         {formatDate(task.task_start)} - {formatDate(task.task_end)}
                                     </span>
                                     <span className="task-duration">{task.task_duration} days</span>

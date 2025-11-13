@@ -6,8 +6,10 @@ import { Axios } from "../../api/axios.js";
 import Queue from "../../../../DataStructs/Queue";
 import "./CustomGanttChart.css"; // ✅ external styles
 import '../../css/ConfirmSchedule.css'
+import { useSharedSocket } from "../../Context/SocketContext.js";
 
 const CustomGanttChart = () => {
+  const {utilitiesSocket} = useSharedSocket()
   const location = useLocation();
   const { projId } = useParams();
   const navigate = useNavigate();
@@ -87,6 +89,7 @@ const CustomGanttChart = () => {
 
       if (response.data?.success) {
         alert(response.data.message || "Schedule saved successfully!");
+        utilitiesSocket.emit('refresh_all_projects')
         navigate(`/projects/${projId}`);
       } else {
         alert("Unexpected server response. Please try again.");

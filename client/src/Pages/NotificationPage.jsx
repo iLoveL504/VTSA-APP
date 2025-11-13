@@ -1,7 +1,7 @@
 import React from 'react'
 import { useStoreState } from 'easy-peasy'
 import { useParams, useNavigate } from 'react-router-dom'
-//import '../css/NotificationPage.css'
+import '../css/NotificationPage.css'
 
 const NotificationPage = () => {
   const { notifId } = useParams()
@@ -14,13 +14,14 @@ const NotificationPage = () => {
     return (
       <div className='Content NotificationPage'>
         <div className="notification-empty">
-          <i>📭</i>
+          <i className="fas fa-inbox"></i>
           <h3>Notification Not Found</h3>
           <p>The notification you're looking for doesn't exist.</p>
           <button 
             className="action-btn btn-primary"
             onClick={() => navigate(-1)}
           >
+            <i className="fas fa-arrow-left"></i>
             Go Back
           </button>
         </div>
@@ -31,22 +32,24 @@ const NotificationPage = () => {
   return (
     <div className='Content NotificationPage'>
       <a className="back-button" onClick={() => navigate(-1)}>
-        ← Back to Notifications
+        <i className="fas fa-chevron-left"></i>
+        Back to Notifications
       </a>
       
       <div className='notification-header'>
         <h3>{foundNotif.subject}</h3>
         <div className="notification-meta">
           <span className="meta-item">
-            <i>📅</i>
+            <i className="fas fa-calendar-alt"></i>
             {foundNotif.date || 'Today'}
           </span>
           <span className="meta-item">
-            <i>🕒</i>
+            <i className="fas fa-clock"></i>
             {foundNotif.time || 'Just now'}
           </span>
           <span className={`notification-status ${foundNotif.read ? 'status-read' : 'status-unread'}`}>
-            {foundNotif.read ? '✓ Read' : '● Unread'}
+            <i className={`fas ${foundNotif.read ? 'fa-check-circle' : 'fa-circle'}`}></i>
+            {foundNotif.read ? 'Read' : 'Unread'}
           </span>
         </div>
       </div>
@@ -58,20 +61,20 @@ const NotificationPage = () => {
         {foundNotif.attachments && foundNotif.attachments.length > 0 && (
           <div className="notification-attachments">
             <div className="attachments-header">
-              <i>📎</i>
+              <i className="fas fa-paperclip"></i>
               Attachments ({foundNotif.attachments.length})
             </div>
             <div className="attachments-list">
               {foundNotif.attachments.map((attachment, index) => (
                 <div key={index} className="attachment-item">
                   <div className="attachment-icon">
-                    {attachment.type === 'pdf' ? '📄' : '📎'}
+                    <i className={`fas ${attachment.type === 'pdf' ? 'fa-file-pdf' : 'fa-file'}`}></i>
                   </div>
                   <div className="attachment-info">
                     <div className="attachment-name">{attachment.name}</div>
                     <div className="attachment-size">{attachment.size}</div>
                   </div>
-                  <i>⬇️</i>
+                  <i className="fas fa-download"></i>
                 </div>
               ))}
             </div>
@@ -81,11 +84,11 @@ const NotificationPage = () => {
       
       <div className='notification-actions'>
         <button className="action-btn btn-secondary">
-          <i>↻</i>
+          <i className="fas fa-undo"></i>
           Mark Unread
         </button>
         <button className="action-btn btn-primary">
-          <i>🗑️</i>
+          <i className="fas fa-trash"></i>
           Delete
         </button>
       </div>

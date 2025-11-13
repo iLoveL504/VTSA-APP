@@ -1,15 +1,14 @@
 import React, { useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import '../../css/ProjectManagerDashboard.css'
-import useAxiosFetch from '../../hooks/useAxiosFetch';
 import 'ldrs/react/Grid.css'
 import { Grid } from 'ldrs/react'
+import { useStoreState } from 'easy-peasy';
 
 const ProjectManagerDashboard = ({ onNewProject, clearProjectData, clearProjectTasks }) => {
   const navigate = useNavigate();
-  const backendURL = import.meta.env.VITE_BACKEND_URL || 'http://localhost:4000'
   // Project Manager Dashboard Data - Calculated from all projects
-  const {data: projects, isLoading: projectsIsLoading} = useAxiosFetch(`${backendURL}/api/projects`)
+  const {projects, isLoading} = useStoreState(state => state)
   const projectManagerData = useMemo(() => {
     const now = new Date();
     const currentMonth = now.getMonth();
@@ -229,10 +228,9 @@ const ProjectManagerDashboard = ({ onNewProject, clearProjectData, clearProjectT
 
       <div className="dashboard-content">
         {/* Left Column - Project Overview */}
-        {console.log(projectsIsLoading)}
         <div className="main-content">
-          {projectsIsLoading ? (
-                            <div className="Loading">
+          {isLoading ? (
+                  <div className="Loading">
                     <p>Data is Loading...</p>
                     <Grid size="60" speed="1.5" color="rgba(84, 176, 210, 1)" />
                 </div>

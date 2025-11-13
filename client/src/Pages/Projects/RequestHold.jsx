@@ -7,7 +7,7 @@ import { useStoreState } from 'easy-peasy'
 const RequestHold = ({proj}) => {
     const { projId } = useParams()
     const projectManagerId = useStoreState(state => state.projectManagerId)
-    const dateNow = useStoreState(state => state.dateNow)
+    const dateNow = useStoreState(state => state.date)
     console.log(projectManagerId)
     const { utilitiesSocket } = useSharedSocket()
     const handleRequestHold = async () => {
@@ -37,6 +37,7 @@ const RequestHold = ({proj}) => {
                     }
                 });
             });        
+            utilitiesSocket.emit('refresh_all_projects')
     }
     console.log(proj)
     const handleApproveHold = async () => {
@@ -72,27 +73,44 @@ const RequestHold = ({proj}) => {
 
     return (
         <div className='Content RequestHold'>
-            {proj.on_hold ? (
-                <div>Project is on hold</div>
-            ) : sessionStorage.getItem('roles') === 'Project Engineer' ? (
+            {sessionStorage.getItem('roles') === 'Project Engineer' ? (
                 <div className='request-hold-section'>
-                    {!proj.request_hold ? (
+                    {proj.will_resume ? (
+                        <div>Project will proceed to TnC on {new Date(proj.resume_date).toLocaleDateString()}</div>
+                    ) : proj.request_resume ? (
+                        <div>Request for Project to proceed to TnC has been sent</div>
+                    ) : proj.on_hold ? (
+                        <div>Project is pending to proceed to TnC</div>
+                    ) : proj.request_hold ? (
+                        <div>Hold for TNC Requested</div>
+                    ) : (
                         <>
-                            <h3>Request Hold for project: {proj.client} ({proj.lift_name})</h3>
+                            <h3>Request Demobilization for project: {proj.client} ({proj.lift_name})</h3>
+                            <div>Project will not proceed to TNC</div>
                             <button
                                 onClick={handleRequestHold}
                             >Request Hold</button>
-                        </>
-                    ) : (
-                        <div>
-                            Hold Requested
-                        </div>
+                        </>                        
                     )}
-
                 </div>
             ) : sessionStorage.getItem('roles') === 'Project Manager' ? (
                 <div classNmae='approve-hold-section'>
-                    <button onClick={handleApproveHold}>Approve Hold {proj.client} ({proj.lift_name})</button>
+                    {proj.will_resume ? (
+                        <div>Project will proceed to TnC on {new Date(proj.resume_date).toLocaleDateString()}</div>
+                    ) : proj.request_resume ? (
+                        <div>
+                            Request for Project to proceed to TnC has been sent
+                        </div>
+                    ) : proj.on_hold ? (
+                        <div>Project is pending to proceed to TnC</div>
+                    ) : proj.request_hold ? (
+                        <button onClick={handleApproveHold}>Approve Hold {proj.client} ({proj.lift_name})</button>
+                    ) : (
+                        <div>
+                            Hold and demobilization for TnC not yet requested
+                        </div>                        
+                    )}
+                    
                 </div>
             ) : (
                 <></>

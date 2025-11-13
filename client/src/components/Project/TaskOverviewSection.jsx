@@ -228,35 +228,40 @@ const TaskCardsContainer = ({
   currentTaskPhase,
   role,
   onTaskDetails,
-  onCreateSchedule
+  onCreateSchedule,
+  proj
 }) => {
   console.log(projectExists)
-  if (projectCompleted) {
+  if (projectCompleted && !proj.will_resume) {
     return <div>Project Completed</div>;
   }
 
-  if (!projectExists) {
+  if (!proj.schedule_created) {
     return <NoScheduleCard role={role} onCreateSchedule={onCreateSchedule} />;
   }
 
   return (
-    <div className="task-cards-container">
-      <div className="task-card current-task-card" onClick={onTaskDetails}>
-        <div className="task-card-header">
-          <h4>Current Task</h4>
-          <span className="priority-badge">ACTIVE</span>
-        </div>
-        <CurrentTaskCard currentTask={currentTask} role={role} onTaskDetails={onTaskDetails} />
-      </div>
+    <>
 
-      <div className="task-card parent-task-card" onClick={onTaskDetails}>
-        <div className="task-card-header">
-          <h4>Parent Project</h4>
-          <span className="project-badge">OVERVIEW</span>
+      <div className="task-cards-container">
+        <div className="task-card current-task-card" onClick={onTaskDetails}>
+          <div className="task-card-header">
+            <h4>Current Task</h4>
+            <span className="priority-badge">ACTIVE</span>
+          </div>
+          <CurrentTaskCard currentTask={currentTask} role={role} onTaskDetails={onTaskDetails} />
         </div>
-        <ParentTaskCard currentTaskPhase={currentTaskPhase} onTaskDetails={onTaskDetails} />
-      </div>
-    </div>
+
+        <div className="task-card parent-task-card" onClick={onTaskDetails}>
+          <div className="task-card-header">
+            <h4>Parent Project</h4>
+            <span className="project-badge">OVERVIEW</span>
+          </div>
+          <ParentTaskCard currentTaskPhase={currentTaskPhase} onTaskDetails={onTaskDetails} />
+        </div>
+      </div>    
+    </>
+
   );
 };
 
@@ -305,7 +310,13 @@ const TaskOverviewSection = ({
           currentParentTask={currentParentTask} 
         />
       )}
-
+      {proj.will_resume ? (
+          <div className="lagging-task-info">
+            Project Testing and Commissioning will resume on {new Date(proj.resume_date).toLocaleDateString()}
+          </div>
+      ) : (
+        <></>
+      )}
       <OverarchingTaskInfo
         currentParentTask={currentParentTask}
         proj={proj}
@@ -336,6 +347,7 @@ const TaskOverviewSection = ({
           role={role}
           onTaskDetails={onTaskDetails}
           onCreateSchedule={onCreateSchedule}
+          proj={proj}
         />
       )}
     </div>

@@ -54,13 +54,14 @@ class UserModel {
     }
 
     static async getDesignatedProject(id, role) {
-
         const filter = role === 'Project Engineer' ? 'pm.project_engineer_id' 
                             : role === 'Foreman' ? 't.foreman_id' 
                                 : role === 'QAQC' ? 'pm.qaqc_id' 
                                     : role === 'TNC Technician' ? 'pm.tnc_tech_id'
                                         : role === 'PMS Technician' ? 'pm.pms_id' : 'tm.emp_id'
         // Get team info
+        console.log(role)
+        console.log(filter)
         const filterQuery = role !== 'Project Engineer' ? `
             select p.id as 'project_id'
             from project_manpower pm 
@@ -89,8 +90,6 @@ class UserModel {
 
         // Extract only the rows from each query result
         const projects = projectResults.map(([rows]) => rows[0]);
-
-      
 
         return projects;
     }

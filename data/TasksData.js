@@ -457,7 +457,7 @@ const tasks = [
   },
   {
     id: 518,
-    text: "Governor",
+    text: "Governor (M/R)",
     type: "task",
     start: null,
     end: null,
@@ -570,7 +570,7 @@ const tasks = [
   },
   {
     id: 527,
-    text: "Governor",
+    text: "Governor (Ropes)",
     type: "task",
     start: null,
     end: null,

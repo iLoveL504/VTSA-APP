@@ -21,7 +21,7 @@ const ForemanCompletion = ({ currentTask, values, handleContractChange, handleAp
                    <div className="completion-section emphasized">
                     <div className="section-header">
                         <h4>
-                            {currentTask?.task_done === 1 ? "Task Completed" : "Complete Current Task"}
+                            {currentTask?.task_done === 1 ? "Task Completed" : currentTask.task_approval === 1 ? 'Task pending for completion' : "Complete Current Task"}
                         </h4>
                     </div>
                     <div className="completion-content">
@@ -29,7 +29,7 @@ const ForemanCompletion = ({ currentTask, values, handleContractChange, handleAp
                             <div>
                                 Task Confirmed and is complete
                             </div>
-                        ) : !currentTask.task_approval === 1 ? (
+                        ) : currentTask.task_approval === 1 ? (
                             <div className="task-completed-state">
                                 <div className="completion-success">
                                     <div className="success-message">

@@ -1,85 +1,106 @@
 import React, {useMemo, useEffect} from 'react'
 import Project from './Project'
-import useAxiosFetch from '../../hooks/useAxiosFetch'
+import ProjectCard from './ProjectCard'
 import { useStoreState } from 'easy-peasy'
 
 import { Grid } from 'ldrs/react'
 
-const ProjectList = ({onHold, searchTerm}) => {
-  const currentProjId = useStoreState(state => state.currentProjId)
-  const backendURL = import.meta.env.VITE_BACKEND_URL || 'http://localhost:4000'
-  const empId = sessionStorage.getItem('id')
+const ProjectList = ({onHold, searchTerm, statusFilter, viewMode}) => {
   const role = sessionStorage.getItem('roles')
-  const filter = {
-    role
-  }
-  const {data: projects} = useAxiosFetch(`${backendURL}/api/projects`)
-  console.log(currentProjId)
-  const {data: designatedProject, isLoading: designatedIsLoading} = useAxiosFetch(`${backendURL}/api/employees/${empId}/designated-project`, filter)
-    // Filter projects based on search term
+
+  const {projects, designatedProjects, designatedIsLoading} = useStoreState(state => state)
+
+
+
+  // Filter projects based on various criteria
   const filteredProjects = useMemo(() => {
-    if (!searchTerm) return projects
+    let filtered = sessionStorage.getItem('roles') === 'Project Manager' ? projects : designatedProjects
     
-    const term = searchTerm.toLowerCase()
-    return projects.filter(project => 
-      project.lift_name?.toLowerCase().includes(term) ||
-      project.client?.toLowerCase().includes(term) ||
-      project.status?.toLowerCase().includes(term)
-    )
-  }, [projects, searchTerm])
-
-useEffect(() => {
-  console.log(filteredProjects)
-}, [filteredProjects])
-
-
-
-  // const [lowRole, setLowRole] = useState(true)
-  // console.log(projects)
-  // useEffect(() => {
-  //   if (sessionStorage.getItem('roles') === 'manager' ||
-  //     sessionStorage.getItem('roles') == 'Project Manager') {
-  //       setLowRole(false)
-  //     }
-  // }, [])
-//console.log(updateIsLoading)
-
-    if (designatedIsLoading) {
-
-        return (
-                <div className="Loading">
-                    <p>Data is Loading...</p>
-                    <Grid size="60" speed="1.5" color="rgba(84, 176, 210, 1)" />
-                </div>
+    if (role === 'manager' || role === 'Project Manager' || role === 'TNC Coordinator' || role === 'QAQC Coordinator') {
+      // Apply search filter
+      if (searchTerm) {
+        const term = searchTerm.toLowerCase()
+        filtered = filtered.filter(project => 
+          project.lift_name?.toLowerCase().includes(term) ||
+          project.client?.toLowerCase().includes(term) ||
+          project.region?.toLowerCase().includes(term)
         )
+      }
+      
+      // Apply status filter
+      if (statusFilter !== 'all') {
+        filtered = filtered.filter(project => project.status === statusFilter)
+      }
+      
+      // Apply hold filter
+      if (onHold === 'on-hold') {
+        filtered = filtered.filter(project => project.on_hold)
+      } else if (onHold === 'request-hold') {
+        filtered = filtered.filter(project => project.request_hold)
+      } else if (onHold === 'active') {
+        filtered = filtered.filter(project => !project.on_hold && !project.request_hold)
+      }
+    } else {
+      console.log(designatedProjects)
+      if (searchTerm) {
+        const term = searchTerm.toLowerCase()
+        filtered = filtered.filter(designatedProjects => 
+          designatedProjects.lift_name?.toLowerCase().includes(term) ||
+          designatedProjects.client?.toLowerCase().includes(term) ||
+          designatedProjects.region?.toLowerCase().includes(term)
+        )
+      }
+      
+      // Apply status filter
+      if (statusFilter !== 'all') {
+        filtered = filtered.filter(designatedProjects => designatedProjects.status === statusFilter)
+      }
+      
+      // Apply hold filter
+      if (onHold === 'on-hold') {
+        filtered = filtered.filter(designatedProjects => designatedProjects.on_hold)
+      } else if (onHold === 'request-hold') {
+        filtered = filtered.filter(designatedProjects => designatedProjects.request_hold)
+      } else if (onHold === 'active') {
+        filtered = filtered.filter(designatedProjects => !designatedProjects.on_hold && !designatedProjects.request_hold)
+      }
+      //filtered = designatedProject
     }
+    
+    return filtered
+  }, [projects, designatedProjects, searchTerm, statusFilter, onHold, role])
+
+  useEffect(() => {
+    console.log('Filtered Projects:', filteredProjects)
+  }, [filteredProjects])
+  console.log('designated is loading: ', designatedIsLoading)
+  if (designatedIsLoading) {
+    return (
+      <div className="Loading">
+        <p>Data is Loading...</p>
+        <Grid size="60" speed="1.5" color="rgba(84, 176, 210, 1)" />
+      </div>
+    )
+  }
 
   return (
-    <div className='ProjectList'>  
-        
-        {
-            sessionStorage.getItem('roles') === 'manager' ||
-            sessionStorage.getItem('roles') === 'Project Manager' ||
-            sessionStorage.getItem('roles') === 'TNC Coordinator' ||
-            sessionStorage.getItem('roles') === 'QAQC Coordinator' ?
-            (
-              <>
-                {onHold ? (filteredProjects.filter(p => (p.request_hold || p.on_hold)).map(p => (
-                  <Project project={p} key={p.id}/>
-                ))) : (filteredProjects.map(p => (
-                  <Project project={p} key={p.id}/>
-                )))}        
-              </>
-            )
-            :  (
-              <>
-                {designatedProject.map(p => (
-                  <Project project={p} key={p.id}/>
-                ))}            
-              </>  
+    <div className={`ProjectList ${viewMode}`}>  
+        <>
+          {viewMode === 'list' ? (
+            // List View
+            filteredProjects.map(p => (
+              <Project project={p} key={p.id} viewMode={viewMode}/>
+            ))
+          ) : (
+            // Grid View
+            <div className="projects-grid">
+              {filteredProjects.map(p => (
+                <ProjectCard project={p} key={p.id}/>
+              ))}
+            </div>
+          )}
+        </> 
 
-            )
-        }
     </div>
   )
 }

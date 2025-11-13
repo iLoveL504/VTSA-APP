@@ -151,6 +151,11 @@
     flex: 1;
 }
 
+.Content.TaskList .task-dates-parent {
+    flex: 1;
+    color: #f0f7ff;
+}
+
 .Content.TaskList .task-duration {
     background: #e2e8f0;
     padding: 0.2rem 0.5rem;

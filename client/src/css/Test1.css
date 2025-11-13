@@ -408,7 +408,7 @@
 }
 
 /* Action buttons */
-.action-buttons {
+.SchedulePage .action-buttons {
   display: flex;
   gap: 0.25rem;
   justify-content: flex-end;

@@ -6,9 +6,11 @@ import { Axios } from '../../api/axios.js'
 import "wx-react-gantt/dist/gantt.css";
 import "../../gantt-custom.css"
 import TaskOverviewSection from '../../components/Project/TaskOverviewSection.jsx'
-
+import { useSharedSocket } from '../../Context/SocketContext.js'
 
 const ResumeProjectModal = ({ isOpen, onClose, onConfirm, project }) => {
+
+
   if (!isOpen) return null;
 
   return (
@@ -46,7 +48,7 @@ const ProjectDetails = ({
     const handleTaskDetails = () => () => {
         setActivePage('task')
     }
-
+    const {utilitiesSocket} = useSharedSocket()
     const handleResumeProject = () => {
         // Open the modal instead of directly resuming
         setIsResumeModalOpen(true)
@@ -66,6 +68,7 @@ const ProjectDetails = ({
             console.log(response.data.result)
             //window.location.reload()
         }
+        utilitiesSocket.emit('refresh_all_projects')
         // Close modal after action
         setIsResumeModalOpen(false)
         // You might want to refresh the project data here
@@ -93,14 +96,25 @@ const isReady =
   currentTask !== null &&
   currentParentTask !== null;
 
-    if (!isLoaded || !isReady) {
-        console.log(isLoaded)
-        return (
-            <div className="Loading">
-                <p>Data is Loading...</p>
-                <Grid size="60" speed="1.5" color="rgba(84, 176, 210, 1)" />
-            </div>
-        )
+    if(!proj.schedule_created || proj.will_resume) {
+        if (!isLoaded) {
+            return (
+                <div className="Loading">
+                    <p>Data is Loading...</p>
+                    <Grid size="60" speed="1.5" color="rgba(84, 176, 210, 1)" />
+                </div>
+            )            
+        }
+    } else {
+            if (!isLoaded || !isReady) {
+            console.log(isLoaded)
+            return (
+                <div className="Loading">
+                    <p>Data is Loading...</p>
+                    <Grid size="60" speed="1.5" color="rgba(84, 176, 210, 1)" />
+                </div>
+            )
+        }
     }
 
     // SIMPLIFIED: Check if we have the essential data

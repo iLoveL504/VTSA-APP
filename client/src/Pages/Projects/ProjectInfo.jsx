@@ -308,7 +308,7 @@ useEffect(() => {
                                 onClick={holdOnClick}
                                 className={activePage === 'hold' ? 'active' : ''}
                             >
-                                Put on Hold
+                                Requests
                             </div>                        
                             </>
                         )}
