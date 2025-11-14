@@ -23,8 +23,8 @@ class UserModel {
         const { username, password, last_name, first_name, job } = user;
         await pool.query(`
             update employees set username = ?, password = ?,
-            last_name = ?, first_name = ?, job = ? where employee_id = ? 
-        `, [username, password, last_name, first_name, job, id]);
+            last_name = ?, first_name = ?, job = ?, in_house = ? where employee_id = ? 
+        `, [username, password, last_name, first_name, job, in_house, id]);
     }
 
     //CREATE

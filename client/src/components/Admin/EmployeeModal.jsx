@@ -7,7 +7,8 @@ const EmployeeModal = ({ employee, roles, onSave, onClose }) => {
         first_name: '',
         last_name: '',
         job: '',
-        is_active: 1
+        is_active: 1,
+        in_house: 1
     })
 
     useEffect(() => {
@@ -27,6 +28,7 @@ const EmployeeModal = ({ employee, roles, onSave, onClose }) => {
     const handleSubmit = (e) => {
         e.preventDefault()
         console.log(formData)
+
         onSave(formData)
     }
 
@@ -107,6 +109,18 @@ const EmployeeModal = ({ employee, roles, onSave, onClose }) => {
                                 {roles.map(role => (
                                     <option key={role} value={role}>{role}</option>
                                 ))}
+                            </select>
+                        </div>
+                        <div className="form-group">
+                            <label>Role *</label>
+                            <select
+                                name="in_house"
+                                value={formData.in_house}
+                                onChange={handleChange}
+                                required
+                            >
+                                <option value={1}>In house</option>
+                                <option value={0}>Contract Based</option>
                             </select>
                         </div>
                     </div>
