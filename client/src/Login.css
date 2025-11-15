@@ -64,7 +64,7 @@
   font-weight: 500;
 }
 
-.form-input {
+.loging-container .form-input {
   padding: 0.75rem 1rem;
   border: 1px solid #ddd;
   border-radius: var(--border-radius);

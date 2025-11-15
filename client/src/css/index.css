@@ -634,7 +634,7 @@ nav .nav-actions {
   gap: 0.5rem;
 }
 
-.table-header, .table-row {
+/* .table-header, .table-row {
   display: grid;
   grid-template-columns: 3fr 1fr 2fr;
   gap: 1rem;
@@ -647,7 +647,7 @@ nav .nav-actions {
   color: white;
   border-radius: 6px;
   font-weight: 600;
-}
+} */
 
 .table-row {
   border-bottom: 1px solid #e2e8f0;

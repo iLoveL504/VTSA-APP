@@ -1,0 +1,1128 @@
+/* TeamsDashboard.css */
+.Content.TeamsDashboard {
+  padding: 24px;
+  background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+  min-height: 100vh;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  width: 100%;
+}
+
+/* Header */
+.dashboard-header {
+  margin-bottom: 32px;
+}
+
+.header-main {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 8px;
+}
+
+.header-icon {
+  font-size: 2.5rem !important;
+  color: #315a95;
+}
+
+.dashboard-header h1 {
+  font-size: 2.25rem;
+  color: #1e293b;
+  margin: 0;
+  font-weight: 700;
+}
+
+.dashboard-header p {
+  font-size: 1.1rem;
+  color: #64748b;
+  margin: 0;
+}
+
+/* Tab Navigation */
+.dashboard-tabs {
+  display: flex;
+  background: white;
+  border-radius: 12px;
+  padding: 8px;
+  margin-bottom: 24px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  border: 1px solid #e2e8f0;
+}
+
+.tab-btn {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px 16px;
+  border: none;
+  background: transparent;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 500;
+  color: #64748b;
+  transition: all 0.2s;
+}
+
+.tab-btn.active {
+  background: #315a95;
+  color: white;
+}
+
+.tab-icon {
+  font-size: 1.2rem !important;
+}
+
+/* Statistics Grid */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 20px;
+  margin-bottom: 32px;
+}
+
+.stat-card {
+  background: white;
+  border-radius: 16px;
+  padding: 24px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+  border: 1px solid #e2e8f0;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.stat-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
+}
+
+.stat-card.primary {
+  border-left: 4px solid #315a95;
+}
+
+.stat-card.secondary {
+  border-left: 4px solid #10b981;
+}
+
+.stat-card.accent {
+  border-left: 4px solid #f59e0b;
+}
+
+.stat-card.info {
+  border-left: 4px solid #3b82f6;
+}
+
+.stat-icon {
+  width: 60px;
+  height: 60px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 1.5rem;
+}
+
+.stat-card.primary .stat-icon {
+  background: #315a95;
+}
+
+.stat-card.secondary .stat-icon {
+  background: #10b981;
+}
+
+.stat-card.accent .stat-icon {
+  background: #f59e0b;
+}
+
+.stat-card.info .stat-icon {
+  background: #3b82f6;
+}
+
+.stat-content {
+  display: flex;
+  flex-direction: column;
+}
+
+.stat-number {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #1e293b;
+  line-height: 1;
+}
+
+.stat-label {
+  font-size: 0.9rem;
+  color: #64748b;
+  margin-top: 4px;
+}
+
+/* Role Distribution */
+.role-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.role-stat {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 16px;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  border: 1px solid #e2e8f0;
+}
+
+.role-icon {
+  font-size: 2rem !important;
+  padding: 12px;
+  border-radius: 10px;
+}
+
+.role-icon.foreman {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+.role-icon.skilled {
+  background: #dbeafe;
+  color: #1e40af;
+}
+
+.role-icon.installer {
+  background: #d1fae5;
+  color: #065f46;
+}
+
+.role-icon.engineer {
+  background: #e0e7ff;
+  color: #3730a3;
+}
+
+.role-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.role-count {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #1e293b;
+  line-height: 1;
+}
+
+.role-label {
+  font-size: 0.9rem;
+  color: #64748b;
+  margin-top: 4px;
+}
+
+/* Controls */
+.dashboard-controls {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+  padding: 16px 20px;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.view-toggle {
+  display: flex;
+  gap: 8px;
+}
+
+.toggle-btn {
+  padding: 8px 16px;
+  border: 1px solid #e2e8f0;
+  background: white;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-weight: 500;
+}
+
+.toggle-btn.active {
+  background: #315a95;
+  color: white;
+  border-color: #315a95;
+}
+
+.toggle-btn:hover:not(.active) {
+  background: #f8fafc;
+}
+
+.status-filter {
+  padding: 8px 12px;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  background: white;
+  font-size: 0.9rem;
+}
+
+/* Projects Container */
+.projects-container {
+  display: grid;
+  gap: 24px;
+}
+
+.projects-container.grid {
+  grid-template-columns: repeat(auto-fill, minmax(500px, 1fr));
+}
+
+.projects-container.list {
+  grid-template-columns: 1fr;
+}
+
+/* Project Card */
+.project-card {
+  background: white;
+  border-radius: 16px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+  border: 1px solid #e2e8f0;
+  overflow: hidden;
+  transition: box-shadow 0.3s ease;
+}
+
+.project-card:hover {
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+}
+
+.project-card-header {
+  padding: 20px 24px;
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 16px;
+  background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.project-basic-info {
+  flex: 1;
+}
+
+.project-title {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.project-title h3 {
+  margin: 0;
+  font-size: 1.25rem;
+  color: #1e293b;
+  font-weight: 600;
+}
+
+.project-meta {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.project-client, .project-id {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.9rem;
+  color: #64748b;
+}
+
+.meta-icon {
+  font-size: 1rem !important;
+}
+
+.project-dates {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  align-items: flex-end;
+}
+
+.date-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.8rem;
+  color: #64748b;
+}
+
+.date-icon {
+  font-size: 0.9rem !important;
+}
+
+.project-duration {
+  background: #315a95;
+  color: white;
+  padding: 4px 8px;
+  border-radius: 6px;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.project-expand {
+  color: #64748b;
+  margin-left: 12px;
+}
+
+/* Project Card Content */
+.project-card-content {
+  padding: 24px;
+}
+
+.leadership-section, .technicians-section, .team-section {
+  margin-bottom: 32px;
+}
+
+.leadership-section:last-child, .technicians-section:last-child, .team-section:last-child {
+  margin-bottom: 0;
+}
+
+.leadership-section h4, .technicians-section h4, .team-section h4 {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0 0 20px 0;
+  font-size: 1.1rem;
+  color: #1e293b;
+  font-weight: 600;
+  padding-bottom: 12px;
+  border-bottom: 2px solid #f1f5f9;
+}
+
+.section-icon {
+  font-size: 1.2rem !important;
+  color: #315a95;
+}
+
+.leadership-grid, .technicians-grid, .personnel-grid {
+  display: grid;
+  gap: 16px;
+}
+
+.leadership-grid, .technicians-grid {
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+}
+
+.personnel-grid {
+  grid-template-columns: 1fr;
+}
+
+.leadership-item, .technician-item, .personnel-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px;
+  background: #f8fafc;
+  border-radius: 12px;
+  border: 1px solid #e2e8f0;
+  transition: transform 0.2s;
+}
+
+.leadership-item:hover, .technician-item:hover, .personnel-item:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.personnel-avatar {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  background: #315a95;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 1.5rem;
+  flex-shrink: 0;
+}
+
+.personnel-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.personnel-name {
+  font-weight: 600;
+  color: #1e293b;
+  font-size: 1rem;
+}
+
+.personnel-username {
+  font-size: 0.8rem;
+  color: #64748b;
+  margin-top: 2px;
+}
+
+.personnel-role {
+  font-size: 0.85rem;
+  color: #64748b;
+  margin-top: 4px;
+}
+
+.role-group {
+  margin-bottom: 20px;
+}
+
+.role-group:last-child {
+  margin-bottom: 0;
+}
+
+.role-group h5 {
+  margin: 0 0 12px 0;
+  font-size: 0.9rem;
+  color: #64748b;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  padding-left: 8px;
+  border-left: 3px solid #315a95;
+}
+
+.no-technicians, .no-team {
+  text-align: center;
+  padding: 40px 20px;
+  color: #94a3b8;
+  font-style: italic;
+  background: #f8fafc;
+  border-radius: 8px;
+  border: 2px dashed #e2e8f0;
+}
+
+/* Status Badges */
+.status-badge {
+  padding: 6px 12px;
+  border-radius: 8px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.status-installation {
+  background: #dbeafe;
+  color: #1e40af;
+}
+
+.status-preliminaries {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+.status-structural {
+  background: #d1fae5;
+  color: #065f46;
+}
+
+.status-testing {
+  background: #e0e7ff;
+  color: #3730a3;
+}
+
+.status-unknown {
+  background: #f1f5f9;
+  color: #64748b;
+}
+
+/* Job Badges */
+.job-badge {
+  padding: 4px 8px;
+  border-radius: 6px;
+  font-size: 0.7rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  white-space: nowrap;
+}
+
+.job-foreman {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+.job-skilled {
+  background: #dbeafe;
+  color: #1e40af;
+}
+
+.job-installer {
+  background: #d1fae5;
+  color: #065f46;
+}
+
+.job-engineer {
+  background: #e0e7ff;
+  color: #3730a3;
+}
+
+.job-technician {
+  background: #f3e8ff;
+  color: #7c3aed;
+}
+
+.job-qaqc {
+  background: #fce7f3;
+  color: #be185d;
+}
+
+/* Personnel Tally */
+.personnel-tally, .technicians-tally {
+  background: white;
+  border-radius: 16px;
+  padding: 24px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+}
+
+.tally-header {
+  margin-bottom: 24px;
+  text-align: center;
+}
+
+.tally-header h2 {
+  color: #1e293b;
+  margin: 0 0 8px 0;
+}
+
+.tally-header p {
+  color: #64748b;
+  margin: 0;
+}
+
+.tally-stats, .technicians-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 20px;
+  margin-bottom: 32px;
+}
+
+.tally-stat-card, .technician-stat-card {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 20px;
+  background: #f8fafc;
+  border-radius: 12px;
+  border: 1px solid #e2e8f0;
+}
+
+.tally-stat-icon, .technician-stat-icon {
+  font-size: 2.5rem !important;
+  color: #315a95;
+}
+
+.technician-stat-icon.tnc {
+  color: #7c3aed;
+}
+
+.technician-stat-icon.qaqc {
+  color: #be185d;
+}
+
+.technician-stat-icon.pms {
+  color: #059669;
+}
+
+.tally-stat-content, .technician-stat-content {
+  display: flex;
+  flex-direction: column;
+}
+
+.tally-stat-number, .technician-stat-number {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #1e293b;
+  line-height: 1;
+}
+
+.tally-stat-label, .technician-stat-label {
+  font-size: 0.9rem;
+  color: #64748b;
+  margin-top: 4px;
+}
+
+/* Personnel Table */
+.personnel-list h3, .technicians-list h3 {
+  color: #1e293b;
+  margin: 0 0 20px 0;
+  font-size: 1.25rem;
+  padding-bottom: 12px;
+  border-bottom: 2px solid #f1f5f9;
+}
+
+.personnel-table, .technicians-table {
+  background: #f8fafc;
+  border-radius: 12px;
+  border: 1px solid #e2e8f0;
+  overflow: hidden;
+}
+
+.table-header {
+  display: grid;
+  gap: 16px;
+  padding: 16px 20px;
+  background: #315a95;
+  color: white;
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+.personnel-table .table-header {
+  grid-template-columns: 2fr 1fr 0.8fr 1fr;
+}
+
+.technicians-table .table-header {
+  grid-template-columns: 2fr 1.5fr 1.5fr 1.5fr 1.5fr;
+}
+
+.TeamsDashboard .table-row {
+  display: grid;
+  gap: 16px;
+  padding: 16px 20px;
+  border-bottom: 1px solid #e2e8f0;
+  align-items: center;
+  transition: background-color 0.2s;
+}
+
+.personnel-table .table-row {
+  grid-template-columns: 2fr 1fr 0.8fr 1fr;
+}
+
+.technicians-table .table-row {
+  grid-template-columns: 2fr 1.5fr 1.5fr 1.5fr 1.5fr;
+}
+
+.TeamsDashboard .table-row:hover {
+  background: white;
+}
+
+.table-row:last-child {
+  border-bottom: none;
+}
+
+.person-name {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 600;
+  color: #1e293b;
+}
+
+.project-name, .client-name {
+  font-weight: 600;
+  color: #1e293b;
+}
+
+.technician-name {
+  color: #374151;
+  font-size: 0.9rem;
+}
+
+.person-icon {
+  font-size: 1.2rem !important;
+  color: #315a95;
+}
+
+.project-count {
+  text-align: center;
+  font-weight: 600;
+  color: #315a95;
+  background: #dbeafe;
+  padding: 4px 8px;
+  border-radius: 6px;
+  font-size: 0.8rem;
+}
+
+.username {
+  color: #64748b;
+  font-family: monospace;
+  font-size: 0.9rem;
+}
+
+/* No Projects State */
+.no-projects {
+  text-align: center;
+  padding: 60px 20px;
+  background: white;
+  border-radius: 16px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+}
+
+.no-projects-icon {
+  font-size: 4rem !important;
+  color: #cbd5e1;
+  margin-bottom: 16px;
+}
+
+.no-projects h3 {
+  color: #64748b;
+  margin: 0 0 8px 0;
+}
+
+.no-projects p {
+  color: #94a3b8;
+  margin: 0;
+}
+
+/* Loading State */
+.dashboard-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 400px;
+  text-align: center;
+}
+
+.loading-spinner {
+  width: 40px;
+  height: 40px;
+  border: 4px solid #e2e8f0;
+  border-top: 4px solid #315a95;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-bottom: 16px;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .Content.TeamsDashboard {
+    padding: 16px;
+  }
+  
+  .stats-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .dashboard-tabs {
+    flex-direction: column;
+  }
+  
+  .dashboard-controls {
+    flex-direction: column;
+    gap: 16px;
+    align-items: stretch;
+  }
+  
+  .projects-container.grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .project-card-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+  
+  .project-dates {
+    align-items: flex-start;
+    width: 100%;
+  }
+  
+  .leadership-grid, .technicians-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .personnel-table .table-header,
+  .personnel-table .table-row,
+  .technicians-table .table-header,
+  .technicians-table .table-row {
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+  
+  .table-header {
+    display: none;
+  }
+  
+  .table-row {  
+    padding: 16px;
+    background: white;
+    margin-bottom: 8px;
+    border-radius: 8px;
+    border: 1px solid #e2e8f0;
+  }
+  
+  .person-name {
+    justify-content: center;
+  }
+}
+
+/* Manpower Overview Styles */
+.manpower-overview {
+  background: white;
+  border-radius: 16px;
+  padding: 24px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+}
+
+.manpower-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 20px;
+  margin-bottom: 32px;
+}
+
+.manpower-stat-card {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 20px;
+  border-radius: 12px;
+  border: 1px solid #e2e8f0;
+  transition: transform 0.2s;
+}
+
+.manpower-stat-card:hover {
+  transform: translateY(-2px);
+}
+
+.manpower-stat-card.total {
+  background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+  border-left: 4px solid #315a95;
+}
+
+.manpower-stat-card.assigned {
+  background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+  border-left: 4px solid #0ea5e9;
+}
+
+.manpower-stat-card.available {
+  background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
+  border-left: 4px solid #22c55e;
+}
+
+.manpower-stat-icon {
+  font-size: 2.5rem !important;
+}
+
+.manpower-stat-card.total .manpower-stat-icon {
+  color: #315a95;
+}
+
+.manpower-stat-card.assigned .manpower-stat-icon {
+  color: #0ea5e9;
+}
+
+.manpower-stat-card.available .manpower-stat-icon {
+  color: #22c55e;
+}
+
+.manpower-stat-content {
+  display: flex;
+  flex-direction: column;
+}
+
+.manpower-stat-number {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #1e293b;
+  line-height: 1;
+}
+
+.manpower-stat-label {
+  font-size: 0.9rem;
+  color: #64748b;
+  margin-top: 4px;
+}
+
+/* Role Sections */
+.role-breakdown {
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+}
+
+.role-section {
+  background: #f8fafc;
+  border-radius: 12px;
+  padding: 24px;
+  border: 1px solid #e2e8f0;
+}
+
+.role-section-header {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 24px;
+  padding-bottom: 16px;
+  border-bottom: 2px solid #e2e8f0;
+}
+
+.role-section-icon {
+  font-size: 2.5rem !important;
+  padding: 12px;
+  border-radius: 10px;
+}
+
+.role-section-icon.foreman {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+.role-section-icon.skilled {
+  background: #dbeafe;
+  color: #1e40af;
+}
+
+.role-section-icon.installer {
+  background: #d1fae5;
+  color: #065f46;
+}
+
+.role-section-icon.engineer {
+  background: #e0e7ff;
+  color: #3730a3;
+}
+
+.role-section-title {
+  flex: 1;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.role-section-title h3 {
+  margin: 0;
+  color: #1e293b;
+  font-size: 1.5rem;
+}
+
+.role-count-badge {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  background: white;
+  padding: 8px 12px;
+  border-radius: 8px;
+  border: 1px solid #e2e8f0;
+  font-weight: 600;
+}
+
+.assigned-count {
+  color: #059669;
+}
+
+.total-count {
+  color: #1e293b;
+}
+
+.separator {
+  color: #64748b;
+}
+
+.count-label {
+  color: #64748b;
+  font-size: 0.8rem;
+  margin-left: 4px;
+  font-weight: normal;
+}
+
+/* Personnel Lists */
+.personnel-lists {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+}
+
+.assigned-list, .available-list {
+  background: white;
+  border-radius: 8px;
+  padding: 16px;
+  border: 1px solid #e2e8f0;
+}
+
+.assigned-list h4, .available-list h4 {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0 0 16px 0;
+  font-size: 1rem;
+  color: #1e293b;
+  padding-bottom: 12px;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.list-icon {
+  font-size: 1.2rem !important;
+}
+
+.list-icon.assigned {
+  color: #059669;
+}
+
+.list-icon.available {
+  color: #0ea5e9;
+}
+
+.personnel-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px;
+  border-radius: 8px;
+  margin-bottom: 8px;
+  transition: background-color 0.2s;
+}
+
+.personnel-item.assigned {
+  background: #f0fdf4;
+  border: 1px solid #bbf7d0;
+}
+
+.personnel-item.available {
+  background: #f0f9ff;
+  border: 1px solid #bae6fd;
+}
+
+.personnel-item:hover {
+  background: #f8fafc;
+}
+
+.no-personnel {
+  text-align: center;
+  padding: 20px;
+  color: #94a3b8;
+  font-style: italic;
+  background: #f8fafc;
+  border-radius: 6px;
+  border: 1px dashed #e2e8f0;
+}
+
+/* Responsive Design for Manpower Tab */
+@media (max-width: 768px) {
+  .manpower-stats-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .personnel-lists {
+    grid-template-columns: 1fr;
+  }
+  
+  .role-section-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+  
+  .role-section-title {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+}

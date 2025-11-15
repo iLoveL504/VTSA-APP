@@ -488,12 +488,12 @@
     background: #5a6268;
 }
 
-.btn-primary {
+.FinalizeHandover .btn-primary {
     background: #28a745;
     color: white;
 }
 
-.btn-primary:hover {
+.FinalizeHandover .btn-primary:hover {
     background: #218838;
 }
 

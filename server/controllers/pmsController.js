@@ -16,6 +16,8 @@ export const PMSController = {
     try {
       const {id} = req.params
       const client = await PMSModel.getPMSClient(Number(id))
+      console.log('here in get client')
+      console.log(client)
       res.json(client[0])
     } catch (err) {
       console.log(err)
@@ -27,6 +29,16 @@ export const PMSController = {
     try {
       const {id} = req.params
       const result = await PMSModel.getStatus(id)
+      res.json(result)
+    } catch (err) {
+      console.log(err)
+      res.status(500).json({ error: err.message });    
+    }
+  },
+  async getCallbackStatus (req, res) {
+    try {
+      const {id} = req.params
+      const result = await PMSModel.getCallbackStatus(Number(id))
       res.json(result)
     } catch (err) {
       console.log(err)
@@ -211,5 +223,53 @@ export const PMSController = {
       console.log(err)
       res.status(400).json({ error: err.message });
     }
-  }
+  },
+
+  async beginCallback(req, res) {
+    try {
+      const {clientId} = req.params
+      await PMSModel.ongoingCallback(Number(clientId))
+          res.status(200).json({
+        success: true,
+        message: "approved"
+    })
+    } catch (err) {
+      console.log(err)
+      res.status(400).json({ error: err.message });      
+    }
+  },
+  // ==========================
+//  COMPLETE CALLBACK
+// ==========================
+  async completeCallback (req, res) {
+    try {
+        const { clientId } = req.params;
+        const photos = req.files || {};
+
+        console.log('Completing callback for client:', clientId);
+        console.log('Uploaded files:', photos);
+
+        if (!clientId) {
+            return res.status(400).json({
+                success: false,
+                message: 'Client ID is required'
+            });
+        }
+
+        const result = await PMSModel.markCallbackComplete(clientId, photos);
+        
+        res.status(200).json({
+            success: true,
+            message: 'Callback completed successfully',
+            data: result
+        });
+    } catch (error) {
+        console.error('Error completing callback:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Failed to complete callback',
+            error: error.message
+        });
+    }
+}
 };

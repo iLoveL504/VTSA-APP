@@ -16,6 +16,8 @@ import PMS_Entry from './PMS_Entry.jsx'
 import TaskDetails from './TaskDetails.jsx'
 import RequestHold from './RequestHold.jsx'
 import ProjectTeam from './ProjectTeam.jsx'
+import ProjectDashboard from './ProjectDashboard.jsx'
+import React from 'react'
 
 const ConfirmationModal = ({ isOpen, onClose, onConfirm, title, message, confirmText = "Confirm", cancelText = "Cancel", type}) => {
   if (!isOpen) return null;
@@ -70,7 +72,8 @@ const ProjectInfo = () => {
       onHold,
       tasksIsLoading,
       fetchedData
-    } = useStoreState(state => state); // Remove .projectStore since it's directly in root
+    } = useStoreState(state => state);
+    
     const {
       fetchAllProjectData,
       fetchTeamInfo,
@@ -81,10 +84,10 @@ const ProjectInfo = () => {
       clearProjectTasks
     } = useStoreActions(actions => actions); // Remove .projectStore since it's directly in root
 
-    const [activePage, setActivePage] = useState('details')
+    const [activePage, setActivePage] = useState('dashboard')
     const [isEditing, setIsEditing] = useState(false)
     const [formData, setFormData] = useState({})
-    
+    const [dataLoaded, setDataLoaded] = useState(false)
     // const { 
     //     currentParentTask, 
     //     currentTaskPhase, 
@@ -102,6 +105,36 @@ const ProjectInfo = () => {
     const [isLoaded, setIsLoaded] = useState(false)
     
     useEffect(() => {
+      const fetchAllData = async () => {
+        if (!projId || dataLoaded) return; // Fetch guard prevents re-fetching
+
+        try {
+          // Fetch main project data if not already loaded
+          if (!proj || Object.keys(proj).length === 0) {
+            await fetchAllProjectData(projId);
+          }
+
+          // Once project data is available, fetch dependent data
+          if (proj && proj.id) {
+            // Fetch team info and project tasks in parallel
+            await Promise.all([
+              fetchTeamInfo({ projId, projData: proj }),
+              findProjectTasks({ projectId: projId, projectData: proj })
+            ]);
+          }
+
+          setDataLoaded(true); // Set guard to prevent future fetches
+        } catch (error) {
+          console.error('Error fetching project data:', error);
+          setDataLoaded(true); // Still set to true to avoid infinite loading
+        }
+      };
+
+      fetchAllData();
+    }, [projId, proj, fetchAllProjectData, fetchTeamInfo, findProjectTasks, dataLoaded]);
+
+
+    useEffect(() => {
         const userRole = sessionStorage.getItem('roles');
         setRole(userRole);
         clearProjectData()
@@ -115,6 +148,16 @@ const ProjectInfo = () => {
       }
     }, [proj])
 
+const handleTaskDetails = () => {
+    setActivePage('task')
+}
+
+const handleCreateSchedule = () => {
+    navigate(`/projects/${projId}/custom`) 
+}
+
+
+// 
     // Consolidated useEffect for all data fetching
 // Consolidated useEffect for all data fetching
 useEffect(() => {
@@ -232,9 +275,10 @@ useEffect(() => {
         setActivePage(`documents`)
     }
 
-    const holdOnClick = () => {
-        setActivePage('hold')
+    const dashboardOnClick = () => {
+        setActivePage(`dashboard`)
     }
+
 
     const handleDailyReportClick = () => {
         navigate(`report`)
@@ -278,6 +322,18 @@ useEffect(() => {
                 <h2>{values.lift_name || proj?.lift_name}</h2>
                     <div className="action-buttons">
                         <div 
+                                onClick={dashboardOnClick}
+                                className={activePage === 'dashboard' ? 'active' : ''}
+                            >
+                                Dashboard
+                        </div>
+                        <div 
+                                onClick={progressOnClick}
+                                className={activePage === 'progress' ? 'active' : ''}
+                            >
+                                Progress
+                        </div>
+                        <div 
                             onClick={() => setActivePage('details')}
                             className={activePage === 'details' ? 'active' : ''}
                         >
@@ -286,12 +342,7 @@ useEffect(() => {
                         {(sessionStorage.getItem('roles') === 'Project Engineer' ||
                         sessionStorage.getItem('roles') === 'Project Manager') && (
                             <>
-                            <div 
-                                onClick={progressOnClick}
-                                className={activePage === 'progress' ? 'active' : ''}
-                            >
-                                Progress
-                            </div>
+
                             <div 
                                 onClick={teamsOnClick}
                                 className={activePage === 'teams' ? 'active' : ''}
@@ -304,16 +355,25 @@ useEffect(() => {
                             >
                                 Documents
                             </div>
-                            <div 
-                                onClick={holdOnClick}
-                                className={activePage === 'hold' ? 'active' : ''}
-                            >
-                                Requests
-                            </div>                        
                             </>
                         )}
                     </div>
             </div>
+{
+  activePage === 'dashboard' && (
+    <React.Suspense fallback={<div>Loading Dashboard...</div>}>
+                <ProjectDashboard 
+                    handleTaskDetails={handleTaskDetails}
+                    handleCreateSchedule={handleCreateSchedule}
+                    progressOnClick={() => setActivePage('progress')}
+                    teamsOnClick={() => setActivePage('teams')}
+                    handleDailyReportClick={handleDailyReportClick}
+                    setActivePage={setActivePage}
+                    dataLoaded={dataLoaded} // Tell dashboard data is already loaded
+                />
+    </React.Suspense>
+  )
+}
             {
                 activePage === 'details' && 
                 <ProjectDetails 
@@ -358,6 +418,17 @@ useEffect(() => {
                     taskPhotos={taskPhotos}
                     currentTask={currentTask}
                     holidays={holidays}
+                    projectCompleted={projectCompleted}
+                    projectExists={projectExists}
+                    currentParentTask={currentParentTask}
+                    currentTaskPhase={currentTaskPhase}
+                    projectedTask={projectedTask}
+                    isBehindSchedule={isBehindSchedule}
+                    onHold={onHold}
+                    isLoaded={isLoaded}
+                    proj={proj}
+                    onTaskDetails={handleTaskDetails}
+                    onCreateSchedule={handleCreateSchedule}
                 />
             }
             {

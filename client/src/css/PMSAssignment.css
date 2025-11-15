@@ -1,796 +1,1135 @@
-.Content.PMSAssignment {
-  padding: 2rem;
-  width: 100%;
-  max-width: 1800px;
-  margin: 0 auto;
+/* PMSAssignment.css */
+.pms-assignment {
+  padding: 0;
+  background: #f8fafc;
+  min-height: 100vh;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
-.Content.PMSAssignment button {
-  background-color: #315a95;
-  color: white;
-  padding: 0.75rem 1.5rem;
-  border: none;
-  border-radius: 4px;
-  font-family: 'Montserrat', sans-serif;
-  font-weight: 500;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
+/* Header */
+.pms-dashboard .pms-header {
+  background: white;
+  border-bottom: 1px solid #e2e8f0;
+  padding: 24px;
 }
 
-.Content.PMSAssignment button:hover {
-  background-color: #26467c;
-  transform: translateY(-1px);
-  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-}
-
-.PMSAssignment .header-stats {
-  display: flex;
-  gap: 2rem;
-  margin-top: 1rem;
-  margin-bottom: 1rem;
-}
-
-/* Project Table Header */
-.PMSAssignment .table-header {
-  display: grid;
-  grid-template-columns: 1.5fr 1fr 1fr 1.5fr 1fr 1fr 1fr 1fr;
-  background-color: #315a95;
-  color: white;
-  border-radius: 8px 8px 0 0;
-  margin-bottom: 0;
-  font-weight: 600;
-}
-
-
-.Content.PMSAssignment .table-cell {
-  font-weight: 600;
-  font-size: 0.9rem;
-  text-align: left;
-}
-
-/* Project Header Styling */
-.Content.PMSAssignment .projects-header {
+.pms-header-content {
   display: flex;
   justify-content: space-between;
-  align-items: center;
-  margin-bottom: 2rem;
-  padding: 0 1rem;
-  flex-wrap: wrap;
-  gap: 1rem;
+  align-items: flex-start;
+  gap: 24px;
 }
 
-.Content.PMSAssignment .header-left h1 {
-  color: #315a95;
-  margin: 0 0 0.5rem 0;
+.pms-header-main {
+  flex: 1;
+}
+
+.pms-title {
   font-size: 2rem;
+  color: #1e293b;
+  margin: 0 0 8px 0;
   font-weight: 700;
 }
 
-.Content.PMSAssignment .projects-count {
+.pms-subtitle {
+  font-size: 1rem;
   color: #64748b;
-  font-size: 0.9rem;
-  font-weight: 500;
+  margin: 0 0 20px 0;
 }
 
-.Content.PMSAssignment .header-right {
+.pms-stats {
+  display: flex;
+  gap: 16px;
+}
+
+.pms-stat-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 16px 20px;
+  background: #f8fafc;
+  border-radius: 8px;
+  border: 1px solid #e2e8f0;
+  min-width: 120px;
+}
+
+.pms-stat-urgent {
+  border-left: 4px solid #dc2626;
+}
+
+.pms-stat-total {
+  border-left: 4px solid #315a95;
+}
+
+.pms-stat-assigned {
+  border-left: 4px solid #10b981;
+}
+
+.pms-stat-number {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: #1e293b;
+  line-height: 1;
+}
+
+.pms-stat-urgent .pms-stat-number {
+  color: #dc2626;
+}
+
+.pms-stat-total .pms-stat-number {
+  color: #315a95;
+}
+
+.pms-stat-assigned .pms-stat-number {
+  color: #10b981;
+}
+
+.pms-stat-label {
+  font-size: 0.8rem;
+  color: #64748b;
+  margin-top: 4px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  font-weight: 600;
+}
+
+.pms-header-actions {
   display: flex;
   align-items: center;
-  gap: 1rem;
-  flex-wrap: wrap;
+  gap: 16px;
 }
 
-.PMSAssignment .details-panel {
-  margin-top: 2rem;
-}
-
-/* Search Container */
-.Content.PMSAssignment .search-container {
+/* Search */
+.pms-search-container {
   position: relative;
   min-width: 300px;
 }
 
-.Content.PMSAssignment .search-input-wrapper {
-  position: relative;
-  display: flex;
-  align-items: center;
-}
-
-.Content.PMSAssignment .search-input {
+.pms-search-input {
   width: 100%;
-  padding: 0.75rem 3rem 0.75rem 1rem;
-  border: 2px solid #e2e8f0;
+  padding: 12px 40px 12px 16px;
+  border: 1px solid #d1d5db;
   border-radius: 8px;
   font-size: 0.9rem;
-  transition: all 0.3s ease;
   background: white;
-  color: #2d3748;
+  transition: border-color 0.2s;
 }
 
-.Content.PMSAssignment .search-input:focus {
+.pms-search-input:focus {
   outline: none;
   border-color: #315a95;
   box-shadow: 0 0 0 3px rgba(49, 90, 149, 0.1);
 }
 
-.Content.PMSAssignment .search-input::placeholder {
-  color: #94a3b8;
-}
-
-.Content.PMSAssignment .search-icon {
+.pms-search-clear {
   position: absolute;
-  right: 1rem;
-  color: #64748b;
-  font-size: 1rem;
-}
-
-.Content.PMSAssignment .clear-search-btn {
-  position: absolute;
-  right: 2.5rem;
+  right: 30px;
+  top: 50%;
+  transform: translateY(-50%);
   background: none;
   border: none;
-  color: #94a3b8;
+  font-size: 1.2rem;
+  color: #64748b;
   cursor: pointer;
-  padding: 0.25rem;
-  border-radius: 50%;
+  padding: 0;
   width: 20px;
   height: 20px;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 1.2rem;
-  transition: all 0.2s ease;
 }
 
-.Content.PMSAssignment .clear-search-btn:hover {
-  background: #f1f5f9;
+.pms-search-icon {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
   color: #64748b;
 }
 
-/* Project List */
-.Content.PMSAssignment .PMSList {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-  background: white;
+.pms-create-btn {
+  padding: 12px 20px;
+  background: #315a95;
+  color: white;
+  border: none;
   border-radius: 8px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
-  padding: 1rem 0;
-  height: 100%;
-  max-height: 500px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: background-color 0.2s;
+  white-space: nowrap;
+}
+
+.pms-create-btn:hover {
+  background: #25467a;
+}
+
+/* Main Content */
+.pms-main-content {
+  display: grid;
+  grid-template-columns: 1fr 400px;
+  gap: 0;
+  height: calc(100vh - 200px);
+}
+
+/* Panels */
+.pms-projects-panel,
+.pms-details-panel {
+  background: white;
+  border-right: 1px solid #e2e8f0;
   overflow-y: auto;
 }
 
-.Content.PMSAssignment .PMSList::-webkit-scrollbar {
-  display: none;
+.pms-details-panel {
+  border-right: none;
+  border-left: 1px solid #e2e8f0;
 }
 
-/* Project Entry */
-.PMSAssignment .ProjectInfo {
-  display: grid;
-  grid-template-columns: 1.5fr 1fr 1fr 1.5fr 1fr 1fr 1fr 1fr;
-  align-items: center;
-  padding: 1rem;
-  gap: 1rem;
-  background: #f8fafc;
-  border-radius: 8px;
-  border: 1px solid #e2e8f0;
-  cursor: pointer;
-  transition: all 0.3s ease;
-}
-
-.Content.PMSAssignment .ProjectInfo:hover {
-  background: #f1f5f9;
-  border-color: #cbd5e1;
-}
-
-/* PMS Status Colors */
-.Content.PMSAssignment .ProjectInfo.pms-pending {
-  background: #fef2f2 !important;
-  border: 2px solid #dc2626 !important;
-  border-left: 6px solid #dc2626 !important;
-}
-
-.Content.PMSAssignment .ProjectInfo.pms-assigned {
-  background: #fffbeb !important;
-  border: 2px solid #d97706 !important;
-  border-left: 6px solid #d97706 !important;
-}
-
-.Content.PMSAssignment .ProjectInfo.pms-ongoing {
-  background: #f0fdf4 !important;
-  border: 2px solid #16a34a !important;
-  border-left: 6px solid #16a34a !important;
-}
-
-
-.PMSAssignment .project-header {
-  font-weight: 600;
-  font-size: 0.9rem;
-
-}
-
-/* Project Name & Client */
-.Content.PMSAssignment .project-name {
-  font-weight: 600;
-  color: #1e293b;
-  margin-bottom: 0.25rem;
-}
-
-.Content.PMSAssignment .project-client {
-  color: #64748b;
-  font-size: 0.875rem;
-}
-
-/* Badges */
-.Content.PMSAssignment .free-badge {
-  background: #dcfce7;
-  color: #166534;
-  padding: 0.25rem 0.5rem;
-  border-radius: 4px;
-  font-size: 0.75rem;
-  font-weight: 600;
-}
-
-.Content.PMSAssignment .paid-badge {
-  background: #f1f5f9;
-  color: #475569;
-  padding: 0.25rem 0.5rem;
-  border-radius: 4px;
-  font-size: 0.75rem;
-  font-weight: 600;
-}
-
-/* Assign Button */
-.Content.PMSAssignment .assign-btn {
-  background: #dc2626;
-  color: white;
-  border: none;
-  padding: 0.4rem 0.8rem;
-  border-radius: 4px;
-  font-size: 0.75rem;
-  font-weight: 600;
-  cursor: pointer;
-  margin-top: 0.5rem;
-  transition: all 0.2s ease;
-}
-
-.Content.PMSAssignment .assign-btn:hover {
-  background: #b91c1c;
-  transform: translateY(-1px);
-}
-
-/* Info Section Layout */
-.Content.PMSAssignment .info-section {
-  display: flex;
-  gap: 2rem;
-  margin-bottom: 2rem;
-}
-
-/* Entry Section */
-.Content.PMSAssignment .entry-section.compact {
-  padding: 1.5rem;
-  max-width: 900px;
-  height: 100%;
-  max-height: 800px;
-}
-
-.Content.PMSAssignment .entry-header {
+.pms-panel-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 1.5rem;
-  padding-bottom: 1rem;
-  border-bottom: 2px solid #e2e8f0;
+  padding: 20px 24px;
+  background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+  border-bottom: 1px solid #e2e8f0;
+  position: sticky;
+  top: 0;
+  z-index: 10;
 }
 
-.Content.PMSAssignment .entry-header h1 {
+.pms-panel-title {
   margin: 0;
-  font-size: 1.5rem;
-  color: #315a95;
+  color: #1e293b;
+  font-size: 1.25rem;
+  font-weight: 600;
 }
 
-.Content.PMSAssignment .entry-actions {
-  display: flex;
-  gap: 0.5rem;
-}
-
-/* Selected Entry Content */
-.Content.PMSAssignment .selected-entry-content {
-  display: flex;
-  flex-direction: column;
-  gap: 1.5rem;
-}
-
-/* Compact Project Overview */
-.Content.PMSAssignment .project-overview {
-  background: #f8fafc;
-  border-radius: 8px;
-  padding: 1rem;
-  border: 1px solid #e2e8f0;
-}
-
-.Content.PMSAssignment .project-main-info {
-  margin-bottom: 0.75rem;
-}
-
-.PMSAssignment .project-title {
-  color: #ffffff;
-  margin: 0 0 0.5rem 0;
-  font-size: 1.2rem;
-  font-weight: 700;
-  line-height: 1.3;
-}
-
-.Content.PMSAssignment .project-meta {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.5rem;
-  font-size: 0.85rem;
-}
-
-.Content.PMSAssignment .project-meta span {
-  background: white;
-  padding: 0.2rem 0.6rem;
-  border-radius: 12px;
-  border: 1px solid #e2e8f0;
+.pms-results-count {
+  font-size: 0.9rem;
   color: #64748b;
   font-weight: 500;
 }
 
-.Content.PMSAssignment .project-dates {
-  display: flex;
-  gap: 1.5rem;
-  font-size: 0.85rem;
+.pms-baby-book-btn {
+  padding: 8px 16px;
+  background: #8b5cf6;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  font-weight: 500;
 }
 
-.Content.PMSAssignment .date-item {
+/* Projects List */
+.pms-projects-container {
   display: flex;
+  flex-direction: column;
+}
+
+.pms-projects-header {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr;
+  gap: 16px;
+  padding: 16px 24px;
+  background: #f8fafc;
+  border-bottom: 1px solid #e2e8f0;
+  font-weight: 600;
+  color: #374151;
+  font-size: 0.9rem;
+  position: sticky;
+  top: 80px;
+  z-index: 5;
+}
+
+.pms-projects-list {
+  flex: 1;
+  overflow-y: auto;
+}
+
+/* PMSEntry Styles */
+.pms-entry {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr;
+  gap: 16px;
+  padding: 16px 24px;
+  border-bottom: 1px solid #f1f5f9;
+  cursor: pointer;
+  transition: background-color 0.2s;
   align-items: center;
-  gap: 0.5rem;
 }
 
-.Content.PMSAssignment .date-item label {
-  font-size: 0.75rem;
+.pms-entry:hover {
+  background: #f8fafc;
+}
+
+.pms-entry.pms-entry-pending {
+  border-left: 3px solid #f59e0b;
+}
+
+.pms-entry.pms-entry-assigned {
+  border-left: 3px solid #10b981;
+}
+
+.pms-entry.pms-entry-ongoing {
+  border-left: 3px solid #3b82f6;
+}
+
+.pms-entry-col {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.pms-project-name {
+  font-weight: 600;
+  color: #1e293b;
+  font-size: 0.95rem;
+}
+
+.pms-project-client {
+  font-size: 0.8rem;
+  color: #64748b;
+}
+
+.pms-location-main {
+  font-weight: 500;
+  color: #1e293b;
+  font-size: 0.9rem;
+}
+
+.pms-location-region {
+  font-size: 0.8rem;
+  color: #64748b;
+  background: #e2e8f0;
+  padding: 2px 6px;
+  border-radius: 4px;
+  align-self: flex-start;
+}
+
+.pms-status-indicator {
+  padding: 4px 8px;
+  border-radius: 6px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  text-align: center;
+}
+
+.pms-status-pending {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+.pms-status-assigned {
+  background: #d1fae5;
+  color: #065f46;
+}
+
+.pms-status-ongoing {
+  background: #dbeafe;
+  color: #1e40af;
+}
+
+.pms-status-none {
+  background: #f1f5f9;
+  color: #64748b;
+}
+
+.pms-date {
+  font-weight: 500;
+  color: #1e293b;
+  font-size: 0.9rem;
+}
+
+.pms-date-empty {
+  color: #94a3b8;
+  font-style: italic;
+}
+
+.pms-contract-badge {
+  padding: 4px 8px;
+  border-radius: 6px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.pms-contract-free {
+  background: #d1fae5;
+  color: #065f46;
+}
+
+.pms-contract-paid {
+  background: #dbeafe;
+  color: #1e40af;
+}
+
+.pms-callback-date {
+  font-weight: 500;
+  color: #dc2626;
+  font-size: 0.9rem;
+}
+
+.pms-callback-empty {
+  color: #94a3b8;
+  font-style: italic;
+}
+
+/* Details Panel */
+.pms-detail-card {
+  padding: 20px;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.pms-detail-header {
+  margin-bottom: 20px;
+}
+
+.pms-detail-title {
+  font-size: 1.5rem;
+  color: #1e293b;
+  margin: 0 0 12px 0;
+  font-weight: 700;
+}
+
+.pms-detail-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.pms-client {
+  font-weight: 600;
+  color: #374151;
+}
+
+.pms-product-type {
+  color: #64748b;
+  font-size: 0.9rem;
+}
+
+.pms-location {
+  color: #64748b;
+  font-size: 0.9rem;
+}
+
+.pms-detail-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.pms-detail-item {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.pms-detail-label {
+  font-size: 0.8rem;
   color: #64748b;
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.5px;
 }
 
-.Content.PMSAssignment .date-item span {
-  font-size: 0.85rem;
+.pms-detail-value {
+  font-weight: 500;
   color: #1e293b;
-  font-weight: 500;
-  background: none;
-  padding: 0;
-  border: none;
+  font-size: 0.95rem;
 }
 
-.PMSAssignment .no-selection-content {
-  text-align: center;
-  padding: 3rem;
-  color: #64748b;
-  border: 1px solid #475569;
-  border-radius: 8px;
-  border-style: dashed;
-  margin: 1rem 0;
-}
-
-/* Action Buttons */
-.Content.PMSAssignment .action-buttons-pms {
-  margin-bottom: 2rem;
-}
-
-.Content.PMSAssignment .baby-book-btn {
-  background: #315a95;
-  color: white;
-  border: none;
-  padding: 0.75rem 1.5rem;
+.pms-status-badge {
+  padding: 4px 8px;
   border-radius: 6px;
-  font-weight: 500;
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-.Content.PMSAssignment .baby-book-btn:hover {
-  background: #26467c;
-  transform: translateY(-1px);
-}
-
-/* Schedule Update Section */
-.Content.PMSAssignment .schedule-update-section {
-  background: #f8fafc;
-  border: 1px solid #e2e8f0;
-  border-radius: 8px;
-  padding: 1.5rem;
-  margin-bottom: 2rem;
-}
-
-.Content.PMSAssignment .schedule-update-section h3 {
-  color: #315a95;
-  margin: 0 0 1rem 0;
-  font-size: 1.2rem;
-}
-
-.Content.PMSAssignment .schedule-info p {
-  margin: 0 0 1rem 0;
-  color: #475569;
-}
-
-.Content.PMSAssignment .schedule-selection {
-  display: flex;
-  align-items: end;
-  gap: 1rem;
-  flex-wrap: wrap;
-}
-
-.Content.PMSAssignment .schedule-selection label {
+  font-size: 0.8rem;
   font-weight: 600;
-  color: #374151;
-  margin-bottom: 0.5rem;
-  display: block;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  display: inline-block;
 }
 
-.Content.PMSAssignment .date-input {
-  padding: 0.5rem;
-  border: 1px solid #d1d5db;
-  border-radius: 4px;
-  font-size: 0.9rem;
-  min-width: 150px;
+.pms-status-pms-inspection-pending,
+.pms-status-free-pms-available {
+  background: #fef3c7;
+  color: #92400e;
 }
 
-.Content.PMSAssignment .btn-confirm {
-  background: #059669;
-  color: white;
-  border: none;
-  padding: 0.5rem 1rem;
-  border-radius: 4px;
-  font-weight: 500;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  height: fit-content;
-}
-
-.Content.PMSAssignment .btn-confirm:hover:not(:disabled) {
-  background: #047857;
-}
-
-.Content.PMSAssignment .btn-confirm:disabled {
-  background: #9ca3af;
-  cursor: not-allowed;
-}
-
-/* PMS Status Section */
-.Content.PMSAssignment .pms-status-section {
-  background: white;
-  border: 1px solid #e2e8f0;
-  border-radius: 8px;
-  padding: 1.5rem;
-}
-
-.Content.PMSAssignment .entry-pms-assignment {
-  text-align: center;
-  padding: 2rem;
-  background: #fef2f2;
-  border: 2px dashed #dc2626;
-  border-radius: 8px;
-}
-
-.Content.PMSAssignment .entry-pms-assignment h3 {
-  color: #dc2626;
-  margin: 0 0 1rem 0;
-}
-
-.Content.PMSAssignment .assign-pms-btn {
-  background: linear-gradient(135deg, #dc2626, #ef4444);
-  color: white;
-  border: none;
-  padding: 1rem 2rem;
-  border-radius: 8px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  box-shadow: 0 4px 15px rgba(220, 38, 38, 0.3);
-}
-
-.Content.PMSAssignment .assign-pms-btn:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(220, 38, 38, 0.4);
-}
-
-.Content.PMSAssignment .entry-pms-assigned,
-.Content.PMSAssignment .entry-pms-ongoing,
-.Content.PMSAssignment .entry-no-inspection {
-  padding: 1rem;
-  border-radius: 6px;
-}
-
-.Content.PMSAssignment .entry-pms-assigned {
-  background: #fffbeb;
-  border: 1px solid #f59e0b;
-}
-
-.Content.PMSAssignment .entry-pms-ongoing {
-  background: #f0fdf4;
-  border: 1px solid #16a34a;
-}
-
-.Content.PMSAssignment .entry-no-inspection {
-  background: #f8fafc;
-  border: 1px solid #e2e8f0;
-}
-
-/* Status Messages */
-.Content.PMSAssignment .status {
-  padding: 0.75rem;
-  border-radius: 4px;
-  margin: 1rem 0;
-  font-weight: 500;
-}
-
-.Content.PMSAssignment .status.success {
+.pms-status-pms-inspection-assigned {
   background: #d1fae5;
   color: #065f46;
-  border: 1px solid #a7f3d0;
 }
 
-.Content.PMSAssignment .status.error {
-  background: #fee2e2;
-  color: #991b1b;
-  border: 1px solid #fecaca;
-}
-
-.Content.PMSAssignment .status.info {
+.pms-status-pms-inspection-ongoing {
   background: #dbeafe;
   color: #1e40af;
-  border: 1px solid #93c5fd;
 }
 
-/* Technician Tally Section */
-.Content.PMSAssignment .tech-tally-section {
-  flex: 1;
-  background: white;
-  padding: 1.5rem;
-  border-radius: 12px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
-  border: 1px solid #e2e8f0;
-  max-height: 600px;
-  overflow-y: auto;
+/* Quick Actions */
+.pms-quick-actions {
+  padding: 20px;
+  border-top: 1px solid #e2e8f0;
 }
 
-.Content.PMSAssignment .tech-tally-section h3 {
-  color: #315a95;
-  margin-bottom: 1.5rem;
-  font-size: 1.3rem;
-  font-weight: 600;
-}
-
-.Content.PMSAssignment .tally-cards {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-}
-
-.Content.PMSAssignment .tally-card {
-  border: 1px solid #e2e8f0;
-  border-radius: 8px;
-  padding: 1.25rem;
-  background: #f8fafc;
-}
-
-.Content.PMSAssignment .tally-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 1rem;
-  padding-bottom: 0.75rem;
-  border-bottom: 2px solid #e2e8f0;
-}
-
-.Content.PMSAssignment .tally-header h4 {
-  margin: 0;
-  color: #1e293b;
+.pms-actions-title {
+  margin: 0 0 16px 0;
+  color: #374151;
   font-size: 1.1rem;
   font-weight: 600;
 }
 
-.Content.PMSAssignment .project-count {
-  background: #315a95;
-  color: white;
-  padding: 0.25rem 0.75rem;
-  border-radius: 20px;
-  font-size: 0.85rem;
-  font-weight: 600;
-}
-
-.Content.PMSAssignment .tally-projects {
+.pms-action-buttons {
   display: flex;
   flex-direction: column;
-  gap: 0.75rem;
+  gap: 8px;
 }
 
-.Content.PMSAssignment .project-item {
-  background: white;
-  padding: 0.75rem;
-  border-radius: 6px;
-  border-left: 3px solid #315a95;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+.pms-action-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 16px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: all 0.2s;
+  text-align: left;
 }
 
-.Content.PMSAssignment .project-name {
+.pms-action-primary {
+  background: #315a95;
+  color: white;
+}
+
+.pms-action-primary:hover {
+  background: #25467a;
+}
+
+.pms-action-secondary {
+  background: #f8fafc;
+  color: #374151;
+  border: 1px solid #e2e8f0;
+}
+
+.pms-action-secondary:hover {
+  background: #e2e8f0;
+}
+
+.pms-action-icon {
+  font-size: 1.1rem;
+}
+
+/* Workload Section */
+.pms-workload-section {
+  padding: 20px;
+  border-top: 1px solid #e2e8f0;
+}
+
+.pms-workload-title {
+  margin: 0 0 16px 0;
+  color: #374151;
+  font-size: 1.1rem;
   font-weight: 600;
-  color: #1e293b;
-  margin-bottom: 0.25rem;
-  font-size: 0.95rem;
 }
 
-PMSAssignment .project-details {
+.pms-workload-cards {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.pms-workload-card {
+  padding: 16px;
+  background: #f8fafc;
+  border-radius: 8px;
+  border: 1px solid #e2e8f0;
+}
+
+.pms-workload-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  margin-bottom: 12px;
+}
+
+.pms-tech-name {
+  margin: 0;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #1e293b;
+}
+
+.pms-project-count {
+  background: #315a95;
+  color: white;
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.pms-workload-projects {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.pms-workload-project {
+  padding: 8px;
+  background: white;
+  border-radius: 6px;
+  border: 1px solid #e2e8f0;
+}
+
+.pms-workload-project-name {
+  font-weight: 500;
+  color: #1e293b;
+  font-size: 0.9rem;
+  margin-bottom: 4px;
+}
+
+.pms-workload-project-meta {
+  display: flex;
+  justify-content: space-between;
   font-size: 0.8rem;
   color: #64748b;
 }
 
-.PMSAssignment .project-location {
-  flex: 1;
+/* No Selection State */
+.pms-no-selection {
+  padding: 60px 20px;
+  text-align: center;
+  color: #94a3b8;
 }
 
-t.PMSAssignment .inspection-date {
-  padding: 0.2rem 0.5rem;
-  border-radius: 4px;
+.pms-no-selection-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+
+.pms-no-selection-icon {
+  font-size: 3rem;
+  opacity: 0.5;
+}
+
+.pms-no-selection h3 {
+  margin: 0;
+  color: #64748b;
+}
+
+.pms-no-selection p {
+  margin: 0;
+}
+
+/* No Results */
+.pms-no-results {
+  padding: 60px 20px;
+  text-align: center;
+  color: #94a3b8;
+}
+
+.pms-no-results-icon {
+  font-size: 3rem;
+  margin-bottom: 16px;
+  opacity: 0.5;
+}
+
+.pms-no-results h3 {
+  margin: 0 0 8px 0;
+  color: #64748b;
+}
+
+.pms-no-results p {
+  margin: 0 0 16px 0;
+}
+
+.pms-clear-search {
+  background: none;
+  border: none;
+  color: #315a95;
+  cursor: pointer;
   font-weight: 500;
-  color: #475569;
+  text-decoration: underline;
 }
 
 /* Modal Styles */
-.Content.PMSAssignment .modal-overlay {
+.pms-modal-overlay {
   position: fixed;
   top: 0;
   left: 0;
   right: 0;
   bottom: 0;
-  background-color: rgba(0, 0, 0, 0.5);
+  background: rgba(0, 0, 0, 0.5);
   display: flex;
-  justify-content: center;
   align-items: center;
+  justify-content: center;
   z-index: 1000;
-  animation: fadeIn 0.2s ease-out;
+  padding: 20px;
 }
 
-.Content.PMSAssignment .modal-content {
+.pms-modal-content {
   background: white;
-  border-radius: 8px;
-  padding: 2rem;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
-  max-width: 500px;
+  border-radius: 12px;
   width: 90%;
-  max-height: 90vh;
+  max-width: 900px;
+  max-height: 70vh;
   overflow-y: auto;
-  animation: slideIn 0.2s ease-out;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
 }
 
-.Content.PMSAssignment .assign-modal {
-  max-width: 500px;
+.pms-modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 24px;
+  border-bottom: 1px solid #e2e8f0;
 }
 
-.Content.PMSAssignment .modal-project-info {
-  background: #f8f9fa;
-  padding: 1rem;
-  border-radius: 8px;
-  margin-bottom: 1.5rem;
-  border-left: 4px solid #315a95;
-}
-
-.Content.PMSAssignment .modal-project-info p {
-  margin: 0.5rem 0;
-  color: #495057;
-}
-
-.Content.PMSAssignment .tech-selection {
-  margin-bottom: 1.5rem;
-}
-
-.Content.PMSAssignment .tech-selection label {
-  display: block;
-  margin-bottom: 0.5rem;
+.pms-modal-title {
+  margin: 0;
+  color: #1e293b;
+  font-size: 1.5rem;
   font-weight: 600;
-  color: #315a95;
 }
 
-.Content.PMSAssignment .tech-select {
-  width: 100%;
-  padding: 0.75rem;
-  border: 2px solid #e2e8f0;
+.pms-modal-close {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  color: #64748b;
+  cursor: pointer;
+  padding: 0;
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.pms-modal-close:hover {
+  color: #374151;
+}
+
+.pms-modal-body {
+  padding: 24px;
+}
+
+/* Project Info in Modal */
+.pms-project-info {
+  margin-bottom: 24px;
+}
+
+.pms-project-card {
+  padding: 16px;
+  background: #f8fafc;
+  border-radius: 8px;
+  border: 1px solid #e2e8f0;
+}
+
+.pms-project-name {
+  margin: 0 0 12px 0;
+  color: #1e293b;
+  font-size: 1.2rem;
+  font-weight: 600;
+}
+
+.pms-project-details {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.pms-detail-item {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.pms-detail-label {
+  font-size: 0.8rem;
+  color: #64748b;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.pms-detail-value {
+  font-weight: 500;
+  color: #1e293b;
+  font-size: 0.9rem;
+}
+
+/* Current Assignment */
+.pms-current-assignment {
+  margin-bottom: 24px;
+  padding: 16px;
+  background: #f0f9ff;
+  border: 1px solid #bae6fd;
+  border-radius: 8px;
+}
+
+.pms-section-title {
+  margin: 0 0 12px 0;
+  color: #1e293b;
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+.pms-current-techs {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.pms-current-tech {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 12px;
+  background: white;
   border-radius: 6px;
-  font-size: 1rem;
+  border: 1px solid #e2e8f0;
+}
+
+.pms-tech-name {
+  font-weight: 500;
+  color: #1e293b;
+}
+
+.pms-tech-status {
+  font-size: 0.8rem;
+  color: #10b981;
+  font-weight: 600;
+}
+
+/* Date Selection */
+.pms-date-section {
+  margin-bottom: 24px;
+}
+
+.pms-date-label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 600;
+  color: #374151;
+}
+
+.pms-date-input {
+  padding: 10px 12px;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  font-size: 0.9rem;
   background: white;
 }
 
-.Content.PMSAssignment .tech-select:focus {
+.pms-date-input:focus {
   outline: none;
   border-color: #315a95;
   box-shadow: 0 0 0 3px rgba(49, 90, 149, 0.1);
 }
 
-/* Modal Animations */
-@keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
+/* Technician Selection */
+.pms-tech-selection {
+  margin-bottom: 24px;
 }
 
-@keyframes slideIn {
-  from { 
-    opacity: 0;
-    transform: translateY(-20px);
-  }
-  to { 
-    opacity: 1;
-    transform: translateY(0);
-  }
+.pms-selection-header {
+  margin-bottom: 16px;
+}
+
+.pms-selection-subtitle {
+  font-size: 0.9rem;
+  color: #64748b;
+}
+
+.pms-techs-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 8px;
+  margin-bottom: 16px;
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+.pms-tech-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.pms-tech-card:hover {
+  background: #e2e8f0;
+}
+
+.pms-tech-selected {
+  background: #dbeafe;
+  border-color: #315a95;
+}
+
+.pms-tech-current {
+  border-left: 3px solid #10b981;
+}
+
+.pms-tech-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 8px;
+  background: #315a95;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+.pms-tech-info {
+  flex: 1;
+}
+
+.pms-tech-name {
+  font-weight: 600;
+  color: #1e293b;
+  margin-bottom: 2px;
+}
+
+.pms-tech-region {
+  font-size: 0.8rem;
+  color: #64748b;
+}
+
+.pms-current-badge {
+  font-size: 0.7rem;
+  color: #10b981;
+  font-weight: 600;
+  margin-top: 2px;
+}
+
+.pms-tech-checkbox {
+  width: 20px;
+  height: 20px;
+  border: 2px solid #d1d5db;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.pms-tech-selected .pms-tech-checkbox {
+  background: #315a95;
+  border-color: #315a95;
+  color: white;
+}
+
+.pms-checkmark {
+  font-size: 0.8rem;
+  font-weight: bold;
+}
+
+.pms-no-techs {
+  padding: 20px;
+  text-align: center;
+  color: #94a3b8;
+  font-style: italic;
+}
+
+/* Selected Technicians */
+.pms-selected-techs {
+  padding: 16px;
+  background: #f0f9ff;
+  border: 1px solid #bae6fd;
+  border-radius: 8px;
+}
+
+.pms-selected-title {
+  margin: 0 0 12px 0;
+  color: #0369a1;
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.pms-selected-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.pms-selected-tag {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  background: white;
+  border: 1px solid #0ea5e9;
+  border-radius: 20px;
+  font-size: 0.9rem;
+}
+
+.pms-tag-name {
+  font-weight: 500;
+  color: #0369a1;
+}
+
+.pms-tag-remove {
+  background: none;
+  border: none;
+  color: #0369a1;
+  cursor: pointer;
+  font-size: 1.1rem;
+  padding: 0;
+  width: 16px;
+  height: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Status Messages */
+.pms-status-message {
+  padding: 12px 16px;
+  border-radius: 8px;
+  margin-bottom: 16px;
+  font-weight: 500;
+}
+
+.pms-status-success {
+  background: #d1fae5;
+  color: #065f46;
+  border: 1px solid #a7f3d0;
+}
+
+.pms-status-info {
+  background: #dbeafe;
+  color: #1e40af;
+  border: 1px solid #93c5fd;
+}
+
+.pms-status-error {
+  background: #fee2e2;
+  color: #dc2626;
+  border: 1px solid #fca5a5;
+}
+
+/* Modal Actions */
+.pms-modal-actions {
+  display: flex;
+  gap: 12px;
+  padding: 24px;
+  border-top: 1px solid #e2e8f0;
+  justify-content: flex-end;
+}
+
+.pms-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: all 0.2s;
+  font-size: 0.9rem;
+}
+
+.pms-btn-primary {
+  background: #315a95;
+  color: white;
+}
+
+.pms-btn-primary:hover:not(:disabled) {
+  background: #25467a;
+}
+
+.pms-btn-primary:disabled {
+  background: #94a3b8;
+  cursor: not-allowed;
+}
+
+.pms-btn-secondary {
+  background: white;
+  color: #374151;
+  border: 1px solid #d1d5db;
+}
+
+.pms-btn-secondary:hover {
+  background: #f9fafb;
+}
+
+.pms-btn-danger {
+  background: #ef4444;
+  color: white;
+}
+
+.pms-btn-danger:hover:not(:disabled) {
+  background: #dc2626;
+}
+
+.pms-btn-danger:disabled {
+  background: #fca5a5;
+  cursor: not-allowed;
 }
 
 /* Responsive Design */
 @media (max-width: 1024px) {
-  .Content.PMSAssignment .header-row,
-  .Content.PMSAssignment .ProjectInfo {
-    grid-template-columns: 2fr 1fr 1fr;
-    grid-template-rows: auto auto;
-    gap: 0.5rem;
+  .pms-main-content {
+    grid-template-columns: 1fr;
   }
   
-  .Content.PMSAssignment .info-section {
-    flex-direction: column;
-  }
-  
-  .Content.PMSAssignment .tech-tally-section {
-    max-height: none;
+  .pms-details-panel {
+    display: none;
   }
 }
 
 @media (max-width: 768px) {
-  .Content.PMSAssignment {
-    padding: 1rem;
-  }
-  
-  .Content.PMSAssignment .header-row,
-  .Content.PMSAssignment .ProjectInfo {
-    grid-template-columns: 1fr;
-    gap: 0.5rem;
-  }
-  
-  .Content.PMSAssignment .projects-header {
+  .pms-header-content {
     flex-direction: column;
-    align-items: stretch;
-    text-align: center;
   }
   
-  .Content.PMSAssignment .header-right {
+  .pms-header-actions {
+    width: 100%;
+    flex-direction: column;
+  }
+  
+  .pms-search-container {
+    min-width: auto;
+  }
+  
+  .pms-stats {
     justify-content: center;
   }
   
-  .Content.PMSAssignment .search-container {
-    min-width: 100%;
+  .pms-projects-header {
+    display: none;
   }
   
-  .Content.PMSAssignment .info-grid {
+  .pms-entry {
     grid-template-columns: 1fr;
+    gap: 8px;
+    padding: 16px;
+    border: 1px solid #e2e8f0;
+    margin-bottom: 8px;
+    border-radius: 8px;
   }
   
-  .Content.PMSAssignment .schedule-selection {
+  .pms-modal-actions {
     flex-direction: column;
-    align-items: stretch;
   }
   
-  .Content.PMSAssignment .project-details {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 0.25rem;
+  .pms-modal-content {
+    width: 95%;
+    margin: 10px;
   }
 }

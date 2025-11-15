@@ -46,11 +46,14 @@ router.post('/assign/:pmsId', PMSController.assignTechs);
 
 router.post('/callback/:clientId', PMSController.scheduleCallback)
 
+router.put('/begin-callback/:clientId', PMSController.beginCallback)
+
 // Begin PMS Inspection
 router.put('/begin-inspection/:id', PMSController.beginInspection)
 
 //get inspection status complete/ongoing
 router.get('/inspection-status/:id', PMSController.getInspectionStatus)
+router.get('/callback-status/:id', PMSController.getCallbackStatus)
 
 // Mark inspection as complete (with photos)
 router.post(
@@ -60,6 +63,16 @@ router.post(
     { name: 'evidence', maxCount: 10 },
   ]),
   PMSController.completeInspection
+);
+
+// Complete callback inspection
+router.post(
+  '/complete-callback/:clientId',
+  upload.fields([
+    { name: 'service_reports', maxCount: 10 },
+    { name: 'evidence', maxCount: 10 },
+  ]),
+  PMSController.completeCallback
 );
 
 // Get Baby Book for Client

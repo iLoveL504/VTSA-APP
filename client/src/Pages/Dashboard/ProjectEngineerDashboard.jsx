@@ -3,6 +3,20 @@ import { useNavigate } from 'react-router-dom';
 import '../../css/ProjectEngineerDashboard.css';
 import {useStoreState} from 'easy-peasy'
 import 'ldrs/react/Grid.css'
+import {
+  Build,
+  Engineering,
+  Bolt,
+  Warning,
+  PauseCircleFilled,
+  BarChart,
+  ReportProblem,
+  Group,
+  CalendarToday,
+  ListAlt,
+  List
+} from "@mui/icons-material";
+
 
 const ProjectEngineerDashboard = ({clearProjectData, clearProjectTasks}) => {
   const navigate = useNavigate();
@@ -155,7 +169,10 @@ const ProjectEngineerDashboard = ({clearProjectData, clearProjectTasks}) => {
       <div className="stats-grid">
         <div className="stat-card">
           <div className="stat-icon" style={{backgroundColor: 'rgba(40, 167, 69, 0.1)'}}>
-            <span style={{color: '#28a745'}}>🔧</span>
+            <span style={{color: '#28a745'}}>
+  <Build />
+</span>
+
           </div>
           <div className="stat-content">
             <h3>{dashboardData.installationPhase}</h3>
@@ -165,7 +182,10 @@ const ProjectEngineerDashboard = ({clearProjectData, clearProjectTasks}) => {
 
         <div className="stat-card">
           <div className="stat-icon" style={{backgroundColor: 'rgba(255, 193, 7, 0.1)'}}>
-            <span style={{color: '#ffc107'}}>🏗️</span>
+            <span style={{color: '#ffc107'}}>
+  <Engineering />
+</span>
+
           </div>
           <div className="stat-content">
             <h3>{dashboardData.structuralPhase}</h3>
@@ -175,7 +195,10 @@ const ProjectEngineerDashboard = ({clearProjectData, clearProjectTasks}) => {
 
         <div className="stat-card">
           <div className="stat-icon" style={{backgroundColor: 'rgba(23, 162, 184, 0.1)'}}>
-            <span style={{color: '#17a2b8'}}>⚡</span>
+            <span style={{color: '#17a2b8'}}>
+  <Bolt />
+</span>
+
           </div>
           <div className="stat-content">
             <h3>{dashboardData.tncPhase}</h3>
@@ -185,7 +208,10 @@ const ProjectEngineerDashboard = ({clearProjectData, clearProjectTasks}) => {
 
         <div className="stat-card">
           <div className="stat-icon" style={{backgroundColor: 'rgba(220, 53, 69, 0.1)'}}>
-            <span style={{color: '#dc3545'}}>⚠️</span>
+            <span style={{color: '#dc3545'}}>
+  <Warning />
+</span>
+
           </div>
           <div className="stat-content">
             <h3>{dashboardData.criticalProjects.length}</h3>
@@ -195,7 +221,10 @@ const ProjectEngineerDashboard = ({clearProjectData, clearProjectTasks}) => {
 
         <div className="stat-card">
           <div className="stat-icon" style={{backgroundColor: 'rgba(108, 117, 125, 0.1)'}}>
-            <span style={{color: '#6c757d'}}>⏸️</span>
+            <span style={{color: '#6c757d'}}>
+  <PauseCircleFilled />
+</span>
+
           </div>
           <div className="stat-content">
             <h3>{dashboardData.onHoldProjects.length}</h3>
@@ -205,7 +234,10 @@ const ProjectEngineerDashboard = ({clearProjectData, clearProjectTasks}) => {
 
         <div className="stat-card">
           <div className="stat-icon" style={{backgroundColor: 'rgba(255, 193, 7, 0.1)'}}>
-            <span style={{color: '#ffc107'}}>📊</span>
+            <span style={{color: '#deb830ff'}}>
+              <CalendarToday />
+            </span>
+
           </div>
           <div className="stat-content">
             <h3>{dashboardData.behindSchedule.length}</h3>

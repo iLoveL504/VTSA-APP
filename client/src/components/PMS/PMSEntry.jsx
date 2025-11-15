@@ -1,10 +1,19 @@
 import React from 'react';
 
 const PMSEntry = ({ project, setSelectedEntry }) => {
-    const handleSelect = (project) => (e) => {
-        if (e.target.closest('.assign-btn')) return;
+    const handleSelect = () => {
         setSelectedEntry(project);
     };
+
+    // const handleAssign = (e) => {
+    //     e.stopPropagation();
+    //     onAssignClick(project, 'regular');
+    // };
+
+    // const handleCallback = (e) => {
+    //     e.stopPropagation();
+    //     onCallbackClick(project);
+    // };
 
     const getStatusClass = () => {
         switch (project.pms_status) {
@@ -22,66 +31,72 @@ const PMSEntry = ({ project, setSelectedEntry }) => {
 
     const statusClass = getStatusClass();
     const isFreePMS = project.pms_contract === 'Free PMS';
+
     return (
         <div 
-            className={`ProjectInfo pms-${statusClass}`} 
-            onClick={handleSelect(project)}
+            className={`pms-entry pms-entry-${statusClass}`} 
+            onClick={handleSelect}
         >
-            {/* Column 1: Project Name & Client */}
-            <div className="project-column">
-                <div className="project-name">{project.lift_name}</div>
-                <div className="project-client">{project.client}</div>
+            {/* Project & Client */}
+            <div className="pms-entry-col pms-col-project">
+                <div className="pms-project-name">{project.lift_name}</div>
+                <div className="pms-project-client">{project.client}</div>
             </div>
             
-            {/* Column 2: Product Type */}
-            <div className="product-type">
+            {/* Product Type */}
+            <div className="pms-entry-col pms-col-product">
                 {project.product_type}
             </div>
             
-            {/* Column 3: Location */}
-            <div className="location">
-                <div>{project.location}</div>
-                <div className="island-group">{project.island_group}</div>
+            {/* Location */}
+            <div className="pms-entry-col pms-col-location">
+                <div className="pms-location-main">{project.location}</div>
+                <div className="pms-location-region">{project.island_group}</div>
             </div>
 
-            {/* Column 4: PMS Status */}
-            <div className="pms-status">
-                <span className={`status-badge ${statusClass}`}>
+            {/* PMS Status */}
+            <div className="pms-entry-col pms-col-status">
+                <span className={`pms-status-indicator pms-status-${statusClass}`}>
                     {project.pms_status}
                 </span>
             </div>
             
-            {/* Column 5: Next Inspection Date */}
-            <div className="inspection-date">
-                {project.last_inspection_date !== null ? (
-                    <div>{new Date(project.last_inspection_date).toLocaleDateString('en-GB')}</div>
+            {/* Last Inspection */}
+            <div className="pms-entry-col pms-col-last">
+                {project.last_inspection_date ? (
+                    <div className="pms-date">{new Date(project.last_inspection_date).toLocaleDateString('en-GB')}</div>
                 ) : (
-                    <div>-</div>
+                    <div className="pms-date-empty">-</div>
                 )}
             </div>
-            {/* Column 6: Next Inspection Date */}
-            <div className="inspection-date">
+
+            {/* Next Inspection */}
+            <div className="pms-entry-col pms-col-next">
                 {project.pms_inspection_date ? (
-                    <div>{new Date(project.pms_inspection_date).toLocaleDateString('en-GB')}</div>
+                    <div className="pms-date">{new Date(project.pms_inspection_date).toLocaleDateString('en-GB')}</div>
                 ) : (
-                    <div>-</div>
+                    <div className="pms-date-empty">-</div>
                 )}
             </div>
             
-            {/* Column 7: Free PMS */}
-            <div className="free-pms">
+            {/* Contract */}
+            <div className="pms-entry-col pms-col-contract">
                 {isFreePMS ? (
-                    <span className="free-badge">Free PMS</span>
+                    <span className="pms-contract-badge pms-contract-free">Free PMS</span>
                 ) : (
-                    <span className="paid-badge">Paid</span>
+                    <span className="pms-contract-badge pms-contract-paid">Paid</span>
                 )}
             </div>
-            <div className='callback-date'>
-                <div>{project.callback_date ? (
-                    new Date(project.callback_date).toLocaleDateString()
+
+            {/* Callback Date */}
+            <div className="pms-entry-col pms-col-callback">
+                {project.callback_date ? (
+                    <div className="pms-callback-date">
+                        {new Date(project.callback_date).toLocaleDateString('en-GB')}
+                    </div>
                 ) : (
-                    '-'
-                )}</div>
+                    <div className="pms-callback-empty">-</div>
+                )}
             </div>
         </div>
     );

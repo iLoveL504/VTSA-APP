@@ -39,7 +39,8 @@ import {
     resumeProj,
     projectHolidays,
     adjustInstallation,
-    requestProjResume
+    requestProjResume,
+    getProjQAQCHistory
 } from "../../controllers/projectController.js"
 const router = express.Router()
 import multer from 'multer'
@@ -110,6 +111,9 @@ router.route('/schedule/:id')
     .put(completeTask)
 
 //qaqc routes
+router.route('/qaqc/history/:id')
+    .get(getProjQAQCHistory)
+
 router.route('/qaqc/request/:id')
     .post(requestProjQAQC)
 

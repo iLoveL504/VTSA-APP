@@ -170,9 +170,9 @@ const QAQCAssignment = () => {
                 url: endpoint,
                 data: payload
             });
-            
-            if (response.data.success) {
-                setAssignmentStatus('success');
+            console.log(payload)
+             if (response.data.success) {
+                 setAssignmentStatus('success');
 
                 // Make Notification
                 await new Promise((resolve, reject) => {

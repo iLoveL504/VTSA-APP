@@ -273,6 +273,17 @@ export const foremanApprove = async (req, res) => {
     }
 }
 
+export const getProjQAQCHistory = async (req, res) => {
+    try {
+        const {id} = req.params
+        const qaqcHistory = await projects.getQAQCHistory(Number(id))
+        res.status(200).json(qaqcHistory);        
+    } catch (e) {
+        console.error(e);
+        res.status(500).json({ success: false, message: "Error getting qaqc history" });   
+    }
+}
+
 //QAQC Controllers
 export const requestProjQAQC = async (req, res) => {
     const { project_id, scheduled_date, reason } = req.body

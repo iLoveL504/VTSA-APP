@@ -87,25 +87,13 @@
     }
 }
 
-/* Project Page Styles - Modern Redesign */
-.Content.ProjectPage .ProjectDetails {  
-  padding: 0;
-  max-width: 1400px;
-  margin: 0 auto;
-  background: #f8fafc;
-  min-height: 90vh;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-}
+
 
 /* Project Header - Div-based Navigation */
 .Content.ProjectPage .project-header {
   background: linear-gradient(135deg, #1e3a5f 0%, #315a95 100%);
   color: white;
   padding: 1.5rem 2rem;
-  margin-bottom: 2rem;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
   position: relative;
   overflow: hidden;
@@ -325,33 +313,8 @@
     display: none;
   }
 }
-.Content.ProjectPage .ProjectDetails .action-buttons {
-  display: flex;
-  flex-direction: row-reverse;
-  gap: 1rem;
-  width: 100%;
-}
 
-.Content.ProjectPage .ProjectDetails .action-buttons button {
-  border: 2px solid rgba(255, 255, 255, 0.3);
-  border-radius: 8px;
-  font-weight: 600;
-  transition: all 0.3s ease;
-  background: rgb(47, 122, 196);
-  backdrop-filter: blur(10px);
-}
-
-.Content.ProjectPage .action-buttons button:hover {
-  background: rgba(255, 255, 255, 0.2);
-  transform: translateY(-2px);
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-}
-
-.Content.ProjectPage .ProjectDetails .action-buttons button:hover {
-  background: rgba(65, 136, 208, 0.387);
-  transform: translateY(-2px);
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-}
+/* Project Page Styles - Modern Redesign */
 
 .Content.ProjectPage .action-buttons button:disabled {
   opacity: 0.6;
@@ -403,7 +366,7 @@
     border-radius: 12px;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
     border: 1px solid #e2e8f0;
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    /* transition: transform 0.2s ease, box-shadow 0.2s ease; */
     cursor: pointer;
 }
 
@@ -1019,7 +982,7 @@
   background: white;
   border-radius: 16px;
   box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-  max-width: 600px;
+  max-width: 800px;
   width: 100%;
   max-height: calc(90vh - 10vh);
   overflow-y: auto;

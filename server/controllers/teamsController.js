@@ -10,6 +10,16 @@ export const getLastTeamId = async (req, res) => {
   
     res.json(results).status(200)
 }
+
+export const teamDashboardData = async (req, res) => {
+    try {
+        const results = await teams.getTeamDashboard()
+        res.json(results).status(200)       
+    } catch (err) {
+        res.status(500).json({ error: err.message });        
+    }
+}
+
 export const getTeamPerId = async (req, res) => {
     try {
         const { id } = req.params;

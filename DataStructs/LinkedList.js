@@ -536,9 +536,9 @@ applyDateOffset(fromNode, dayOffset) {
     while (current) {
       const s = current.data.task_start;
       const e = current.data.task_end;
-      console.log(
-        `${current.data.task_id} ${current.data.task_name} | start: ${s ? s.toDateString() : "?"} | end(excl): ${e ? e.toDateString() : "?"} | dur: ${current.data.task_duration} | percent: ${current.data.percent_progress ? current.data.percent_progress : 0}%`
-      );
+      // console.log(
+      //   `${current.data.task_id} ${current.data.task_name} | start: ${s ? s.toDateString() : "?"} | end(excl): ${e ? e.toDateString() : "?"} | dur: ${current.data.task_duration} | percent: ${current.data.percent_progress ? current.data.percent_progress : 0}%`
+      // );
       current = current.next;
     }
   }

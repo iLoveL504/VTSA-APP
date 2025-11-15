@@ -62,7 +62,9 @@ static async getAllPMS() {
             }
         }
 
-        console.log(`${r.id} has: ${(r.pms_inspection_date === null && r.last_inspection_date === null)}`)
+        
+
+       // console.log(`${r.id} has: ${(r.pms_inspection_date === null && r.last_inspection_date === null)}`)
         if (r.pms_inspection_date === null) {
             console.log('meron ba')
             // Determine base date (handover date or last inspection)
@@ -71,7 +73,7 @@ static async getAllPMS() {
                 : r.handover_date 
                     ? dayjs(r.handover_date)
                     : dayjs();
-            console.log(baseDate.format('YYYY-MM-DD'))
+          //  console.log(baseDate.format('YYYY-MM-DD'))
             // Determine interval based on contract type
             let setInspectionDate;
 
@@ -132,6 +134,8 @@ static async getAllPMS() {
             pp.inspection_ongoing,
             pp.inspection_id,
             pp.callback_date,
+            pp.callback_ongoing,
+            pp.callback_id,
             -- Status calculation based on PMS inspection flags
             CASE 
                 WHEN pp.inspection_ongoing = 1 THEN 'PMS Inspection Ongoing'
@@ -191,11 +195,11 @@ static async getAllPMS() {
             acc[key].projects.push(projInfo)
             return acc
         }, {})
-        console.log('---------------teams---------------')
-        console.log(teams)
+        // console.log('---------------teams---------------')
+        // console.log(teams)
         const sortedTeam = Object.entries(teams).map(t => {
-            console.log('inside object entries')
-            console.log(t[1])
+            // console.log('inside object entries')
+            // console.log(t[1])
             if (t[1].projects[0].project_id === null) {
                 t[1].projects = []
                 return t
@@ -204,7 +208,7 @@ static async getAllPMS() {
             }
         })
 
-        console.log(sortedTeam)
+        // console.log(sortedTeam)
         // console.log(teams)
 
         // const [technicianTally] = await pool.query(`
@@ -341,7 +345,7 @@ static async getAllPMS() {
             from projects p
             join pms_projects pp on p.id = pp.id
             left join client_baby_book cbb on pp.id = cbb.pms_id
-            left join contracts c on c.baby_book_id = cbb.id where p.id = ? and c.current_contract = 1;
+            left join contracts c on c.baby_book_id = cbb.pms_id where p.id = ? and c.current_contract = 1;
             `, [pmsId])
         console.log('i got hte ocntract id')
         
@@ -371,33 +375,7 @@ static async getAllPMS() {
         
         }
         await pool.query(`delete from pms_inspection_team where pms_id = ?`, [pmsId])
-        // const connection = await pool.getConnection();
-        // try {
-        // await connection.beginTransaction();
 
-        // // Insert PMS history record
-        // await connection.query(
-        //     `INSERT INTO pms_history (pms_id, report_details, date_conducted)
-        //     VALUES (?, ?, CURDATE())`,
-        //     [pmsId, reportDetails]
-        // );
-
-        // // Mark PMS as completed
-        // await connection.query(
-        //     `UPDATE pms_projects
-        //     SET inspection_ongoing = 0, inspection_assigned = 0, inspection_pending = 0
-        //     WHERE id = ?`,
-        //     [pmsId]
-        // );
-
-        // await connection.commit();
-        // return { message: 'Inspection marked as completed.' };
-        // } catch (err) {
-        // await connection.rollback();
-        // throw err;
-        // } finally {
-        // connection.release();
-        // }
     }
 
     // ==========================
@@ -424,38 +402,65 @@ static async getAllPMS() {
         // return { message: 'File deleted successfully.' };
     }
 
-    static async getBabyBook (id) {
-        const [handoverDocs] = await pool.query(`
-                select * from handover_documents where project_id = ?;
-            `, [id])
-        const [service_reports] = await pool.query(`
-            select p.id, p.lift_name, pp.free_pms, ph.id as \`inspection_history_id\`, ph.report_details, ph.date_conducted, c.id as \`contract_id\`, pid.inspection_document_name, pid.doc_url
+static async getBabyBook (id) {
+    const [handoverDocs] = await pool.query(`
+            select * from handover_documents where project_id = ?;
+        `, [id])
+    
+    const [service_reports] = await pool.query(`
+        select p.id, p.lift_name, pp.free_pms, ph.id as \`inspection_history_id\`, ph.report_details, ph.date_conducted, c.id as \`contract_id\`, pid.inspection_document_name, pid.doc_url
+        from projects p join pms_projects pp on p.id = pp.id
+        join client_baby_book cbb on cbb.pms_id = pp.id
+        join contracts c on c.baby_book_id = cbb.pms_id
+        join pms_history ph on ph.pms_id = pp.id
+        left join pms_inspection_documents pid on pid.contract_id = c.id
+        where p.id = ?;   
+        `, [id])
+    
+    const [callback_reports] = await pool.query(`
+        select p.id, p.lift_name, pp.free_pms, ch.id as \`callback_history_id\`, ch.completion_date, c.id as \`contract_id\`, cd.document_name, cd.doc_url
+        from projects p 
+        join pms_projects pp on p.id = pp.id
+        join client_baby_book cbb on cbb.pms_id = pp.id
+        join contracts c on c.baby_book_id = cbb.pms_id
+        join callback_history ch on ch.pms_id = pp.id
+        left join callback_documents cd on cd.callback_id = ch.id
+        where p.id = ?;   
+        `, [id])
+    
+    const [callback_photos] = await pool.query(`
+        select p.id, p.lift_name, pp.free_pms, ch.id as \`callback_history_id\`, ch.completion_date, c.id as \`contract_id\`, cp.photo_url
+        from projects p 
+        join pms_projects pp on p.id = pp.id
+        join client_baby_book cbb on cbb.pms_id = pp.id
+        join contracts c on c.baby_book_id = cbb.pms_id
+        join callback_history ch on ch.pms_id = pp.id
+        left join callback_photos cp on cp.callback_id = ch.id
+        where p.id = ?;   
+        `, [id])
+    
+    const [contract_documents] = await pool.query(`
+            select p.id, p.lift_name, pp.free_pms, cd.*
             from projects p join pms_projects pp on p.id = pp.id
             join client_baby_book cbb on cbb.pms_id = pp.id
             join contracts c on c.baby_book_id = cbb.pms_id
-            join pms_history ph on ph.pms_id = pp.id
-            join pms_inspection_documents pid on pid.contract_id = c.id
-            where p.id = ?;   
-            `, [id])
-        const [contract_documents] = await pool.query(`
-                select p.id, p.lift_name, pp.free_pms, cd.*
-                from projects p join pms_projects pp on p.id = pp.id
-                join client_baby_book cbb on cbb.pms_id = pp.id
-                join contracts c on c.baby_book_id = cbb.pms_id
-                join contract_documents cd on cd.contract_id = c.id where p.id = ?;
-            `, [id])
-        const [contract_photo] = await pool.query(`
-                select * from project_contract_photos where project_id = ?;
-            `, [id])
-        const baby_book = {
-            handOverDocs: handoverDocs,
-            service_reports: service_reports,
-            contract_documents: contract_documents,
-            contract_photo: contract_photo
-        }
-        return baby_book
+            join contract_documents cd on cd.contract_id = c.id where p.id = ?;
+        `, [id])
+    
+    const [contract_photo] = await pool.query(`
+            select * from project_contract_photos where project_id = ?;
+        `, [id])
+    
+    const baby_book = {
+        handOverDocs: handoverDocs,
+        service_reports: service_reports,
+        callback_reports: callback_reports,
+        callback_photos: callback_photos,
+        contract_documents: contract_documents,
+        contract_photo: contract_photo
     }
-
+    return baby_book
+}
     static async scheduleInspection (pmsId, date) {
         await pool.query(`
                 update pms_projects set pms_inspection_date = ? where id = ?
@@ -499,71 +504,124 @@ static async getAllPMS() {
 
         return results
     }
+
+    //Begin callback
+    static async ongoingCallback (pmsId) {
+
+        await pool.query(`update pms_projects set callback_ongoing = 1 where id = ?`, [pmsId])
+
+        //Get current contract id
+        const [contract] = await pool.query(`select id from contracts where baby_book_id = ? and current_contract = 1`, [pmsId])
+        const contractId = contract[0].id
+        const [results] =  await pool.query(`insert into callback_history (pms_id, contract_id) values (?, ?)`, [pmsId, contractId])
+        const insertId = results.insertId
+        await pool.query(`update pms_projects set callback_id = ? where id = ?`, [insertId, pmsId])
+    }
+
+    static async getCallbackStatus (pmsId) {
+        const [inspId] = await pool.query(`select callback_id from pms_projects where id = ?`, [pmsId])
+        const inspectionId = inspId[0].callback_id
+        const [results] = await pool.query (`
+				select p.id, p.lift_name, pp.callback_date, ch.inspection_done from projects p 
+                join pms_projects pp on p.id = pp.id
+                join callback_history ch on ch.pms_id = pp.id where p.id = ? and pp.callback_id = 1;
+            `, [pmsId, inspectionId])
+        console.log('here in get callback status')
+        console.log(results)
+        return results[0]
+    }
+
+    //Callback Complete
+// ==========================
+//  MARK CALLBACK COMPLETE
+// ==========================
+static async markCallbackComplete(clientId, photos) {
+    const { service_reports, evidence } = photos;
     
-    //static async markInspectionComplete(pmsId, reportDetails) {
-    //     const connection = await pool.getConnection();
-    //     try {
-    //     await connection.beginTransaction();
+    // Get callback ID
+    const [callbackIdResult] = await pool.query(
+        `SELECT callback_id FROM pms_projects WHERE id = ?`, 
+        [clientId]
+    );
+    const callbackId = callbackIdResult[0].callback_id;
+    
+    console.log('Completing callback for client:', clientId);
+    console.log('Callback ID:', callbackId);
+    console.log('Service reports:', service_reports);
+    console.log('Evidence:', evidence);
 
-    //     // Step 1: Insert PMS history record
-    //     await connection.query(
-    //         `INSERT INTO pms_history (pms_id, report_details, date_conducted)
-    //         VALUES (?, ?, CURDATE())`,
-    //         [pmsId, reportDetails]
-    //     );
+    // // Update callback status - reset callback flags and set completion
+    await pool.query(`
+        UPDATE pms_projects 
+        SET callback_ongoing = 0, callback_date = NULL, callback_id = NULL 
+        WHERE id = ?
+    `, [clientId]);
 
-    //     // Step 2: Get contract type for the PMS project
-    //     const [[contract]] = await connection.query(
-    //         `SELECT pp.contract_type, pp.pms_inspection_date 
-    //         FROM pms_projects pp 
-    //         WHERE pp.id = ?`,
-    //         [pmsId]
-    //     );
+    // // Mark callback inspection as done in history
+    await pool.query(`
+        UPDATE callback_history 
+        SET inspection_done = 1
+        WHERE id = ?
+    `, [callbackId]);
 
-    //     let nextInspectionDate = null;
-    //     if (contract && contract.contract_type) {
-    //         const current = contract.pms_inspection_date
-    //         ? dayjs(contract.pms_inspection_date)
-    //         : dayjs();
+    // // Get current contract ID
+    const [contractResult] = await pool.query(`
+        SELECT id FROM contracts 
+        WHERE baby_book_id = ? AND current_contract = 1
+    `, [clientId]);
+    const contractId = contractResult[0].id;
 
-    //         switch (contract.contract_type.toLowerCase()) {
-    //         case 'monthly':
-    //             nextInspectionDate = current.add(1, 'month').format('YYYY-MM-DD');
-    //             break;
-    //         case 'quarterly':
-    //             nextInspectionDate = current.add(3, 'month').format('YYYY-MM-DD');
-    //             break;
-    //         case 'yearly':
-    //             nextInspectionDate = current.add(12, 'month').format('YYYY-MM-DD');
-    //             break;
-    //         }
-    //     }
+    // // Upload service report documents
+    if (service_reports && service_reports.length > 0) {
+        for (const report of service_reports) {
+            const filePath = "/uploads/" + report.filename;
+            const originalName = report.originalname;
+            console.log('Uploading service report:', filePath);
+            
+            await pool.query(
+                `INSERT INTO callback_documents (callback_id, doc_url, contract_id, document_name) 
+                 VALUES (?, ?, ?, ?)`,
+                [callbackId, filePath, contractId, originalName]
+            );
+        }
+    }
 
-    //     // Step 3: Update project status and next inspection date
-    //     await connection.query(
-    //         `UPDATE pms_projects
-    //         SET 
-    //         inspection_ongoing = 0,
-    //         inspection_assigned = 0,
-    //         inspection_pending = 0,
-    //         pms_inspection_date = ?
-    //         WHERE id = ?`,
-    //         [nextInspectionDate, pmsId]
-    //     );
+    // Upload evidence photos
+    if (evidence && evidence.length > 0) {
+        for (const photo of evidence) {
+            const filePath = "/uploads/" + photo.filename;
+            console.log('Uploading evidence:', filePath);
+            
+            await pool.query(
+                `INSERT INTO callback_photos (callback_id, doc_url, contract_id) 
+                 VALUES (?, ?, ?)`,
+                [callbackId, filePath, contractId]
+            );
+        }
+    }
 
-    //     await connection.commit();
+    // Clear callback inspection team
+    await pool.query(
+        `DELETE FROM callback_inspection_team WHERE client_id = ?`, 
+        [clientId]
+    );
 
-    //     return {
-    //         message: 'Inspection marked as completed.',
-    //         nextInspectionDate,
-    //     };
-    //     } catch (err) {
-    //     await connection.rollback();
-    //     throw err;
-    //     } finally {
-    //     connection.release();
-    //     }
-    // }
+    console.log('Callback completed successfully for client:', clientId);
+    return { success: true, callbackId };
+}
+
+    //Client will renew contract
+    static async renewContract (clientId, data) {
+        const {contract_start_date, contract_end_date} = data
+        await pool.query(`insert into contracts (baby_book_id, contract_start_date, contract_end_date, current_contract = 1, free_pms = 0)
+            values (?, ?, ?, 1, 0)`, [clientId, contract_start_date, contract_end_date])
+    }
+
+    //Archive Project (Client will not renew contract)
+    static async cancelContract (clientId) {
+        await pool.query(`update projects set archived = 1 where id = ?`, [clientId])
+    }
+
 }
 
 /*--------------------------- Draft Schema ----------------------*/

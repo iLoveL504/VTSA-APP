@@ -8,8 +8,10 @@ const CallbackPage = () => {
     const navigate = useNavigate();
     const backendURL = import.meta.env.VITE_BACKEND_URL || 'http://localhost:4000';
     const { clientId } = useParams();
+    console.log('here in client id')
+    console.log(clientId)
     const { data: status } = useAxiosFetch(`${backendURL}/api/pms/callback-status/${clientId}`);
-    const { data: client } = useAxiosFetch(`${backendURL}/api/pms/callback-clients/${clientId}`);
+    const { data: client } = useAxiosFetch(`${backendURL}/api/pms/clients/${clientId}`);
     console.log(client);
     console.log(status);
     
@@ -19,11 +21,11 @@ const CallbackPage = () => {
 
     // Check if callback can be started (date condition)
     const canBeginCallback = () => {
-        if (!client || !client.pms_inspection_date) return false;
+        if (!client || !client.callback_date) return false;
         
         try {
             const today = new Date().toISOString().split('T')[0];
-            const callbackDate = new Date(client.pms_inspection_date).toISOString().split('T')[0];
+            const callbackDate = new Date(client.callback_date).toISOString().split('T')[0];
             return today >= callbackDate;
         } catch (error) {
             console.error('Error parsing dates:', error);
@@ -34,7 +36,7 @@ const CallbackPage = () => {
     console.log('can begin callback:', canBeginCallback());
     
     // Check if callback is ongoing
-    const isCallbackOngoing = client?.inspection_ongoing === 1;
+    const isCallbackOngoing = client?.callback_ongoing === 1;
 
     const handleFileUpload = (event, type) => {
         const uploadedFiles = Array.from(event.target.files);
@@ -142,8 +144,8 @@ const CallbackPage = () => {
                     <p>{client.book_name || client.client} • {client.project_location || `${client.location}, ${client.island_group}`}</p>
                     <div className="inspection-details">
                         <span><strong>Project Name:</strong> {client.project_name}</span>
-                        <span><strong>Scheduled Date:</strong> {new Date(client.pms_inspection_date).toLocaleDateString('en-GB')}</span>
-                        <span><strong>Contract Type:</strong> {client.free_pms ? 'Free PMS' : 'Paid PMS'}</span>
+                        <span><strong>Scheduled Date:</strong> {new Date(client.callback_date).toLocaleDateString('en-GB')}</span>
+                        <span><strong>Contract Type:</strong> {client.pms_contract}</span>
                         <span><strong>Status:</strong> {isCallbackOngoing ? 'In Progress' : 'Not Started'}</span>
                     </div>
                 </div>
@@ -162,7 +164,7 @@ const CallbackPage = () => {
             )}
 
             <div>
-                {status?.callback_done ? (
+                {status?.inspection_done ? (
                     <div className="completion-status">
                         <div className="completion-badge">
                             <i className="fas fa-check-circle"></i>
@@ -188,7 +190,7 @@ const CallbackPage = () => {
                                             <p>
                                                 {canBeginCallback() 
                                                     ? 'You can now begin the callback inspection' 
-                                                    : `Callback can be started on ${new Date(client.pms_inspection_date).toLocaleDateString('en-GB')}`}
+                                                    : `Callback can be started on ${new Date(client.callback_date).toLocaleDateString('en-GB')}`}
                                             </p>
                                         </div>
                                     </div>

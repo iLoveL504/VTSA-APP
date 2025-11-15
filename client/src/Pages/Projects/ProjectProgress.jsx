@@ -1,5 +1,4 @@
 // src/pages/ProjectProgress.jsx
-import { useParams } from 'react-router-dom'
 import { useState } from 'react'
 import { useStoreState } from 'easy-peasy'
 import MyGanttComponent from '../../outComponent/GANTT_CHART/GanttChart.jsx'
@@ -10,15 +9,23 @@ import ViewSchedule from './ViewSchedule.jsx'
 import AccomplishmentReport from './AccomplishmentReport.jsx'
 import TaskList from './TaskList.jsx'
 import { Grid } from 'ldrs/react'
+import TaskOverviewSection from '../../components/Project/TaskOverviewSection.jsx'
 
-const ProjectProgress = ({ projSched, projSchedIsLoading, taskPhotos, currentTask, holidays }) => {
+const ProjectProgress = ({ 
+    projId, 
+    projSched, 
+    projSchedIsLoading,
+    taskPhotos,
+    currentTask,
+    holidays,
+    // Add these new props
+    proj,
+}) => {
     console.log(holidays)
-    const { projId } = useParams()
-    const numId = Number(projId)
     const projects = useStoreState(state => state.projects)
     
     // ADD GUARDS: Check if projects is loaded and find project safely
-    const proj = projects && Array.isArray(projects) ? projects.find(p => p.id === numId) : null;
+    // const proj = projects && Array.isArray(projects) ? projects.find(p => p.id === numId) : null;
     
     const [activeTab, setActiveTab] = useState('gantt')
     
@@ -48,11 +55,22 @@ const ProjectProgress = ({ projSched, projSchedIsLoading, taskPhotos, currentTas
 
     return (
         <div className="Content ProjectProgress">
-            {/* ADD GUARD for TaskList */}
-            {projSched && taskPhotos && currentTask && (
-                <TaskList projSched={projSched} taskPhotos={taskPhotos} currentTask={currentTask}/>
-            )}
-            
+            {/* <TaskOverviewSection
+                onHold={onHold}
+                isBehindSchedule={isBehindSchedule}
+                projectedTask={projectedTask}
+                currentParentTask={currentParentTask}
+                proj={proj}
+                onResumeProject={onResumeProject}
+                onTaskDetails={onTaskDetails}
+                role={sessionStorage.getItem('roles')}
+                projectCompleted={projectCompleted}
+                projectExists={projectExists}
+                currentTask={currentTask}
+                currentTaskPhase={currentTaskPhase}
+                onCreateSchedule={onCreateSchedule}
+                isLoaded={isLoaded}
+            /> */}
             <div className="progress-header">
                 <h2>Project Progress - {proj.lift_name}</h2>
                 <div className="tabs">
@@ -63,10 +81,16 @@ const ProjectProgress = ({ projSched, projSchedIsLoading, taskPhotos, currentTas
                         Gantt Chart
                     </button>
                     <button 
+                        className={activeTab === 'tasklist' ? 'active' : ''}
+                        onClick={() => setActiveTab('tasklist')}
+                    >
+                        Task List
+                    </button>
+                    <button 
                         className={activeTab === 'accomplishment' ? 'active' : ''}
                         onClick={() => setActiveTab('accomplishment')}
                     >
-                        AccomplishmentReport
+                        Accomplishment Report
                     </button>
                 </div>
             </div>
@@ -77,6 +101,13 @@ const ProjectProgress = ({ projSched, projSchedIsLoading, taskPhotos, currentTas
                         projSched={projSched || []} 
                         projSchedIsLoading={projSchedIsLoading} 
                         holidays={holidays}
+                    />
+                )}
+                {activeTab === 'tasklist' && projSched && taskPhotos && currentTask && (
+                    <TaskList 
+                        projSched={projSched} 
+                        taskPhotos={taskPhotos} 
+                        currentTask={currentTask}
                     />
                 )}
                 {activeTab === 'accomplishment' && <AccomplishmentReport proj={proj}/>}

@@ -1,0 +1,1307 @@
+.ProjectAssignment {
+
+    width: 100%;
+
+    padding: 2rem;
+    margin: 0;
+}
+
+.ProjectAssignment .project-phase-buttons {
+    display: flex;
+    gap: 1rem;
+    margin-top: 1rem;
+    margin-bottom: 2rem;
+}
+
+.project-assignment-header {
+    margin-bottom: 2rem;
+    text-align: center;
+}
+.project-assignment-content {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+}
+
+.project-assignment-header h2 {
+    color: #2c3e50;
+    margin-bottom: 0.5rem;
+    font-size: 2rem;
+}
+
+.project-assignment-header p {
+    color: #7f8c8d;
+    font-size: 1.1rem;
+}
+
+.preliminaries-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    height: 800px;
+    width: 100%;
+    padding-right: 1rem;
+    overflow-y: auto;
+}
+
+.project-card {
+    width: 100%;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    border: 1px solid #e1e8ed;
+    padding: 1.5rem;
+    transition: all 0.3s ease;
+}
+
+.project-card.editing {
+  border: 2px solid #315a95;              /* strong blue border */
+  background-color: #f0f6ff;              /* subtle blue tint */
+  box-shadow: 0 6px 18px rgba(49, 90, 149, 0.25);
+  transform: scale(1.01);
+  z-index: 5;
+}
+
+.project-card.editing,
+.project-card:not(.editing) {
+  transition: all 0.3s ease;
+}
+
+
+.project-card:hover {
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+    transform: translateY(-2px);
+}
+
+.project-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 1rem;
+    padding-bottom: 1rem;
+    border-bottom: 2px solid #f8f9fa;
+}
+
+.project-basic-info h3 {
+    margin: 0 0 0.25rem 0;
+    color: #2c3e50;
+    font-size: 1.3rem;
+}
+
+.project-id {
+    color: #6c757d;
+    font-size: 0.9rem;
+}
+
+.status-badge {
+    padding: 0.25rem 0.75rem;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    text-overflow: ellipsis;
+}
+
+.status-badge.preliminaries {
+    background: #fff3cd;
+    color: #856404;
+    border: 1px solid #ffeaa7;
+}
+
+.project-details {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.detail-row {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.detail-label {
+    font-size: 0.8rem;
+    color: #6c757d;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    font-weight: 600;
+}
+
+.detail-value {
+    color: #2c3e50;
+    font-weight: 500;
+}
+
+.project-timeline {
+    background: #f8f9fa;
+    padding: 1rem;
+    border-radius: 8px;
+    margin-bottom: 1.5rem;
+}
+
+.timeline-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.5rem 0;
+}
+
+.timeline-item:not(:last-child) {
+    border-bottom: 1px solid #e9ecef;
+}
+
+.timeline-label {
+    color: #6c757d;
+    font-size: 0.9rem;
+}
+
+.timeline-date {
+    color: #2c3e50;
+    font-weight: 600;
+    font-size: 0.9rem;
+}
+
+/* team info each project */
+
+/* Project Team Info Styles */
+.project-team-info {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+    padding-top: 1rem;
+    border-top: 2px solid #f8f9fa;
+    margin-top: 1rem;
+}
+
+.project-team-info > div {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.project-team-info h4 {
+    color: #2c3e50;
+    margin: 0;
+    font-size: 1rem;
+    font-weight: 600;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid #e9ecef;
+}
+
+/* Team Member Lists */
+.team-member-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    min-height: 60px;
+}
+
+.team-member {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.5rem 0.75rem;
+    background: #f8f9fa;
+    border-radius: 6px;
+    border: 1px solid #e9ecef;
+    transition: all 0.3s ease;
+}
+
+.team-member:hover {
+    background: #e9ecef;
+    border-color: #315a95;
+}
+
+.team-member.selected {
+    background: #d4edda;
+    border-color: #28a745;
+    box-shadow: 0 2px 4px rgba(40, 167, 69, 0.2);
+}
+
+.team-member-name {
+    font-weight: 500;
+    color: #2c3e50;
+    font-size: 0.9rem;
+}
+
+.team-member-role {
+    font-size: 0.75rem;
+    color: #6c757d;
+    background: white;
+    padding: 0.2rem 0.5rem;
+    border-radius: 12px;
+    border: 1px solid #dee2e6;
+}
+
+/* Empty State */
+.team-empty-state {
+    text-align: center;
+    padding: 1rem;
+    color: #6c757d;
+    font-style: italic;
+    background: #f8f9fa;
+    border: 2px dashed #dee2e6;
+    border-radius: 6px;
+    font-size: 0.9rem;
+}
+
+/* Selection States for Personnel Cards */
+.personnel-card.selectable {
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border: 2px solid transparent;
+}
+
+.personnel-card.selectable:hover {
+    border-color: #315a95;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(49, 90, 149, 0.2);
+}
+
+.personnel-card.selected {
+    border-color: #28a745;
+    background: #f8fff9;
+    box-shadow: 0 4px 12px rgba(40, 167, 69, 0.2);
+}
+
+.personnel-card.disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+/* Selection Badge */
+.selection-badge {
+    position: absolute;
+    top: -8px;
+    left: -8px;
+    width: 24px;
+    height: 24px;
+    background: #28a745;
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.7rem;
+    font-weight: bold;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+/* Remove Button */
+.remove-member-btn {
+    background: #dc3545;
+    color: white;
+    border: none;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 0.7rem;
+    transition: all 0.3s ease;
+    opacity: 0;
+}
+
+.team-member:hover .remove-member-btn {
+    opacity: 1;
+}
+
+.remove-member-btn:hover {
+    background: #c82333;
+    transform: scale(1.1);
+}
+
+/* Role-specific colors */
+.role-foreman .team-member-role {
+    background-color: rgb(39, 111, 204);
+    color: white;
+    border: none;
+}
+
+.role-skilled-installer .team-member-role {
+    background-color: rgb(57, 161, 57);
+    color: white;
+    border: none;
+}
+
+.role-installer .team-member-role {
+    background-color: rgb(106, 106, 106);
+    color: white;
+    border: none;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .project-team-info {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+    
+    .team-member {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.5rem;
+    }
+    
+    .remove-member-btn {
+        align-self: flex-end;
+        opacity: 1; /* Always show on mobile */
+    }
+}
+
+.assignment-status .assigned {
+    color: #28a745;
+    font-weight: 600;
+    padding: 0.5rem 1rem;
+    background: #d4edda;
+    border-radius: 20px;
+    font-size: 0.9rem;
+}
+
+.assignment-status .unassigned {
+    color: #dc3545;
+    font-weight: 600;
+    padding: 0.5rem 1rem;
+    background: #f8d7da;
+    border-radius: 20px;
+    font-size: 0.9rem;
+}
+
+.project-team {
+    display: flex;
+    flex-direction: row;
+    gap: 0.75rem;
+}
+
+.btn-primary {
+    background: #315a95;
+    color: white;
+    border: none;
+    padding: 0.6rem 1.2rem;
+    border-radius: 6px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.btn-primary:hover {
+    background: #1e3a5f;
+    transform: translateY(-1px);
+}
+
+.btn-secondary {
+    background: #6c757d;
+    color: white;
+    border: none;
+    padding: 0.6rem 1.2rem;
+    border-radius: 6px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.btn-secondary:hover {
+    background: #545b62;
+    transform: translateY(-1px);
+}
+
+.no-projects {
+    text-align: center;
+    padding: 3rem;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.no-projects h3 {
+    color: #6c757d;
+    margin-bottom: 1rem;
+}
+
+.no-projects p {
+    color: #6c757d;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .ProjectAssignment {
+        padding: 1rem;
+    }
+
+    .project-card-header {
+        flex-direction: column;
+        gap: 1rem;
+        align-items: flex-start;
+    }
+
+    .project-details {
+        grid-template-columns: 1fr;
+    }
+
+    .project-assignment-info {
+        flex-direction: column;
+        gap: 1rem;
+        align-items: flex-start;
+    }
+
+    .project-actions {
+        width: 100%;
+        justify-content: space-between;
+    }
+
+    .btn-primary,
+    .btn-secondary {
+        flex: 1;
+        text-align: center;
+    }
+
+    .timeline-item {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.25rem;
+    }
+}
+
+.forecasted-team {
+  flex: 1;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  border: 1px solid #e1e8ed;
+  overflow-y: auto;
+  max-height: 100%;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-height: 800px;
+}
+
+.forecasted-team-header {
+  padding: 1.5rem;
+  margin-bottom: 0;
+  border-bottom: 1px solid #e1e8ed;
+  background: #f8f9fa;
+  border-radius: 12px 12px 0 0;
+}
+
+.forecasted-team-header h3 {
+  color: #2c3e50;
+  margin-bottom: 0.5rem;
+  font-size: 1.3rem;
+}
+
+.forecasted-team-header p {
+  color: #6c757d;
+  margin: 0;
+}
+
+/* Group Tabs */
+.group-tabs {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 1.5rem;
+  padding: 0 1.5rem;
+  flex-wrap: wrap;
+}
+
+.group-tab {
+  padding: 0.75rem 1.5rem;
+  border: none;
+  background: #f8f9fa;
+  color: #6c757d;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  font-size: 0.9rem;
+}
+
+.group-tab:hover {
+  background: #e9ecef;
+  color: #495057;
+}
+
+.group-tab.active {
+  background: #315a95;
+  color: white;
+}
+
+/* Personnel List */
+.personnel-list {
+  flex: 1;
+  padding: 0 1.5rem;
+  max-height: 700px;
+  overflow-y: auto;
+}
+
+.personnel-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 1rem;
+  padding-bottom: 1rem;
+}
+
+.personnel-card {
+  background: #f8f9fa;
+  padding: 1rem;
+  border-radius: 8px;
+  border: 1px solid #e9ecef;
+  text-align: center;
+  transition: all 0.3s ease;
+  position: relative;
+}
+
+.personnel-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  border-color: #315a95;
+}
+
+.personnel-group-badge {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  padding: 0.2rem 0.5rem;
+  border-radius: 12px;
+  font-size: 0.7rem;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.group-no-project .personnel-group-badge {
+  background: #dc3545;
+  color: white;
+}
+
+.group-forecasted .personnel-group-badge {
+  background: #28a745;
+  color: white;
+}
+
+.personnel-name {
+  font-weight: 600;
+  color: #2c3e50;
+  margin-bottom: 0.5rem;
+  font-size: 1rem;
+  margin-top: 0.5rem;
+}
+
+.personnel-id {
+  color: #6c757d;
+  font-size: 0.8rem;
+  margin-bottom: 0.5rem;
+}
+
+.personnel-job {
+  color: #315a95;
+  font-weight: 600;
+  font-size: 0.8rem;
+  margin-bottom: 1rem;
+  text-transform: capitalize;
+  padding: 0.3rem 0.8rem;
+  background: white;
+  border-radius: 15px;
+  display: inline-block;
+  border: 1px solid #315a95;
+}
+
+.select-person-btn {
+  background: #315a95;
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-size: 0.8rem;
+  width: 100%;
+}
+
+.select-person-btn:hover {
+  background: #1e3a5f;
+  transform: translateY(-1px);
+}
+
+.no-personnel {
+  text-align: center;
+  padding: 3rem;
+  color: #6c757d;
+  background: #f8f9fa;
+  border-radius: 8px;
+  border: 2px dashed #dee2e6;
+  margin: 2rem 0;
+}
+
+/* Forecast Summary */
+.forecast-summary {
+  margin-top: auto;
+  padding: 1.5rem;
+  border-top: 2px solid #f8f9fa;
+  background: #f8f9fa;
+  border-radius: 0 0 12px 12px;
+}
+
+.forecast-summary h4 {
+  color: #2c3e50;
+  margin-bottom: 1rem;
+  text-align: center;
+}
+
+.summary-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 1rem;
+}
+
+.summary-stat {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.75rem;
+  background: white;
+  border-radius: 8px;
+  border: 1px solid #e9ecef;
+}
+
+.stat-label {
+  color: #6c757d;
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+.ProjectAssignment .stat-count {
+  background: #315a95;
+  color: white;
+  padding: 0.25rem 0.75rem;
+  border-radius: 20px;
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+/* Job-specific colors */
+.job-foreman {
+  background-color: rgb(39, 111, 204);
+  color: white;
+}
+
+.job-skilled-installer {
+  background-color: rgb(57, 161, 57);
+  color: white;
+}
+
+.job-installer {
+  background-color: rgb(106, 106, 106);
+  color: white;
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+  .project-assignment-content {
+    flex-direction: column;
+    height: auto;
+  }
+  
+  .preliminaries-list,
+  .forecasted-team {
+    max-height: none;
+  }
+  
+  .personnel-grid {
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  }
+}
+
+@media (max-width: 768px) {
+  .project-assignment-content {
+    padding: 0 1rem 1rem;
+  }
+  
+  .personnel-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .group-tabs {
+    flex-direction: column;
+  }
+  
+  .group-tab {
+    text-align: center;
+  }
+  
+  .summary-stats {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Modal Styles */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.6);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    padding: 1rem;
+}
+
+.ProjectAssignment .modal-content {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    width: 100%;
+    max-width: 500px;
+    max-height: 90vh;
+    overflow-y: auto;
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.5rem;
+    border-bottom: 1px solid #e1e8ed;
+}
+
+.modal-header h3 {
+    margin: 0;
+    color: #2c3e50;
+    font-size: 1.3rem;
+}
+
+.modal-close {
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    cursor: pointer;
+    color: #6c757d;
+    padding: 0;
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.modal-close:hover {
+    color: #2c3e50;
+    background: #f8f9fa;
+    border-radius: 50%;
+}
+
+.modal-body {
+    padding: 1.5rem;
+}
+
+.modal-body p {
+    margin-bottom: 1rem;
+    color: #6c757d;
+    line-height: 1.5;
+}
+
+.project-info {
+    background: #f8f9fa;
+    padding: 1rem;
+    border-radius: 8px;
+    border-left: 4px solid #315a95;
+}
+
+.modal-footer {
+    display: flex;
+    gap: 1rem;
+    justify-content: flex-end;
+    padding: 1.5rem;
+    border-top: 1px solid #e1e8ed;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .modal-content {
+        margin: 1rem;
+        width: calc(100% - 2rem);
+    }
+    
+    .modal-footer {
+        flex-direction: column;
+    }
+    
+    .modal-footer button {
+        width: 100%;
+    }
+}
+
+.project-assignment-layout {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+  height: 100%;
+}
+
+.projects-container {
+  overflow-y: auto;
+  width: 100%;
+}
+
+.personnel-container {
+  background: #f8f9fa;
+  border-radius: 8px;
+  padding: 20px;
+  height: fit-content;
+  position: sticky;
+  top: 20px;
+  width: 100%;
+}
+
+.team-view-toggle {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.toggle-btn {
+  flex: 1;
+  padding: 10px;
+  border: 1px solid #ddd;
+  background: #4776b9;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.toggle-btn.active {
+  background: #315a95;
+  color: white;
+  border-color: #007bff;
+}
+
+.current-team-display {
+  background: #f8f9fa;
+  border-radius: 12px;
+  padding: 20px;
+  margin-bottom: 24px;
+}
+
+.current-team-display h4 {
+  margin: 0 0 20px 0;
+  color: #2c3e50;
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+.team-roles {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.team-role-group {
+  background: white;
+  border-radius: 8px;
+  padding: 16px;
+  border: 1px solid #e9ecef;
+}
+
+.role-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid #f1f3f4;
+}
+
+.role-title {
+  font-weight: 600;
+  color: #2c3e50;
+  font-size: 1rem;
+}
+
+.role-count {
+  background: #e9ecef;
+  color: #6c757d;
+  padding: 4px 8px;
+  border-radius: 12px;
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.role-members {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.team-member-card {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px;
+  background: #f8f9fa;
+  border-radius: 6px;
+  border: 1px solid #e9ecef;
+  transition: all 0.2s ease;
+}
+
+.team-member-card:hover {
+  background: #e9ecef;
+  border-color: #dee2e6;
+}
+
+.member-info {
+  flex: 1;
+}
+
+.member-name {
+  display: block;
+  font-weight: 500;
+  color: #2c3e50;
+  margin-bottom: 4px;
+}
+
+.member-details {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.member-job {
+  background: #6c757d;
+  color: white;
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+
+.member-id {
+  color: #6c757d;
+  font-size: 0.875rem;
+}
+
+.remove-member-btn {
+  background: #dc3545;
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 24px;
+  height: 24px;
+  cursor: pointer;
+  font-size: 1rem;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.remove-member-btn:hover {
+  background: #c82333;
+  transform: scale(1.1);
+}
+
+.empty-role {
+  text-align: center;
+  color: #6c757d;
+  font-style: italic;
+  padding: 20px;
+  background: #f8f9fa;
+  border-radius: 6px;
+  border: 1px dashed #dee2e6;
+}
+
+/* No Dates Warning Styles */
+.no-dates-warning {
+    text-align: center;
+    padding: 3rem 2rem;
+    background: linear-gradient(135deg, #fff3cd 0%, #ffeaa7 100%);
+    border: 2px solid #ffc107;
+    border-radius: 12px;
+    margin: 1rem;
+}
+
+.warning-icon {
+    font-size: 3rem;
+    color: #856404;
+    margin-bottom: 1rem;
+}
+
+.no-dates-warning h3 {
+    color: #856404;
+    margin-bottom: 1rem;
+    font-size: 1.5rem;
+}
+
+.no-dates-warning p {
+    color: #856404;
+    margin-bottom: 1.5rem;
+    font-size: 1.1rem;
+}
+
+.warning-details {
+    background: rgba(255, 255, 255, 0.7);
+    padding: 1.5rem;
+    border-radius: 8px;
+    margin-top: 1.5rem;
+}
+
+.warning-details p {
+    font-weight: 600;
+    margin-bottom: 1rem;
+}
+
+.warning-details ul {
+    text-align: left;
+    color: #856404;
+    padding-left: 1.5rem;
+}
+
+.warning-details li {
+    margin-bottom: 0.5rem;
+}
+
+/* Select Project Prompt */
+.select-project-prompt {
+    text-align: center;
+    padding: 4rem 2rem;
+    color: #6c757d;
+}
+
+.prompt-icon {
+    font-size: 3rem;
+    color: #6c757d;
+    margin-bottom: 1.5rem;
+    opacity: 0.7;
+}
+
+.select-project-prompt h3 {
+    color: #6c757d;
+    margin-bottom: 1rem;
+    font-size: 1.5rem;
+}
+
+/* Phase Info Styles */
+.phase-info {
+    padding: 0;
+}
+
+.phase-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.5rem;
+    background: linear-gradient(135deg, #315a95 0%, #1e3a5f 100%);
+    color: white;
+    border-radius: 12px 12px 0 0;
+}
+
+.phase-header h3 {
+    margin: 0;
+    font-size: 1.3rem;
+}
+
+.phase-badge {
+    background: rgba(255, 255, 255, 0.2);
+    padding: 0.4rem 1rem;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.phase-stats {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    padding: 1.5rem;
+    background: #f8f9fa;
+}
+
+.stat-item {
+    text-align: center;
+    padding: 1rem;
+    background: white;
+    border-radius: 8px;
+    border: 1px solid #e9ecef;
+}
+
+.stat-number {
+    display: block;
+    font-size: 2rem;
+    font-weight: 700;
+    color: #315a95;
+    margin-bottom: 0.5rem;
+}
+
+.stat-label {
+    color: #6c757d;
+    font-size: 0.9rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.selected-project-info {
+    padding: 1.5rem;
+}
+
+.selected-project-info h4 {
+    color: #2c3e50;
+    margin-bottom: 1rem;
+    font-size: 1.1rem;
+    font-weight: 600;
+}
+
+.project-detail-card {
+    background: white;
+    border: 1px solid #e9ecef;
+    border-radius: 8px;
+    padding: 1.5rem;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.project-title {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+    padding-bottom: 1rem;
+    border-bottom: 2px solid #f8f9fa;
+}
+
+.project-title h5 {
+    margin: 0;
+    color: #2c3e50;
+    font-size: 1.1rem;
+}
+
+.project-id {
+    color: #6c757d;
+    font-size: 0.9rem;
+    font-weight: 600;
+}
+
+.ProjectAssignment .project-meta {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    margin-bottom: 1.5rem;
+}
+
+.meta-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.5rem 0;
+}
+
+.meta-item:not(:last-child) {
+    border-bottom: 1px solid #f1f3f4;
+}
+
+.meta-label {
+    color: #6c757d;
+    font-weight: 600;
+    font-size: 0.9rem;
+}
+
+.meta-value {
+    color: #2c3e50;
+    font-weight: 500;
+}
+
+.meta-value.status {
+    background: #315a95;
+    color: white;
+    padding: 0.3rem 0.8rem;
+    border-radius: 15px;
+    font-size: 0.8rem;
+    font-weight: 600;
+}
+
+.team-assignment-info {
+    background: #f8f9fa;
+    padding: 1rem;
+    border-radius: 6px;
+    border: 1px solid #e9ecef;
+}
+
+.team-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.team-count {
+    background: #28a745;
+    color: white;
+    padding: 0.3rem 0.8rem;
+    border-radius: 12px;
+    font-size: 0.8rem;
+    font-weight: 600;
+}
+
+.btn-edit-team {
+    background: #315a95;
+    color: white;
+    border: none;
+    padding: 0.6rem 1.2rem;
+    border-radius: 6px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    width: 100%;
+    font-size: 0.9rem;
+}
+
+.btn-edit-team:hover {
+    background: #1e3a5f;
+    transform: translateY(-1px);
+}
+
+.btn-edit-team i {
+    margin-right: 0.5rem;
+}
+
+.no-project-selected {
+    text-align: center;
+    padding: 3rem 2rem;
+    color: #6c757d;
+}
+
+.no-project-selected .prompt-icon {
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .phase-header {
+        flex-direction: column;
+        gap: 1rem;
+        text-align: center;
+    }
+    
+    .phase-stats {
+        grid-template-columns: 1fr;
+    }
+    
+    .project-title {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.5rem;
+    }
+    
+    .meta-item {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.25rem;
+    }
+}

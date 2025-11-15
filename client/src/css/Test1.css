@@ -560,7 +560,7 @@
 }
 
 /* Stagger animation for multiple cards */
-.task-card:nth-child(odd) {
+.SchedulePage .task-card:nth-child(odd) {
   animation-delay: 0.1s;
 }
 

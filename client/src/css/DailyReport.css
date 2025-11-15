@@ -82,8 +82,8 @@
   font-family: 'Montserrat', sans-serif;
 }
 
-.form-group input,
-.form-group textarea {
+ .form-group input,
+ .form-group textarea {
   width: 100%;
   padding: 1rem 1.25rem;
   border: 2px solid #e2e8f0;

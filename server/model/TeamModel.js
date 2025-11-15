@@ -4,17 +4,15 @@ import { UtilitiesModel as utility } from './UtilitiesModel.js';
 class TeamModel {
     static async getAllTeams() {
         const [results] = await pool.query(`
-            select pm.id, pm.project_engineer_id, pe.username as \`pe_username\`, pm.tnc_tech_id as 'tnc_id', tnc.username as \`tnc_username\`, pm.team_id, t.Foreman, t.foreman_id, 
-            tm.emp_id, e.username as \`e_username\`, e.job , p.id as \`project_id\`, 
-            p.lift_name, p.status, p.installation_start_date as \`operations_start_date\`, 
-            p.project_end_date, p.tnc_start_date, p.project_end_date
-            from project_manpower pm 
+            select  pm.project_id, p.lift_name, p.client, pm.project_engineer_id, concat(pe.last_name , ' ', pe.first_name) as \`pe_fullname\`, pe.job,
+            pm.tnc_tech_id, concat(tnc.last_name , ' ', tnc.first_name) as \`tnc_fullname\`, tnc.job,
+            pm.qaqc_id, concat(qaqc.last_name , ' ', qaqc.first_name) as \`qaqc_fullname\`, tnc.job,
+            pm.pms_id, concat(pms.last_name , ' ', pms.first_name) as \`pms_fullname\`, pms.job from project_manpower pm
             left join employees pe on pm.project_engineer_id = pe.employee_id
             left join employees tnc on pm.tnc_tech_id = tnc.employee_id
-            left join teams t on pm.team_id = t.team_id
-            left join projects p on pm.project_id = p.id
-            left join team_members tm on t.team_id = tm.foreman_id
-            left join employees e on e.employee_id = tm.emp_id;
+            left join employees qaqc on pm.qaqc_id = qaqc.employee_id
+            left join employees pms on pm.pms_id = pms.employee_id
+            join projects p on p.id = pm.project_id where p.archived = 0 and p.status <> 'Completed';
         `);
 
     
@@ -75,8 +73,8 @@ class TeamModel {
     }
 
     static async editTeam(id, data) {
-        console.log(data)
-        console.log(id)
+        // console.log(data)
+        // console.log(id)
         const foreman = data.find(t => t.job === 'Foreman')
         const foremanId = foreman.employee_id
         const installers = data.filter(t => t.job !== 'Foreman').map(t => t.employee_id)
@@ -190,6 +188,148 @@ class TeamModel {
         return result
         
     }
+
+   static async getTeamDashboard() {
+    const [result1] = await pool.query(`
+        SELECT pm.project_id, p.lift_name, p.client, pm.project_engineer_id, 
+               CONCAT(pe.last_name, ' ', pe.first_name) AS \`pe_fullname\`, pe.job,
+               pm.tnc_tech_id, CONCAT(tnc.last_name, ' ', tnc.first_name) AS \`tnc_fullname\`, tnc.job,
+               pm.qaqc_id, CONCAT(qaqc.last_name, ' ', qaqc.first_name) AS \`qaqc_fullname\`, qaqc.job,
+               pm.pms_id, CONCAT(pms.last_name, ' ', pms.first_name) AS \`pms_fullname\`, pms.job 
+        FROM project_manpower pm
+        LEFT JOIN employees pe ON pm.project_engineer_id = pe.employee_id
+        LEFT JOIN employees tnc ON pm.tnc_tech_id = tnc.employee_id
+        LEFT JOIN employees qaqc ON pm.qaqc_id = qaqc.employee_id
+        LEFT JOIN employees pms ON pm.pms_id = pms.employee_id
+        JOIN projects p ON p.id = pm.project_id 
+        WHERE p.archived = 0 AND p.status <> 'Completed';
+    `);
+
+    const [result2] = await pool.query(`
+        SELECT pm.id AS \`project_manpower_id\`, pm.project_engineer_id, pe.username AS \`pe_username\`, 
+               pm.team_id, t.Foreman, t.foreman_id, tm.emp_id, e.username AS \`e_username\`, 
+               CONCAT(e.last_name, ' ', e.first_name) AS \`e_fullname\`, e.job, 
+               p.id AS \`project_id\`, p.lift_name, p.status, 
+               p.installation_start_date AS \`operations_start_date\`, p.project_end_date
+        FROM project_manpower pm 
+        LEFT JOIN employees pe ON pm.project_engineer_id = pe.employee_id
+        LEFT JOIN employees tnc ON pm.tnc_tech_id = tnc.employee_id
+        LEFT JOIN teams t ON pm.team_id = t.team_id
+        LEFT JOIN projects p ON pm.project_id = p.id
+        LEFT JOIN team_members tm ON t.team_id = tm.foreman_id
+        LEFT JOIN employees e ON e.employee_id = tm.emp_id
+        WHERE p.archived = 0 AND p.status <> 'Completed';
+    `);
+
+    // Merge the data
+    const projectsMap = new Map();
+
+    // First, process the techs data (result1)
+    result1.forEach(projectTech => {
+        const projectId = projectTech.project_id;
+        
+        projectsMap.set(projectId, {
+            project_id: projectId,
+            lift_name: projectTech.lift_name,
+            client: projectTech.client,
+            project_engineer: {
+                id: projectTech.project_engineer_id,
+                fullname: projectTech.pe_fullname,
+                job: projectTech.job
+            },
+            technicians: {
+                tnc_tech: projectTech.tnc_tech_id ? {
+                    id: projectTech.tnc_tech_id,
+                    fullname: projectTech.tnc_fullname,
+                    job: 'Test and Commission'
+                } : null,
+                qaqc_tech: projectTech.qaqc_id ? {
+                    id: projectTech.qaqc_id,
+                    fullname: projectTech.qaqc_fullname,
+                    job: 'QA/QC'
+                } : null,
+                pms_tech: projectTech.pms_id ? {
+                    id: projectTech.pms_id,
+                    fullname: projectTech.pms_fullname,
+                    job: 'PMS'
+                } : null
+            },
+            foreman: null,
+            team: [],
+            status: null,
+            operations_start_date: null,
+            project_end_date: null
+        });
+    });
+
+    // Then, process the team data (result2)
+    result2.forEach(teamMember => {
+        const projectId = teamMember.project_id;
+        
+        if (!projectsMap.has(projectId)) {
+            // Create project if it doesn't exist
+            projectsMap.set(projectId, {
+                project_id: projectId,
+                lift_name: teamMember.lift_name,
+                client: null, // Not available in result2
+                project_engineer: {
+                    id: teamMember.project_engineer_id,
+                    fullname: null,
+                    job: null
+                },
+                technicians: {
+                    tnc_tech: null,
+                    qaqc_tech: null,
+                    pms_tech: null
+                },
+                foreman: null,
+                team: [],
+                status: teamMember.status,
+                operations_start_date: teamMember.operations_start_date,
+                project_end_date: teamMember.project_end_date
+            });
+        }
+
+        const project = projectsMap.get(projectId);
+        
+        // Update project details if missing from result1
+        if (!project.status) {
+            project.status = teamMember.status;
+            project.operations_start_date = teamMember.operations_start_date;
+            project.project_end_date = teamMember.project_end_date;
+        }
+
+        // Set foreman
+        if (teamMember.Foreman && !project.foreman) {
+            project.foreman = {
+                id: teamMember.foreman_id,
+                name: teamMember.Foreman
+            };
+        }
+
+        // Add team member if valid
+        if (teamMember.emp_id && teamMember.e_fullname) {
+            const teamMemberObj = {
+                id: teamMember.emp_id,
+                username: teamMember.e_username,
+                fullname: teamMember.e_fullname,
+                job: teamMember.job
+            };
+
+            // Check if team member already exists to avoid duplicates
+            const exists = project.team.some(member => 
+                member.id === teamMemberObj.id
+            );
+            
+            if (!exists) {
+                project.team.push(teamMemberObj);
+            }
+        }
+    });
+
+    // Convert map to array and return
+    return Array.from(projectsMap.values());
+}
 }
 
 export { TeamModel }

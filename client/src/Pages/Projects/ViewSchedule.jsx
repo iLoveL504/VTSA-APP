@@ -256,7 +256,7 @@ const TestChart = ({projSched, projSchedIsLoading, holidays }) => {
     return (
         <>
             {/* Control Panel */}
-            <div className="control-panel" style={{ marginBottom: '20px', padding: '20px', background: '#f5f5f5', borderRadius: '8px' }}>
+            <div className="control-panel" style={{ marginBottom: '20px', padding: '20px', background: '#ffffffff', borderRadius: '8px' }}>
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
                     {/* Holidays Section */}
                     <div>

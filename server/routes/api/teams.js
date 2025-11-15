@@ -14,11 +14,15 @@ import {
         editTeam,
         assignProjPIC,
         getTncTechProjects,
-        getqaqcTechProjects
+        getqaqcTechProjects,
+        teamDashboardData
     } from '../../controllers/teamsController.js'
 
 router.route('/')
     .get(getAllTeams)
+
+router.route('/dashboard')
+    .get(teamDashboardData)
 
 router.route('/latest-team')
     .get(getLastTeamId)

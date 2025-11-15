@@ -117,6 +117,20 @@ export default createStore({
     setTeamNoProject: action((state, payload) => {
         state.teamsNoProject = payload
     }),
+    allTeams: [],
+    setAllTeams: action ((state, payload) => {
+        state.allTeams = payload
+    }),
+    fetchAllTeams: thunk(async (action) => {
+      const backendURL = import.meta.env.VITE_BACKEND_URL || "http://localhost:4000";
+      try {
+        const teams = await Axios.get(`${backendURL}/api/teams/dashboard`)
+        console.log(teams)
+        action.setAllTeams(teams.data)
+      } catch (err) {
+        console.log(err)
+      }
+    }),
     peProjects: [],
     setPeProjects: action((state, payload) => {
         state.peProjects = payload
@@ -433,14 +447,35 @@ findProjectTasks: thunk(async (actions, { projectId, projectData }, { getState }
     console.log(foundParentTask);
     
     if (!foundParentTask) {
-      actions.setProjectCompleted(true);
-      actions.setTasksIsLoading(false);
-      return;
+
+      console.log('inside foundParentTask:')
+      console.log(projectData)
+      if (projectData.will_resume) {
+        const bufferParent = fetchedData.find(t => t.task_id === 600)
+        const bufferTask = fetchedData.find(t => t.task_id === 601)
+        console.log(bufferParent)
+        console.log(bufferTask)
+
+        actions.setCurrentParentTask(bufferParent)
+        actions.setCurrentTask(bufferTask)
+        actions.setTasksIsLoading(false);
+        actions.setOnHold(true)
+        return
+      }
+      if (projectData.status === 'Completed') {
+        actions.setProjectCompleted(true);
+        actions.setTasksIsLoading(false);
+        return;        
+      }
+
     }
     
     if (projectData?.on_hold) {
+
       actions.setCurrentTask(projectData.current_task);
       actions.setCurrentParentTask(projectData.task_phase);
+    //  
+
       actions.setOnHold(true);
       actions.setTasksIsLoading(false);
       return;

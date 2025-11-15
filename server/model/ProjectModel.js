@@ -16,7 +16,6 @@ const summaryMap = {
 
 class ProjectModel {
     static async findById(id){
-        console.log(`Line 18: ${typeof id}`)
         const [results] = await pool.query(
             `           SELECT 
           p.*, 
@@ -210,8 +209,8 @@ console.log() //
     
     const foundCurrentTask = actualTask.task_name;
     const is_behind = actualTask.task_id !== projectedTask.task_id;
-    console.log('---------------line 214---------------')
-    console.log(`project ${project.id} is in ${foundCurrentTask}`)
+    // console.log('---------------line 214---------------')
+    // console.log(`project ${project.id} is in ${foundCurrentTask}`)
     // Resuming Project
     
     
@@ -229,6 +228,7 @@ console.log() //
         in_qaqc: in_qaqc ? 1 : 0,
         joint_inspection: joint_inspection ? 1 : 0,
         current_task_id: actualTask.task_id,
+        task_phase_id: foundParentTask.task_id,
         is_behind: is_behind ? 1 : 0,
         holdDays,
         isOnHold: false,
@@ -255,6 +255,7 @@ static async updateSingleProjectStatus(projectId, statusInfo) {
         holdDays,
         isOnHold,
         willResume,
+        task_phase_id
     } = statusInfo;
     // console.log(`project ${projectId} will resume: ${willResume}`)
     if (isOnHold && !willResume) {
@@ -282,7 +283,7 @@ static async updateSingleProjectStatus(projectId, statusInfo) {
       await pool.query(`update projects set on_hold = 0, will_resume = 0, 
         resume_date = null, request_resume = 0, request_hold = 0, status = ? where id = ?`, [task_phase, projectId])
     }
-
+    
     // Update project main data
     await pool.query(
         `UPDATE projects SET 
@@ -297,7 +298,8 @@ static async updateSingleProjectStatus(projectId, statusInfo) {
             in_tnc = ?,
             current_task_id = ?,
             is_behind = ?,
-            days_since_hold = ?
+            days_since_hold = ?,
+            task_phase_id = ?
         WHERE id = ?`,
         [
             start_date,
@@ -312,6 +314,7 @@ static async updateSingleProjectStatus(projectId, statusInfo) {
             current_task_id,
             is_behind,
             holdDays,
+            task_phase_id,
             projectId
         ]
     );
@@ -506,7 +509,7 @@ static async getProjectSchedule(id) {
 
   // Get Project Holidays
   static async holidaysPerProject (projId) {
-      console.log(`Line 486: ${projId}`)
+      // console.log(`Line 486: ${projId}`)
     const [result] = await pool.query(`select holiday from project_holidays where project_id = ?`, [projId])
     const holidays = result.map(r => new Date(r.holiday).toLocaleDateString())
     return holidays
@@ -630,7 +633,7 @@ static async adjustInstallationStart(projId, data) {
 }
 
 static async getTaskPhotos(id) {
-  console.log(`Line 608: ${id}`)
+  // console.log(`Line 608: ${id}`)
   const [results] = await pool.query('select * from task_photos where project_id = ?', [id])
   return results
 }
@@ -1111,10 +1114,71 @@ static async getTaskPhotos(id) {
   }
 
   static async assignProjQAQC (data) {
-    const {projId, qaqcId} = data
+    const {projId, qaqcId, inspection_date} = data
     await pool.query(`update project_manpower set qaqc_id = ? where project_id = ?`, [qaqcId, projId])
-    await pool.query(`update projects set qaqc_pending = 0, qaqc_is_assigned = 1, qaqc_ongoing = 0 where id = ?`, [projId])
+    await pool.query(`update projects set qaqc_pending = 0, qaqc_is_assigned = 1, qaqc_ongoing = 0, qaqc_inspection_date = ? where id = ?`, [inspection_date, projId])
     await this.addQAQCInspectionRecord(projId, data)
+
+  }
+
+  static async getQAQCHistory (projId) {
+    const [results] = await pool.query(`
+      select p.id, p.lift_name, qh.inspection_reason, qh.inspection_date, qh.inspection_complete,
+            qh.qaqc_id, concat(e.last_name, ' ', e.first_name) as \`full_name\`, pip.photo_url, pip.checklist, qp.doc_url as \`punchlist_url\`
+            from projects p 
+			join qaqc_inspection_history qh on qh.project_id = p.id
+            left join employees e on e.employee_id = qh.qaqc_id
+            left join project_inspection_photos pip on pip.inspection_id = qh.id
+            left join qaqc_punchlisting qp on qp.inspection_id = qh.id    
+      `)
+
+const grouped = results.reduce((acc, item) => {
+  const projectId = item.id;
+
+  // 1. Initialize project
+  if (!acc[projectId]) {
+    acc[projectId] = {
+      lift_name: item.lift_name,
+      inspections: []
+    };
+  }
+
+  // 2. Create unique key per inspection
+  const inspectionKey =
+    item.inspection_reason + "|" + item.inspection_date;
+
+  // 3. Check if this inspection already exists
+  let existing = acc[projectId].inspections.find(
+    (i) => i._key === inspectionKey
+  );
+
+  // 4. If not found, create it
+  if (!existing) {
+    existing = {
+      _key: inspectionKey, // internal key (remove later if needed)
+      inspection_reason: item.inspection_reason,
+      inspection_date: item.inspection_date,
+      inspection_complete: item.inspection_complete,
+      qaqc_id: item.qaqc_id,
+      full_name: item.full_name,
+      photos: [],
+      checklists: [],
+      punchlist_urls: []
+    };
+
+    acc[projectId].inspections.push(existing);
+  }
+
+  // 5. Push photo/checklist/punchlist if they exist
+  if (item.photo_url) existing.photos.push(item.photo_url);
+  if (item.checklist) existing.checklists.push(item.checklist);
+  if (item.punchlist_url) existing.punchlist_urls.push(item.punchlist_url);
+
+  return acc;
+}, {});
+
+
+    return grouped
 
   }
 

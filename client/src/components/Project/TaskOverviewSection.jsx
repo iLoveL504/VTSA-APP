@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 import { Grid } from 'ldrs/react'
 // 🕒 Utility
 const formatLocalDate = (isoString) => {
@@ -53,7 +53,7 @@ const OverarchingTaskInfo = ({
 }) => {
   if (!currentParentTask || Object.keys(currentParentTask).length === 0) return null;
 
-  if (onHold) {
+  if (onHold && !(proj.will_resume || !proj.request_resume)) {
     return (
       <div className="overarching-task-info hold">
         <div>
@@ -72,7 +72,7 @@ const OverarchingTaskInfo = ({
       </div>
     );
   }
-
+  console.log(currentParentTask)
   return (
     <div className="overarching-task-info">
       <div className="overarching-task-title">
@@ -280,6 +280,19 @@ const TaskOverviewSection = ({
   currentTaskPhase,
   onCreateSchedule,
 }) => {
+
+  useEffect(() => {
+    console.log('-----------TASK OVERVIEW DATA------------')
+    console.log(currentParentTask)
+    console.log(projectedTask)
+    console.log(proj)
+    console.log(onTaskDetails)
+    console.log(currentTask)
+    console.log(currentTaskPhase)
+    console.log(onCreateSchedule)
+
+    console.log('-----------TASK OVERVIEW DATA------------')
+  }, [])
 
 // const isReady =
 //   isLoaded &&

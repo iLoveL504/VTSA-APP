@@ -7,8 +7,10 @@ import { IoIosClose } from "react-icons/io"
 import useToggle from '../../hooks/useToggle'
 import { useStoreState } from 'easy-peasy'
 import { useNavigate } from 'react-router-dom'
+import { useSharedSocket } from '../../Context/SocketContext'
 
 const NavBar = ({ invertMenuToggle }) => {
+  const { utilitiesSocket } = useSharedSocket()
   const user = useStoreState(state => state.user)
   const notifications = useStoreState(state => state.notifications)
   const inbox= useStoreState(state => state.inbox) // <-- assuming you store inbox here
@@ -26,10 +28,10 @@ const NavBar = ({ invertMenuToggle }) => {
         n.employee_id === Number(sessionStorage.getItem('id'))
       )
       setNotifs(userNotifications)
-      setUnreadCount(userNotifications.length)
+      setUnreadCount(userNotifications.filter(n => !n.mark_read).length)
     }
   }, [notifications])
-
+  console.log(notifications)
   useEffect(() => {
     if (inbox) {
       setUserMessages(inbox)
@@ -39,6 +41,8 @@ const NavBar = ({ invertMenuToggle }) => {
 
   const handleNotificationClick = (notif) => {
     console.log('Clicked:', notif)
+    const id = notif.id
+    utilitiesSocket.emit("read_notification", {id})
     navigate(`/notification/${notif.notification_id}`)
   }
 
@@ -47,11 +51,11 @@ const NavBar = ({ invertMenuToggle }) => {
   }
 
   const markAllAsRead = () => {
-    setUnreadCount(0)
+    utilitiesSocket.emit('read_all_notifications', {id: user.employee_id})
   }
 
   const markAllMessagesAsRead = () => {
-    setUnreadMsgCount(0)
+    console.log('mark')
   }
 
   const clearAllNotifications = () => {
@@ -177,12 +181,12 @@ const NavBar = ({ invertMenuToggle }) => {
                   </button>
                 </div>
               </div>
-
+              {console.log(notifs)}
               <div className="notification-list">
                 {notifs.length === 0 ? (
                   <p className="no-notifications">No new notifications</p>
                 ) : (
-                  [...notifs].reverse().map((notif) => (
+                  [...notifs].reverse().slice(0,10).map((notif) => (
                     <div
                       key={notif.notification_id}
                       className="notification-item unread"
@@ -192,8 +196,8 @@ const NavBar = ({ invertMenuToggle }) => {
                         <IoIosNotifications />
                       </div>
                       <div className="notif-content">
-                        <h5 className="notif-title">{notif.subject}</h5>
-                        <p className="notif-body">{notif.body}</p>
+                        <h5 className="notif-title">{String(notif.subject || '')}</h5>
+                        <p className="notif-body">{String(notif.body || '')}</p>
                         <p className="notif-meta">
                           {new Date(notif.notify_date).toLocaleDateString()}{" "}
                           {new Date(notif.notify_date).toLocaleTimeString()}

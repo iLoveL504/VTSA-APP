@@ -4,6 +4,37 @@ import '../../css/ProjectManagerDashboard.css'
 import 'ldrs/react/Grid.css'
 import { Grid } from 'ldrs/react'
 import { useStoreState } from 'easy-peasy';
+// MUI icons
+import AssessmentIcon from '@mui/icons-material/Assessment';
+import BoltIcon from '@mui/icons-material/Bolt';
+import WarningIcon from '@mui/icons-material/Warning';
+import AutorenewIcon from '@mui/icons-material/Autorenew';
+import PauseCircleFilledIcon from '@mui/icons-material/PauseCircleFilled';
+import MoveToInboxIcon from '@mui/icons-material/MoveToInbox';
+import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
+import FlagIcon from '@mui/icons-material/Flag';
+import AddIcon from '@mui/icons-material/Add';
+import ReportProblemIcon from '@mui/icons-material/ReportProblem';
+
+// Replacements for react-icons/md
+import ErrorIcon from '@mui/icons-material/Error';
+import UpdateIcon from '@mui/icons-material/Update';
+import InboxIcon from '@mui/icons-material/Inbox';
+import PauseCircleIcon from '@mui/icons-material/PauseCircle';
+import BuildCircleIcon from '@mui/icons-material/BuildCircle';
+import BuildIcon from '@mui/icons-material/Build';
+
+import { 
+  MdError,
+  MdUpdate,
+  MdInbox,
+  MdPauseCircleFilled,
+  MdBuildCircle,
+  MdBuild
+} from "react-icons/md";
+
+
 
 const ProjectManagerDashboard = ({ onNewProject, clearProjectData, clearProjectTasks }) => {
   const navigate = useNavigate();
@@ -155,75 +186,77 @@ const ProjectManagerDashboard = ({ onNewProject, clearProjectData, clearProjectT
 
       {/* Key Metrics Grid */}
       <div className="stats-grid">
-        <div className="stat-card">
-          <div className="stat-icon" style={{backgroundColor: 'rgba(49, 90, 149, 0.1)'}}>
-            <span style={{color: '#315a95'}}>📊</span>
-          </div>
-          <div className="stat-content">
-            <h3>{projectManagerData.totalProjects}</h3>
-            <p>Total Projects</p>
-          </div>
-        </div>
+<div className="stat-card">
+  <div className="stat-icon" style={{backgroundColor: 'rgba(49, 90, 149, 0.1)'}}>
+    <AssessmentIcon style={{color: '#315a95'}} /> {/* total projects */}
+  </div>
+  <div className="stat-content">
+    <h3>{projectManagerData.totalProjects}</h3>
+    <p>Total Projects</p>
+  </div>
+</div>
 
-        <div className="stat-card">
-          <div className="stat-icon" style={{backgroundColor: 'rgba(40, 167, 69, 0.1)'}}>
-            <span style={{color: '#28a745'}}>⚡</span>
-          </div>
-          <div className="stat-content">
-            <h3>{projectManagerData.activeProjects}</h3>
-            <p>Active Projects</p>
-          </div>
-        </div>
+<div className="stat-card">
+  <div className="stat-icon" style={{backgroundColor: 'rgba(40, 167, 69, 0.1)'}}>
+    <BoltIcon style={{color: '#28a745'}} /> {/* active */}
+  </div>
+  <div className="stat-content">
+    <h3>{projectManagerData.activeProjects}</h3>
+    <p>Active Projects</p>
+  </div>
+</div>
 
-        <div className="stat-card">
-          <div className="stat-icon" style={{backgroundColor: 'rgba(220, 53, 69, 0.1)'}}>
-            <span style={{color: '#dc3545'}}>⚠️</span>
-          </div>
-          <div className="stat-content">
-            <h3>{projectManagerData.criticalProjects.length}</h3>
-            <p>Critical</p>
-          </div>
-        </div>
+<div className="stat-card">
+  <div className="stat-icon" style={{backgroundColor: 'rgba(220, 53, 69, 0.1)'}}>
+    <ReportProblemIcon style={{color: '#dc3545'}} /> {/* critical */}
+  </div>
+  <div className="stat-content">
+    <h3>{projectManagerData.criticalProjects.length}</h3>
+    <p>Critical</p>
+  </div>
+</div>
 
-        <div className="stat-card">
-          <div className="stat-icon" style={{backgroundColor: 'rgba(255, 193, 7, 0.1)'}}>
-            <span style={{color: '#ffc107'}}>🔄</span>
-          </div>
-          <div className="stat-content">
-            <h3>{projectManagerData.laggingProjects.length}</h3>
-            <p>Lagging</p>
-          </div>
-        </div>
+<div className="stat-card">
+  <div className="stat-icon" style={{backgroundColor: 'rgba(206, 155, 2, 0.1)'}}>
+    <AutorenewIcon style={{color: '#e2b324ff'}} /> {/* lagging */}
+  </div>
+  <div className="stat-content">
+    <h3>{projectManagerData.laggingProjects.length}</h3>
+    <p>Lagging</p>
+  </div>
+</div>
 
-        <div className="stat-card">
-          <div className="stat-icon" style={{backgroundColor: 'rgba(108, 117, 125, 0.1)'}}>
-            <span style={{color: '#6c757d'}}>⏸️</span>
-          </div>
-          <div className="stat-content">
-            <h3>{projectManagerData.pendingProjects.length}</h3>
-            <p>On Hold</p>
-          </div>
-        </div>
+<div className="stat-card">
+  <div className="stat-icon" style={{backgroundColor: 'rgba(108, 117, 125, 0.1)'}}>
+    <PauseCircleIcon style={{color: '#6c757d'}} /> {/* on hold */}
+  </div>
+  <div className="stat-content">
+    <h3>{projectManagerData.pendingProjects.length}</h3>
+    <p>On Hold</p>
+  </div>
+</div>
 
-        <div className="stat-card">
-          <div className="stat-icon" style={{backgroundColor: 'rgba(108, 117, 125, 0.1)'}}>
-            <span style={{color: '#6c757d'}}>📥</span>
-          </div>
-          <div className="stat-content">
-            <h3>{projectManagerData.incomingProjects.length}</h3>
-            <p>Incoming</p>
-          </div>
-        </div>
+<div className="stat-card">
+  <div className="stat-icon" style={{backgroundColor: 'rgba(81, 21, 165, 0.1)'}}>
+    <InboxIcon style={{color: '#7862b4ff'}} /> {/* incoming */}
+  </div>
+  <div className="stat-content">
+    <h3>{projectManagerData.incomingProjects.length}</h3>
+    <p>Incoming</p>
+  </div>
+</div>
 
-        <div className="stat-card">
-          <div className="stat-icon" style={{backgroundColor: 'rgba(23, 162, 184, 0.1)'}}>
-            <span style={{color: '#17a2b8'}}>✅</span>
-          </div>
-          <div className="stat-content">
-            <h3>{projectManagerData.completedProjects}</h3>
-            <p>Completed</p>
-          </div>
-        </div>
+<div className="stat-card">
+  <div className="stat-icon" style={{backgroundColor: 'rgba(23, 162, 184, 0.1)'}}>
+    <CheckCircleIcon style={{color: '#17a2b8'}} /> {/* completed */}
+  </div>
+  <div className="stat-content">
+    <h3>{projectManagerData.completedProjects}</h3>
+    <p>Completed</p>
+  </div>
+</div>
+
+
       </div>
 
       <div className="dashboard-content">
@@ -239,7 +272,10 @@ const ProjectManagerDashboard = ({ onNewProject, clearProjectData, clearProjectT
               {projectManagerData.criticalProjects.length > 0 && (
                 <div className="content-card critical-alert">
                   <div className="card-header">
-                    <h3 style={{color: '#dc3545'}}>⚠️ Critical Projects</h3>
+                    <h3 style={{color: '#dc3545'}}>
+  <MdError size={22} style={{marginRight: '6px'}} /> Critical Projects
+</h3>
+
                     <span className="badge critical">{projectManagerData.criticalProjects.length} projects</span>
                   </div>
                   <div className="projects-list">
@@ -254,7 +290,10 @@ const ProjectManagerDashboard = ({ onNewProject, clearProjectData, clearProjectT
               {projectManagerData.laggingProjects.length > 0 && (
                 <div className="content-card lagging-alert">
                   <div className="card-header">
-                    <h3 style={{color: '#ffc107'}}>🔄 Lagging Projects</h3>
+                    <h3 style={{color: '#ffc107'}}>
+  <MdUpdate size={22} style={{marginRight: '6px'}} /> Lagging Projects
+</h3>
+
                     <span className="badge lagging">{projectManagerData.laggingProjects.length} projects</span>
                   </div>
                   <div className="projects-list">
@@ -268,7 +307,10 @@ const ProjectManagerDashboard = ({ onNewProject, clearProjectData, clearProjectT
             {projectManagerData.incomingProjects.length > 0 && (
               <div className="content-card incoming-alert">
                 <div className="card-header">
-                  <h3 style={{color: '#6f42c1'}}>📥 Incoming Projects</h3>
+                  <h3 style={{color: '#6f42c1'}}>
+  <MdInbox size={22} style={{marginRight: '6px'}} /> Incoming Projects
+</h3>
+
                   <span className="badge incoming">{projectManagerData.incomingProjects.length} projects</span>
                 </div>
                 <div className="projects-list">
@@ -283,7 +325,10 @@ const ProjectManagerDashboard = ({ onNewProject, clearProjectData, clearProjectT
               {projectManagerData.pendingProjects.length > 0 && (
                 <div className="content-card pending-alert">
                   <div className="card-header">
-                    <h3 style={{color: '#6c757d'}}>⏸️ Pending Projects (Cannot Proceed to TNC)</h3>
+                    <h3 style={{color: '#6c757d'}}>
+  <MdPauseCircleFilled size={22} style={{marginRight: '6px'}} /> Pending Projects
+</h3>
+
                     <span className="badge pending">{projectManagerData.pendingProjects.length} projects</span>
                   </div>
                   <div className="projects-list">
@@ -297,7 +342,9 @@ const ProjectManagerDashboard = ({ onNewProject, clearProjectData, clearProjectT
               {projectManagerData.tncProjectsThisMonth.length > 0 && (
                 <div className="content-card tnc-alert">
                   <div className="card-header">
-                    <h3 style={{color: '#17a2b8'}}>🔧 Upcoming Hand overs This Month ({getMonthName(new Date().toISOString())})</h3>
+                    <h3 style={{color: '#17a2b8'}}>
+                      <MdBuildCircle size={22} style={{marginRight: '6px'}} />Upcoming Hand overs This Month ({getMonthName(new Date().toISOString())})
+                    </h3>
                     <span className="badge tnc">{projectManagerData.tncProjectsThisMonth.length} projects</span>
                   </div>
                   <div className="projects-list">
@@ -312,7 +359,9 @@ const ProjectManagerDashboard = ({ onNewProject, clearProjectData, clearProjectT
               {projectManagerData.tncProjectsNextMonth.length > 0 && (
                 <div className="content-card tnc-next-alert">
                   <div className="card-header">
-                    <h3 style={{color: '#20c997'}}>🔧 TNC Next Month ({getMonthName(new Date(new Date().getFullYear(), new Date().getMonth() + 1, 1).toISOString())})</h3>
+                    <h3 style={{color: '#20c997'}}>
+                      <MdBuild size={22} style={{marginRight: '6px'}} /> Upcoming Next Month ({getMonthName(new Date(new Date().getFullYear(), new Date().getMonth() + 1, 1).toISOString())})
+                      </h3>
                     <span className="badge tnc-next">{projectManagerData.tncProjectsNextMonth.length} projects</span>
                   </div>
                   <div className="projects-list">
@@ -339,27 +388,7 @@ const ProjectManagerDashboard = ({ onNewProject, clearProjectData, clearProjectT
               </div>
 
               {/* Project Status Distribution */}
-              <div className="content-card">
-                <div className="card-header">
-                  <h3>Project Status Distribution</h3>
-                </div>
-                <div className="status-distribution">
-                  {Object.entries(projectManagerData.statusDistribution).map(([status, count]) => (
-                    <div key={status} className="status-item">
-                      <span className="status-name">{status}</span>
-                      <div className="status-bar-container">
-                        <div 
-                          className="status-bar"
-                          style={{ 
-                            width: `${(count / projectManagerData.totalProjects) * 100}%` 
-                          }}
-                        ></div>
-                      </div>
-                      <span className="status-count">{count}</span>
-                    </div>
-                  ))}
-                </div>
-              </div>          
+      
             </>            
           )}
 
@@ -473,6 +502,28 @@ const ProjectManagerDashboard = ({ onNewProject, clearProjectData, clearProjectT
               ))}
             </div>
           </div>
+
+                        <div className="content-card">
+                <div className="card-header">
+                  <h3>Project Status Distribution</h3>
+                </div>
+                <div className="status-distribution">
+                  {Object.entries(projectManagerData.statusDistribution).map(([status, count]) => (
+                    <div key={status} className="status-item">
+                      <span className="status-name">{status}</span>
+                      <div className="status-bar-container">
+                        <div 
+                          className="status-bar"
+                          style={{ 
+                            width: `${(count / projectManagerData.totalProjects) * 100}%` 
+                          }}
+                        ></div>
+                      </div>
+                      <span className="status-count">{count}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>    
         </div>
       </div>
     </div>

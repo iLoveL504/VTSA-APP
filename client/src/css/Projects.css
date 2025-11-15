@@ -166,6 +166,7 @@
   align-items: center;
   padding: 1rem;
   gap: 1rem;
+  animation: none !important;
 }
 
 .ProjectMenu .table-cell {
@@ -640,13 +641,13 @@
   min-width: 300px;
 }
 
-.search-input-wrapper {
+.ProjectMenu .search-input-wrapper {
   position: relative;
   display: flex;
   align-items: center;
 }
 
-.search-input {
+.ProjectMenu .search-input {
   width: 100%;
   padding: 0.75rem 3rem 0.75rem 1rem;
   border: 2px solid #e2e8f0;
@@ -658,7 +659,7 @@
   border: 1px solid #e9ecef;
 }
 
-.search-input:focus {
+.ProjectMenu .search-input:focus {
   outline: none;
   border-color: #315a95;
   box-shadow: 0 0 0 3px rgba(49, 90, 149, 0.1);
@@ -962,12 +963,13 @@
   overflow: auto;
 }
 
-.modal-header {
+.ProjectMenu .modal-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
   padding: 20px;
   border-bottom: 1px solid #e9ecef;
+  background-color: #004085;
 }
 
 .modal-header h3 {

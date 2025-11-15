@@ -6,8 +6,10 @@ import { GoProjectRoadmap } from "react-icons/go";
 import { IoIosDocument } from "react-icons/io";
 import { useNavigate, Link } from 'react-router-dom';
 import { BiSolidLogOut } from "react-icons/bi"
+//import {useState} from 'react'
 
 const ProjectManagerMenu = () => {
+  //const [selectedTab, setSelectedTab] = useState(null)
   const navigate = useNavigate()
   const handleLogout = () => {
     sessionStorage.clear()
@@ -22,7 +24,7 @@ const ProjectManagerMenu = () => {
                 Dashboard
             </li>
           </Link>
-          <Link to="/technician">
+          <Link to="/admin/users">
             <li>
                 <IoPerson style={{ color: 'white' }}/>
                 Users

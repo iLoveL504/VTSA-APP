@@ -44,6 +44,7 @@ import {useSharedSocket} from './Context/SocketContext.js'
 import Inbox from './Pages/Inbox.jsx'
 import ServiceReportPage from './Pages/PMS/ServiceReportPage.jsx'
 import CallbackPage from './Pages/PMS/CallbackPage.jsx'
+import PMSMain from './Pages/PMS/PMSMain.jsx'
 
 function App() {
   const backendURL = import.meta.env.VITE_BACKEND_URL || 'https://localhost:4000';
@@ -69,6 +70,7 @@ const { data: notifData } =
   const setPMSProjects = useStoreActions(actions => actions.setPMSProjects)
   const fetchProjects = useStoreActions(actions => actions.fetchProjects)
   const fetchDesignatedProjects = useStoreActions(action => action.fetchDesignatedProjects)
+  const fetchAllTeams = useStoreActions(action => action.fetchAllTeams)
   const updateFilteredProjectStatuses = useStoreActions(actions => actions.updateFilteredProjectStatuses);
 
   const [empId, setEmpId] = useState(null)
@@ -124,8 +126,10 @@ useEffect(() => {
   if (pmsData) setPMSProjects(pmsData)
 }, [pmsData, setPMSProjects])
 
+//action fetches
 useEffect(() => {
   fetchProjects()
+  fetchAllTeams()
 }, [])
 
 useEffect(() => {
@@ -164,7 +168,11 @@ useEffect(() => {
             <Route path=":projId" element={<ProjectInfo />} />
             <Route path=":projId/team" element={<AssignTeam />} />
             <Route path=":projId/qaqc" element={<QAQC_Checklist />} />
+
             <Route path=":projId/progress" element={<ProjectProgress />} />
+            <Route path=":projId/task-details" element={<ProjectProgress />} />
+
+
             <Route path=":projId/report" element={<ProjectReport />} />
             <Route path=":projId/custom" element={<Test1 />} />
             <Route path=":projId/kickoff" element={<KickOffChecklist />} />
@@ -179,7 +187,7 @@ useEffect(() => {
           
           <Route path="testsheet" element={<TestJspreadsheet />} />
           <Route path="PMS">
-            <Route index element={<PMSAssignment />} />
+            <Route index element={<PMSMain />} />
             <Route path="new-entry" element={<PMSNewEntry />} />
             <Route path="inspections" element={<PMSInspections />} />
             <Route path="inspections/:clientId" element={<InspectionPage />} />

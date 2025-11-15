@@ -68,6 +68,31 @@ export default function utilitiesNamespace (usp) {
                 callback({success: false, error: error.message})
             }
         })
+        // mark notification read 
+        socket.on("read_notification", async (data) => {
+            try {
+                console.log(data)
+                const { id } = data
+                await notifications.readNotification(id)
+                const results = await notifications.getAllNotifications()
+                socket.emit("notification_update_done", results)
+            } catch (err) {
+                console.error('Error: ', err)
+                callback({success: false, error: err.message})                
+            }
+        })
+        socket.on("read_all_notifications", async (data) => {
+            try {
+                console.log(data)
+                const { id } = data
+                await notifications.readAllNotifications(id)
+                const results = await notifications.getAllNotifications()
+                socket.emit("notification_update_done", results)
+            } catch (err) {
+                console.error('Error: ', err)
+                callback({success: false, error: err.message})                
+            }
+        })
         // set contract amount
         socket.on("set_contract", async (data) => {
             const {amount, projId} = data

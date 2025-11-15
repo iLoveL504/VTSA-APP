@@ -1,83 +1,93 @@
-import React, { useState, useEffect } from 'react'
+import React, { useEffect } from 'react'
 import '../../css/ProjectTeam.css'
 import { Grid } from 'ldrs/react'
 import { Axios } from '../../api/axios'
+import { useStoreState } from 'easy-peasy'
 
-const ProjectTeam = ({teamInfo, proj, teamTechs, projId}) => {
-    const[teamMIds, setTeamMIds] = useState([])
-    const[pic, setPIC] = useState(null)
-    
-    console.log(teamTechs)
-    console.log(teamInfo)
-    
-    // ADD GUARDS: Safe access to arrays
-    const teamInfoArray = Array.isArray(teamInfo) ? teamInfo : [];
-    const teamTechsArray = Array.isArray(teamTechs) ? teamTechs : [];
-    
-    // Get Foreman safely
-    const Foreman = teamInfoArray.length > 0 ? teamInfoArray[0] : null;
-    
-    console.log(teamMIds)
-    
-    // Get unique team composition safely
-    const teamComposition = teamTechsArray.length > 0 ? teamTechsArray[0] : null;
-    
-    console.log(teamInfoArray)
+// Material-UI Icons
+import {
 
-    // Group team members by job role SAFELY
-    const groupedTeamMembers = {};
-    if (teamTechsArray.length > 0) {
-        teamTechsArray.forEach(member => {
-            const job = member.job || 'Unassigned';
-            if (!groupedTeamMembers[job]) {
-                groupedTeamMembers[job] = [];
-            }
-            groupedTeamMembers[job].push(member);
-        });
+  Groups as GroupsIcon,
+  Engineering as EngineeringIcon,
+  SupervisorAccount as SupervisorAccountIcon,
+  Build as BuildIcon,
+  Construction as ConstructionIcon,
+  Settings as SettingsIcon,
+  Assignment as AssignmentIcon,
+  Person as PersonIcon,
+  Badge as BadgeIcon,
+  Schedule as ScheduleIcon,
+  Business as BusinessIcon,
+  Save as SaveIcon,
+  CheckCircle as CheckCircleIcon
+} from '@mui/icons-material'
+
+const ProjectTeam = ({ teamInfo, proj, teamTechs, projId }) => {
+    const { allTeams } = useStoreState(state => state)
+    
+    // Find the project team from allTeams using the new data format
+    const projectTeam = allTeams.find(t => t.project_id === Number(projId))
+    
+    // Use the new data format if available, otherwise fall back to old format
+    const teamData = projectTeam || {
+        project_engineer: {},
+        technicians: {},
+        foreman: null,
+        team: [],
+        status: '',
+        operations_start_date: '',
+        project_end_date: ''
     }
 
-    const handlePICChange = (e) => {
-        const value = e.target.value
-        console.log(value)
-        setPIC(value)
+    // Safe access to arrays and objects
+    const teamMembers = Array.isArray(teamData.team) ? teamData.team : []
+    const projectEngineer = teamData.project_engineer || {}
+    const technicians = teamData.technicians || {}
+    const foreman = teamData.foreman
+
+    // Group team members by job role
+    const groupedTeamMembers = {
+        'Skilled Installer': teamMembers.filter(m => m.job === 'Skilled Installer'),
+        'Installer': teamMembers.filter(m => m.job === 'Installer')
     }
 
-    const handleSavePIC = async () => {
-        console.log(pic)
-        try {
-            const response = await Axios.put(`/api/teams/assign-pic/${projId}`, {picId: pic})
-            if(!response?.data.success) {
-                window.alert('Error updating PIC')
-            } else {
-                window.alert('PIC Updated')
-                window.location.reload()
-            }
-        } catch (err) {
-            console.error(err)
-        }
-    }
+
 
     useEffect(() => {
-        if (teamInfoArray.length > 0) {
-            const eIds = teamInfoArray.map(t => {
-                return {
-                    id: t.emp_id,
-                    fullname: t.e_fullname,
-                    job: t.job
-                }
+        // Build the list of available PIC candidates
+        const picCandidates = []
+        
+        // Add project engineer if available
+        if (projectEngineer.id) {
+            picCandidates.push({
+                id: projectEngineer.id,
+                fullname: projectEngineer.fullname,
+                job: 'Project Engineer'
             })
-            const fId = teamInfoArray[0].foreman_id
-            const fname = teamInfoArray[0].Foreman
-            const ids = [...eIds, {id: fId, fullname: fname, job: 'Foreman'}]
-            setPIC(proj?.project_PIC || null)
-            setTeamMIds(ids)            
         }
-    }, [teamInfoArray, proj])
+        
+        // Add foreman if available
+        if (foreman && foreman.id) {
+            picCandidates.push({
+                id: foreman.id,
+                fullname: foreman.name,
+                job: 'Foreman'
+            })
+        }
+        
+        // Add team members
+        teamMembers.forEach(member => {
+            picCandidates.push({
+                id: member.id,
+                fullname: member.fullname,
+                job: member.job
+            })
+        })
 
-    console.log(groupedTeamMembers)
+    }, [projectEngineer, foreman, teamMembers, proj])
 
-    // ADD LOADING STATE
-    if (!teamInfo && !teamTechs) {
+    // Loading state
+    if (!projectTeam && !teamInfo && !teamTechs) {
         return (
             <div className='ProjectTeam'>
                 <div className="loading-state">
@@ -90,101 +100,245 @@ const ProjectTeam = ({teamInfo, proj, teamTechs, projId}) => {
 
     return (
         <div className='ProjectTeam'>
-            <h3>Project Team Composition</h3>
-            
-            {/* Team Composition Overview */}
-            <div className="team-composition">
-                <h4>Key Roles</h4>
-                <div className="composition-grid">
-                    <div className="role-item">
-                        <strong>Project Engineer:</strong>
-                        <span>{teamComposition?.pe_fullname || 'Not assigned'}</span>
+            {/* Header */}
+            <div className="team-header">
+                <GroupsIcon className="header-icon" />
+                <div>
+                    <h2>Project Team</h2>
+                    <p>Team composition and assignments for {teamData.lift_name}</p>
+                </div>
+            </div>
+
+            {/* Project Status Overview */}
+            <div className="project-overview">
+                <div className="overview-card">
+                    <div className="overview-item">
+                        <span className="overview-label">Project Status</span>
+                        <span className={`status-badge ${teamData.status?.toLowerCase().replace(' ', '-')}`}>
+                            {teamData.status || 'Unknown'}
+                        </span>
                     </div>
-                    <div className="role-item">
-                        <strong>TNC Tech:</strong>
-                        <span>{teamComposition?.tnc_fullname || 'Not assigned'}</span>
+                    <div className="overview-item">
+                        <span className="overview-label">Operations Start</span>
+                        <span className="overview-value">
+                            {teamData.operations_start_date ? 
+                                new Date(teamData.operations_start_date).toLocaleDateString() : 
+                                'Not scheduled'
+                            }
+                        </span>
                     </div>
-                    <div className="role-item">
-                        <strong>QAQC Tech:</strong>
-                        <span>{teamComposition?.qaqc_fullname || 'Not assigned'}</span>
-                    </div>
-                    <div className="role-item">
-                        <strong>PMS Tech:</strong>
-                        <span>{teamComposition?.pms_fullname || 'Not assigned'}</span>
+                    <div className="overview-item">
+                        <span className="overview-label">Project End</span>
+                        <span className="overview-value">
+                            {teamData.project_end_date ? 
+                                new Date(teamData.project_end_date).toLocaleDateString() : 
+                                'Not scheduled'
+                            }
+                        </span>
                     </div>
                 </div>
             </div>
 
-            {/* Installation Team */}
-            <div className="installation-team">
-                <h4>Installation Team</h4>
-                
-                {/* Project In Charge */}
-                <div className='team-section'>
-                    <h5>Project In Charge</h5>
-                    <div>
-                        <label htmlFor="equipmentType">Project In Charge</label>
-                        <select
-                            id="equipmentType"
-                            name="equipmentType"
-                            value={pic || ''}
-                            onChange={handlePICChange}
-                            required
-                        >
-                            <option value=""></option>
-                            {Array.isArray(teamMIds) && teamMIds.map((type) => (
-                                <option key={`M-${type.id}`} value={type.id}>
-                                    {type.fullname}
-                                </option>
-                            ))}
-                        </select>                    
-                    </div>
-                    <button onClick={handleSavePIC}>Save Project In-Charge</button>
-                </div>
-                
-                {/* Foreman */}
-                {Foreman && (
+            <div className="team-content">
+                {/* Left Column - Leadership & Technical Roles */}
+                <div className="team-column leadership-column">
+
+                    {/* Project Leadership */}
                     <div className="team-section">
-                        <h5>Foreman</h5>
-                        <div className="team-member foreman">
-                            <span className="member-name">{Foreman.Foreman}</span>
-                            <span className="member-username">({Foreman.foreman_id})</span>
+                        <div className="section-header">
+                            <EngineeringIcon className="section-icon" />
+                            <h3>Project Leadership</h3>
+                        </div>
+                        <div className="leadership-grid">
+                            {/* Project Engineer */}
+                            <div className="leadership-card">
+                                <div className="role-header">
+                                    <EngineeringIcon className="role-icon" />
+                                    <span className="role-title">Project Engineer</span>
+                                </div>
+                                <div className="person-info">
+                                    {projectEngineer.fullname ? (
+                                        <>
+                                            <span className="person-name">{projectEngineer.fullname}</span>
+                                            <span className="person-id">ID: {projectEngineer.id}</span>
+                                        </>
+                                    ) : (
+                                        <span className="not-assigned">Not assigned</span>
+                                    )}
+                                </div>
+                            </div>
+
+                            {/* Foreman */}
+                            <div className="leadership-card">
+                                <div className="role-header">
+                                    <SupervisorAccountIcon className="role-icon" />
+                                    <span className="role-title">Foreman</span>
+                                </div>
+                                <div className="person-info">
+                                    {foreman && foreman.name ? (
+                                        <>
+                                            <span className="person-name">{foreman.name}</span>
+                                            <span className="person-id">ID: {foreman.id}</span>
+                                        </>
+                                    ) : (
+                                        <span className="not-assigned">Not assigned</span>
+                                    )}
+                                </div>
+                            </div>
                         </div>
                     </div>
-                )}
-                
-                {/* Skilled Installers */}
-                {teamInfoArray.filter(m => m.job === 'Skilled Installer').length > 0 && (
-                    <div className="team-section">
-                        <h5>Skilled Installer(s)</h5>
-                        {teamInfoArray.filter(m => m.job === 'Skilled Installer').map((m, index) => (
-                            <div key={index} className="team-members-list">
-                                <div className="member-name">{m.e_fullname}</div> 
-                            </div>
-                        ))}
-                    </div>
-                )}
-                
-                {/* Installers by Job Type */}
-                {teamInfoArray.filter(m => m.job === 'Installer').length > 0 && (
-                    <div className="team-section">
-                        <h5>Installers</h5>
-                        {teamInfoArray.filter(m => m.job === 'Installer').map((m, index) => (
-                            <div key={index} className="team-members-list">
-                                <div className="member-name">{m.e_fullname}</div>
-                            </div>
-                        ))}
-                    </div>
-                )}
 
+                    {/* Technical Specialists */}
+                    <div className="team-section">
+                        <div className="section-header">
+                            <SettingsIcon className="section-icon" />
+                            <h3>Technical Specialists</h3>
+                        </div>
+                        <div className="technicians-grid">
+                            {/* TNC Technician */}
+                            <div className="technician-card">
+                                <div className="technician-header">
+                                    <BuildIcon className="tech-icon" />
+                                    <span className="tech-role">TNC Technician</span>
+                                </div>
+                                <div className="technician-info">
+                                    {technicians.tnc_tech ? (
+                                        <>
+                                            <span className="tech-name">{technicians.tnc_tech.fullname}</span>
+                                            <span className="tech-id">ID: {technicians.tnc_tech.id}</span>
+                                        </>
+                                    ) : (
+                                        <span className="not-assigned">Not assigned</span>
+                                    )}
+                                </div>
+                            </div>
+
+                            {/* QA/QC Technician */}
+                            <div className="technician-card">
+                                <div className="technician-header">
+                                    <AssignmentIcon className="tech-icon" />
+                                    <span className="tech-role">QA/QC Technician</span>
+                                </div>
+                                <div className="technician-info">
+                                    {technicians.qaqc_tech ? (
+                                        <>
+                                            <span className="tech-name">{technicians.qaqc_tech.fullname}</span>
+                                            <span className="tech-id">ID: {technicians.qaqc_tech.id}</span>
+                                        </>
+                                    ) : (
+                                        <span className="not-assigned">Not assigned</span>
+                                    )}
+                                </div>
+                            </div>
+
+                            {/* PMS Technician */}
+                            <div className="technician-card">
+                                <div className="technician-header">
+                                    <BuildIcon className="tech-icon" />
+                                    <span className="tech-role">PMS Technician</span>
+                                </div>
+                                <div className="technician-info">
+                                    {technicians.pms_tech ? (
+                                        <>
+                                            <span className="tech-name">{technicians.pms_tech.fullname}</span>
+                                            <span className="tech-id">ID: {technicians.pms_tech.id}</span>
+                                        </>
+                                    ) : (
+                                        <span className="not-assigned">Not assigned</span>
+                                    )}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                {/* Right Column - Installation Team */}
+                <div className="team-column installation-column">
+                    <div className="team-section">
+                        <div className="section-header">
+                            <GroupsIcon className="section-icon" />
+                            <h3>Installation Team</h3>
+                            <span className="team-count">{teamMembers.length} members</span>
+                        </div>
+
+                        {/* Skilled Installers */}
+                        {groupedTeamMembers['Skilled Installer'].length > 0 && (
+                            <div className="role-section">
+                                <div className="role-title">
+                                    <BuildIcon className="role-title-icon" />
+                                    <h4>Skilled Installers</h4>
+                                    <span className="role-count">{groupedTeamMembers['Skilled Installer'].length}</span>
+                                </div>
+                                <div className="members-list">
+                                    {groupedTeamMembers['Skilled Installer'].map((member) => (
+                                        <div key={member.id} className="team-member-card skilled">
+                                            <PersonIcon className="member-avatar" />
+                                            <div className="member-details">
+                                                <span className="member-name">{member.fullname}</span>
+                                                <div className="member-meta">
+                                                    <span className="member-username">@{member.username}</span>
+                                                    <span className="member-id">ID: {member.id}</span>
+                                                </div>
+                                            </div>
+                                            <div className="member-badge skilled-badge">
+                                                Skilled
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        )}
+
+                        {/* Installers */}
+                        {groupedTeamMembers['Installer'].length > 0 && (
+                            <div className="role-section">
+                                <div className="role-title">
+                                    <ConstructionIcon className="role-title-icon" />
+                                    <h4>Installers</h4>
+                                    <span className="role-count">{groupedTeamMembers['Installer'].length}</span>
+                                </div>
+                                <div className="members-list">
+                                    {groupedTeamMembers['Installer'].map((member) => (
+                                        <div key={member.id} className="team-member-card installer">
+                                            <PersonIcon className="member-avatar" />
+                                            <div className="member-details">
+                                                <span className="member-name">{member.fullname}</span>
+                                                <div className="member-meta">
+                                                    <span className="member-username">@{member.username}</span>
+                                                    <span className="member-id">ID: {member.id}</span>
+                                                </div>
+                                            </div>
+                                            <div className="member-badge installer-badge">
+                                                Installer
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        )}
+
+                        {/* Empty State for Installation Team */}
+                        {teamMembers.length === 0 && (
+                            <div className="empty-team">
+                                <GroupsIcon className="empty-icon" />
+                                <h4>No Installation Team Assigned</h4>
+                                <p>This project doesn't have an installation team assigned yet.</p>
+                            </div>
+                        )}
+                    </div>
+                </div>
             </div>
 
-            {/* Empty State */}
-            {(teamTechsArray.length === 0 && teamInfoArray.length === 0) && (
-                <div className="empty-state">
-                    <p>No team information available for this project.</p>
+            {/* Project Summary */}
+            <div className="project-summary">
+                <div className="summary-card">
+                    <BusinessIcon className="summary-icon" />
+                    <div className="summary-content">
+                        <h4>{teamData.lift_name}</h4>
+                        <p>{teamData.client} • Project #{teamData.project_id}</p>
+                    </div>
                 </div>
-            )}
+            </div>
         </div>
     )
 }

@@ -43,7 +43,6 @@ const PMSAssignment = () => {
     // Load available technicians when modal opens
     useEffect(() => {
         if (assignModal.isOpen && assignModal.project) {
-            console.log('use effect LOADEEEEEEEEEEEEED')
             loadAvailableTechnicians(assignModal.project.island_group);
             loadCurrentAssignment(assignModal.project, assignModal.type === 'callback' ? true : false);
         }
@@ -74,18 +73,13 @@ const PMSAssignment = () => {
 
     const loadCurrentAssignment = async (project, isCallback) => {
         try {
-            // If project is already assigned, load current technicians
             if ((project.pms_status === 'PMS Inspection Assigned' || project.pms_status === 'PMS Inspection Ongoing') && !isCallback) {
                 const assignedTechs = pmsTeams.filter(p => {
-            const exist = p[1].projects.find(p => project.id === p.project_id)    
-                if (exist !== undefined) return true
-            }).map(t => t[1].employee_id)
-            console.log(assignedTechs)
-            console.log(pmsTechs)
-            setSelectedTechs(pmsTechs.filter(t => {
-
-                return assignedTechs.includes(t.employee_id)
-            }))             
+                    const exist = p[1].projects.find(p => project.id === p.project_id);
+                    if (exist !== undefined) return true;
+                }).map(t => t[1].employee_id);
+                
+                setSelectedTechs(pmsTechs.filter(t => assignedTechs.includes(t.employee_id)));
             } else {
                 setCurrentAssignedTechs([]);
                 setSelectedTechs([]);
@@ -96,23 +90,7 @@ const PMSAssignment = () => {
         }
     };
 
-    const handleCreateClick = () => {
-        navigate('/projects');
-    };
-
-    const handleSearchChange = (e) => {
-        setSearchTerm(e.target.value);
-    };
-
-    const handleClearSearch = () => {
-        setSearchTerm('');
-    };
-
-    // PMS Assignment Functions
     const handleAssignClick = (project, type = 'regular') => {
-        console.log(project)
-        console.log(pmsTeams)
-
         const isEditMode = project.pms_status === 'PMS Inspection Assigned' || project.pms_status === 'PMS Inspection Ongoing';
         setAssignModal({ 
             isOpen: true, 
@@ -120,13 +98,10 @@ const PMSAssignment = () => {
             type, 
             mode: isEditMode ? 'edit' : 'assign',
         });
-        console.log(isEditMode)
-        if(isEditMode) {
-            console.log('Then it is in edit mode')
-        } else {
-        setSelectedTechs([]);            
+        
+        if(!isEditMode) {
+            setSelectedTechs([]);
         }
-
         setAssignmentStatus('');
     };
 
@@ -152,13 +127,11 @@ const PMSAssignment = () => {
             };
             
             let endpoint, method;
-            console.log(payload)
+            
             if (assignModal.mode === 'edit') {
-                // Update existing assignment
                 endpoint = `/api/pms/assign/${assignModal.project.id}`;
                 method = 'POST';
             } else {
-                // Create new assignment
                 endpoint = assignModal.type === 'callback' 
                     ? `/api/pms/callback/${assignModal.project.id}`
                     : `/api/pms/assign/${assignModal.project.id}`;
@@ -218,7 +191,6 @@ const PMSAssignment = () => {
         setCurrentAssignedTechs([]);
     };
 
-    // Callback Functions
     const handleCallbackClick = (project) => {
         setAssignModal({ 
             isOpen: true, 
@@ -281,128 +253,167 @@ const PMSAssignment = () => {
          assignModal.project.pms_status === 'PMS Inspection Ongoing');
 
     return (
-        <div className="Content PMSAssignment">
+        <div className="pms-assignment">
             {/* Assignment Modal */}
             {assignModal.isOpen && (
-                <div className="modal-overlay">
-                    <div className="modal-content assign-modal">
-                        <h3>
-                            {assignModal.mode === 'edit' ? 'Edit Assignment' : 
-                             assignModal.type === 'callback' ? 'Schedule Callback' : 'Assign PMS Technician'}
-                        </h3>
-                        <div className="modal-project-info">
-                            <p><strong>Project:</strong> {assignModal.project.lift_name}</p>
-                            <p><strong>Client:</strong> {assignModal.project.client}</p>
-                            <p><strong>Location:</strong> {assignModal.project.location}, {assignModal.project.island_group}</p>
-                            <p><strong>Product Type:</strong> {assignModal.project.product_type}</p>
-                            <p><strong>PMS Status:</strong> {assignModal.project.pms_status}</p>
+                <div className="pms-modal-overlay">
+                    <div className="pms-modal-content">
+                        <div className="pms-modal-header">
+                            <h3 className="pms-modal-title">
+                                {assignModal.mode === 'edit' ? 'Edit Assignment' : 
+                                 assignModal.type === 'callback' ? 'Schedule Callback' : 'Assign PMS Technician'}
+                            </h3>
+                            <button className="pms-modal-close" onClick={handleAssignClose}>×</button>
                         </div>
                         
-                        {/* Current Assignment Info */}
-                        {isAssignedProject && currentAssignedTechs.length > 0 && (
-                            <div className="current-assignment">
-                                <h4>Current Assignment</h4>
-                                <div className="current-techs">
-                                    {currentAssignedTechs.map(tech => (
-                                        <div key={tech.employee_id} className="current-tech-item">
-                                            <span>{tech.last_name} {tech.first_name}</span>
-                                            <span className="tech-status">Assigned</span>
+                        <div className="pms-modal-body">
+                            <div className="pms-project-info">
+                                <div className="pms-project-card">
+                                    <h4 className="pms-project-name">{assignModal.project.lift_name}</h4>
+                                    <div className="pms-project-details">
+                                        <div className="pms-detail-item">
+                                            <span className="pms-detail-label">Client:</span>
+                                            <span className="pms-detail-value">{assignModal.project.client}</span>
                                         </div>
-                                    ))}
+                                        <div className="pms-detail-item">
+                                            <span className="pms-detail-label">Location:</span>
+                                            <span className="pms-detail-value">{assignModal.project.location}, {assignModal.project.island_group}</span>
+                                        </div>
+                                        <div className="pms-detail-item">
+                                            <span className="pms-detail-label">Product Type:</span>
+                                            <span className="pms-detail-value">{assignModal.project.product_type}</span>
+                                        </div>
+                                        <div className="pms-detail-item">
+                                            <span className="pms-detail-label">PMS Status:</span>
+                                            <span className={`pms-status-badge ${assignModal.project.pms_status?.toLowerCase().replace(' ', '-')}`}>
+                                                {assignModal.project.pms_status}
+                                            </span>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
-                        )}
-                        {console.log(selectedTechs)}
-                        {/* Date Selection */}
-                        <div className="date-selection">
-                            <label>
-                                {assignModal.type === 'callback' ? 'Callback Date:' : 'Inspection Date:'}
-                            </label>
-                            <input
-                                type="date"
-                                value={inspectionDate}
-                                onChange={(e) => setInspectionDate(e.target.value)}
-                                className="date-input"
-                                min={new Date().toISOString().split('T')[0]}
-                            />
-                        </div>
-                        
-                        {/* Technician Selection */}
-                        <div className="tech-selection">
-                            <label>
-                                {assignModal.mode === 'edit' ? 'Update Technicians:' : 'Select Technicians:'} (Max 2)
-                            </label>
-                            <span>Available technicians in {assignModal.project.island_group}</span>
-                            
-                            <div className="techs-list">
-                                {availableTechs.map(tech => {
-                                    const isCurrentlyAssigned = currentAssignedTechs.find(t => t.employee_id === tech.employee_id);
-                                    const isSelected = selectedTechs.find(t => t.employee_id === tech.employee_id);
-                                    
-                                    return (
-                                        <div 
-                                            key={tech.employee_id}
-                                            className={`tech-item ${isSelected ? 'selected' : ''} ${
-                                                isCurrentlyAssigned && assignModal.mode === 'edit' ? 'currently-assigned' : ''
-                                            }`}
-                                            onClick={() => handleTechSelection(tech)}
-                                        >
-                                            <div className="tech-info">
-                                                <strong>{tech.last_name} {tech.first_name}</strong>
-                                                <span>{tech.island_group}</span>
-                                                {isCurrentlyAssigned && assignModal.mode === 'edit' && (
-                                                    <span className="current-badge">Currently Assigned</span>
-                                                )}
+
+                            {/* Current Assignment */}
+                            {isAssignedProject && currentAssignedTechs.length > 0 && (
+                                <div className="pms-current-assignment">
+                                    <h4 className="pms-section-title">Current Assignment</h4>
+                                    <div className="pms-current-techs">
+                                        {currentAssignedTechs.map(tech => (
+                                            <div key={tech.employee_id} className="pms-current-tech">
+                                                <span className="pms-tech-name">{tech.last_name} {tech.first_name}</span>
+                                                <span className="pms-tech-status">Currently Assigned</span>
                                             </div>
-                                            <div className="tech-checkbox">
-                                                {isSelected ? '✓' : ''}
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
+
+                            {/* Date Selection */}
+                            <div className="pms-date-section">
+                                <label className="pms-date-label">
+                                    {assignModal.type === 'callback' ? 'Callback Date:' : 'Inspection Date:'}
+                                </label>
+                                <input
+                                    type="date"
+                                    value={inspectionDate}
+                                    onChange={(e) => setInspectionDate(e.target.value)}
+                                    className="pms-date-input"
+                                    min={new Date().toISOString().split('T')[0]}
+                                />
+                            </div>
+
+                            {/* Technician Selection */}
+                            <div className="pms-tech-selection">
+                                <div className="pms-selection-header">
+                                    <h4 className="pms-section-title">
+                                        {assignModal.mode === 'edit' ? 'Update Technicians:' : 'Select Technicians:'}
+                                    </h4>
+                                    <span className="pms-selection-subtitle">Available in {assignModal.project.island_group} (Max 2)</span>
+                                </div>
+                                
+                                <div className="pms-techs-grid">
+                                    {availableTechs.map(tech => {
+                                        const isCurrentlyAssigned = currentAssignedTechs.find(t => t.employee_id === tech.employee_id);
+                                        const isSelected = selectedTechs.find(t => t.employee_id === tech.employee_id);
+                                        
+                                        return (
+                                            <div 
+                                                key={tech.employee_id}
+                                                className={`pms-tech-card ${isSelected ? 'pms-tech-selected' : ''} ${
+                                                    isCurrentlyAssigned && assignModal.mode === 'edit' ? 'pms-tech-current' : ''
+                                                }`}
+                                                onClick={() => handleTechSelection(tech)}
+                                            >
+                                                <div className="pms-tech-avatar">
+                                                    {tech.first_name[0]}{tech.last_name[0]}
+                                                </div>
+                                                <div className="pms-tech-info">
+                                                    <div className="pms-tech-name">{tech.first_name} {tech.last_name}</div>
+                                                    <div className="pms-tech-region">{tech.island_group}</div>
+                                                    {isCurrentlyAssigned && assignModal.mode === 'edit' && (
+                                                        <div className="pms-current-badge">Currently Assigned</div>
+                                                    )}
+                                                </div>
+                                                <div className="pms-tech-checkbox">
+                                                    {isSelected && <div className="pms-checkmark">✓</div>}
+                                                </div>
                                             </div>
+                                        );
+                                    })}
+                                    {availableTechs.length === 0 && (
+                                        <div className="pms-no-techs">
+                                            No available technicians in {assignModal.project.island_group} region
                                         </div>
-                                    );
-                                })}
-                                {availableTechs.length === 0 && (
-                                    <div className="no-techs">No available technicians in this region</div>
+                                    )}
+                                </div>
+
+                                {selectedTechs.length > 0 && (
+                                    <div className="pms-selected-techs">
+                                        <h5 className="pms-selected-title">Selected Technicians:</h5>
+                                        <div className="pms-selected-list">
+                                            {selectedTechs.map(tech => (
+                                                <div key={tech.employee_id} className="pms-selected-tag">
+                                                    <span className="pms-tag-name">{tech.first_name} {tech.last_name}</span>
+                                                    <button 
+                                                        className="pms-tag-remove"
+                                                        onClick={() => handleTechSelection(tech)}
+                                                    >
+                                                        ×
+                                                    </button>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </div>
                                 )}
                             </div>
 
-                            {selectedTechs.length > 0 && (
-                                <div className="selected-techs">
-                                    <strong>Selected Technicians:</strong>
-                                    {selectedTechs.map(tech => (
-                                        <span key={tech.employee_id} className="selected-tech-tag">
-                                            {tech.last_name} {tech.first_name}
-                                        </span>
-                                    ))}
+                            {assignmentStatus && (
+                                <div className={`pms-status-message pms-status-${
+                                    assignmentStatus === 'success' ? 'success' : 
+                                    assignmentStatus === 'assigning' || assignmentStatus === 'unassigning' ? 'info' : 'error'
+                                }`}>
+                                    {assignmentStatus === 'assigning' ? 'Processing assignment...' : 
+                                     assignmentStatus === 'unassigning' ? 'Unassigning technicians...' : assignmentStatus}
                                 </div>
                             )}
                         </div>
 
-                        {assignmentStatus && (
-                            <div className={`status ${
-                                assignmentStatus === 'success' ? 'success' : 
-                                assignmentStatus === 'assigning' || assignmentStatus === 'unassigning' ? 'info' : 'error'
-                            }`}>
-                                {assignmentStatus === 'assigning' ? 'Processing...' : 
-                                 assignmentStatus === 'unassigning' ? 'Unassigning...' : assignmentStatus}
-                            </div>
-                        )}
-
-                        <div className="modal-actions">
+                        <div className="pms-modal-actions">
                             {assignModal.mode === 'edit' && (
                                 <button 
                                     onClick={handleUnassign}
-                                    className="btn-danger"
+                                    className="pms-btn pms-btn-danger"
                                     disabled={assignmentStatus === 'assigning' || assignmentStatus === 'unassigning' || assignmentStatus === 'success'}
                                 >
                                     {assignmentStatus === 'unassigning' ? 'Unassigning...' : 'Unassign All'}
                                 </button>
                             )}
-                            <button onClick={handleAssignClose} className="btn-cancel">
+                            <button onClick={handleAssignClose} className="pms-btn pms-btn-secondary">
                                 Cancel
                             </button>
                             <button 
                                 onClick={handleAssignConfirm} 
-                                className="btn-confirm"
+                                className="pms-btn pms-btn-primary"
                                 disabled={assignmentStatus === 'assigning' || assignmentStatus === 'unassigning' || assignmentStatus === 'success' || selectedTechs.length === 0}
                             >
                                 {assignmentStatus === 'assigning' ? 'Processing...' : 
@@ -414,217 +425,229 @@ const PMSAssignment = () => {
                 </div>
             )}
             
-            {/* Header Section */}
-            <div className="dashboard-header">
-                <div className="header-main">
-                    <h1>PMS Assignment Dashboard</h1>
-                    <div className="header-stats">
-                        <div className="stat-badge urgent">
-                            <span className="stat-count">{projectsNeedingAssignment}</span>
-                            <span className="stat-label">Need Assignment</span>
-                        </div>
-                        <div className="stat-badge total">
-                            <span className="stat-count">{pmsProjects.length}</span>
-                            <span className="stat-label">Total Projects</span>
-                        </div>
-                    </div>
-                </div>
-                
-                <div className="header-actions">
-                    <div className="search-container">
-                        <div className="search-input-wrapper">
-                            <input
-                                type="text"
-                                placeholder="Search projects..."
-                                value={searchTerm}
-                                onChange={handleSearchChange}
-                                className="search-input"
-                            />
-                            {searchTerm && (
-                                <button 
-                                    className="clear-search-btn"
-                                    onClick={handleClearSearch}
-                                >
-                                    ×
-                                </button>
-                            )}
-                            <span className="search-icon">🔍</span>
-                        </div>
-                    </div>
-
-                    <button 
-                        onClick={handleCreateClick} 
-                        className="create-project-btn"
-                        style={{display: sessionStorage.getItem('roles') === 'Project Manager' ? 'block' : 'none'}}
-                    >
-                        + New Project
-                    </button>
-                </div>
-            </div>
-
-            {/* Main Content Grid */}
-            <div className="dashboard-grid">
-                {/* Projects Panel */}
-                <div className="projects-panel">
-                    <div className="panel-header">
-                        <h2>Projects</h2>
-                        <div className="panel-actions">
-                            <span className="results-count">{filteredProjects.length} projects</span>
-                        </div>
-                    </div>
-                    
-                    <div className="projects-table">
-                        <div className="table-header">
-                            <div className="table-cell">Project & Client</div>
-                            <div className="table-cell">Product Type</div>
-                            <div className="table-cell">Location</div>
-                            <div className="table-cell">PMS Status</div>
-                            <div className="table-cell">Last Inspection</div>
-                            <div className="table-cell">Next Inspection</div>
-                            <div className="table-cell">Contract</div>
-                            <div className="table-cell">Callback Date</div>
+            {/* Main Dashboard */}
+            <div className="pms-dashboard">
+                {/* Header */}
+                <header className="pms-header">
+                    <div className="pms-header-content">
+                        <div className="pms-header-main">
+                            <h1 className="pms-title">PMS Assignment Dashboard</h1>
+                            <p className="pms-subtitle">Manage preventive maintenance schedules and technician assignments</p>
+                            
+                            <div className="pms-stats">
+                                <div className="pms-stat-card pms-stat-urgent">
+                                    <div className="pms-stat-number">{projectsNeedingAssignment}</div>
+                                    <div className="pms-stat-label">Need Assignment</div>
+                                </div>
+                                <div className="pms-stat-card pms-stat-total">
+                                    <div className="pms-stat-number">{pmsProjects.length}</div>
+                                    <div className="pms-stat-label">Total Projects</div>
+                                </div>
+                                <div className="pms-stat-card pms-stat-assigned">
+                                    <div className="pms-stat-number">
+                                        {pmsProjects.filter(p => p.pms_status === 'PMS Inspection Assigned' || p.pms_status === 'PMS Inspection Ongoing').length}
+                                    </div>
+                                    <div className="pms-stat-label">Assigned</div>
+                                </div>
+                            </div>
                         </div>
                         
-                        <div className="table-body">
-                            <PMSList 
-                                projects={filteredProjects}
-                                searchTerm={searchTerm} 
-                                setSelectedEntry={setSelectedEntry}
-                                onAssignClick={handleAssignClick}
-                                onCallbackClick={handleCallbackClick}
-                                selectedEntryId={selectedEntry.id}
-                            />
-                        </div>
-                    </div>
-
-                    {filteredProjects.length === 0 && pmsProjects.length > 0 && (
-                        <div className="no-results">
-                            <p>No projects found matching "{searchTerm}"</p>
-                            <button onClick={handleClearSearch} className="clear-search-link">
-                                Clear search
-                            </button>
-                        </div>
-                    )}
-                </div>
-
-                {/* Details Panel */}
-                <div className="details-panel">
-                    <div className="panel-header">
-                        <h2>Project Details</h2>
-                        {selectedEntry.id && (
-                            <button
-                                onClick={() => navigate(`/baby-book/${selectedEntry.id}`)}
-                                className="baby-book-btn"
-                            >
-                                View Baby Book
-                            </button>
-                        )}
-                    </div>
-                    
-                    {selectedEntry.id ? (
-                        <div className="project-details">
-                            <div className="project-card">
-                                <div className="project-header">
-                                    <h3 className="project-title">{selectedEntry.lift_name}</h3>
-                                    <div className="project-meta">
-                                        <span className="client">{selectedEntry.client}</span>
-                                        <span className="product-type">{selectedEntry.product_type}</span>
-                                        <span className="location">{selectedEntry.location}, {selectedEntry.island_group}</span>
-                                    </div>
-                                </div>
-                                
-                                <div className="project-info-grid">
-                                    <div className="info-item">
-                                        <label>Handover Date:</label>
-                                        <span>{selectedEntry.handover_date ? 
-                                            new Date(selectedEntry.handover_date).toLocaleDateString('en-GB') : 'N/A'}
-                                        </span>
-                                    </div>
-                                    <div className="info-item">
-                                        <label>Days Since Handover:</label>
-                                        <span>{selectedEntry.days_since_handover || 'N/A'} days</span>
-                                    </div>
-                                    <div className="info-item">
-                                        <label>PMS Status:</label>
-                                        <span className={`status-badge ${selectedEntry.pms_status?.toLowerCase().replace(' ', '-')}`}>
-                                            {selectedEntry.pms_status}
-                                        </span>
-                                    </div>
-                                    <div className="info-item">
-                                        <label>PMS Scheduling:</label>
-                                        <span className={`status-badge ${selectedEntry.pms_status?.toLowerCase().replace(' ', '-')}`}>
-                                            {selectedEntry.contract_type}
-                                        </span>
-                                    </div>
-                                </div>
-
-                                {/* Quick Actions */}
-                                <div className="quick-actions-section">
-                                    <h4>Quick Actions</h4>
-                                    <div className="action-buttons">
-                                        {(selectedEntry.pms_status === 'PMS Inspection Pending' || selectedEntry.pms_status === 'Free PMS Available') && (
-                                            <button 
-                                                className="btn-primary"
-                                                onClick={() => handleAssignClick(selectedEntry, 'regular')}
-                                            >
-                                                👥 Assign PMS
-                                            </button>
-                                        )}
-                                        
-                                        {(selectedEntry.pms_status === 'PMS Inspection Assigned' || selectedEntry.pms_status === 'PMS Inspection Ongoing') && (
-                                            <button 
-                                                className="btn-primary"
-                                                onClick={() => handleAssignClick(selectedEntry, 'regular')}
-                                            >
-                                                ✏️ Edit Assignment
-                                            </button>
-                                        )}
-                                        
+                        <div className="pms-header-actions">
+                            <div className="pms-search">
+                                <div className="pms-search-container">
+                                    <input
+                                        type="text"
+                                        placeholder="Search projects by name, client, or location..."
+                                        value={searchTerm}
+                                        onChange={(e) => setSearchTerm(e.target.value)}
+                                        className="pms-search-input"
+                                    />
+                                    {searchTerm && (
                                         <button 
-                                            className="btn-secondary"
-                                            onClick={() => handleCallbackClick(selectedEntry)}
+                                            className="pms-search-clear"
+                                            onClick={() => setSearchTerm('')}
                                         >
-                                            📞 Schedule Callback
+                                            ×
                                         </button>
-                                    </div>
+                                    )}
+                                    <span className="pms-search-icon">🔍</span>
                                 </div>
                             </div>
-                        </div>
-                    ) : (
-                        <div className="no-selection">
-                            <div className="no-selection-content">
-                                <div className="no-selection-icon">📋</div>
-                                <h3>No Project Selected</h3>
-                                <p>Select a project from the list to view details and take action</p>
-                            </div>
-                        </div>
-                    )}
-
-                    {/* Technician Tally */}
-                    <div className="tally-section">
-                        <h3>Team Workload</h3>
-                        <div className="tally-cards">
-                            {pmsTeams.map(([techName, data]) => (
-                                <div key={techName} className="tally-card">
-                                    <div className="tally-header">
-                                        <h4>{techName}</h4>
-                                        <span className="project-count">{data.projects?.length || 0} projects</span>
-                                    </div>
-                                    <div className="tally-projects">
-                                        {data.projects?.map((project, index) => (
-                                            <div key={index} className="project-item">
-                                                <div className="project-name">{project.project_name}</div>
-                                                <div className="project-meta">
-                                                    <span>{project.project_location}</span>
-                                                    <span>{new Date(project.inspection_date).toLocaleDateString('en-GB')}</span>
-                                                </div>
-                                            </div>
-                                        ))}
-                                    </div>
-                                </div>
-                            ))}
+                            
+                            {sessionStorage.getItem('roles') === 'Project Manager' && (
+                                <button className="pms-create-btn">
+                                    + New Project
+                                </button>
+                            )}
                         </div>
                     </div>
+                </header>
+
+                {/* Main Content */}
+                <div className="pms-main-content">
+                    {/* Projects Panel */}
+                    <section className="pms-projects-panel">
+                        <div className="pms-panel-header">
+                            <h2 className="pms-panel-title">Projects</h2>
+                            <div className="pms-panel-meta">
+                                <span className="pms-results-count">{filteredProjects.length} projects</span>
+                            </div>
+                        </div>
+                        
+                        <div className="pms-projects-container">
+                            <div className="pms-projects-header">
+                                <div className="pms-projects-column pms-col-project">Project & Client</div>
+                                <div className="pms-projects-column pms-col-product">Product Type</div>
+                                <div className="pms-projects-column pms-col-location">Location</div>
+                                <div className="pms-projects-column pms-col-status">PMS Status</div>
+                                <div className="pms-projects-column pms-col-last">Last Inspection</div>
+                                <div className="pms-projects-column pms-col-next">Next Inspection</div>
+                                <div className="pms-projects-column pms-col-contract">Contract</div>
+                                <div className="pms-projects-column pms-col-callback">Callback</div>
+                            </div>
+                            
+                            <div className="pms-projects-list">
+                                <PMSList 
+                                    projects={filteredProjects}
+                                    searchTerm={searchTerm} 
+                                    setSelectedEntry={setSelectedEntry}
+                                    onAssignClick={handleAssignClick}
+                                    onCallbackClick={handleCallbackClick}
+                                    selectedEntryId={selectedEntry.id}
+                                />
+                            </div>
+
+                            {filteredProjects.length === 0 && pmsProjects.length > 0 && (
+                                <div className="pms-no-results">
+                                    <div className="pms-no-results-icon">📋</div>
+                                    <h3>No projects found</h3>
+                                    <p>No projects match your search criteria</p>
+                                    <button onClick={() => setSearchTerm('')} className="pms-clear-search">
+                                        Clear search
+                                    </button>
+                                </div>
+                            )}
+                        </div>
+                    </section>
+
+                    {/* Details Panel */}
+                    <aside className="pms-details-panel">
+                        <div className="pms-panel-header">
+                            <h2 className="pms-panel-title">Project Details</h2>
+                            {selectedEntry.id && (
+                                <button  onClick={() => navigate(`/baby-book/${selectedEntry.id}`)} className="pms-baby-book-btn">
+                                    View Baby Book
+                                </button>
+                            )}
+                        </div>
+                        
+                        {selectedEntry.id ? (
+                            <div className="pms-project-details">
+                                <div className="pms-detail-card">
+                                    <div className="pms-detail-header">
+                                        <h3 className="pms-detail-title">{selectedEntry.lift_name}</h3>
+                                        <div className="pms-detail-meta">
+                                            <span className="pms-client">{selectedEntry.client}</span>
+                                            <span className="pms-product-type">{selectedEntry.product_type}</span>
+                                            <span className="pms-location">{selectedEntry.location}, {selectedEntry.island_group}</span>
+                                        </div>
+                                    </div>
+                                    
+                                    <div className="pms-detail-grid">
+                                        <div className="pms-detail-item">
+                                            <label className="pms-detail-label">Handover Date:</label>
+                                            <span className="pms-detail-value">
+                                                {selectedEntry.handover_date ? 
+                                                    new Date(selectedEntry.handover_date).toLocaleDateString('en-GB') : 'N/A'}
+                                            </span>
+                                        </div>
+                                        <div className="pms-detail-item">
+                                            <label className="pms-detail-label">Days Since Handover:</label>
+                                            <span className="pms-detail-value">{selectedEntry.days_since_handover || 'N/A'} days</span>
+                                        </div>
+                                        <div className="pms-detail-item">
+                                            <label className="pms-detail-label">PMS Status:</label>
+                                            <span className={`pms-status-badge pms-status-${selectedEntry.pms_status?.toLowerCase().replace(' ', '-')}`}>
+                                                {selectedEntry.pms_status}
+                                            </span>
+                                        </div>
+                                        <div className="pms-detail-item">
+                                            <label className="pms-detail-label">Contract Type:</label>
+                                            <span className="pms-detail-value">{selectedEntry.contract_type}</span>
+                                        </div>
+                                    </div>
+
+                                    {/* Quick Actions */}
+                                    <div className="pms-quick-actions">
+                                        <h4 className="pms-actions-title">Quick Actions</h4>
+                                        <div className="pms-action-buttons">
+                                            {(selectedEntry.pms_status === 'PMS Inspection Pending' || selectedEntry.pms_status === 'Free PMS Available') && (
+                                                <button 
+                                                    className="pms-action-btn pms-action-primary"
+                                                    onClick={() => handleAssignClick(selectedEntry, 'regular')}
+                                                >
+                                                    <span className="pms-action-icon">👥</span>
+                                                    Assign PMS
+                                                </button>
+                                            )}
+                                            
+                                            {(selectedEntry.pms_status === 'PMS Inspection Assigned' || selectedEntry.pms_status === 'PMS Inspection Ongoing') && (
+                                                <button 
+                                                    className="pms-action-btn pms-action-primary"
+                                                    onClick={() => handleAssignClick(selectedEntry, 'regular')}
+                                                >
+                                                    <span className="pms-action-icon">✏️</span>
+                                                    Edit Assignment
+                                                </button>
+                                            )}
+                                            
+                                            <button 
+                                                className="pms-action-btn pms-action-secondary"
+                                                onClick={() => handleCallbackClick(selectedEntry)}
+                                            >
+                                                <span className="pms-action-icon">📞</span>
+                                                Schedule Callback
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        ) : (
+                            <div className="pms-no-selection">
+                                <div className="pms-no-selection-content">
+                                    <div className="pms-no-selection-icon">📋</div>
+                                    <h3>No Project Selected</h3>
+                                    <p>Select a project from the list to view details and take action</p>
+                                </div>
+                            </div>
+                        )}
+
+                        {/* Team Workload */}
+                        <div className="pms-workload-section">
+                            <h3 className="pms-workload-title">Team Workload</h3>
+                            <div className="pms-workload-cards">
+                                {pmsTeams.map(([techName, data]) => (
+                                    <div key={techName} className="pms-workload-card">
+                                        <div className="pms-workload-header">
+                                            <h4 className="pms-tech-name">{techName}</h4>
+                                            <span className="pms-project-count">{data.projects?.length || 0} projects</span>
+                                        </div>
+                                        <div className="pms-workload-projects">
+                                            {data.projects?.map((project, index) => (
+                                                <div key={index} className="pms-workload-project">
+                                                    <div className="pms-workload-project-name">{project.project_name}</div>
+                                                    <div className="pms-workload-project-meta">
+                                                        <span>{project.project_location}</span>
+                                                        <span>{new Date(project.inspection_date).toLocaleDateString('en-GB')}</span>
+                                                    </div>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    </aside>
                 </div>
             </div>
         </div>

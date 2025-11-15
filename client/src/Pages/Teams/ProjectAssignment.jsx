@@ -4,6 +4,29 @@ import { useStoreState } from 'easy-peasy';
 import { Axios } from '../../api/axios.js';
 import '../../css/ProjectAssignment.css';
 
+// Material-UI Icons
+import {
+  Groups as TeamsIcon,
+  Groups2 as GroupsIcon,
+  Engineering as EngineeringIcon,
+  Schedule as ScheduleIcon,
+  Person as PersonIcon,
+  Construction as ConstructionIcon,
+  Build as BuildIcon,
+  SupervisorAccount as SupervisorAccountIcon,
+  Business as BusinessIcon,
+  Assignment as AssignmentIcon,
+  CalendarToday as CalendarIcon,
+  Edit as EditIcon,
+  Save as SaveIcon,
+  Cancel as CancelIcon,
+  FilterList as FilterIcon,
+  Search as SearchIcon,
+  Warning as WarningIcon,
+  CheckCircle as CheckCircleIcon,
+  GroupAdd as GroupAddIcon
+} from '@mui/icons-material';
+
 const SaveTeamModal = ({ isOpen, onClose, project, forecastSocket, utilitiesSocket, team }) => {
     if (!isOpen) return null;
     const teamIds = team.map(p => p.emp_id === null ? p.foreman_id : p.emp_id)
@@ -37,27 +60,53 @@ const SaveTeamModal = ({ isOpen, onClose, project, forecastSocket, utilitiesSock
         <div className="modal-overlay" onClick={onClose}>
             <div className="modal-content" onClick={(e) => e.stopPropagation()}>
                 <div className="modal-header">
-                    <h3>Save Team for {project?.lift_name}</h3>
+                    <TeamsIcon className="modal-icon" />
+                    <h3>Finalize Team Assignment</h3>
                     <button className="modal-close" onClick={onClose}>×</button>
                 </div>
                 <div className="modal-body">
-                    <p>Are you sure you want to save this team assignment? This action cannot be undone.</p>
-                    <div className="project-info">
-                        <strong>Project:</strong> {project?.lift_name}<br/>
-                        <strong>ID:</strong> #{project?.id}
+                    <div className="project-summary">
+                        <BusinessIcon className="summary-icon" />
+                        <div className="summary-content">
+                            <h4>{project?.lift_name}</h4>
+                            <p>Project #{project?.id} • {project?.client}</p>
+                        </div>
                     </div>
-                    <h3>Team Composition</h3>
-                    <div className="team-info">
-                      {team.map((t, i)=> (
-                        <div key={i}>{t.foreman_full_name ? 
-                          (`${t.foreman_full_name} ID#${t.foreman_id} (Foreman)`) : 
-                          (`${t.full_name} ID#${t.emp_id} (${t.job})`)}</div>
-                      ))}
+                    
+                    <div className="team-composition">
+                        <h4>Team Composition</h4>
+                        <div className="team-members-list">
+                            {team.map((t, i) => (
+                                <div key={i} className="team-member-summary">
+                                    <PersonIcon className="member-icon" />
+                                    <div className="member-details">
+                                        <span className="member-name">
+                                            {t.foreman_full_name || t.full_name}
+                                        </span>
+                                        <span className="member-role">
+                                            {t.foreman_full_name ? 'Foreman' : t.job}
+                                        </span>
+                                    </div>
+                                    <span className="member-id">ID#{t.foreman_id || t.emp_id}</span>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                    
+                    <div className="confirmation-message">
+                        <WarningIcon className="warning-icon" />
+                        <p>Are you sure you want to save this team assignment? This action cannot be undone.</p>
                     </div>
                 </div>
                 <div className="modal-footer">
-                    <button className="btn-secondary" onClick={onClose}>Cancel</button>
-                    <button className="btn-primary" onClick={handleSave}>Save Team</button>
+                    <button className="btn-secondary" onClick={onClose}>
+                        <CancelIcon className="btn-icon" />
+                        Cancel
+                    </button>
+                    <button className="btn-primary" onClick={handleSave}>
+                        <SaveIcon className="btn-icon" />
+                        Confirm & Save
+                    </button>
                 </div>
             </div>
         </div>
@@ -81,12 +130,10 @@ const ProjectAssignment = () => {
     const [editedTeam, setEditedTeam] = useState([])
 
     const [selectedTab, setSelectedTab] = useState('preliminaries')
-
-    // Filter personnel based on active tab
-    const filteredPersonnel = teamsNoProject.concat(forecastData).filter(person => {
-        if (activeRoleTab === 'all') return true
-        return person.group === activeRoleTab
-    })
+    
+    // New state for filters
+    const [jobFilter, setJobFilter] = useState('all');
+    const [searchTerm, setSearchTerm] = useState('');
 
     const itemRefs = useRef([]);
     const projects = useStoreState(state => state.projects)
@@ -131,8 +178,25 @@ const ProjectAssignment = () => {
             month: 'short',
             day: 'numeric'
         });
-    }; 
-    console.log(currentProjects)
+    };
+
+    // Filter personnel based on active tab, job filter, and search
+    const filteredPersonnel = teamsNoProject.concat(forecastData).filter(person => {
+        // Group filter
+        if (activeRoleTab !== 'all' && person.group !== activeRoleTab) return false;
+        
+        // Job filter
+        if (jobFilter !== 'all' && person.job !== jobFilter) return false;
+        
+        // Search filter
+        if (searchTerm && !person.full_name.toLowerCase().includes(searchTerm.toLowerCase()) &&
+            !person.employee_id.toString().includes(searchTerm)) {
+            return false;
+        }
+        
+        return true;
+    });
+
     const editBlur = () => {
       setEditingProjectId(null)
       setEditTeamSelection([])
@@ -140,7 +204,7 @@ const ProjectAssignment = () => {
     }
 
     useEffect(() => {
-        if(forecastSocket) {
+        if(forecastSocket && utilitiesSocket) {
             forecastSocket.emit('no_project_team')
             forecastSocket.emit('tentative_project_team')
             utilitiesSocket.emit('refresh_project_data')
@@ -189,13 +253,10 @@ const ProjectAssignment = () => {
             setEditingProjectId(null);
         } else {
             // Start editing    
-           console.log(installationTeams[projectId] === undefined)
             if(installationTeams[projectId] === undefined) {
                 setEditTeamSelection(teamsNoProject)
                 setEditedTeam([])
             } else {
-                console.log(installationTeams)
-                 console.log(Object.keys(installationTeams).length === 0)
                 const projInstallationTeam = [...installationTeams[projectId].team, ...teamsNoProject]
                 setEditTeamSelection(projInstallationTeam)
                 setEditedTeam(installationTeams[projectId].team)                
@@ -239,152 +300,187 @@ const ProjectAssignment = () => {
                 `}
                 ref={(el) => (itemRefs.current[index] = {project, el})}
                 onClick={() => projectOnClick(project, fTeam)}
-                style={{ cursor: 'pointer' }}
             >
                 <div className="project-card-header">
-                    <div className="project-basic-info">
-                        <h3>{project.lift_name}</h3>
-                        <span className="project-id">Project #{project.id}</span>
-                    </div>
-                    <div className="project-status">
-                        <span className={`status-badge ${phase}`}>{project.current_task}</span>
-                    </div>
-                    {phase === 'preliminaries' && (
-                        <div className="project-status">
-                            <span className={`status-badge ${hasTeam ? 'finalized' : 'tentative'}`}>
-                                {hasTeam ? 'Team Finalized' : 'Team Pending'}
-                            </span>
+                    <div className="project-main-info">
+                        <div className="project-title-section">
+                            <BusinessIcon className="project-icon" />
+                            <div>
+                                <h3>{project.lift_name}</h3>
+                                <span className="project-id">#{project.id}</span>
+                            </div>
                         </div>
-                    )}
+                        <div className="project-status-badges">
+                            <span className={`status-badge phase-${phase}`}>
+                                {phase.charAt(0).toUpperCase() + phase.slice(1)}
+                            </span>
+                            {phase === 'preliminaries' && (
+                                <span className={`status-badge team-${hasTeam ? 'finalized' : 'pending'}`}>
+                                    {hasTeam ? 'Team Finalized' : 'Team Pending'}
+                                </span>
+                            )}
+                        </div>
+                    </div>
+
+                    <div className="project-client">
+                        <span className="client-name">{project.client}</span>
+                    </div>
                 </div>
 
-                <div className="project-details">
-                    <div className="detail-row">
-                        <span className="detail-label">Client:</span>
-                        <span className="detail-value">{project.client}</span>
-                    </div>
-                    <div className="detail-row">
-                        <span className="detail-label">Description:</span>
-                        <span className="detail-value">{project.description}</span>
-                    </div>
-                    <div className="detail-row">
-                        <span className="detail-label">Capacity:</span>
+                <div className="project-details-grid">
+                    <div className="detail-item">
+                        <span className="detail-label">Capacity</span>
                         <span className="detail-value">{project.cap} kg</span>
                     </div>
-                    <div className="detail-row">
-                        <span className="detail-label">Stops:</span>
+                    <div className="detail-item">
+                        <span className="detail-label">Stops</span>
                         <span className="detail-value">{project.stops}</span>
                     </div>
-                    <div className="detail-row">
-                        <span className="detail-label">Speed:</span>
+                    <div className="detail-item">
+                        <span className="detail-label">Speed</span>
                         <span className="detail-value">{project.speed} m/min</span>
                     </div>
                 </div>
 
                 <div className="project-timeline">
                     <div className="timeline-item">
-                        <span className="timeline-label">Installation Start:</span>
-                        <span className="timeline-date">{project.installation_start_date ? formatDate(project.installation_start_date) : 'no date'}</span>
+                        <CalendarIcon className="timeline-icon" />
+                        <div className="timeline-content">
+                            <span className="timeline-label">Installation Start</span>
+                            <span className="timeline-date">
+                                {project.installation_start_date ? formatDate(project.installation_start_date) : 'Not scheduled'}
+                            </span>
+                        </div>
                     </div>
                     <div className="timeline-item">
-                        <span className="timeline-label">Testing and Commissioning Start:</span>
-                        <span className="timeline-date">{project.tnc_start_date ? formatDate(project.tnc_start_date) : 'no date'}</span>
-                    </div>
-                    <div className="timeline-item">
-                        <span className="timeline-label">Project End:</span>
-                        <span className="timeline-date">{project.project_end_date ? formatDate(project.project_end_date) : 'no date'}</span>
+                        <ScheduleIcon className="timeline-icon" />
+                        <div className="timeline-content">
+                            <span className="timeline-label">Project End</span>
+                            <span className="timeline-date">
+                                {project.project_end_date ? formatDate(project.project_end_date) : 'Not scheduled'}
+                            </span>
+                        </div>
                     </div>
                 </div>
 
-                {phase === 'preliminaries' && !hasTeam && (
-                    <button onClick={(e) => {
-                        const fTeam = tentativeProjectTeams.filter(t => t.project_id === project.id)
-                        setTeamToSave(fTeam)
-                        e.stopPropagation();
-                        setSelectedProject(project);
-                        setIsModalOpen(true);
-                    }}>
-                        Save Team
-                    </button>
-                )}
-
-                {/* Edit button available for ALL phases if project has team */}
-                {(hasTeam || installationTeams[project.id]?.team) && (
-                    <button
-                        onClick={(e) => {
-                            e.stopPropagation();
-                            handleEditClick(project.id);
-                        }}
-                        className="btn-edit-save"
-                    >
-                        {editingProjectId === project.id ? 'Save Changes' : 'Edit Team'}
-                    </button>
-                )}
-
-                <h4>Project Engineer: {project.pe_fullname}</h4>
-                
-                {(phase === 'preliminaries' || (phase !== 'preliminaries' && projectTeams.length > 0)) && (
-                   <div className="project-team-info">
-    <div>
-        <h4>Foreman</h4>
-        <div className="team-member-list">
-            {foreman ? (
-                <div 
-                    className={`team-member role-foreman ${!hasTeam ? 'editable' : ''}`}
-                    onClick={(e) => {
-                        if (!hasTeam) {
-                            e.stopPropagation();
-                            const employee_id = foreman.foreman_id || foreman.employee_id;
-                            const projectId = project.id;
-                            const date = project.installation_start_date?.split("T")[0];
-                            forecastSocket.emit("remove_forecast_member", { projectId, employee_id, date });
-                        }
-                    }}
-                >
-                    <span className="team-member-name">
-                        {hasTeam ? foreman.full_name : (foreman.foreman_full_name || foreman.full_name)}
-                    </span>
-                    <span className="team-member-role">Foreman</span>
-                    {!hasTeam && <span className="remove-indicator" title="Click to remove">×</span>}
+                <div className="project-engineer">
+                    <EngineeringIcon className="engineer-icon" />
+                    <span className="engineer-name">{project.pe_fullname || 'No Engineer Assigned'}</span>
                 </div>
-            ) : (
-                <div className="team-empty-state">No foreman assigned</div>
-            )}
-        </div>
-    </div>
 
-    <div>
-        <h4>Installers</h4>
-        <div className="team-member-list">
-            {installers.length > 0 ? (
-                installers.map((installer) => (
-                    <div
-                        key={hasTeam ? installer.employee_id : installer.emp_id}
-                        className={`team-member role-${installer.job.toLowerCase().replace(" ", "-")} ${!hasTeam ? 'editable' : ''}`}
-                        onClick={(e) => {
-                            if (!hasTeam) {
+                {/* Team Display */}
+                <div className="project-team-display">
+                    <div className="team-role-section">
+                        <div className="role-header">
+                            <SupervisorAccountIcon className="role-icon" />
+                            <span>Foreman</span>
+                        </div>
+                        <div className="role-members">
+                            {foreman ? (
+                                <div className={`team-member role-foreman ${!hasTeam ? 'editable' : ''}`}>
+                                    <PersonIcon className="member-icon" />
+                                    <span className="member-name">
+                                        {hasTeam ? foreman.full_name : (foreman.foreman_full_name || foreman.full_name)}
+                                    </span>
+                                    {!hasTeam && (
+                                        <button 
+                                            className="remove-member"
+                                            onClick={(e) => {
+                                                e.stopPropagation();
+                                                const employee_id = foreman.foreman_id || foreman.employee_id;
+                                                const projectId = project.id;
+                                                const date = project.installation_start_date?.split("T")[0];
+                                                forecastSocket.emit("remove_forecast_member", { projectId, employee_id, date });
+                                            }}
+                                        >
+                                            ×
+                                        </button>
+                                    )}
+                                </div>
+                            ) : (
+                                <div className="team-empty">No foreman assigned</div>
+                            )}
+                        </div>
+                    </div>
+
+                    <div className="team-role-section">
+                        <div className="role-header">
+                            <GroupsIcon className="role-icon" />
+                            <span>Installers ({installers.length})</span>
+                        </div>
+                        <div className="role-members">
+                            {installers.length > 0 ? (
+                                installers.map((installer) => (
+                                    <div
+                                        key={hasTeam ? installer.employee_id : installer.emp_id}
+                                        className={`team-member role-${installer.job.toLowerCase().replace(" ", "-")} ${!hasTeam ? 'editable' : ''}`}
+                                    >
+                                        <PersonIcon className="member-icon" />
+                                        <span className="member-name">{installer.full_name}</span>
+                                        <span className="member-role">{installer.job}</span>
+                                        {!hasTeam && (
+                                            <button 
+                                                className="remove-member"
+                                                onClick={(e) => {
+                                                    e.stopPropagation();
+                                                    const employee_id = installer.emp_id || installer.employee_id;
+                                                    const projectId = project.id;
+                                                    const date = project.installation_start_date?.split("T")[0];
+                                                    forecastSocket.emit("remove_forecast_member", { projectId, employee_id, date });
+                                                }}
+                                            >
+                                                ×
+                                            </button>
+                                        )}
+                                    </div>
+                                ))
+                            ) : (
+                                <div className="team-empty">No installers assigned</div>
+                            )}
+                        </div>
+                    </div>
+                </div>
+
+                {/* Action Buttons */}
+                <div className="project-actions">
+                    {phase === 'preliminaries' && !hasTeam && (
+                        <button 
+                            className="btn-save-team"
+                            onClick={(e) => {
+                                const fTeam = tentativeProjectTeams.filter(t => t.project_id === project.id)
+                                setTeamToSave(fTeam)
                                 e.stopPropagation();
-                                const employee_id = installer.emp_id || installer.employee_id;
-                                const projectId = project.id;
-                                const date = project.installation_start_date?.split("T")[0];
-                                forecastSocket.emit("remove_forecast_member", { projectId, employee_id, date });
-                            }
-                        }}
-                    >
-                        <span className="team-member-name">
-                            {installer.full_name} 
-                        </span>
-                        <span className="team-member-role">{installer.job}</span>
-                        {!hasTeam && <span className="remove-indicator" title="Click to remove">×</span>}
-                    </div>
-                ))
-            ) : (
-                <div className="team-empty-state">No installers assigned</div>
-            )}
-        </div>
-    </div>     
-</div>
-                )}
+                                setSelectedProject(project);
+                                setIsModalOpen(true);
+                            }}
+                        >
+                            <SaveIcon className="btn-icon" />
+                            Save Team
+                        </button>
+                    )}
+
+                    {(hasTeam || installationTeams[project.id]?.team) && (
+                        <button
+                            className={`btn-edit ${editingProjectId === project.id ? 'editing' : ''}`}
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                handleEditClick(project.id);
+                            }}
+                        >
+                            {editingProjectId === project.id ? (
+                                <>
+                                    <CheckCircleIcon className="btn-icon" />
+                                    Save Changes
+                                </>
+                            ) : (
+                                <>
+                                    <EditIcon className="btn-icon" />
+                                    Edit Team
+                                </>
+                            )}
+                        </button>
+                    )}
+                </div>
             </div>
         );
     };
@@ -392,51 +488,79 @@ const ProjectAssignment = () => {
     return (
         <>
             <div className='Content ProjectAssignment'>
-                <div className='project-phase-buttons'>
-                    <button 
-                        onClick={() => handlePhaseClick('preliminaries')}
-                        className={selectedTab === 'preliminaries' ? 'active' : ''}
-                    >
-                        Preliminaries ({getProjectsByPhase('preliminaries').length})
-                    </button>
-                    <button 
-                        onClick={() => handlePhaseClick('installation')}
-                        className={selectedTab === 'installation' ? 'active' : ''}
-                    >
-                        Installation ({getProjectsByPhase('installation').length})
-                    </button>
-                    <button 
-                        onClick={() => handlePhaseClick('tnc')}
-                        className={selectedTab === 'tnc' ? 'active' : ''}
-                    >
-                        TNC ({getProjectsByPhase('tnc').length})
-                    </button>
+                {/* Header */}
+                <div className="assignment-header">
+                    <div className="header-content">
+                        <TeamsIcon className="header-icon" />
+                        <div>
+                            <h1>Project Team Assignment</h1>
+                            <p>Manage team assignments across different project phases</p>
+                        </div>
+                    </div>
+                </div>
+
+                {/* Phase Navigation */}
+                <div className='phase-navigation'>
+                    <div className="phase-buttons">
+                        <button 
+                            onClick={() => handlePhaseClick('preliminaries')}
+                            className={`phase-btn ${selectedTab === 'preliminaries' ? 'active' : ''}`}
+                        >
+                            <AssignmentIcon className="phase-icon" />
+                            Preliminaries
+                            <span className="project-count">{getProjectsByPhase('preliminaries').length}</span>
+                        </button>
+                        <button 
+                            onClick={() => handlePhaseClick('installation')}
+                            className={`phase-btn ${selectedTab === 'installation' ? 'active' : ''}`}
+                        >
+                            <ConstructionIcon className="phase-icon" />
+                            Installation
+                            <span className="project-count">{getProjectsByPhase('installation').length}</span>
+                        </button>
+                        <button 
+                            onClick={() => handlePhaseClick('tnc')}
+                            className={`phase-btn ${selectedTab === 'tnc' ? 'active' : ''}`}
+                        >
+                            <BuildIcon className="phase-icon" />
+                            Testing & Commissioning
+                            <span className="project-count">{getProjectsByPhase('tnc').length}</span>
+                        </button>
+                    </div>
                 </div>  
                 
-                <div className='project-assignment-layout'>
+                <div className='assignment-layout'>
                     {/* Left Side - Projects */}
-                    <div className='projects-container'>
-                        {/* Only show team toggle for preliminaries */}
+                    <div className='projects-panel'>
+                        {/* Team View Toggle - Only for Preliminaries */}
                         {selectedTab === 'preliminaries' && (
-                            <div className="team-view-toggle">
-                                <button 
-                                    className={`toggle-btn ${teamView === 'pending' ? 'active' : ''}`}
-                                    onClick={() => setTeamView('pending')}
-                                >
-                                    Pending Teams ({projectsNoTeam.length})
-                                </button>
-                                <button 
-                                    className={`toggle-btn ${teamView === 'assigned' ? 'active' : ''}`}
-                                    onClick={() => setTeamView('assigned')}
-                                >
-                                    Assigned Teams ({projectsWithTeam.length})
-                                </button>
+                            <div className="view-controls">
+                                <div className="view-toggle">
+                                    <button 
+                                        className={`view-btn ${teamView === 'pending' ? 'active' : ''}`}
+                                        onClick={() => setTeamView('pending')}
+                                    >
+                                        <WarningIcon className="view-icon" />
+                                        Pending Teams
+                                        <span className="count-badge">{projectsNoTeam.length}</span>
+                                    </button>
+                                    <button 
+                                        className={`view-btn ${teamView === 'assigned' ? 'active' : ''}`}
+                                        onClick={() => setTeamView('assigned')}
+                                    >
+                                        <CheckCircleIcon className="view-icon" />
+                                        Assigned Teams
+                                        <span className="count-badge">{projectsWithTeam.length}</span>
+                                    </button>
+                                </div>
                             </div>
                         )}
 
+                        {/* Projects List */}
                         <div className="projects-list">
                             {currentProjects.length === 0 ? (
-                                <div className="no-projects">
+                                <div className="empty-state">
+                                    <TeamsIcon className="empty-icon" />
                                     <h3>
                                         {selectedTab === 'preliminaries' 
                                             ? (teamView === 'pending' 
@@ -445,76 +569,115 @@ const ProjectAssignment = () => {
                                             : `No ${selectedTab.charAt(0).toUpperCase() + selectedTab.slice(1)} Projects`
                                         }
                                     </h3>
+                                    <p>All projects are properly assigned and managed</p>
                                 </div>
                             ) : (
-                                currentProjects.map((project, index) => (
-                                    <ProjectCard 
-                                        key={index} 
-                                        project={project} 
-                                        index={index}
-                                        hasTeam={selectedTab === 'preliminaries' ? teamView === 'assigned' : true}
-                                        phase={selectedTab}
-                                    />
-                                ))
+                                <div className="projects-grid">
+                                    {currentProjects.map((project, index) => (
+                                        <ProjectCard 
+                                            key={index} 
+                                            project={project} 
+                                            index={index}
+                                            hasTeam={selectedTab === 'preliminaries' ? teamView === 'assigned' : true}
+                                            phase={selectedTab}
+                                        />
+                                    ))}
+                                </div>
                             )}
                         </div>
                     </div>
 
                     {/* Right Side - Personnel Selection */}
-                    <div className='personnel-container'>
-                        {/* Only show personnel selection for preliminaries with pending teams */}
+                    <div className='personnel-panel'>
+                        {/* Personnel Selection for Preliminaries Pending Teams */}
                         {selectedTab === 'preliminaries' && teamView === 'pending' && (
                             <>
                                 {selectedProject && selectedProject.lift_name && selectedProject.installation_start_date ? (
-                                    <div className='forecasted-team'>
-                                        <div className="forecasted-team-header">
-                                            <h3>Available Personnel for {selectedProject.lift_name}</h3>
-                                            <p>Team members available by {formatDate(selectedProject.installation_start_date)}</p>
+                                    <div className='personnel-selection'>
+                                        <div className="selection-header">
+                                            <div className="header-info">
+                                                <h3>Available Personnel</h3>
+                                                <p>Assign team members to <strong>{selectedProject.lift_name}</strong></p>
+                                            </div>
+                                            <div className="project-badge">
+                                                <BusinessIcon />
+                                                Project #{selectedProject.id}
+                                            </div>
                                         </div>
                                         
-                                        <div className="group-tabs">
-                                            <button className={`group-tab ${activeRoleTab === 'all' ? 'active' : ''}`}
-                                                    onClick={() => setActiveRoleTab('all')}>
-                                                All Personnel ({teamsNoProject.concat(forecastData).length})
-                                            </button>
+                                        {/* Filters */}
+                                        <div className="filters-section">
+                                            <div className="search-box">
+                                                <SearchIcon className="search-icon" />
+                                                <input
+                                                    type="text"
+                                                    placeholder="Search by name or ID..."
+                                                    value={searchTerm}
+                                                    onChange={(e) => setSearchTerm(e.target.value)}
+                                                    className="search-input"
+                                                />
+                                            </div>
                                             
-                                            {!selectedProject.has_team ? (
-                                                <>
-                                                    <button className={`group-tab ${activeRoleTab === 'no-project' ? 'active' : ''}`}
-                                                            onClick={() => setActiveRoleTab('no-project')}>
-                                                        No Project ({teamsNoProject.length})
+                                            <div className="filter-controls">
+                                                <div className="filter-group">
+                                                    <FilterIcon className="filter-icon" />
+                                                    <select 
+                                                        value={jobFilter}
+                                                        onChange={(e) => setJobFilter(e.target.value)}
+                                                        className="filter-select"
+                                                    >
+                                                        <option value="all">All Roles</option>
+                                                        <option value="Foreman">Foreman</option>
+                                                        <option value="Skilled Installer">Skilled Installer</option>
+                                                        <option value="Installer">Installer</option>
+                                                    </select>
+                                                </div>
+                                                
+                                                <div className="group-tabs">
+                                                    <button 
+                                                        className={`group-tab ${activeRoleTab === 'all' ? 'active' : ''}`}
+                                                        onClick={() => setActiveRoleTab('all')}
+                                                    >
+                                                        All ({teamsNoProject.concat(forecastData).length})
                                                     </button>
-                                                    <button className={`group-tab ${activeRoleTab === 'forecasted' ? 'active' : ''}`}
-                                                            onClick={() => setActiveRoleTab('forecasted')}>
+                                                    <button 
+                                                        className={`group-tab ${activeRoleTab === 'no-project' ? 'active' : ''}`}
+                                                        onClick={() => setActiveRoleTab('no-project')}
+                                                    >
+                                                        Available ({teamsNoProject.length})
+                                                    </button>
+                                                    <button 
+                                                        className={`group-tab ${activeRoleTab === 'forecasted' ? 'active' : ''}`}
+                                                        onClick={() => setActiveRoleTab('forecasted')}
+                                                    >
                                                         Forecasted ({forecastData.length})
-                                                    </button>                          
-                                                </>
-                                            ) : (
-                                                <button className={`group-tab ${activeRoleTab === 'no-project' ? 'active' : ''}`}
-                                                        onClick={() => setActiveRoleTab('no-project')}>
-                                                    Available Technicians ({teamsNoProject.length})
-                                                </button>
-                                            )}
+                                                    </button>
+                                                </div>
+                                            </div>
                                         </div>
 
-                                        <div className="personnel-list">
+                                        {/* Personnel Grid */}
+                                        <div className="personnel-grid">
                                             {filteredPersonnel.length > 0 ? (
-                                                <div className="personnel-grid">
-                                                    {filteredPersonnel.map((person, index) => (
+                                                filteredPersonnel.map((person, index) => {
+                                                    const alreadyAssigned = tentativeProjectTeams.some(
+                                                        t => Number(t.project_id) === Number(selectedProject.id) &&
+                                                            (t.emp_id === person.employee_id || t.foreman_id === person.employee_id)
+                                                    );
+
+                                                    return (
                                                         <div 
-                                                            style={{cursor: 'pointer'}}
                                                             key={index} 
-                                                            className={`personnel-card group-${person.group}`}
+                                                            className={`personnel-card 
+                                                                group-${person.group} 
+                                                                ${alreadyAssigned ? 'assigned' : ''}
+                                                                role-${person.job.toLowerCase().replace(' ', '-')}
+                                                            `}
                                                             onClick={() => {
                                                                 const { employee_id, job } = person;
                                                                 const projectId = selectedProject.id;
                                                                 const date = selectedProject.installation_start_date.split("T")[0];
                                                                 
-                                                                const alreadyAssigned = tentativeProjectTeams.some(
-                                                                    t => Number(t.project_id) === Number(projectId) &&
-                                                                        (t.emp_id === employee_id || t.foreman_id === employee_id)
-                                                                );
-
                                                                 if (alreadyAssigned) {
                                                                     forecastSocket.emit("remove_forecast_member", { projectId, employee_id, date });
                                                                 } else {
@@ -526,103 +689,125 @@ const ProjectAssignment = () => {
                                                                 }
                                                             }}
                                                         >   
-                                                            <div className="personnel-group-badge">
-                                                                {person.group === 'no-project' ? 'Available' : 'Forecasted'}
+                                                            <div className="personnel-header">
+                                                                <div className={`availability-badge group-${person.group}`}>
+                                                                    {person.group === 'no-project' ? 'Available' : 'Forecasted'}
+                                                                </div>
+                                                                <div className={`role-badge role-${person.job.toLowerCase().replace(' ', '-')}`}>
+                                                                    {person.job}
+                                                                </div>
                                                             </div>
-                                                            <div className="personnel-name">{person.full_name}</div>
-                                                            <div className="personnel-id">ID: {person.employee_id}</div>
-                                                            <div className={`personnel-job job-${person.job.toLowerCase().replace(' ', '-')}`}>
-                                                                {person.job}
+                                                            <div className="personnel-body">
+                                                                <PersonIcon className="personnel-avatar" />
+                                                                <div className="personnel-info">
+                                                                    <div className="personnel-name">{person.full_name}</div>
+                                                                    <div className="personnel-id">ID: {person.employee_id}</div>
+                                                                    <div className="personnel-island">Island: {person.island_group}</div>
+                                                                </div>
                                                             </div>
-                                                            <div>Island: {person.island_group}</div>
+                                                            <div className="personnel-footer">
+                                                                {alreadyAssigned ? (
+                                                                    <div className="assigned-indicator">
+                                                                        <CheckCircleIcon className="assigned-icon" />
+                                                                        Assigned
+                                                                    </div>
+                                                                ) : (
+                                                                    <div className="assign-indicator">
+                                                                        <GroupAddIcon className="assign-icon" />
+                                                                        Click to Assign
+                                                                    </div>
+                                                                )}
+                                                            </div>
                                                         </div>
-                                                    ))}
-                                                </div>
+                                                    );
+                                                })
                                             ) : (
                                                 <div className="no-personnel">
-                                                    <p>No personnel available for the selected group</p>
+                                                    <PersonIcon className="no-personnel-icon" />
+                                                    <h4>No personnel found</h4>
+                                                    <p>Try adjusting your filters or search terms</p>
                                                 </div>
                                             )}
                                         </div>
 
-                                        <div className="forecast-summary">
-                                            <h4>Availability Summary</h4>
-                                            <div className="summary-stats">
-                                                <div className="summary-stat">
-                                                    <span className="stat-label">Total Available:</span>
-                                                    <span className="stat-count">{teamsNoProject.concat(forecastData).length}</span>
+                                        {/* Summary */}
+                                        <div className="selection-summary">
+                                            <h4>Selection Summary</h4>
+                                            <div className="summary-grid">
+                                                <div className="summary-item">
+                                                    <span className="summary-label">Total Available</span>
+                                                    <span className="summary-count">{teamsNoProject.concat(forecastData).length}</span>
                                                 </div>
-                                                <div className="summary-stat">
-                                                    <span className="stat-label">No Project:</span>
-                                                    <span className="stat-count">{teamsNoProject.length}</span>
+                                                <div className="summary-item">
+                                                    <span className="summary-label">Currently Available</span>
+                                                    <span className="summary-count">{teamsNoProject.length}</span>
                                                 </div>
-                                                {!selectedProject.has_team && (
-                                                    <div className="summary-stat">
-                                                        <span className="stat-label">Forecasted:</span>
-                                                        <span className="stat-count">{forecastData.length}</span>
-                                                    </div>
-                                                )}
+                                                <div className="summary-item">
+                                                    <span className="summary-label">Forecasted Available</span>
+                                                    <span className="summary-count">{forecastData.length}</span>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
                                 ) : (
-                                <div className='forecasted-team'>
-                                    <div className="no-dates-warning">
-                                        <div className="warning-icon">
-                                            <i className="fas fa-calendar-times"></i>
-                                        </div>
-                                        <h3>Cannot Make Forecast</h3>
-                                        <p>Project <strong>{selectedProject.lift_name}</strong> needs installation dates set before team assignment.</p>
-                                        <div className="warning-details">
-                                            <p>Please ensure the following dates are set:</p>
-                                            <ul>
-                                                <li>Installation Start Date</li>
-                                                <li>Testing & Commissioning Start Date</li>
-                                                <li>Project End Date</li>
-                                            </ul>
+                                    <div className='no-project-selected'>
+                                        <div className="selection-prompt">
+                                            <BusinessIcon className="prompt-icon" />
+                                            <h3>Select a Project</h3>
+                                            <p>Choose a project from the left panel to assign team members</p>
+                                            {selectedProject && !selectedProject.installation_start_date && (
+                                                <div className="date-warning">
+                                                    <WarningIcon className="warning-icon" />
+                                                    <div className="warning-content">
+                                                        <strong>Missing Installation Dates</strong>
+                                                        <p>Set installation dates in project details to enable team assignment</p>
+                                                    </div>
+                                                </div>
+                                            )}
                                         </div>
                                     </div>
-                                </div>
                                 )}
                             </>
                         )}
 
-                        {/* Show team editing for ALL phases when editing */}
+                        {/* Team Editing for All Phases */}
                         {editingProjectId && (
-                            <div className='forecasted-team'>
-                                <div className="forecasted-team-header">
-                                    <h3>Edit Personnel for {selectedProject.lift_name}</h3>
-                                    <p>Phase: {selectedTab.charAt(0).toUpperCase() + selectedTab.slice(1)}</p>
+                            <div className='team-editing'>
+                                <div className="editing-header">
+                                    <EditIcon className="editing-icon" />
+                                    <div className="editing-info">
+                                        <h3>Edit Team Composition</h3>
+                                        <p>Modify the team for {selectedProject.lift_name}</p>
+                                    </div>
                                 </div>
 
-                                <div className="current-team-display">
-                                    <h4>Current Team Composition</h4>
-                                    
-                                    <div className="team-roles">
-                                        {/* Foreman Section */}
-                                        <div className="team-role-group">
-                                            <div className="role-header">
-                                                <span className="role-title">Foreman</span>
+                                {/* Current Team */}
+                                <div className="current-team">
+                                    <h4>Current Team</h4>
+                                    <div className="team-composition-editor">
+                                        <div className="team-role-editor">
+                                            <div className="role-header-editor">
+                                                <SupervisorAccountIcon className="role-icon" />
+                                                <span>Foreman (Required: 1)</span>
                                                 <span className="role-count">
-                                                    {editedTeam.filter(t => t.job === 'Foreman').length}
+                                                    {editedTeam.filter(t => t.job === 'Foreman').length}/1
                                                 </span>
                                             </div>
-                                            <div className="role-members">
+                                            <div className="role-members-editor">
                                                 {editedTeam.filter(t => t.job === 'Foreman').map(member => (
                                                     <div 
                                                         key={member.employee_id} 
-                                                        className="team-member-card"
+                                                        className="team-member-editor"
                                                         onClick={() => {
                                                             setEditedTeam(prev => prev.filter(e => e.employee_id !== member.employee_id));
                                                         }}
                                                     >
-                                                        <div className="member-info">
+                                                        <PersonIcon className="member-icon" />
+                                                        <div className="member-details">
                                                             <span className="member-name">{member.full_name}</span>
                                                             <span className="member-id">ID: {member.employee_id}</span>
                                                         </div>
-                                                        <div className="remove-indicator" title="Click to remove">
-                                                            ×
-                                                        </div>
+                                                        <button className="remove-btn">×</button>
                                                     </div>
                                                 ))}
                                                 {editedTeam.filter(t => t.job === 'Foreman').length === 0 && (
@@ -631,33 +816,32 @@ const ProjectAssignment = () => {
                                             </div>
                                         </div>
 
-                                        {/* Installers Section */}
-                                        <div className="team-role-group">
-                                            <div className="role-header">
-                                                <span className="role-title">Installation Team</span>
+                                        <div className="team-role-editor">
+                                            <div className="role-header-editor">
+                                                <GroupsIcon className="role-icon" />
+                                                <span>Installation Team</span>
                                                 <span className="role-count">
                                                     {editedTeam.filter(t => t.job !== 'Foreman').length}
                                                 </span>
                                             </div>
-                                            <div className="role-members">
+                                            <div className="role-members-editor">
                                                 {editedTeam.filter(t => t.job !== 'Foreman').map(member => (
                                                     <div 
                                                         key={member.employee_id} 
-                                                        className="team-member-card"
+                                                        className="team-member-editor"
                                                         onClick={() => {
                                                             setEditedTeam(prev => prev.filter(e => e.employee_id !== member.employee_id));
                                                         }}
                                                     >
-                                                        <div className="member-info">
+                                                        <PersonIcon className="member-icon" />
+                                                        <div className="member-details">
                                                             <span className="member-name">{member.full_name}</span>
-                                                            <div className="member-details">
+                                                            <div className="member-meta">
                                                                 <span className="member-job">{member.job}</span>
                                                                 <span className="member-id">ID: {member.employee_id}</span>
                                                             </div>
                                                         </div>
-                                                        <div className="remove-indicator" title="Click to remove">
-                                                            ×
-                                                        </div>
+                                                        <button className="remove-btn">×</button>
                                                     </div>
                                                 ))}
                                                 {editedTeam.filter(t => t.job !== 'Foreman').length === 0 && (
@@ -668,126 +852,121 @@ const ProjectAssignment = () => {
                                     </div>
                                 </div>
 
-                                <div className="group-tabs">
-                                    <div className="personnel-list">
-                                        {editTeamSelection.length > 0 ? (
-                                            <div className="personnel-grid">
-                                                {editTeamSelection.map((person, index) => (
-                                                    <div 
-                                                        style={{cursor: 'pointer'}}
-                                                        key={index} 
-                                                        className={`personnel-card group-${person.group}`}
-                                                        onClick={() => {
-                                                            setEditedTeam(prev => {
-                                                                const alreadyAdded = prev.some(e => e.employee_id === person.employee_id);
-                                                                if (alreadyAdded) {
-                                                                    return prev.filter(e => e.employee_id !== person.employee_id);
-                                                                } else {
-                                                                    return [...prev, person];
-                                                                }
-                                                            });
-                                                        }}
-                                                    >   
-                                                        <div className="personnel-name">
-                                                            {person.full_name}
-                                                            {editedTeam.map(e => e.employee_id).includes(person.employee_id) ? ' (Selected)' : ''}
-                                                        </div>
-                                                        <div className="personnel-id">ID: {person.employee_id}</div>
-                                                        <div className={`personnel-job job-${person.job.toLowerCase().replace(' ', '-')}`}>
-                                                            {person.job}
-                                                        </div>
-                                                        <div>Island: {person.island_group}</div>
+                                {/* Available Personnel */}
+                                <div className="available-personnel">
+                                    <h4>Available Personnel</h4>
+                                    <div className="personnel-grid-editor">
+                                        {editTeamSelection.map((person, index) => (
+                                            <div 
+                                                key={index} 
+                                                className={`personnel-card-editor ${
+                                                    editedTeam.map(e => e.employee_id).includes(person.employee_id) ? 'selected' : ''
+                                                }`}
+                                                onClick={() => {
+                                                    setEditedTeam(prev => {
+                                                        const alreadyAdded = prev.some(e => e.employee_id === person.employee_id);
+                                                        if (alreadyAdded) {
+                                                            return prev.filter(e => e.employee_id !== person.employee_id);
+                                                        } else {
+                                                            return [...prev, person];
+                                                        }
+                                                    });
+                                                }}
+                                            >   
+                                                <div className="personnel-header-editor">
+                                                    <div className={`role-badge role-${person.job.toLowerCase().replace(' ', '-')}`}>
+                                                        {person.job}
                                                     </div>
-                                                ))}
+                                                </div>
+                                                <div className="personnel-body-editor">
+                                                    <PersonIcon className="personnel-avatar" />
+                                                    <div className="personnel-info">
+                                                        <div className="personnel-name">{person.full_name}</div>
+                                                        <div className="personnel-id">ID: {person.employee_id}</div>
+                                                    </div>
+                                                </div>
+                                                <div className="personnel-footer-editor">
+                                                    {editedTeam.map(e => e.employee_id).includes(person.employee_id) ? (
+                                                        <div className="selected-indicator">
+                                                            <CheckCircleIcon className="selected-icon" />
+                                                            Selected
+                                                        </div>
+                                                    ) : (
+                                                        <div className="select-indicator">
+                                                            Click to Select
+                                                        </div>
+                                                    )}
+                                                </div>
                                             </div>
-                                        ) : (
-                                            <div className="no-personnel">
-                                                <p>No personnel available for the selected group</p>
-                                            </div>
-                                        )}
+                                        ))}
                                     </div>
                                 </div>
                             </div>
                         )}
 
-                        {/* For installation and TNC phases when not editing, show project details */}
+                        {/* Phase Info for Installation and TNC */}
                         {(selectedTab === 'installation' || selectedTab === 'tnc') && !editingProjectId && (
-        <div className="phase-info">
-            <div className="phase-header">
-                <h3>{selectedTab.charAt(0).toUpperCase() + selectedTab.slice(1)} Phase</h3>
-                <span className="phase-badge">{selectedTab}</span>
-            </div>
-            <div className="phase-stats">
-                <div className="stat-item">
-                    <span className="stat-number">{currentProjects.length}</span>
-                    <span className="stat-label">Projects</span>
-                </div>
-                <div className="stat-item">
-                    <span className="stat-number">
-                        {currentProjects.filter(p => installationTeams[p.id]?.team).length}
-                    </span>
-                    <span className="stat-label">Teams Assigned</span>
-                </div>
-            </div>
-            
-            {selectedProject && (
-                <div className="selected-project-info">
-                    <h4>Selected Project</h4>
-                    <div className="project-detail-card">
-                        <div className="project-title">
-                            <h5>{selectedProject.lift_name}</h5>
-                            <span className="project-id">#{selectedProject.id}</span>
-                        </div>
-                        <div className="project-meta">
-                            <div className="meta-item">
-                                <span className="meta-label">Client:</span>
-                                <span className="meta-value">{selectedProject.client}</span>
-                            </div>
-                            <div className="meta-item">
-                                <span className="meta-label">Status:</span>
-                                <span className="meta-value status">{selectedProject.current_task}</span>
-                            </div>
-                            <div className="meta-item">
-                                <span className="meta-label">Installation Start:</span>
-                                <span className="meta-value">
-                                    {selectedProject.installation_start_date 
-                                        ? formatDate(selectedProject.installation_start_date) 
-                                        : 'Not scheduled'
-                                    }
-                                </span>
-                            </div>
-                        </div>
-                        
-                        {installationTeams[selectedProject.id]?.team && (
-                            <div className="team-assignment-info">
-                                <div className="team-header">
-                                    <strong>Team Assigned</strong>
-                                    <span className="team-count">
-                                        {installationTeams[selectedProject.id].team.length} members
-                                    </span>
+                            <div className="phase-info-panel">
+                                <div className="phase-header">
+                                    <div className="phase-title">
+                                        <h3>{selectedTab.charAt(0).toUpperCase() + selectedTab.slice(1)} Phase</h3>
+                                        <span className="phase-badge">{selectedTab}</span>
+                                    </div>
+                                    <div className="phase-stats">
+                                        <div className="phase-stat">
+                                            <span className="stat-number">{currentProjects.length}</span>
+                                            <span className="stat-label">Total Projects</span>
+                                        </div>
+                                        <div className="phase-stat">
+                                            <span className="stat-number">
+                                                {currentProjects.filter(p => installationTeams[p.id]?.team).length}
+                                            </span>
+                                            <span className="stat-label">Teams Assigned</span>
+                                        </div>
+                                    </div>
                                 </div>
-                                {/* <button 
-                                    onClick={() => handleEditClick(selectedProject.id)}
-                                    className="btn-edit-team"
-                                >
-                                    <i className="fas fa-edit"></i>
-                                    Edit Team
-                                </button> */}
+                                
+                                {selectedProject && (
+                                    <div className="selected-project-details">
+                                        <h4>Selected Project Details</h4>
+                                        <div className="project-detail-card">
+                                            <div className="project-header">
+                                                <BusinessIcon className="project-detail-icon" />
+                                                <div className="project-title">
+                                                    <h5>{selectedProject.lift_name}</h5>
+                                                    <span className="project-id">#{selectedProject.id}</span>
+                                                </div>
+                                            </div>
+                                            <div className="project-meta-grid">
+                                                <div className="meta-item">
+                                                    <span className="meta-label">Client</span>
+                                                    <span className="meta-value">{selectedProject.client}</span>
+                                                </div>
+                                                <div className="meta-item">
+                                                    <span className="meta-label">Status</span>
+                                                    <span className="meta-value status">{selectedProject.current_task}</span>
+                                                </div>
+                                                <div className="meta-item">
+                                                    <span className="meta-label">Installation Start</span>
+                                                    <span className="meta-value">
+                                                        {selectedProject.installation_start_date 
+                                                            ? formatDate(selectedProject.installation_start_date) 
+                                                            : 'Not scheduled'
+                                                        }
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                )}
+                                
+                                {!selectedProject && (
+                                    <div className="no-project-prompt">
+                                        <BusinessIcon className="prompt-icon" />
+                                        <p>Select a project to view details</p>
+                                    </div>
+                                )}
                             </div>
-                        )}
-                    </div>
-                </div>
-            )}
-            
-            {!selectedProject && (
-                <div className="no-project-selected">
-                    <div className="prompt-icon">
-                        <i className="fas fa-mouse-pointer"></i>
-                    </div>
-                    <p>Select a project to view details</p>
-                </div>
-            )}
-        </div>
                         )}
                     </div>
                 </div>

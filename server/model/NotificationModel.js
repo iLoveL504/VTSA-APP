@@ -46,6 +46,17 @@ class NotificationModel {
 
         // await this.distributeNotification(latestId, latestNotification)
     }
+
+    static async readNotification(id) {
+        console.log('here in read notification')
+        console.log(id)
+        await pool.query(`update notification_recipients set mark_read = 1 where id = ?`, [id])
+    }
+    static async readAllNotifications(empId) {
+        console.log('here in read all notification')
+        
+        await pool.query(`update notification_recipients set mark_read = 1 where employee_id = ?`, [empId])
+    }
 }
 
 export { NotificationModel }

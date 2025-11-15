@@ -249,7 +249,7 @@
   overflow-y: auto;
 }
 
-.table-row {
+.BabyBook .table-row {
   display: grid;
   grid-template-columns: 1fr 1fr 1fr 1fr 1fr 150px;
   gap: 1rem;

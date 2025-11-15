@@ -1,363 +1,467 @@
-/* Create Project Page - Modern Styling */
-.Content.CreateProject {
-  padding: 2rem;
-  max-width: 1000px;
-  margin: 0 auto;
-  background: #ffffff;
-  min-height: 90vh;
-}
-
-.Content.CreateProject h1 {
-  color: #315a95;
-  margin-bottom: 2rem;
-  font-weight: 700;
-  font-size: 2.2rem;
-  text-align: center;
-  position: relative;
-  padding-bottom: 1rem;
-}
-
-.Content.CreateProject h1::after {
-  content: '';
-  position: absolute;
-  bottom: 0;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 80px;
-  height: 4px;
-  background: linear-gradient(90deg, #315a95, #4a7cc2);
-  border-radius: 2px;
-}
-
-.Content.CreateProject form {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: 1.5rem;
-  padding: 2rem;
+/* Create Project Page - Modern Professional Styling */
+.CreateProject.Content {
+  padding: 0;
   background: #f8fafc;
-  border-radius: 16px;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
-  border: 1px solid #e2e8f0;
+  min-height: 100vh;
 }
 
-.Content.CreateProject form div {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-  position: relative;
-}
-
-.Content.CreateProject label {
-  font-weight: 600;
-  color: #2d3748;
-  font-size: 0.9rem;
-  margin-left: 0.5rem;
-  font-family: 'Montserrat', sans-serif;
-}
-
-.Content.CreateProject input {
-  padding: 1rem 1.25rem;
-  border: 2px solid #e2e8f0;
-  border-radius: 12px;
-  font-family: 'Source Sans 3', sans-serif;
-  font-size: 1rem;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  background: white;
-  color: #2d3748;
-}
-
-.Content.CreateProject input:focus {
-  outline: none;
-  border-color: #315a95;
-  box-shadow: 0 0 0 3px rgba(49, 90, 149, 0.15);
-  transform: translateY(-1px);
-}
-
-.Content.CreateProject input:hover {
-  border-color: #cbd5e0;
-}
-
-.Content.CreateProject input::placeholder {
-  color: #a0aec0;
-  font-size: 0.9rem;
-}
-
-/* Number input styling */
-.Content.CreateProject input[type="number"] {
-  appearance: textfield;
-}
-
-.Content.CreateProject input[type="number"]::-webkit-outer-spin-button,
-.Content.CreateProject input[type="number"]::-webkit-inner-spin-button {
-  -webkit-appearance: none;
-  margin: 0;
-}
-
-.Content.CreateProject textarea {
-  padding: 1rem 1.25rem;
-  border: 2px solid #e2e8f0;
-  border-radius: 12px;
-  font-family: 'Source Sans 3', sans-serif;
-  font-size: 1rem;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  background: white;
-  color: #2d3748;
-  resize: vertical;
-  min-height: 100px;
-  line-height: 1.5;
-}
-
-.Content.CreateProject textarea:focus {
-  outline: none;
-  border-color: #315a95;
-  box-shadow: 0 0 0 3px rgba(49, 90, 149, 0.15);
-  transform: translateY(-1px);
-}
-
-.Content.CreateProject textarea:hover {
-  border-color: #cbd5e0;
-}
-
-.Content.CreateProject textarea::placeholder {
-  color: #a0aec0;
-  font-size: 0.9rem;
-}
-
-/* Focus states for accessibility */
-.Content.CreateProject textarea:focus-visible {
-  outline: 2px solid #315a95;
-  outline-offset: 2px;
-}
-
-/* Animation for textarea */
-.Content.CreateProject textarea {
-  animation: fadeInUp 0.4s ease;
-}
-
-/* Optional: Add a subtle resize handle style */
-.Content.CreateProject textarea::-webkit-resizer {
-  border-width: 8px;
-  border-style: solid;
-  border-color: transparent #cbd5e0 #cbd5e0 transparent;
-}
-
-.Content.CreateProject textarea::-webkit-resizer:hover {
-  border-color: transparent #315a95 #315a95 transparent;
-}
-
-/* Error message styling */
-.Content.CreateProject .error {
-  color: #e53e3e;
-  font-size: 0.8rem;
-  font-weight: 500;
-  margin-top: 0.25rem;
-  margin-left: 0.5rem;
-}
-
-@keyframes slideIn {
-  from {
-    opacity: 0;
-    transform: translateY(-5px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-/* Submit button styling */
-.Content.CreateProject button[type="submit"] {
-  grid-column: 1 / -1;
+/* Header Section */
+.CreateProject .project-header {
   background: linear-gradient(135deg, #315a95 0%, #4a7cc2 100%);
   color: white;
-  padding: 1.25rem 2rem;
-  border: none;
-  border-radius: 12px;
-  font-family: 'Montserrat', sans-serif;
-  font-weight: 600;
-  font-size: 1.1rem;
-  cursor: pointer;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  margin-top: 1rem;
-  text-transform: none;
-  letter-spacing: 0.5px;
+  padding: 2rem 2rem 1.5rem;
   position: relative;
   overflow: hidden;
 }
 
-.Content.CreateProject button[type="submit"]::before {
+.CreateProject .project-header::before {
   content: '';
   position: absolute;
   top: 0;
-  left: -100%;
-  width: 100%;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.05'%3E%3Ccircle cx='30' cy='30' r='2'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+}
+
+.CreateProject .header-content {
+  position: relative;
+  z-index: 1;
+  text-align: center;
+}
+
+.CreateProject .header-content h1 {
+  font-size: 2.5rem;
+  font-weight: 700;
+  margin: 0 0 0.5rem 0;
+  color: white;
+}
+
+.CreateProject .header-content h1::after {
+  display: none;
+}
+
+.CreateProject .header-content p {
+  font-size: 1.1rem;
+  opacity: 0.9;
+  margin: 0;
+  font-weight: 300;
+}
+
+.CreateProject .progress-indicator {
+  position: relative;
+  z-index: 1;
+  margin-top: 2rem;
+  text-align: center;
+}
+
+.CreateProject .progress-bar {
+  background: rgba(255, 255, 255, 0.2);
+  height: 6px;
+  border-radius: 3px;
+  margin-bottom: 0.5rem;
+  overflow: hidden;
+}
+
+.CreateProject .progress-fill {
+  background: #fff;
   height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
-  transition: left 0.5s ease;
+  border-radius: 3px;
+  transition: width 0.3s ease;
+  box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
 }
 
-.Content.CreateProject button[type="submit"]:hover::before {
-  left: 100%;
+.CreateProject .progress-indicator span {
+  font-size: 0.9rem;
+  opacity: 0.8;
 }
 
-.Content.CreateProject button[type="submit"]:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 25px rgba(49, 90, 149, 0.3);
-}
-
-.Content.CreateProject button[type="submit"]:active {
-  transform: translateY(0);
-}
-
-/* Form section grouping */
-.form-section-group {
-  grid-column: 1 / -1;
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: 1.5rem;
-  padding: 1.5rem;
+/* Form Container */
+.CreateProject .form-container {
+  display: flex;
+  max-width: 1400px;
+  margin: 0 auto;
   background: white;
-  border-radius: 12px;
-  border: 1px solid #e2e8f0;
-  margin-bottom: 1rem;
+  border-radius: 20px;
+  margin-top: 2rem;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  min-height: 600px;
 }
 
-.form-section-group:last-child {
-  margin-bottom: 0;
+/* Sidebar */
+.CreateProject .form-sidebar {
+  width: 300px;
+  background: #f8fafc;
+  border-right: 1px solid #e2e8f0;
+  padding: 2rem 0;
 }
 
-.form-section-group h3 {
-  grid-column: 1 / -1;
+.CreateProject .sidebar-item {
+  display: flex;
+  align-items: center;
+  padding: 1rem 1.5rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border-left: 4px solid transparent;
+  position: relative;
+}
+
+.CreateProject .sidebar-item:hover {
+  background: #edf2f7;
+}
+
+.CreateProject .sidebar-item.active {
+  background: white;
+  border-left-color: #315a95;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.CreateProject .sidebar-item.completed {
+  border-left-color: #38a169;
+}
+
+.CreateProject .sidebar-icon {
+  margin-right: 1rem;
+  color: #718096;
+  transition: color 0.3s ease;
+}
+
+.CreateProject .sidebar-item.active .sidebar-icon {
   color: #315a95;
-  font-size: 1.2rem;
-  font-weight: 600;
-  margin-bottom: 1rem;
-  padding-bottom: 0.5rem;
-  border-bottom: 2px solid #e2e8f0;
 }
 
-/* Required field indicator */
-.Content.CreateProject label::after {
+.CreateProject .sidebar-item.completed .sidebar-icon {
+  color: #38a169;
+}
+
+.CreateProject .sidebar-content h4 {
+  margin: 0 0 0.25rem 0;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #2d3748;
+}
+
+.CreateProject .sidebar-content p {
+  margin: 0;
+  font-size: 0.8rem;
+  color: #718096;
+}
+
+.CreateProject .check-icon {
+  margin-left: auto;
+  color: #38a169;
+  font-size: 1.2rem !important;
+}
+
+/* Form Content */
+.CreateProject .form-content {
+  flex: 1;
+  padding: 2rem 3rem;
+  overflow-y: auto;
+  max-height: 80vh;
+}
+
+.CreateProject .form-section {
+  animation: CreateProject-fadeInUp 0.4s ease;
+}
+
+.CreateProject .section-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 2rem;
+  padding-bottom: 1rem;
+  border-bottom: 2px solid #f1f5f9;
+}
+
+.CreateProject .section-icon {
+  font-size: 2rem !important;
+  color: #315a95;
+  margin-right: 1rem;
+}
+
+.CreateProject .section-header h2 {
+  margin: 0 0 0.25rem 0;
+  color: #2d3748;
+  font-size: 1.5rem;
+  font-weight: 600;
+}
+
+.CreateProject .section-header p {
+  margin: 0;
+  color: #718096;
+  font-size: 0.95rem;
+}
+
+/* Form Grid */
+.CreateProject .form-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.CreateProject .form-group {
+  display: flex;
+  flex-direction: column;
+}
+
+.CreateProject .form-group.full-width {
+  grid-column: 1 / -1;
+}
+
+.CreateProject .form-group label {
+  font-weight: 600;
+  color: #2d3748;
+  font-size: 0.9rem;
+  margin-bottom: 0.5rem;
+  display: flex;
+  align-items: center;
+}
+
+.CreateProject .form-group label::after {
   content: '*';
   color: #e53e3e;
   margin-left: 0.25rem;
   opacity: 0.8;
 }
 
-/* Focus states for accessibility */
-.Content.CreateProject input:focus-visible {
-  outline: 2px solid #315a95;
-  outline-offset: 2px;
+.CreateProject .form-group input,
+.CreateProject .form-group textarea,
+.CreateProject .form-group select {
+  padding: 0.875rem 1rem;
+  border: 2px solid #e2e8f0;
+  border-radius: 10px;
+  font-family: 'Source Sans 3', sans-serif;
+  font-size: 0.95rem;
+  transition: all 0.3s ease;
+  background: white;
+  color: #2d3748;
 }
 
-/* Loading state for submit button */
-.Content.CreateProject button[type="submit"]:disabled {
-  background: linear-gradient(135deg, #a0aec0 0%, #cbd5e0 100%);
+.CreateProject .form-group input:focus,
+.CreateProject .form-group textarea:focus,
+.CreateProject .form-group select:focus {
+  outline: none;
+  border-color: #315a95;
+  box-shadow: 0 0 0 3px rgba(49, 90, 149, 0.1);
+}
+
+.CreateProject .form-group input:hover,
+.CreateProject .form-group textarea:hover,
+.CreateProject .form-group select:hover {
+  border-color: #cbd5e0;
+}
+
+.CreateProject .form-group input.error,
+.CreateProject .form-group textarea.error,
+.CreateProject .form-group select.error {
+  border-color: #e53e3e;
+  box-shadow: 0 0 0 3px rgba(229, 62, 62, 0.1);
+}
+
+.CreateProject .error-message {
+  color: #e53e3e;
+  font-size: 0.8rem;
+  margin-top: 0.25rem;
+  font-weight: 500;
+}
+
+/* Select Wrapper */
+.CreateProject .select-wrapper {
+  position: relative;
+}
+
+.CreateProject .select-wrapper select {
+  appearance: none;
+  width: 100%;
+}
+
+.CreateProject .select-arrow {
+  position: absolute;
+  right: 1rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #718096;
+  pointer-events: none;
+}
+
+/* File Upload */
+.CreateProject .file-upload-area {
+  border: 2px dashed #e2e8f0;
+  border-radius: 10px;
+  padding: 2rem;
+  text-align: center;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.CreateProject .file-upload-area:hover {
+  border-color: #315a95;
+  background: #f8fafc;
+}
+
+.CreateProject .file-input {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.CreateProject .upload-placeholder {
+  pointer-events: none;
+}
+
+.CreateProject .upload-icon {
+  font-size: 3rem !important;
+  color: #cbd5e0;
+  margin-bottom: 1rem;
+}
+
+.CreateProject .file-preview {
+  margin-top: 1rem;
+  padding: 1rem;
+  background: #f1f5f9;
+  border-radius: 8px;
+  border-left: 4px solid #315a95;
+}
+
+/* Form Navigation */
+.CreateProject .form-navigation {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 2rem;
+  border-top: 2px solid #f1f5f9;
+  margin-top: 2rem;
+}
+
+.CreateProject .btn-secondary,
+.CreateProject .btn-primary,
+.CreateProject .btn-submit {
+  padding: 0.875rem 2rem;
+  border: none;
+  border-radius: 10px;
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 600;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.CreateProject .btn-secondary {
+  background: #f7fafc;
+  color: #4a5568;
+  border: 2px solid #e2e8f0;
+}
+
+.CreateProject .btn-secondary:hover {
+  background: #edf2f7;
+  border-color: #cbd5e0;
+  transform: translateY(-1px);
+}
+
+.CreateProject .btn-primary {
+  background: linear-gradient(135deg, #315a95 0%, #4a7cc2 100%);
+  color: white;
+  margin-left: auto;
+}
+
+.CreateProject .btn-primary:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(49, 90, 149, 0.3);
+}
+
+.CreateProject .btn-submit {
+  background: linear-gradient(135deg, #38a169 0%, #48bb78 100%);
+  color: white;
+  margin-left: auto;
+}
+
+.CreateProject .btn-submit:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(56, 161, 105, 0.3);
+}
+
+.CreateProject .btn-submit:disabled {
+  background: #a0aec0;
   cursor: not-allowed;
   transform: none;
   box-shadow: none;
 }
 
-/* Responsive adjustments */
-@media (max-width: 768px) {
-  .Content.CreateProject {
-    padding: 1rem;
-  }
-  
-  .Content.CreateProject form {
-    grid-template-columns: 1fr;
-    padding: 1.5rem;
-    gap: 1rem;
-  }
-  
-  .Content.CreateProject h1 {
-    font-size: 1.8rem;
-    margin-bottom: 1.5rem;
-  }
-  
-  .form-section-group {
-    grid-template-columns: 1fr;
-  }
+/* Spinner */
+.CreateProject .spinner {
+  width: 16px;
+  height: 16px;
+  border: 2px solid transparent;
+  border-top: 2px solid white;
+  border-radius: 50%;
+  animation: CreateProject-spin 1s linear infinite;
 }
 
-@media (max-width: 480px) {
-  .Content.CreateProject form {
-    padding: 1rem;
-  }
-  
-  .Content.CreateProject input {
-    padding: 0.875rem 1rem;
-  }
-  
-  .Content.CreateProject button[type="submit"] {
-    padding: 1rem 1.5rem;
-    font-size: 1rem;
-  }
+@keyframes CreateProject-spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
 }
 
-/* Animation for form elements */
-.Content.CreateProject form div {
-  animation: fadeInUp 0.4s ease;
+/* Searchable Dropdown */
+.CreateProject .searchable-dropdown {
+  position: relative;
 }
 
-@keyframes fadeInUp {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+.CreateProject .searchable-dropdown input {
+  width: 100%;
 }
 
-/* Staggered animation for form items */
-.Content.CreateProject form div:nth-child(1) { animation-delay: 0.1s; }
-.Content.CreateProject form div:nth-child(2) { animation-delay: 0.15s; }
-.Content.CreateProject form div:nth-child(3) { animation-delay: 0.2s; }
-.Content.CreateProject form div:nth-child(4) { animation-delay: 0.25s; }
-.Content.CreateProject form div:nth-child(5) { animation-delay: 0.3s; }
-.Content.CreateProject form div:nth-child(6) { animation-delay: 0.35s; }
-.Content.CreateProject form div:nth-child(7) { animation-delay: 0.4s; }
-.Content.CreateProject form div:nth-child(8) { animation-delay: 0.45s; }
-.Content.CreateProject form div:nth-child(9) { animation-delay: 0.5s; }
-.Content.CreateProject form div:nth-child(10) { animation-delay: 0.55s; }
-.Content.CreateProject form div:nth-child(11) { animation-delay: 0.6s; }
-.Content.CreateProject form div:nth-child(12) { animation-delay: 0.65s; }
-.Content.CreateProject form div:nth-child(13) { animation-delay: 0.7s; }
-.Content.CreateProject form div:nth-child(14) { animation-delay: 0.75s; }
-.Content.CreateProject form div:nth-child(15) { animation-delay: 0.8s; }
-.Content.CreateProject form div:nth-child(16) { animation-delay: 0.85s; }
-.Content.CreateProject form div:nth-child(17) { animation-delay: 0.9s; }
-.Content.CreateProject form div:nth-child(18) { animation-delay: 0.95s; }
-
-/* Custom scrollbar for the form */
-.Content.CreateProject form {
-  scrollbar-width: thin;
-  scrollbar-color: #cbd5e0 #f8fafc;
+.CreateProject .dropdown-options {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background: white;
+  border: 2px solid #e2e8f0;
+  border-top: none;
+  border-radius: 0 0 10px 10px;
+  max-height: 200px;
+  overflow-y: auto;
+  z-index: 1000;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
-.Content.CreateProject form::-webkit-scrollbar {
-  width: 6px;
+.CreateProject .dropdown-option {
+  padding: 0.75rem 1rem;
+  cursor: pointer;
+  transition: background 0.2s ease;
+  border-bottom: 1px solid #f1f5f9;
 }
 
-.Content.CreateProject form::-webkit-scrollbar-track {
-  background: #f8fafc;
-  border-radius: 3px;
+.CreateProject .dropdown-option:hover {
+  background: #f7fafc;
 }
 
-.Content.CreateProject form::-webkit-scrollbar-thumb {
-  background: #cbd5e0;
-  border-radius: 3px;
+.CreateProject .dropdown-option:last-child {
+  border-bottom: none;
 }
 
-.Content.CreateProject form::-webkit-scrollbar-thumb:hover {
-  background: #a0aec0;
+.CreateProject .dropdown-more,
+.CreateProject .dropdown-no-results {
+  padding: 0.75rem 1rem;
+  color: #718096;
+  font-size: 0.85rem;
+  font-style: italic;
+  background: #f7fafc;
 }
 
-/* Confirmation Modal Styles */
-/* Confirmation Modal Styles */
-.modal-overlay {
+/* Modal Styles with Namespacing */
+.CreateProject .modal-overlay {
   position: fixed;
   top: 0;
   left: 0;
@@ -369,7 +473,7 @@
   justify-content: center;
   z-index: 1000;
   backdrop-filter: blur(4px);
-  animation: fadeIn 0.2s ease;
+  animation: CreateProject-fadeIn 0.2s ease;
 }
 
 .CreateProject .modal-content {
@@ -379,43 +483,50 @@
   max-width: 500px;
   width: 90%;
   box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
-  animation: slideUp 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  animation: CreateProject-slideUp 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   border: 1px solid #e2e8f0;
   overflow: hidden;
 }
 
-.modal-header {
+.CreateProject .modal-header {
   background: linear-gradient(135deg, #315a95 0%, #4a7cc2 100%);
   color: white;
   padding: 1.5rem 2rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
 }
 
-.modal-header h3 {
+.CreateProject .modal-header h3 {
   margin: 0;
   font-size: 1.3rem;
   font-weight: 600;
 }
 
-.modal-body {
+.CreateProject .modal-icon {
+  font-size: 2rem !important;
+}
+
+.CreateProject .modal-body {
   padding: 2rem;
   color: #4a5568;
   line-height: 1.6;
 }
 
-.modal-body p {
+.CreateProject .modal-body p {
   margin: 0 0 1rem 0;
 }
 
-.modal-body p:last-child {
+.CreateProject .modal-body p:last-child {
   margin-bottom: 0;
 }
 
-.modal-body strong {
+.CreateProject .modal-body strong {
   color: #315a95;
   font-weight: 600;
 }
 
-.modal-actions {
+.CreateProject .modal-actions {
   padding: 1.5rem 2rem;
   background: #f8fafc;
   display: flex;
@@ -424,7 +535,7 @@
   border-top: 1px solid #e2e8f0;
 }
 
-.btn-cancel {
+.CreateProject .btn-cancel {
   padding: 0.75rem 1.5rem;
   border: 2px solid #e2e8f0;
   background: white;
@@ -436,13 +547,13 @@
   transition: all 0.2s ease;
 }
 
-.btn-cancel:hover {
+.CreateProject .btn-cancel:hover {
   background: #f7fafc;
   border-color: #cbd5e0;
   transform: translateY(-1px);
 }
 
-.btn-confirm {
+.CreateProject .btn-confirm {
   padding: 0.75rem 1.5rem;
   background: linear-gradient(135deg, #315a95 0%, #4a7cc2 100%);
   color: white;
@@ -454,21 +565,21 @@
   transition: all 0.2s ease;
 }
 
-.btn-confirm:hover {
+.CreateProject .btn-confirm:hover {
   transform: translateY(-1px);
   box-shadow: 0 4px 12px rgba(49, 90, 149, 0.3);
 }
 
 /* Success Modal Styles */
-.success-modal {
+.CreateProject .success-modal {
   text-align: center;
 }
 
-.success-header {
+.CreateProject .success-header {
   background: linear-gradient(135deg, #38a169 0%, #48bb78 100%);
 }
 
-.success-icon {
+.CreateProject .success-icon {
   width: 80px;
   height: 80px;
   background: #38a169;
@@ -480,27 +591,28 @@
   font-size: 2.5rem;
   font-weight: bold;
   margin: 0 auto 1.5rem auto;
-  animation: scaleIn 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  animation: CreateProject-scaleIn 0.5s cubic-bezier(0.4, 0, 0.2, 1);
   box-shadow: 0 8px 20px rgba(56, 161, 105, 0.3);
 }
 
-.success-modal .modal-body {
+.CreateProject .success-modal .modal-body {
   padding: 2rem 2rem 1rem 2rem;
 }
 
-.success-modal .modal-actions {
+.CreateProject .success-modal .modal-actions {
   justify-content: center;
 }
 
-.success-modal .btn-confirm {
+.CreateProject .success-modal .btn-confirm {
   background: linear-gradient(135deg, #38a169 0%, #48bb78 100%);
 }
 
-.success-modal .btn-confirm:hover {
+.CreateProject .success-modal .btn-confirm:hover {
   box-shadow: 0 4px 12px rgba(56, 161, 105, 0.3);
 }
 
-@keyframes fadeIn {
+/* Animation Keyframes with Namespacing */
+@keyframes CreateProject-fadeIn {
   from {
     opacity: 0;
   }
@@ -509,7 +621,7 @@
   }
 }
 
-@keyframes slideUp {
+@keyframes CreateProject-slideUp {
   from {
     opacity: 0;
     transform: translateY(20px) scale(0.95);
@@ -520,7 +632,7 @@
   }
 }
 
-@keyframes scaleIn {
+@keyframes CreateProject-scaleIn {
   from {
     opacity: 0;
     transform: scale(0.5);
@@ -531,139 +643,177 @@
   }
 }
 
-/* Responsive modal */
+@keyframes CreateProject-fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+  .CreateProject .form-container {
+    flex-direction: column;
+    margin: 1rem;
+  }
+  
+  .CreateProject .form-sidebar {
+    width: 100%;
+    border-right: none;
+    border-bottom: 1px solid #e2e8f0;
+  }
+  
+  .CreateProject .sidebar-item {
+    padding: 0.75rem 1rem;
+  }
+  
+  .CreateProject .form-content {
+    padding: 1.5rem;
+  }
+}
+
 @media (max-width: 768px) {
-  .modal-content {
+  .CreateProject .project-header {
+    padding: 1.5rem 1rem 1rem;
+  }
+  
+  .CreateProject .header-content h1 {
+    font-size: 2rem;
+  }
+  
+  .CreateProject .form-grid {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+  
+  .CreateProject .form-content {
+    padding: 1rem;
+  }
+  
+  .CreateProject .form-navigation {
+    flex-direction: column;
+    gap: 1rem;
+  }
+  
+  .CreateProject .btn-secondary,
+  .CreateProject .btn-primary,
+  .CreateProject .btn-submit {
+    width: 100%;
+    justify-content: center;
+  }
+  
+  /* Responsive modal */
+  .CreateProject .modal-content {
     width: 95%;
     margin: 1rem;
   }
   
-  .modal-header,
-  .modal-body,
-  .modal-actions {
+  .CreateProject .modal-header,
+  .CreateProject .modal-body,
+  .CreateProject .modal-actions {
     padding: 1rem 1.5rem;
   }
   
-  .modal-actions {
+  .CreateProject .modal-actions {
     flex-direction: column;
   }
   
-  .btn-cancel,
-  .btn-confirm {
+  .CreateProject .btn-cancel,
+  .CreateProject .btn-confirm {
     width: 100%;
   }
   
-  .success-icon {
+  .CreateProject .success-icon {
     width: 60px;
     height: 60px;
     font-size: 2rem;
   }
 }
 
-/* MUI Select Container */
-/* Form Control Professional Styling */
-.form-control-professional {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-  position: relative;
+/* Custom Scrollbar */
+.CreateProject .form-content::-webkit-scrollbar {
+  width: 6px;
 }
 
-.form-control-professional .MuiFormControl-root {
-  margin-top: 0.5rem;
+.CreateProject .form-content::-webkit-scrollbar-track {
+  background: #f1f5f9;
 }
 
-.form-control-professional .MuiInputLabel-root {
-  font-family: 'Montserrat', sans-serif;
-  font-weight: 600;
-  color: #2d3748;
+.CreateProject .form-content::-webkit-scrollbar-thumb {
+  background: #cbd5e0;
+  border-radius: 3px;
+}
+
+.CreateProject .form-content::-webkit-scrollbar-thumb:hover {
+  background: #a0aec0;
+}
+
+/* Number input styling */
+.CreateProject .form-group input[type="number"] {
+  appearance: textfield;
+}
+
+.CreateProject .form-group input[type="number"]::-webkit-outer-spin-button,
+.CreateProject .form-group input[type="number"]::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Textarea specific styles */
+.CreateProject .form-group textarea {
+  resize: vertical;
+  min-height: 100px;
+  line-height: 1.5;
+}
+
+.CreateProject .form-group textarea::placeholder {
+  color: #a0aec0;
   font-size: 0.9rem;
-  background: white;
-  padding: 0 4px;
-  margin-left: -4px;
 }
 
-.form-control-professional .MuiInputLabel-root.Mui-focused {
-  color: #315a95;
+/* Focus states for accessibility */
+.CreateProject .form-group textarea:focus-visible {
+  outline: 2px solid #315a95;
+  outline-offset: 2px;
 }
 
-.form-control-professional .MuiOutlinedInput-root {
-  border-radius: 12px;
-  font-family: 'Source Sans 3', sans-serif;
-  font-size: 1rem;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  background: white;
+/* Optional: Add a subtle resize handle style */
+.CreateProject .form-group textarea::-webkit-resizer {
+  border-width: 8px;
+  border-style: solid;
+  border-color: transparent #cbd5e0 #cbd5e0 transparent;
 }
 
-.form-control-professional .MuiOutlinedInput-root:hover .MuiOutlinedInput-notchedOutline {
-  border-color: #cbd5e0;
+.CreateProject .form-group textarea::-webkit-resizer:hover {
+  border-color: transparent #315a95 #315a95 transparent;
 }
 
-.form-control-professional .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline {
-  border-color: #315a95;
-  border-width: 2px;
-}
-
-.form-control-professional .MuiSelect-select {
-  padding: 1rem 1.25rem;
-  color: #2d3748;
-}
-
-/* Form Helper Text */
-.form-control-professional .MuiFormHelperText-root {
-  margin-left: 0.5rem;
-  font-family: 'Source Sans 3', sans-serif;
-  color: #718096;
-}
-
-/* Menu items styling */
-.MuiMenu-paper {
-  border-radius: 12px !important;
-  margin-top: 8px !important;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08) !important;
-  border: 1px solid #e2e8f0 !important;
-}
-
-.MuiMenuItem-root {
-  font-family: 'Source Sans 3', sans-serif !important;
-  font-size: 1rem !important;
-  padding: 0.75rem 1rem !important;
-}
-
-.MuiMenuItem-root:hover {
-  background-color: #f8fafc !important;
-}
-
-.MuiMenuItem-root.Mui-selected {
-  background-color: #315a95 !important;
-  color: white !important;
-}
-
-.MuiMenuItem-root.Mui-selected:hover {
-  background-color: #25467a !important;
-}
-
-.searchable-dropdown {
+/* Remove any potential animation conflicts */
+.CreateProject .searchable-dropdown {
   animation: none !important;
 }
 
-.searchable-dropdown input {
+.CreateProject .searchable-dropdown input {
   animation: none !important;
 }
 
-.dropdown-options {
+.CreateProject .dropdown-options {
   animation: none !important;
 }
 
 /* Specifically target the dropdown container to remove staggered animations */
-.Content.CreateProject form .searchable-dropdown {
+.CreateProject .form-content form .searchable-dropdown {
   animation: none !important;
 }
 
 /* Remove the fadeInUp animation for dropdowns */
-.Content.CreateProject form .searchable-dropdown,
-.Content.CreateProject form .searchable-dropdown input,
-.Content.CreateProject form .searchable-dropdown .dropdown-options {
+.CreateProject .form-content form .searchable-dropdown,
+.CreateProject .form-content form .searchable-dropdown input,
+.CreateProject .form-content form .searchable-dropdown .dropdown-options {
   animation: none !important;
   transform: none !important;
   opacity: 1 !important;

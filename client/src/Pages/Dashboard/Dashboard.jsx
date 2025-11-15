@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useStoreState, useStoreActions } from 'easy-peasy';
 import ProjectManagerDashboard from './ProjectManagerDashboard';
 import ProjectEngineerDashboard from './ProjectEngineerDashboard';
+import QAQCDashboard from './QAQCCoordinatorDashboard';
 import '../../css/Dashboard.css';
 
 const Dashboard = () => {
@@ -40,6 +41,9 @@ const Dashboard = () => {
           clearProjectData={clearProjectData}
           clearProjectTasks={clearProjectTasks}
         />;
+
+      case 'QAQC Coordinator':
+        return <QAQCDashboard />
       
       default:
         return (

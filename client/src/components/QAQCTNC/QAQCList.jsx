@@ -4,7 +4,7 @@ import useAxiosFetch from '../../hooks/useAxiosFetch'
 
 import { Grid } from 'ldrs/react'
 
-const QAQCList = ({searchTerm, setSelectedEntry, onAssignClick, manpower, qaqcTechs}) => {
+const QAQCList = ({searchTerm, setSelectedEntry, onAssignClick, manpower, qaqcTechs, projects}) => {
 
   const backendURL = import.meta.env.VITE_BACKEND_URL || 'http://localhost:4000'
   const empId = sessionStorage.getItem('id')
@@ -12,8 +12,6 @@ const QAQCList = ({searchTerm, setSelectedEntry, onAssignClick, manpower, qaqcTe
   const filter = {
     role
   }
-  const {data: projects} = useAxiosFetch(`${backendURL}/api/projects`)
-  console.log(projects)
   const {data: designatedProject, isLoading: designatedIsLoading} = useAxiosFetch(`${backendURL}/api/employees/${empId}/designated-project`, filter)
     // Filter projects based on search term
   const filteredProjects = useMemo(() => {
