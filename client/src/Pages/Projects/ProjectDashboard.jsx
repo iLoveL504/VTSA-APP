@@ -314,7 +314,8 @@ const ProjectDashboard = ({
     handleTaskDetails,
     handleCreateSchedule,
     progressOnClick,
-    setActivePage
+    setActivePage,
+    isLoaded
 }) => {
   const { projId } = useParams();
   const navigate = useNavigate();
@@ -364,8 +365,8 @@ const ProjectDashboard = ({
     navigate(`/projects/${projId}/details`);
   };
 
-  // Loading state
-  if (isLoading || tasksIsLoading) {
+ // Loading state
+  if (isLoaded || tasksIsLoading || isLoading) {
     return (
       <div className="Content ProjectDashboard">
         <div className="dashboard-loading">

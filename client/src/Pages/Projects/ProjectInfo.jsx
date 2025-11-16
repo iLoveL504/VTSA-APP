@@ -70,7 +70,6 @@ const ProjectInfo = () => {
       projectCompleted,
       isBehindSchedule,
       onHold,
-      tasksIsLoading,
       fetchedData
     } = useStoreState(state => state);
     
@@ -102,7 +101,6 @@ const ProjectInfo = () => {
     // } = useFindProjectTask(projId, proj)
 
     const [role, setRole] = useState(null)
-    const [isLoaded, setIsLoaded] = useState(false)
     
     useEffect(() => {
       const fetchAllData = async () => {
@@ -160,42 +158,42 @@ const handleCreateSchedule = () => {
 // 
     // Consolidated useEffect for all data fetching
 // Consolidated useEffect for all data fetching
-useEffect(() => {
-  const fetchAllData = async () => {
-    if (!projId) return;
+// useEffect(() => {
+//   const fetchAllData = async () => {
+//     if (!projId) return;
 
-    try {
-      // Fetch main project data if not already loaded
-      if (!proj || Object.keys(proj).length === 0) {
-        await fetchAllProjectData(projId);
-      }
+//     try {
+//       // Fetch main project data if not already loaded
+//       if (!proj || Object.keys(proj).length === 0) {
+//         await fetchAllProjectData(projId);
+//       }
 
-      // Once project data is available, fetch dependent data
-      if (proj && proj.id) {
-        // Fetch team info and project tasks in parallel
-        await Promise.all([
-          fetchTeamInfo({ projId, projData: proj }),
-          findProjectTasks({ projectId: projId, projectData: proj })
-        ]);
-      }
+//       // Once project data is available, fetch dependent data
+//       if (proj && proj.id) {
+//         // Fetch team info and project tasks in parallel
+//         await Promise.all([
+//           fetchTeamInfo({ projId, projData: proj }),
+//           findProjectTasks({ projectId: projId, projectData: proj })
+//         ]);
+//       }
 
-      // Set loaded state after all data is fetched
-      setIsLoaded(true);
+//       // Set loaded state after all data is fetched
+//       setIsLoaded(true);
 
-    } catch (error) {
-      console.error('Error fetching project data:', error);
-      setIsLoaded(true); // Still set loaded to true to avoid infinite loading
-    }
-  };
+//     } catch (error) {
+//       console.error('Error fetching project data:', error);
+//       setIsLoaded(true); // Still set loaded to true to avoid infinite loading
+//     }
+//   };
 
-  fetchAllData();
+//   fetchAllData();
 
-  // Cleanup function
-  return () => {
-    console.log('leaving project info');
+//   // Cleanup function
+//   return () => {
+//     console.log('leaving project info');
 
-  };
-}, [projId, proj, fetchAllProjectData, fetchTeamInfo, findProjectTasks]);
+//   };
+// }, [projId, proj, fetchAllProjectData, fetchTeamInfo, findProjectTasks]);
 
     const validate = (values) => {
         let errors = {}
@@ -286,7 +284,7 @@ useEffect(() => {
 
 
     // Show loading state
-    if ((isLoading || tasksIsLoading) && !proj) {
+    if (!dataLoaded) {
       console.log('-----------------------------------66666666666666666666666666666')
       return (
         <div className="Content ProjectPage">
@@ -361,7 +359,6 @@ useEffect(() => {
             </div>
 {
   activePage === 'dashboard' && (
-    <React.Suspense fallback={<div>Loading Dashboard...</div>}>
                 <ProjectDashboard 
                     handleTaskDetails={handleTaskDetails}
                     handleCreateSchedule={handleCreateSchedule}
@@ -371,7 +368,6 @@ useEffect(() => {
                     setActivePage={setActivePage}
                     dataLoaded={dataLoaded} // Tell dashboard data is already loaded
                 />
-    </React.Suspense>
   )
 }
             {
@@ -405,7 +401,7 @@ useEffect(() => {
                     projectedTask={projectedTask}
                     isBehindSchedule={isBehindSchedule}
                     onHold={onHold}
-                    isLoaded={isLoaded}
+                    dataLoaded={dataLoaded}
                 />
             }
             {
@@ -425,10 +421,10 @@ useEffect(() => {
                     projectedTask={projectedTask}
                     isBehindSchedule={isBehindSchedule}
                     onHold={onHold}
-                    isLoaded={isLoaded}
                     proj={proj}
                     onTaskDetails={handleTaskDetails}
                     onCreateSchedule={handleCreateSchedule}
+                    dataLoaded={dataLoaded}
                 />
             }
             {
@@ -437,7 +433,13 @@ useEffect(() => {
             }
             {
                 activePage === 'teams' &&
-                <ProjectTeam teamInfo={teamInfo} proj={proj} teamTechs={teamTechs} projId={projId} />
+                <ProjectTeam 
+                  teamInfo={teamInfo} 
+                  proj={proj} 
+                  teamTechs={teamTechs} 
+                  projId={projId} 
+                  dataLoaded={dataLoaded}
+                />
             }
             {
                 activePage === 'pms_entry' &&
@@ -460,6 +462,7 @@ useEffect(() => {
                     proj={proj}
                     ConfirmationModal={ConfirmationModal}
                     fetchedData={fetchedData}
+                    dataLoaded={dataLoaded}
                 />
             }
             

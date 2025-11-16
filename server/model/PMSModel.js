@@ -418,7 +418,7 @@ static async getBabyBook (id) {
         `, [id])
     
     const [callback_reports] = await pool.query(`
-        select p.id, p.lift_name, pp.free_pms, ch.id as \`callback_history_id\`, ch.completion_date, c.id as \`contract_id\`, cd.document_name, cd.doc_url
+        select p.id, p.lift_name, pp.free_pms, ch.id as \`callback_history_id\`, c.id as \`contract_id\`, cd.document_name, cd.doc_url
         from projects p 
         join pms_projects pp on p.id = pp.id
         join client_baby_book cbb on cbb.pms_id = pp.id
@@ -429,7 +429,7 @@ static async getBabyBook (id) {
         `, [id])
     
     const [callback_photos] = await pool.query(`
-        select p.id, p.lift_name, pp.free_pms, ch.id as \`callback_history_id\`, ch.completion_date, c.id as \`contract_id\`, cp.photo_url
+        select p.id, p.lift_name, pp.free_pms, ch.id as \`callback_history_id\`,  c.id as \`contract_id\`, cp.doc_url
         from projects p 
         join pms_projects pp on p.id = pp.id
         join client_baby_book cbb on cbb.pms_id = pp.id

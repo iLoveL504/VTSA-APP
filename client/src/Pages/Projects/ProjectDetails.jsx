@@ -56,10 +56,10 @@ const ResumeProjectModal = ({ isOpen, onClose, onConfirm, project }) => {
 };
 
 const ProjectDetails = ({
-    projectCompleted, currentTask, projectExists, proj, setFormData, teamInfo, teamIsLoading,
+    proj, setFormData, teamInfo, teamIsLoading,
     saveStatus, handleSave, isEditing, errors, handleInputChange, handleNumberInputChange, handleBlur, handleSubmit,
-    values, setIsEditing, handleCancel, photos, backendURL, currentParentTask,
-    isLoaded
+    values, setIsEditing, handleCancel, photos, backendURL, 
+    dataLoaded
 }) => {
     //const {projId} = useParams()
     const [isResumeModalOpen, setIsResumeModalOpen] = useState(false)
@@ -90,16 +90,9 @@ const ProjectDetails = ({
     //     navigate(`/projects/${projId}/custom`) 
     // }
 
-    const isReady =
-      isLoaded &&
-      proj &&
-      projectExists !== undefined &&
-      projectCompleted !== undefined &&
-      currentTask !== null &&
-      currentParentTask !== null;
 
     if(!proj.schedule_created || proj.will_resume) {
-        if (!isLoaded) {
+        if (!dataLoaded) {
             return (
                 <div className="loading-container">
                     <div className="loading-content">
@@ -109,20 +102,9 @@ const ProjectDetails = ({
                 </div>
             )            
         }
-    } else {
-        if (!isLoaded || !isReady) {
-            return (
-                <div className="loading-container">
-                    <div className="loading-content">
-                        <Grid size="60" speed="1.5" color="#315a95" />
-                        <p>Loading project details...</p>
-                    </div>
-                </div>
-            )
-        }
     }
 
-    if ((!proj || Object.keys(proj).length === 0 && !isLoaded)) {
+    if ((!proj || Object.keys(proj).length === 0 && !dataLoaded)) {
         return (
             <div className="no-data-container">
                 <WarningIcon className="no-data-icon" />
