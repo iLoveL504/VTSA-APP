@@ -314,7 +314,7 @@ const ProjectManagerDashboard = ({ onNewProject, clearProjectData, clearProjectT
                   <span className="badge incoming">{projectManagerData.incomingProjects.length} projects</span>
                 </div>
                 <div className="projects-list">
-                  {projectManagerData.incomingProjects.map(project => (
+                  {projectManagerData.incomingProjects.slice(0, 3).map(project => (
                     <ProjectItem key={project.id} project={project} type="incoming" onProjectClick={handleProjectClick} />
                   ))}
                 </div>

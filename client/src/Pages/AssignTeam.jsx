@@ -10,6 +10,7 @@ const ViewProjectEngineers = () => {
   const backendURL = import.meta.env.VITE_BACKEND_URL || "http://localhost:4000";
   const employees = useStoreState(state => state.employees)
   const peProjects = useStoreState(state => state.peProjects)
+  
   const { utilitiesSocket } = useSharedSocket()
   const PEs = employees.filter(e => e.job === 'Project Engineer')
   const { projId } = useParams();
@@ -82,7 +83,7 @@ const handleSubmit = async () => {
       });
     });
 
-
+    utilitiesSocket.emit('refresh_all_projects')
     window.alert("Success!");
     navigate(`/projects/${projId}`);
 

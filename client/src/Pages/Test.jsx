@@ -23,7 +23,7 @@ const Test1 = () => {
   const [startDate, setStartDate] = useState(new Date())
   const [holidays, setHolidays] = useState([]);
   const [newHoliday, setNewHoliday] = useState(null);
-
+  console.log(isCalendarDays)
   // ✅ Normalize helper
   const normalizeDate = (date) => {
     const d = new Date(date);
@@ -325,9 +325,10 @@ const Test1 = () => {
   console.log(linkedList.toArray())
   return (
     <div className="Content SchedulePage">
+              <h2>Customize Project Schedule</h2>
       <div className='schedule-area'>
         <div className="schedule-page">
-        <h2>Customize Project Schedule</h2>
+
 
         {/* Controls */}
         <div className="schedule-controls">
@@ -363,6 +364,11 @@ const Test1 = () => {
             placeholder="Start date"
             value={startDate}
             onChange={setStartDate}
+            excludeDate={date =>  {
+              if (!isCalendarDays) {
+                if (new Date(date).getDay() === 6 || new Date(date).getDay() === 0) return true
+              } else return false
+            }}
           />
           <FormControl className="form-control-professional" size="small">
             <InputLabel id="parent-select-label">Schedule Type</InputLabel>

@@ -321,7 +321,6 @@ const TestChart = ({projSched, projSchedIsLoading, holidays }) => {
                                     onChange={setTempInstallationDate}
                                     placeholder="Select installation start date"
                                     clearable={false}
-                                    minDate={new Date()}
                                     style={{ marginBottom: '10px' }}
                                 />
                                 <div style={{ display: 'flex', gap: '10px' }}>

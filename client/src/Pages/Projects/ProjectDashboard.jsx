@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import '../../css/ProjectDashboard.css'
 import {
   Schedule as ScheduleIcon,
@@ -35,7 +35,6 @@ const formatLocalDate = (isoString) => {
 const SchedulingCard = ({ 
   proj, 
   role, 
-  includeTncSchedule, 
   QAQCCoordinatorId, 
   ProjectManagerId, 
   TNCCoordinatorId, 
@@ -162,11 +161,14 @@ const SchedulingCard = ({
 
   const InspectionItem = ({ type, title, icon: Icon }) => {
     const status = getInspectionStatus(type);
-    const canSchedule = status.status === 'available' && 
-      ((type === 'tnc' && includeTncSchedule) || 
-       (type === 'pms' && includeTncSchedule) || 
-       type === 'qaqc');
+    console.log(type)
+    console.log(status)
     console.log(Icon)
+    const canSchedule = status.status === 'available' && 
+      ((type === 'tnc') || 
+       (type === 'pms') || 
+       type === 'qaqc');
+    console.log(canSchedule)
     return (
       <div className="inspection-item">
         <div className="inspection-header">
@@ -213,21 +215,21 @@ const SchedulingCard = ({
             icon={BuildIcon} 
           />
           
-          {includeTncSchedule && (
+      
             <InspectionItem 
               type="tnc" 
               title="Testing & Commissioning" 
               icon={SettingsIcon} 
             />
-          )}
+   
           
-          {includeTncSchedule && (
+     
             <InspectionItem 
               type="pms" 
               title="PMS Final Inspection" 
               icon={BuildCircleIcon} 
             />
-          )}
+       
         </div>
       </div>
 
@@ -318,7 +320,6 @@ const ProjectDashboard = ({
     isLoaded
 }) => {
   const { projId } = useParams();
-  const navigate = useNavigate();
   const { utilitiesSocket } = useSharedSocket();
 
   // EasyPeasy store state and actions
@@ -332,9 +333,10 @@ const ProjectDashboard = ({
     isLoading,
     tasksIsLoading,
     error,
-    employees
+    employees,
+    allTeams
   } = useStoreState(state => state);
-
+  console.log(allTeams)
   const { fetchAllProjectData } = useStoreActions(action => action);
 
   // Get coordinators
@@ -352,17 +354,16 @@ const ProjectDashboard = ({
   const omitPhases = [100, 200, 300, 400];
   const includeTncSchedule = !(omitPhases.includes(currentTask?.task_parent));
 
-  const handleResumeProject = async () => {
-    console.log('Resuming project:', projId);
-    // Add your resume logic here
-  };
+  // const handleResumeProject = async () => {
+  //   console.log('Resuming project:', projId);
+  // };
 
-  const handleNavigateToProgress = () => {
-    navigate(`/projects/${projId}/progress`);
-  };
+  // const handleNavigateToProgress = () => {
+  //   navigate(`/projects/${projId}/progress`);
+  // };
 
   const handleNavigateToDetails = () => {
-    navigate(`/projects/${projId}/details`);
+    setActivePage('details')
   };
 
  // Loading state
@@ -449,7 +450,7 @@ const ProjectDashboard = ({
             </div>
           </div>
         </div>
-
+      {console.log(onHold)}
         {/* Current Phase Card */}
         <div className="dashboard-card phase-card">
           <div className="card-header">
@@ -467,10 +468,10 @@ const ProjectDashboard = ({
                     Resuming on: {formatLocalDate(proj.resume_date)}
                   </p>
                 )}
-                <button className="btn-resume" onClick={handleResumeProject}>
+                {/* <button className="btn-resume" onClick={handleResumeProject}>
                   <PlayArrowIcon className="btn-icon" />
                   Resume Project
-                </button>
+                </button> */}
               </div>
             ) : currentParentTask ? (
               <div className="phase-info">
@@ -494,7 +495,7 @@ const ProjectDashboard = ({
         </div>
 
         {/* Current Task Card */}
-        <div className="dashboard-card task-card" onClick={handleTaskDetails}>
+        <div className="dashboard-card task-card">
           <div className="card-header">
             <TaskIcon className="card-icon" />
             <h3>Current Task</h3>
@@ -536,6 +537,7 @@ const ProjectDashboard = ({
                   </div>
                   <span className="progress-percent">{currentTask.task_percent}%</span>
                 </div>
+                <button onClick={handleTaskDetails}>More Info</button>
               </div>
             ) : (
               <div className="no-task">
@@ -594,7 +596,7 @@ const ProjectDashboard = ({
                   Schedule Created
                 </div>
                 <p>Project is properly scheduled</p>
-                <button className="btn-view-schedule" onClick={handleNavigateToProgress}>
+                <button className="btn-view-schedule" onClick={() => setActivePage('progress')}>
                   View Schedule
                 </button>
               </div>
@@ -659,6 +661,10 @@ const ProjectDashboard = ({
               <button className="action-btn" onClick={() => setActivePage('documents')}>
                 <AssignmentIcon className="action-icon" />
                 Documents
+              </button>
+              <button className="action-btn" onClick={() => setActivePage('teams')}>
+                <EngineeringIcon className="action-icon" />
+                Project Team
               </button>
             </div>
           </div>

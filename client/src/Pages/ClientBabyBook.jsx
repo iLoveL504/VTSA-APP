@@ -27,7 +27,7 @@ const ClientBabyBook = () => {
 
     useEffect(() => {
         setBabyBook(babyBookData)
-        setServiceReports(babyBookData.service_reports)
+        setServiceReports(babyBookData?.service_reports)
     }, [babyBookData])
 
     useEffect(() => {
@@ -57,7 +57,30 @@ const inspectionHistory = useMemo(() => {
     // Return empty array as fallback
     return []
 }, [babyBook])
-    console.log(inspectionHistory)
+
+const callbackHistory = useMemo(() => {
+    console.log('Callback data:', babyBook?.callback_reports)
+    
+    // Add proper null/undefined checks
+    if (babyBook && babyBook.callback_reports && Array.isArray(babyBook.callback_reports)) {
+        // Group callback reports by callback_history_id
+        const callbackByIds = Array.from(
+            new Map(
+                babyBook.callback_reports
+                    .filter(callback => callback.callback_history_id) // Filter out null/undefined IDs
+                    .map(callback => [callback.callback_history_id, callback])
+            ).values()
+        )
+        return callbackByIds            
+    }
+    
+    // Return empty array as fallback
+    return []
+}, [babyBook])
+
+    console.log('Inspection History:', inspectionHistory)
+    console.log('Callback History:', callbackHistory)
+
     // Function to get file type from URL
     const getFileType = (url) => {
         if (!url) return 'unknown';
@@ -100,9 +123,24 @@ const inspectionHistory = useMemo(() => {
         }).format(parseFloat(amount));
     }
 
-    // Function to format date
+    // Function to get callback evidence photos for a specific callback
+    const getCallbackEvidence = (callbackHistoryId) => {
+        if (!babyBook?.callback_photos) return [];
+        return babyBook.callback_photos.filter(photo => 
+            photo.callback_history_id === callbackHistoryId && photo.doc_url
+        );
+    }
 
+    // Function to get callback documents for a specific callback
+    const getCallbackDocuments = (callbackHistoryId) => {
+        if (!babyBook?.callback_reports) return [];
+        return babyBook.callback_reports.filter(doc => 
+            doc.callback_history_id === callbackHistoryId && doc.doc_url
+        );
+    }
 
+    console.log(projectData)
+    console.log(babyBook)
     if (!babyBook || !projectData) {
         return (
             <div className="baby-book-loading">
@@ -124,10 +162,7 @@ const inspectionHistory = useMemo(() => {
         } catch (err) {
             console.error(err)
         }
-
     }
-
-    // Group the service reports
 
     return (
         <div className="baby-book-container">
@@ -137,18 +172,13 @@ const inspectionHistory = useMemo(() => {
                 <div className="contract-info" style={{textAlign:'left'}}>
                     <h3>Client Information</h3>
                     <div className="contract-info-grid">
-                        <div style={{
-                            textAlign:'left'
-                        }}>
+                        <div style={{textAlign:'left'}}>
                             <p><strong>Contract Amount:</strong> {formatCurrency(projectData.contract_amount)}</p>
                             <p><strong>Client:</strong> {projectData.client || 'N/A'}</p>
                             <p><strong>Location:</strong> {[projectData['city/municipality'], projectData.province, projectData.region].filter(Boolean).join(', ') || 'N/A'}</p>         
                             <p><strong>PMS Contract:</strong> {projectData.pms_contract || 'N/A'}</p>            
                         </div>
-                        <div style={{
-                            textAlign:'left'
-                        }}>
-                            
+                        <div style={{textAlign:'left'}}>
                             <p><strong>PMS Cycle:</strong> {projectData.contract_type || 'N/A'}</p>                            
                             <p><strong>Handover Date:</strong> {new Date(projectData.handover_date).toLocaleDateString() || 'N/A'}</p>
                             <p><strong>Free PMS End:</strong> {new Date(projectData.free_pms_end).toLocaleDateString() || 'N/A'}</p>
@@ -165,7 +195,6 @@ const inspectionHistory = useMemo(() => {
                 <div className="contract-management">
                     <div>Client free preventive maintenance service (PMS) will end at - {new Date(projectData.free_pms_end).toLocaleDateString() || '-'}</div>
                     <div>
-                        gugug
                         <div>Client will continue contract:</div>
                             <FormControl>
                             <RadioGroup
@@ -175,8 +204,8 @@ const inspectionHistory = useMemo(() => {
                                 onChange={handleChange}
                                 value={approveProposal}
                             >
-                                <FormControlLabel value={1} control={<Radio />} label="Continue" />
-                                <FormControlLabel value={0} control={<Radio />} label="Will not continue" />
+                                <FormControlLabel value="1" control={<Radio />} label="Continue" />
+                                <FormControlLabel value="0" control={<Radio />} label="Will not continue" />
                             </RadioGroup>
                             </FormControl>
                             <button onClick={handleSaveContinue}>
@@ -234,7 +263,11 @@ const inspectionHistory = useMemo(() => {
 
                         <div className='ServiceList'>
                             {inspectionHistory.map((service) => (
-                                <div className='ProjectInfo' onClick={() => navigate(`service-report/${service.inspection_history_id}`)}>
+                                <div 
+                                    key={`inspection-${service.inspection_history_id}`}
+                                    className='ProjectInfo' 
+                                    onClick={() => navigate(`service-report/${service.inspection_history_id}`)}
+                                >
                                     <div className='proj-name'>{service.lift_name}</div>
                                     <div>{new Date(service.date_conducted).toLocaleDateString()}</div>
                                     <div>{service.inspection_history_id}</div>
@@ -244,6 +277,59 @@ const inspectionHistory = useMemo(() => {
                     </>
                 ) : (
                     <p className="no-documents">No service reports available.</p>
+                )}
+            </div>
+
+            {/* Callback Reports Section */}
+            <div className="documents-section">
+                <h2>Callback Reports</h2>
+                {callbackHistory.length > 0 ? (
+                    <>
+                        <div className="project-table-header">
+                            <div className="table-row header-row">
+                                <div className="table-cell">Project & Client</div>
+                                <div className="table-cell">Completion Date</div>
+                                <div className="table-cell">Callback ID</div>
+                                <div className="table-cell">Documents</div>
+                            </div>
+                        </div>
+
+                        <div className='ServiceList'>
+                            {callbackHistory.map((callback) => {
+                                const callbackDocuments = getCallbackDocuments(callback.callback_history_id);
+                                const callbackEvidence = getCallbackEvidence(callback.callback_history_id);
+                                const hasDocuments = callbackDocuments.length > 0 || callbackEvidence.length > 0;
+                                
+                                return (
+                                    <div 
+                                        key={`callback-${callback.callback_history_id}`}
+                                        className='ProjectInfo callback-item'
+                                        onClick={() => navigate(`callback-report/${callback.callback_history_id}`)}
+                                    >
+                                        <div className='proj-name'>{callback.lift_name}</div>
+                                        <div>
+                                            {callback.completion_date 
+                                                ? new Date(callback.completion_date).toLocaleDateString() 
+                                                : 'Pending'
+                                            }
+                                        </div>
+                                        <div>{callback.callback_history_id}</div>
+                                        <div className="callback-documents-info">
+                                            {hasDocuments ? (
+                                                <span className="documents-count">
+                                                    📎 {callbackDocuments.length} doc(s) • 🖼️ {callbackEvidence.length} photo(s)
+                                                </span>
+                                            ) : (
+                                                <span className="no-documents">No documents</span>
+                                            )}
+                                        </div>
+                                    </div>
+                                );
+                            })}
+                        </div>
+                    </>
+                ) : (
+                    <p className="no-documents">No callback reports available.</p>
                 )}
             </div>
 

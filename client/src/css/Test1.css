@@ -50,6 +50,7 @@
 
 /* Schedule Controls */
 .schedule-controls {
+  margin-top: 1rem;
   display: flex;
   gap: 1rem;
   margin-bottom: 2rem;
@@ -1016,7 +1017,7 @@
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
-  max-height: 200px;
+  max-height: 400px;
   overflow-y: auto;
 }
 
@@ -1031,10 +1032,10 @@
   transition: all 0.2s ease;
 }
 
-.holiday-item:hover {
+/* .holiday-item:hover {
   border-color: #ff6b6b;
   transform: translateX(4px);
-}
+} */
 
 .holiday-info {
   display: flex;

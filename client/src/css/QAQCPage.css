@@ -961,7 +961,7 @@
   color: #155724;
 }
 
-.Content.QAQCMenu .selected-tech-tag {
+.Content.QAQCMenu .selected-tech .selected-tech-tag {
   background: #28a745;
   color: white;
   padding: 0.4rem 0.8rem;

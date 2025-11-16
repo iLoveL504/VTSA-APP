@@ -45,6 +45,7 @@ import Inbox from './Pages/Inbox.jsx'
 import ServiceReportPage from './Pages/PMS/ServiceReportPage.jsx'
 import CallbackPage from './Pages/PMS/CallbackPage.jsx'
 import PMSMain from './Pages/PMS/PMSMain.jsx'
+import CallbackReportPage from './Pages/PMS/CallbackReportPage.jsx'
 
 function App() {
   const backendURL = import.meta.env.VITE_BACKEND_URL || 'https://localhost:4000';
@@ -224,6 +225,7 @@ useEffect(() => {
             <Route index element={<BabyBook />} />
             <Route path=':clientId' element={<ClientBabyBook />} />
             <Route path=':clientId/service-report/:inspectionId' element={<ServiceReportPage />} />
+            <Route path=':clientId/callback-report/:callbackId' element={<CallbackReportPage />} />
           </Route>
         </Route>
         

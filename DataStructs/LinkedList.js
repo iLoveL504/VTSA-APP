@@ -386,7 +386,9 @@ applyDateOffset(fromNode, dayOffset) {
     }
   }
 
-  adjustInstallationStart(startDate) {
+  adjustInstallationStart(projId, startDate) {
+    console.log('line 390')
+    console.log(startDate)
     if (!(startDate instanceof Date) || isNaN(startDate.getTime())) {
       console.error("Invalid resume date. Must be a valid Date object.");
       return false

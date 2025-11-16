@@ -20,10 +20,6 @@
 }
 
 
-.breadcrumb-item:hover {
-  color: #315a95;
-}
-
 .breadcrumb-item.current {
   color: #315a95;
   font-weight: 600;

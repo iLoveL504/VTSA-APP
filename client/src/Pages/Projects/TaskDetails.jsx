@@ -1,13 +1,30 @@
-/* eslint-disable no-unused-vars */
-/* eslint-disable no-undef */
-
-import React, {useMemo, useState} from 'react'
+import React, { useMemo, useState } from 'react'
 import '../../css/TaskDetails.css'
 import useFormValidate from "../../hooks/useFormValidate";
 import { useSharedSocket } from '../../Context/SocketContext.js';
 import { useStoreState } from 'easy-peasy';
 import { Axios } from '../../api/axios.js'
 import { useParams } from 'react-router-dom'
+
+// Material-UI Icons
+import {
+  CheckCircle as CheckCircleIcon,
+  Warning as WarningIcon,
+  Edit as EditIcon,
+  Save as SaveIcon,
+  Cancel as CancelIcon,
+  Schedule as ScheduleIcon,
+  Assignment as AssignmentIcon,
+  Engineering as EngineeringIcon,
+  Build as BuildIcon,
+  CalendarToday as CalendarIcon,
+  Description as DescriptionIcon,
+  Groups as GroupsIcon,
+  AttachFile as AttachFileIcon,
+  CloudUpload as CloudUploadIcon,
+  Delete as DeleteIcon,
+  Visibility as VisibilityIcon
+} from '@mui/icons-material'
 
 // Import role components
 import ForemanCompletion from './ForemanCompletion'
@@ -18,8 +35,9 @@ import TNCCompletion from './TNCCompletion.jsx';
 import PMSCompletion from './PMSCompletion.jsx';
 
 const TaskDetails = ({currentTask, currentParentTask, currentTaskPhase, proj, ConfirmationModal, fetchedData}) => {
-    const omitPhases = [100, 200, 300, 400]
-    const includeTncSchedule = !(omitPhases.includes(currentTask.task_parent))
+    // const omitPhases = [100, 200, 300, 400]
+    console.log(ConfirmationModal)
+    // const includeTncSchedule = !(omitPhases.includes(currentTask.task_parent))
     const { utilitiesSocket } = useSharedSocket()
     const {projId} = useParams()
     const employees = useStoreState(state => state.employees)
@@ -33,13 +51,13 @@ const TaskDetails = ({currentTask, currentParentTask, currentTaskPhase, proj, Co
     const PMSCoordinatorId = PMSCoordinator.employee_id
 
     const role = sessionStorage.getItem('roles')
-    const [qaqcDate, setQaqcDate] = useState(new Date())
-    const [tncDate, setTncDate] = useState(new Date())
+    // const [qaqcDate, setQaqcDate] = useState(new Date())
+    // const [tncDate, setTncDate] = useState(new Date())
     const [saveStatus, setSaveStatus] = useState('')
     const [qaqcChecklistType, setQaqcChecklistType] = useState('')
     const [tncChecklistType, setTncChecklistType] = useState('')
-    const [pmsDate, setPmsDate] = useState(new Date())
-    console.log(proj)
+   // const [pmsDate, setPmsDate] = useState(new Date())
+    
     const [confirmationModal, setConfirmationModal] = useState({
         isOpen: false,
         type: '',
@@ -61,16 +79,16 @@ const TaskDetails = ({currentTask, currentParentTask, currentTaskPhase, proj, Co
       task: null
     });
 
-    const qaqcReasons = [
-        'Template Setting',
-        'Prior Testing and Commissioning',
-        'Handover'
-    ]
-    const [qaqcReason, setQaqcReason] = useState(qaqcReasons[0])
+    // const qaqcReasons = [
+    //     'Template Setting',
+    //     'Prior Testing and Commissioning',
+    //     'Handover'
+    // ]
+   // const [qaqcReason, setQaqcReason] = useState(qaqcReasons[0])
 
-    const handleQaqcReason = (e) => {
-        setQaqcReason(e.target.value)
-    }
+    // const handleQaqcReason = (e) => {
+    //     setQaqcReason(e.target.value)
+    // }
 
     const formatDateForMySQL = (date) => {
         return new Date(date).toISOString().split('T')[0]
@@ -80,37 +98,37 @@ const TaskDetails = ({currentTask, currentParentTask, currentTaskPhase, proj, Co
         return new Date(date).toLocaleDateString("en-GB")
     }
 
-    const handleScheduleQAQC = () => {
-        setConfirmationModal({
-            isOpen: true,
-            type: 'qaqc',
-            data: {
-                date: qaqcDate,
-                reason: qaqcReason
-            }
-        })
-    }
+    // const handleScheduleQAQC = () => {
+    //     setConfirmationModal({
+    //         isOpen: true,
+    //         type: 'qaqc',
+    //         data: {
+    //             date: qaqcDate,
+    //             reason: qaqcReason
+    //         }
+    //     })
+    // }
 
-    const handleSchedulePMS = () => {
-        setConfirmationModal({
-            isOpen: true,
-            type: 'pms',
-            data: {
-                date: pmsDate,
-                reason: 'Final Inspection'
-            }
-        })
-    }
+    // const handleSchedulePMS = () => {
+    //     setConfirmationModal({
+    //         isOpen: true,
+    //         type: 'pms',
+    //         data: {
+    //             date: pmsDate,
+    //             reason: 'Final Inspection'
+    //         }
+    //     })
+    // }
 
-    const handleScheduleTNC = () => {
-        setConfirmationModal({
-            isOpen: true,
-            type: 'tnc',
-            data: {
-                date: tncDate
-            }
-        })
-    }
+    // const handleScheduleTNC = () => {
+    //     setConfirmationModal({
+    //         isOpen: true,
+    //         type: 'tnc',
+    //         data: {
+    //             date: tncDate
+    //         }
+    //     })
+    // }
 
     const handleApproval = (task, photos, type) => () => {
         if (type === 'punchlisting') {
@@ -128,16 +146,12 @@ const TaskDetails = ({currentTask, currentParentTask, currentTaskPhase, proj, Co
                 type: type
             });  
         }
-
-        console.log('where am I')
     }
 
     const handlePunchlistConfirm = async () => {
         setPunchlistModal({ isOpen: false, task: null });   
         const Ids = [proj.project_engineer_id]
-        console.log(Ids)
         try {
-            console.log('punchlist Confirm')
             const formData = new FormData
             const punchlistFiles = punchlistModal.photos.filter(
                 (file) => file.fileType === "photo" || file.name.startsWith("punchlist_")
@@ -147,22 +161,16 @@ const TaskDetails = ({currentTask, currentParentTask, currentTaskPhase, proj, Co
             );
             punchlistFiles.forEach((file) => {
                 formData.append('punchlist', file)                
-            }
-            )
+            })
             punchlistEvidenceFiles.forEach((file) => {
                 formData.append('punchlist_evidence', file)                
-            }
-            )
-            // approvalModal.photos.forEach((file) => {
-            //     formData.append('photos', file);
-            // });
-            console.log('before')
+            })
+            
             const response = await Axios.post(`/api/projects/qaqc/punchlist/${proj.id}`, formData)
             if (!response.data?.success) {
                 window.alert("Something went wrong during assignment.");
                 return;
             }
-            console.log('ds')
 
             await new Promise((resolve, reject) => {
                 const timeout = setTimeout(() => {
@@ -183,20 +191,16 @@ const TaskDetails = ({currentTask, currentParentTask, currentTaskPhase, proj, Co
                     }
                 });
             });
-            console.log(
-                Object.fromEntries(formData.entries())
-            );
+            
             utilitiesSocket.emit('update_task_status')
             
         } catch (e) {
             console.log(e)
         }
-       
     }
 
     const handleApprovalConfirm = async () => {
       try {
-        
         setApprovalModal({ isOpen: false, task: null });
         const task_id = approvalModal.task.task_id
         const task_name = approvalModal.task.task_name
@@ -246,7 +250,6 @@ const TaskDetails = ({currentTask, currentParentTask, currentTaskPhase, proj, Co
             });
         });
         utilitiesSocket.emit('update_task_status')
-       // window.location.reload()
       } catch (e) {
         console.log(e);
       }
@@ -259,32 +262,27 @@ const TaskDetails = ({currentTask, currentParentTask, currentTaskPhase, proj, Co
             type,
             photos: values.photos
         });
-
     }
-     console.log(completionModal)
+
     const handleCompletionConfirm = (type) =>  async () => {
         try {
-        //     console.log(fetchedData)
-        //    console.log(type)
-
             if (type === 'Project Engineer'){
                 let percentCompleted = 0
-                    let taskUpdates = []
-                    for(const t in fetchedData) {
-                        percentCompleted += fetchedData[t].task_percent
-                        taskUpdates.push(fetchedData[t])
-                        if (fetchedData[t].task_name === completionModal.task.task_name) break
-                    }
+                let taskUpdates = []
+                for(const t in fetchedData) {
+                    percentCompleted += fetchedData[t].task_percent
+                    taskUpdates.push(fetchedData[t])
+                    if (fetchedData[t].task_name === completionModal.task.task_name) break
+                }
 
-                    const payload = {
-                        taskUpdates,
-                        percentCompleted
-                    }
-                    await Axios.put(`/api/projects/schedule/${projId}`, payload)
+                const payload = {
+                    taskUpdates,
+                    percentCompleted
+                }
+                await Axios.put(`/api/projects/schedule/${projId}`, payload)
+                
                 if (currentTask.task_name === 'Final Cleaning / Hand over') {
                     const Ids = [PMSCoordinatorId, ProjectManagerId]
-                    console.log('handover procedure')
-                    console.log(completionModal.photos)
                     const formData = new FormData()
                     completionModal.photos.forEach(p => formData.append('photos', p)) 
                     const task_id = completionModal.task.task_id
@@ -322,11 +320,9 @@ const TaskDetails = ({currentTask, currentParentTask, currentTaskPhase, proj, Co
                             }
                         });
                     });
-                    
                 }
             } else if (type === 'qaqc') {
                 const formData = new FormData()
-                console.log(completionModal)
                 formData.append('inspection_type', type)
                 formData.append('inspection_reason', proj.qaqc_inspection_reason)
                 formData.append('checklist', qaqcChecklistType)
@@ -336,73 +332,59 @@ const TaskDetails = ({currentTask, currentParentTask, currentTaskPhase, proj, Co
                 const checklistFiles = completionModal.photos.filter(
                         (file) => file.fileType === "document" || file.name.startsWith("checklist_")
                     );
-                    evidenceFiles.forEach((file) => formData.append("evidence", file));
-
-                    // Append document files
-                    checklistFiles.forEach((file) => formData.append("documents", file));
+                evidenceFiles.forEach((file) => formData.append("evidence", file));
+                checklistFiles.forEach((file) => formData.append("documents", file));
                 formData.append('inspection_id', proj.current_qaqc_id)
-                    console.log(
-                        Object.fromEntries(formData.entries())
-                    );
-                 await Axios.post(`/api/projects/qaqc/complete/${projId}`, formData)
+                
+                await Axios.post(`/api/projects/qaqc/complete/${projId}`, formData)
             } else if (type === 'tnc') {
-                console.log("tnc completion modal", completionModal);
+                const formData = new FormData();
+                formData.append("inspection_type", "tnc");
+                formData.append("inspection_id", proj.current_tnc_id || "");
 
-                    const formData = new FormData();
-                    formData.append("inspection_type", "tnc");
-                    formData.append("inspection_id", proj.current_tnc_id || ""); // optional, depends on your schema
+                const evidenceFiles = completionModal.photos.filter(
+                    (file) => file.fileType === "photo" || file.name.startsWith("photo_")
+                );
+                const documentFiles = completionModal.photos.filter(
+                    (file) => file.fileType === "document" || file.name.startsWith("document_")
+                );
 
-                    // Separate files by their prefixes or custom properties
-                    const evidenceFiles = completionModal.photos.filter(
-                        (file) => file.fileType === "photo" || file.name.startsWith("photo_")
-                    );
-                    const documentFiles = completionModal.photos.filter(
-                        (file) => file.fileType === "document" || file.name.startsWith("document_")
-                    );
+                evidenceFiles.forEach((file) => formData.append("evidence", file));
+                documentFiles.forEach((file) => formData.append("documents", file));
+                
+                const task_id = completionModal.task.task_id
+                const task_name = completionModal.task.task_name
+                const start_date = completionModal.task.task_start.split('T')[0]
+                const end_date = completionModal.task.task_end.split('T')[0]
+                const task_duration = completionModal.task.task_duration
+                const task_percent = completionModal.task.task_percent
 
-                    // Append evidence files
-                    evidenceFiles.forEach((file) => formData.append("evidence", file));
-
-                    // Append document files
-                    documentFiles.forEach((file) => formData.append("documents", file));
-                    const task_id = completionModal.task.task_id
-                    const task_name = completionModal.task.task_name
-                    const start_date = completionModal.task.task_start.split('T')[0]
-                    const end_date = completionModal.task.task_end.split('T')[0]
-                    const task_duration = completionModal.task.task_duration
-                    const task_percent = completionModal.task.task_percent
-
-                    formData.append('task_id', task_id)
-                    formData.append('task_name', task_name)
-                    formData.append('start_date', start_date)
-                    formData.append('end_date', end_date)
-                    formData.append('task_duration', task_duration)
-                    formData.append('task_percent', task_percent)
-                    formData.append('role', 'tnc')
-                    formData.append('checklist_type', tncChecklistType)
-                    console.log(
-                        Object.fromEntries(formData.entries())
-                    );
-                    try {
-                        const response = await Axios.post(`/api/projects/tnc/approve-task/${projId}`, formData, {
-                            headers: {
-                                "Content-Type": "multipart/form-data",
-                            },
-                        });
-                        console.log('after repsonse')
-                        if (response?.data.success) {
-                            window.alert("TNC inspection completed successfully!");
-                        } else {
-                            window.alert("Something went wrong completing the TNC inspection.");
-                        }
-                    } catch (error) {
-                        console.error("Error completing TNC:", error);
-                        window.alert("Failed to complete TNC inspection.");
+                formData.append('task_id', task_id)
+                formData.append('task_name', task_name)
+                formData.append('start_date', start_date)
+                formData.append('end_date', end_date)
+                formData.append('task_duration', task_duration)
+                formData.append('task_percent', task_percent)
+                formData.append('role', 'tnc')
+                formData.append('checklist_type', tncChecklistType)
+                
+                try {
+                    const response = await Axios.post(`/api/projects/tnc/approve-task/${projId}`, formData, {
+                        headers: {
+                            "Content-Type": "multipart/form-data",
+                        },
+                    });
+                    if (response?.data.success) {
+                        window.alert("TNC inspection completed successfully!");
+                    } else {
+                        window.alert("Something went wrong completing the TNC inspection.");
                     }
+                } catch (error) {
+                    console.error("Error completing TNC:", error);
+                    window.alert("Failed to complete TNC inspection.");
+                }
             } else if (type === 'pms') {
-                console.log(completionModal)
                 const formData = new FormData()
-                console.log(completionModal)
                 formData.append('inspection_type', type)
                 const task_id = completionModal.task.task_id
                 const task_name = completionModal.task.task_name
@@ -427,7 +409,6 @@ const TaskDetails = ({currentTask, currentParentTask, currentTaskPhase, proj, Co
             setCompletionModal({ isOpen: false, task: null });   
             utilitiesSocket.emit('update_task_status')
             utilitiesSocket.emit('refresh_all_projects')
-            //window.location.reload()
         } catch (e) {
             console.log(e)
         } 
@@ -436,7 +417,6 @@ const TaskDetails = ({currentTask, currentParentTask, currentTaskPhase, proj, Co
     const confirmSchedule = async () => {
         setSaveStatus('saving')
         setConfirmationModal({ isOpen: false, type: '', data: null })
-        console.log(confirmationModal)
         try {
             const payload = {
                 scheduled_date: formatDateForMySQL(confirmationModal.data.date),
@@ -503,9 +483,8 @@ const TaskDetails = ({currentTask, currentParentTask, currentTaskPhase, proj, Co
         handleContractChange,
         updatePhotos
     } = useFormValidate(initialState, validate)
-    console.log(proj)
+
     const renderRoleCompletion = () => {    
-        
         switch(role) {
             case 'Foreman':
                 return (
@@ -573,112 +552,61 @@ const TaskDetails = ({currentTask, currentParentTask, currentTaskPhase, proj, Co
 
     return (
         <div className="Content TaskDetails">
-            {/* Not Project Engineer Modal */}
-            <ConfirmationModal
-                isOpen={approvalModal.isOpen}
-                onClose={() => setApprovalModal({ isOpen: false, task: null })}
-                onConfirm={handleApprovalConfirm}
-                title="Confirm Approval"
-                message={`Are you sure you want to approve the task "${approvalModal.task?.task_name}"? This action cannot be undone.`}
-                confirmText="Approve Task"
-                cancelText="Cancel"
-                type={approvalModal.type}
-            />
-            {/* Project Engineer Modal */}
-            <ConfirmationModal
-                isOpen={completionModal.isOpen}
-                onClose={() => setCompletionModal({ isOpen: false, task: null })}
-                onConfirm={handleCompletionConfirm(completionModal.type)}
-                title="Confirm Task Completion"
-                message={`Are you sure you want to mark the task "${completionModal.task?.task_name}" as complete? This action cannot be undone.`}
-                confirmText="Mark Complete"
-                cancelText="Cancel"
-                type={completionModal.type}
-            />      
-            {/* Punchlisting Modal */}
-            <ConfirmationModal
-                isOpen={punchlistModal.isOpen}
-                onClose={() => setPunchlistModal({ isOpen: false, task: null })}
-                onConfirm={handlePunchlistConfirm}
-                title="Confirm Approval"
-                message={`Are you sure you want to approve punchlisting for "${punchlistModal.task?.task_name}"? This action cannot be undone.`}
-                confirmText="Approve Punchlisting"
-                cancelText="Cancel"
-                type={approvalModal.type}
-            />
-            <h3>Task Details</h3>
-            
-            {saveStatus === 'success' && (
-                <div className="status-message success">
+            {/* Status Messages */}
+            {saveStatus === 'success' ? (
+                <div className="TaskDetails__status-message TaskDetails__status-message--success">
+                    <CheckCircleIcon className="TaskDetails__status-icon" />
                     Inspection scheduled successfully!
                 </div>
-            )}
-            {saveStatus === 'error' && (
-                <div className="status-message error">
+            ) : (<></>)}
+            {saveStatus === 'error' ? (
+                <div className="TaskDetails__status-message TaskDetails__status-message--error">
+                    <WarningIcon className="TaskDetails__status-icon" />
                     Failed to schedule inspection. Please try again.
                 </div>
-            )}
+            ) : (<></>)}
             
-            {confirmationModal.isOpen && (
-                <div className="modal-overlay">
-                    <div className="modal-content">
-                        <div className="modal-header">
-                            <h3>Confirm Schedule</h3>
-                        </div>
-                        <div className="modal-body">
-                            <p>Are you sure you want to schedule this inspection?</p>
-                            <div className="confirmation-details">
-                                <div className="detail-item">
-                                    <strong>Type:</strong> {confirmationModal.type === 'qaqc' ? 'QAQC Inspection' : 'Testing & Commissioning'}
-                                </div>
-                                <div className="detail-item">
-                                    <strong>Date:</strong> {formatDisplayDate(confirmationModal.data.date)}
-                                </div>
-                                {confirmationModal.type === 'qaqc' && (
-                                    <div className="detail-item">
-                                        <strong>Reason:</strong> {confirmationModal.data.reason}
-                                    </div>
-                                )}
-                                <div className="detail-item">
-                                    <strong>Task:</strong> {currentTask?.task_name}
-                                </div>
-                            </div>
-                        </div>
-                        <div className="modal-actions">
-                            <button onClick={closeModal} className="btn-cancel">
-                                Cancel
-                            </button>
-                            <button onClick={confirmSchedule} className="btn-confirm" disabled={saveStatus === 'saving'}>
-                                {saveStatus === 'saving' ? 'Scheduling...' : 'Confirm Schedule'}
-                            </button>
+            {/* Header Section */}
+            <div className="TaskDetails__header">
+                <div className="TaskDetails__header-content">
+                    <AssignmentIcon className="TaskDetails__header-icon" />
+                    <div className="TaskDetails__title">
+                        <h1>Task Details</h1>
+                        <div className="TaskDetails__meta">
+                            <span className="TaskDetails__project-name">{proj?.lift_name}</span>
+                            <span className="TaskDetails__task-id">Task #{currentTask?.task_id}</span>
                         </div>
                     </div>
                 </div>
-            )}
-            
-            <div className="task-overview-minimal">
-                <div className="task-context">
-                    <div className="context-item">
-                        <span className="context-label">Project:</span>
-                        <span className="context-value">{currentParentTask?.task_name}</span>
+            </div>
+
+            {/* Task Overview Card */}
+            <div className="TaskDetails__overview">
+                <div className="TaskDetails__context">
+                    <div className="TaskDetails__context-item">
+                        <span className="TaskDetails__context-label">Project</span>
+                        <span className="TaskDetails__context-value">{currentParentTask?.task_name}</span>
                     </div>
-                    <div className="context-item">
-                        <span className="context-label">Phase:</span>
-                        <span className="context-value">{currentTaskPhase?.task_name}</span>
+                    <div className="TaskDetails__context-item">
+                        <span className="TaskDetails__context-label">Phase</span>
+                        <span className="TaskDetails__context-value">{currentTaskPhase?.task_name}</span>
                     </div>
-                    <div className="context-item">
-                        <span className="context-label">Active Task:</span>
-                        <span className="context-value highlight">{currentTask?.task_name}</span>
+                    <div className="TaskDetails__context-item">
+                        <span className="TaskDetails__context-label">Active Task</span>
+                        <span className="TaskDetails__context-value TaskDetails__context-value--highlight">
+                            {currentTask?.task_name}
+                        </span>
                     </div>
                 </div>
-                <div className="task-timeline">
-                    <div className="timeline-item">
-                        <span className="timeline-date">
+                <div className="TaskDetails__timeline">
+                    <div className="TaskDetails__timeline-item">
+                        <CalendarIcon className="TaskDetails__timeline-icon" />
+                        <span className="TaskDetails__timeline-date">
                             {new Date(currentTask?.task_start).toLocaleDateString("en-GB")} - {new Date(currentTask?.task_end).toLocaleDateString("en-GB")}
                         </span>
-                        <span className="timeline-duration">({currentTask?.task_duration} days)</span>
+                        <span className="TaskDetails__timeline-duration">({currentTask?.task_duration} days)</span>
                     </div>
-                    <div className="progress-indicator">
+                    <div className="TaskDetails__progress-indicator">
                         Progress: <strong>{currentTask?.task_percent}%</strong>
                     </div>
                 </div>
@@ -687,49 +615,76 @@ const TaskDetails = ({currentTask, currentParentTask, currentTaskPhase, proj, Co
             {/* Role-based Completion Section */}
             {renderRoleCompletion()}
 
-            {/* Scheduling Section */}
-            {role === 'Project Engineer' && !omitPhases.includes(currentTask.task_parent) && (
-                <ProjectEngineerScheduling
-                    qaqcDate={qaqcDate}
-                    setQaqcDate={setQaqcDate}
-                    tncDate={tncDate}
-                    setTncDate={setTncDate}
-                    pmsDate={pmsDate}
-                    setPmsDate={setPmsDate}
-                    qaqcReason={qaqcReason}
-                    handleQaqcReason={handleQaqcReason}
-                    qaqcReasons={qaqcReasons}
-                    handleScheduleQAQC={handleScheduleQAQC}
-                    handleScheduleTNC={handleScheduleTNC}
-                    handleSchedulePMS={handleSchedulePMS}
-                    saveStatus={saveStatus}
-                    proj={proj}
-                    includeTncSchedule={includeTncSchedule}
-                    fetchedData={fetchedData}
-                />
-            )}
-
-            {/* Special case for omitted phases */}
-            {role === 'Project Engineer' && omitPhases.includes(currentTask.task_parent) && (
-                <ProjectEngineerScheduling
-                    qaqcDate={qaqcDate}
-                    setQaqcDate={setQaqcDate}
-                    tncDate={tncDate}
-                    setTncDate={setTncDate}
-                    pmsDate={pmsDate}
-                    setPmsDate={setPmsDate}
-                    qaqcReason={qaqcReason}
-                    handleQaqcReason={handleQaqcReason}
-                    qaqcReasons={qaqcReasons}
-                    handleScheduleQAQC={handleScheduleQAQC}
-                    handleScheduleTNC={handleScheduleTNC}
-                    handleSchedulePMS={handleSchedulePMS}
-                    saveStatus={saveStatus}
-                    proj={proj}
-                    includeTncSchedule={includeTncSchedule}
-                    fetchedData={fetchedData}
-                />
-            )}
+            {/* Modals */}
+            <ConfirmationModal
+                isOpen={approvalModal.isOpen}
+                onClose={() => setApprovalModal({ isOpen: false, task: null })}
+                onConfirm={handleApprovalConfirm}
+                title="Confirm Approval"
+                message={`Are you sure you want to approve the task "${approvalModal.task?.task_name}"? This action cannot be undone.`}
+                confirmText="Approve Task"
+                cancelText="Cancel"
+                type={approvalModal.type || ''}
+            />
+            
+            <ConfirmationModal
+                isOpen={completionModal.isOpen}
+                onClose={() => setCompletionModal({ isOpen: false, task: null })}
+                onConfirm={handleCompletionConfirm(completionModal.type)}
+                title="Confirm Task Completion"
+                message={`Are you sure you want to mark the task "${completionModal.task?.task_name}" as complete? This action cannot be undone.`}
+                confirmText="Mark Complete"
+                cancelText="Cancel"
+                type={completionModal.type || ''}
+            />      
+            
+            <ConfirmationModal
+                isOpen={punchlistModal.isOpen}
+                onClose={() => setPunchlistModal({ isOpen: false, task: null })}
+                onConfirm={handlePunchlistConfirm}
+                title="Confirm Approval"
+                message={`Are you sure you want to approve punchlisting for "${punchlistModal.task?.task_name}"? This action cannot be undone.`}
+                confirmText="Approve Punchlisting"
+                cancelText="Cancel"
+                type={approvalModal.type || ''}
+            />
+            
+            {confirmationModal.isOpen ? (
+                <div className="TaskDetails__modal-overlay">
+                    <div className="TaskDetails__modal-content">
+                        <div className="TaskDetails__modal-header">
+                            <h3>Confirm Schedule</h3>
+                        </div>
+                        <div className="TaskDetails__modal-body">
+                            <p>Are you sure you want to schedule this inspection?</p>
+                            <div className="TaskDetails__confirmation-details">
+                                <div className="TaskDetails__detail-item">
+                                    <strong>Type:</strong> {confirmationModal.type === 'qaqc' ? 'QAQC Inspection' : 'Testing & Commissioning'}
+                                </div>
+                                <div className="TaskDetails__detail-item">
+                                    <strong>Date:</strong> {formatDisplayDate(confirmationModal.data.date)}
+                                </div>
+                                {confirmationModal.type === 'qaqc' && (
+                                    <div className="TaskDetails__detail-item">
+                                        <strong>Reason:</strong> {confirmationModal.data.reason}
+                                    </div>
+                                )}
+                                <div className="TaskDetails__detail-item">
+                                    <strong>Task:</strong> {currentTask?.task_name}
+                                </div>
+                            </div>
+                        </div>
+                        <div className="TaskDetails__modal-actions">
+                            <button onClick={closeModal} className="TaskDetails__btn-cancel">
+                                Cancel
+                            </button>
+                            <button onClick={confirmSchedule} className="TaskDetails__btn-confirm" disabled={saveStatus === 'saving'}>
+                                {saveStatus === 'saving' ? 'Scheduling...' : 'Confirm Schedule'}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            ) : (<></>)}
         </div>
     )
 }

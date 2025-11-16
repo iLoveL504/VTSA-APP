@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import Box from '@mui/material/Box';
 import LinearProgress from '@mui/material/LinearProgress';
 import { useNavigate } from 'react-router-dom'
-import { useStoreActions, useStoreState } from 'easy-peasy';
+import { useStoreState } from 'easy-peasy';
 import { Axios } from '../../api/axios';
 import { useSharedSocket } from '../../Context/SocketContext';
 
@@ -18,8 +18,8 @@ const summaryMap = {
 const Project = ({project, viewMode = 'list'}) => {
   const {utilitiesSocket} = useSharedSocket()
   const navigate = useNavigate()
-  const clearProjectTasks = useStoreActions(actions => actions.clearProjectTasks)
-  const clearProjectData = useStoreActions(actions => actions.clearProjectData)
+  // const clearProjectTasks = useStoreActions(actions => actions.clearProjectTasks)
+  // const clearProjectData = useStoreActions(actions => actions.clearProjectData)
   const projectManagerId = useStoreState(state => state.projectManagerId)
   const [resumeModalOpen, setResumeModalOpen] = useState(false)
   const [approveResumeModalOpen, setApproveResumeModalOpen] = useState(false)
@@ -32,8 +32,8 @@ const Project = ({project, viewMode = 'list'}) => {
   const [isRequestingHold, setIsRequestingHold] = useState(false)
 
   const handleClick = async () => {
-    clearProjectData()
-    clearProjectTasks()
+    // clearProjectData()
+    // clearProjectTasks()
     navigate(`/projects/${project.id}`)
   }
 

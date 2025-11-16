@@ -154,10 +154,7 @@ const handlePrint = useReactToPrint({
                 )
             }
            
-            <button className="btn-outline" onClick={handleDownload}>
-              <i className="fas fa-download"></i>
-              Download PDF
-            </button>
+
             <button className="btn-primary" onClick={handleEdit}>
               <i className="fas fa-edit"></i>
               Edit Report

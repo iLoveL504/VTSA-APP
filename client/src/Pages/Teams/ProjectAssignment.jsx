@@ -31,7 +31,7 @@ const SaveTeamModal = ({ isOpen, onClose, project, forecastSocket, utilitiesSock
     if (!isOpen) return null;
     const teamIds = team.map(p => p.emp_id === null ? p.foreman_id : p.emp_id)
     const Ids = [...teamIds, ...[project.project_engineer_id]]
-    
+    console.log(team)
     const handleSave = () => {
         forecastSocket.emit('save', project, (ack) => {
             if (ack?.success) {
@@ -121,6 +121,7 @@ const ProjectAssignment = () => {
     const forecastData = useStoreState(state => state.forecastData)
     const teamsNoProject = useStoreState(state => state.teamsNoProject)
     const tentativeProjectTeams = useStoreState(state => state.tentativeProjectTeams)
+    
     const installationTeams = useStoreState(state => state.installationTeams)
     const [selectedProject, setSelectedProject] = useState({})
     const [activeRoleTab, setActiveRoleTab] = useState('all')
@@ -130,7 +131,8 @@ const ProjectAssignment = () => {
     const [editedTeam, setEditedTeam] = useState([])
 
     const [selectedTab, setSelectedTab] = useState('preliminaries')
-    
+    console.log(tentativeProjectTeams)
+    console.log(installationTeams)
     // New state for filters
     const [jobFilter, setJobFilter] = useState('all');
     const [searchTerm, setSearchTerm] = useState('');
@@ -278,11 +280,11 @@ const ProjectAssignment = () => {
 
     const ProjectCard = ({ project, index, hasTeam = false, phase = 'preliminaries' }) => {
         const fTeam = tentativeProjectTeams.filter(t => t.project_id === project.id);
-        
+        console.log(hasTeam)
         const projectTeams = hasTeam 
             ? installationTeams[project.id]?.team || []
             : tentativeProjectTeams.filter(t => Number(t.project_id) === Number(project.id));
-        
+        console.log(projectTeams)
         const foreman = hasTeam 
             ? projectTeams.find(p => p.job === "Foreman")
             : projectTeams.find(p => p.foreman_id !== null);

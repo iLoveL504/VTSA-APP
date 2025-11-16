@@ -14,8 +14,19 @@ import {
   Group,
   CalendarToday,
   ListAlt,
-  List
+  List,
 } from "@mui/icons-material";
+
+import { 
+  MdError,
+  MdUpdate,
+  MdInbox,
+  MdPauseCircleFilled,
+  MdBuildCircle,
+  MdBuild
+} from "react-icons/md";
+
+import InboxIcon from '@mui/icons-material/Inbox';
 
 
 const ProjectEngineerDashboard = ({clearProjectData, clearProjectTasks}) => {
@@ -47,7 +58,7 @@ const ProjectEngineerDashboard = ({clearProjectData, clearProjectTasks}) => {
       completedProjects: assignedProjects.filter(p => 
         p.status === 'Completed' || p.handover_done
       ).length,
-      
+      incomingProjectTally: assignedProjects.filter(p => p.status === 'Incoming').length,
       // Installation specific metrics
       installationPhase: assignedProjects.filter(p => 
         p.status === 'Installation'
@@ -68,6 +79,9 @@ const ProjectEngineerDashboard = ({clearProjectData, clearProjectTasks}) => {
       
       // Projects behind schedule
       behindSchedule: assignedProjects.filter(p => p.is_behind === 1),
+
+      // Incoming Projects
+      incomingProjects: assignedProjects.filter(p => p.status === 'Incoming'),
       
       // Projects on hold
       onHoldProjects: assignedProjects.filter(p => p.on_hold === 1 || p.request_hold === 1),
@@ -167,6 +181,20 @@ const ProjectEngineerDashboard = ({clearProjectData, clearProjectTasks}) => {
 
       {/* Key Metrics */}
       <div className="stats-grid">
+
+        <div className="stat-card">
+          <div className="stat-icon" style={{backgroundColor: 'rgba(81, 21, 165, 0.1)'}}>
+            <span style={{color: '#7862b4ff'}}>
+              <InboxIcon />
+            </span>
+
+          </div>
+          <div className="stat-content">
+            <h3>{dashboardData.incomingProjectTally}</h3>
+            <p>Incoming</p>
+          </div>
+        </div>
+
         <div className="stat-card">
           <div className="stat-icon" style={{backgroundColor: 'rgba(40, 167, 69, 0.1)'}}>
             <span style={{color: '#28a745'}}>
@@ -271,6 +299,30 @@ const ProjectEngineerDashboard = ({clearProjectData, clearProjectTasks}) => {
               </div>
             </div>
           )}
+            {dashboardData.incomingProjects.length > 0 && (
+              <div className="content-card incoming-alert">
+                <div className="card-header">
+                  <h3 style={{color: '#6f42c1'}}>
+                    <MdInbox size={22} style={{marginRight: '6px'}} /> Incoming Projects
+                  </h3>
+
+                  <span className="badge incoming">{dashboardData.incomingProjects.length} projects</span>
+                </div>
+                <div className="projects-list">
+                  {dashboardData.incomingProjects.map(project => (
+                                      <ProjectItem 
+                    key={project.id} 
+                    project={project} 
+                    onProjectClick={handleProjectClick}
+                    onUpdateTask={handleUpdateTask}
+                    // clearProjectData={clearProjectData}
+                    // clearProjectTasks={clearProjectTasks}
+                  />
+                  ))}
+                </div>
+              </div>
+            )}
+          
 
           {/* Projects On Hold */}
           {dashboardData.onHoldProjects.length > 0 && (
@@ -297,7 +349,7 @@ const ProjectEngineerDashboard = ({clearProjectData, clearProjectTasks}) => {
           {/* Active Projects */}
           <div className="content-card">
             <div className="card-header">
-              <h3>My Active Projects</h3>
+              <h3>All My Active Projects</h3>
               <span className="badge active">{dashboardData.activeProjects} projects</span>
             </div>
             <div className="projects-list">
@@ -448,7 +500,7 @@ const ProjectEngineerDashboard = ({clearProjectData, clearProjectTasks}) => {
 };
 
 // Project Item Component
-const ProjectItem = ({ project, type, onProjectClick, clearProjectData, clearProjectTasks }) => {
+const ProjectItem = ({ project, type, onProjectClick }) => {
   const getDaysUntilDeadline = () => {
     if (!project.project_end_date) return null;
     const deadline = new Date(project.project_end_date);
@@ -548,8 +600,8 @@ const ProjectItem = ({ project, type, onProjectClick, clearProjectData, clearPro
         <button 
           className="btn-primary btn-sm"
           onClick={() => {
-            clearProjectTasks()
-            clearProjectData()
+            // clearProjectTasks()
+            // clearProjectData()
             onProjectClick(project.id)
           }}
         >

@@ -406,7 +406,7 @@ const ProjectDetails = ({
                                         <p>This project doesn't have a team assigned yet.</p>
                                         <button 
                                             className="btn-assign-team"
-                                            onClick={() => navigate(`/projects/${proj.id}/team`)}
+                                            onClick={() => navigate(`/teams`)}
                                         >
                                             Assign Team
                                         </button>

@@ -564,8 +564,10 @@ static async adjustInstallationStart(projId, data) {
     });
     adjustedSchedule.importTasksWithDates(schedule)
     adjustedSchedule.printListData()
+    console.log('-------here in line 567-------')
+    console.log(date)
     adjustedSchedule.adjustInstallationStart(projId, new Date(date))
-    adjustedSchedule.printListData()
+    //adjustedSchedule.printListData()
   
       const editedSchedule = adjustedSchedule.toArray()
       const checkQuery = `show tables like 'project_${projId}_schedule'`
@@ -1451,6 +1453,7 @@ static async rectifyItems (projId) {
     adjustedSchedule.resumeProject(new Date(resume_date))
     
     const editedSchedule = adjustedSchedule.toArray()
+    console.log(editedSchedule)
        const checkQuery = `show tables like 'project_${projId}_schedule'`
     const [results] = await pool.query(checkQuery)
     if(results.length !== 0) {
@@ -1488,8 +1491,8 @@ static async rectifyItems (projId) {
       const insertPromises = editedSchedule.map(async (t) => {
       const insertQuery = `
         INSERT INTO project_${projId}_schedule 
-          (task_id, task_name, task_start, task_end, task_duration, task_done, task_actual_current, task_type, task_parent, task_percent, section_title, item_code, wt, unit, description)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+          (task_id, task_name, task_start, task_end, task_duration, task_done, task_actual_current, task_type, task_parent, task_percent, section_title, item_code, wt, unit, description, pres_acc)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
       `;
 
       const values = [
@@ -1507,7 +1510,8 @@ static async rectifyItems (projId) {
         t.item_code || null,
         t.wt || 0.00,
         t.unit || 1,
-        t.task_name
+        t.task_name,
+         t.pres_acc || 0.00
       ];
 
       return pool.query(insertQuery, values);
@@ -1541,8 +1545,8 @@ static async rectifyItems (projId) {
         update pms_projects set free_pms_end = DATE_ADD(handover_date, INTERVAL 1 YEAR) where id = ?
       `, [projId])
     //get team id
-    const [getId] = await pool.query(`select team_id from project_manpower where project_id = ?`, [projId])
-    const team_id = getId[0].team_id
+    // const [getId] = await pool.query(`select team_id from project_manpower where project_id = ?`, [projId])
+    // const team_id = getId[0].team_id
 
     //clear team members
     await pool.query(`delete from team_members where project_id = ?`, [projId])
@@ -1550,9 +1554,8 @@ static async rectifyItems (projId) {
     //clear project team since it is now in handover
     await pool.query(`delete from project_manpower where project_id = ?`, [projId])
 
-    const [result] =  await pool.query(`insert into client_baby_book (pms_id, book_name) values (?, ?)`, [projId, client])
-    const insertId = result.insertId
-    await pool.query(`insert into contracts (baby_book_id) values (?)`, [insertId])
+    await pool.query(`insert into client_baby_book (pms_id, book_name) values (?, ?)`, [projId, client])
+    await pool.query(`insert into contracts (baby_book_id) values (?)`, [projId])
       for (const photo of photos) {
       const filePath = "/uploads/" + photo.filename;
       await pool.query(

@@ -1255,7 +1255,7 @@
     box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
 }
 
-.modal-header {
+.ProjectAssignment .modal-header {
     display: flex;
     align-items: center;
     gap: 12px;
@@ -1263,18 +1263,18 @@
     border-bottom: 1px solid #e2e8f0;
 }
 
-.modal-icon {
+.ProjectAssignment .modal-icon {
     font-size: 1.5rem !important;
     color: #315a95;
 }
 
-.modal-header h3 {
+.ProjectAssignment .modal-header h3 {
     margin: 0;
     flex: 1;
     color: #1e293b;
 }
 
-.modal-close {
+.ProjectAssignment .modal-close {
     background: none;
     border: none;
     font-size: 1.5rem;

@@ -47,7 +47,7 @@ export default function forecastMenNameSpace(nsp) {
     });
 
     socket.on("save", async (data, callback) => {
-
+      console.log(data)
       try {
         await forecast.finalizeTeam(data);
         await emitAllUpdates(data.date);

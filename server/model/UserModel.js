@@ -20,7 +20,7 @@ class UserModel {
 
     //UPDATE
     static async updateUser (user, id) {
-        const { username, password, last_name, first_name, job } = user;
+        const { username, password, last_name, first_name, job, in_house } = user;
         await pool.query(`
             update employees set username = ?, password = ?,
             last_name = ?, first_name = ?, job = ?, in_house = ? where employee_id = ? 

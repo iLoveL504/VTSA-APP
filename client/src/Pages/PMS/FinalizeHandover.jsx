@@ -221,11 +221,11 @@ const FinalizeHandover = ({proj}) => {
                     </div>
 
                          <div className="form-control-professional">
-                        <label htmlFor="contracttType">Equipment Type</label>
+                        <label htmlFor="contracttType">Contract Type</label>
                         <select
                             id="contractType"
                             name="contractType"
-                            value={values.equipmentType}
+                            value={values.contractType}
                             onChange={handleInputChange}
                             onBlur={handleBlur}
                             required

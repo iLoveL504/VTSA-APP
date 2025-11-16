@@ -3,7 +3,7 @@ import '../../css/ProjectTeam.css'
 import { Grid } from 'ldrs/react'
 import { Axios } from '../../api/axios'
 import { useStoreState } from 'easy-peasy'
-
+import { useNavigate } from 'react-router-dom'
 // Material-UI Icons
 import {
 
@@ -24,7 +24,7 @@ import {
 
 const ProjectTeam = ({ teamInfo, proj, teamTechs, projId }) => {
     const { allTeams } = useStoreState(state => state)
-    
+    const navigate = useNavigate()
     // Find the project team from allTeams using the new data format
     const projectTeam = allTeams.find(t => t.project_id === Number(projId))
     
@@ -149,6 +149,7 @@ const ProjectTeam = ({ teamInfo, proj, teamTechs, projId }) => {
                             <EngineeringIcon className="section-icon" />
                             <h3>Project Leadership</h3>
                         </div>
+
                         <div className="leadership-grid">
                             {/* Project Engineer */}
                             <div className="leadership-card">
@@ -163,7 +164,14 @@ const ProjectTeam = ({ teamInfo, proj, teamTechs, projId }) => {
                                             <span className="person-id">ID: {projectEngineer.id}</span>
                                         </>
                                     ) : (
-                                        <span className="not-assigned">Not assigned</span>
+                                        <span className="not-assigned">
+                                            <button
+                                                className="btn-assign-team"
+                                                onClick={() => navigate(`/projects/${proj.id}/team`)}
+                                            >
+                                                Asisgn Project Engineer
+                                            </button>
+                                        </span>
                                     )}
                                 </div>
                             </div>
@@ -184,6 +192,9 @@ const ProjectTeam = ({ teamInfo, proj, teamTechs, projId }) => {
                                         <span className="not-assigned">Not assigned</span>
                                     )}
                                 </div>
+                            </div>
+                            <div>
+                                
                             </div>
                         </div>
                     </div>
