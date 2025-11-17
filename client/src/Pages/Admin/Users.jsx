@@ -307,7 +307,7 @@ const getRoleIcon = (role) => {
                         <span className="stat-label">Total Employees</span>
                     </div>
                 </div>
-                <div className="stat-card active">
+                {/* <div className="stat-card active">
                     <PersonIcon className="stat-icon" />
                     <div className="stat-content">
                         <span className="stat-number">{stats.active}</span>
@@ -320,7 +320,7 @@ const getRoleIcon = (role) => {
                         <span className="stat-number">{stats.inactive}</span>
                         <span className="stat-label">Inactive Employees</span>
                     </div>
-                </div>
+                </div> */}
             </div>
 
             {/* Controls Section */}
@@ -436,7 +436,7 @@ const getRoleIcon = (role) => {
                         <div className="table-cell">Role</div>
                         <div className="table-cell">Username</div>
                         <div className="table-cell">Hire Date</div>
-                        <div className="table-cell">Status</div>
+                        {/* <div className="table-cell">Status</div> */}
                         <div className="table-cell">In House</div>
                         <div className="table-cell actions-cell">Actions</div>
                     </div>
@@ -484,11 +484,11 @@ const getRoleIcon = (role) => {
                                 <div className="table-cell">
                                     {new Date(employee.hire_date).toLocaleDateString()}
                                 </div>
-                                <div className="table-cell">
+                                {/* <div className="table-cell">
                                     <span className={`status-badge ${employee.is_active ? 'active' : 'inactive'}`}>
                                         {employee.is_active ? 'Active' : 'Inactive'}
                                     </span>
-                                </div>
+                                </div> */}
                                 <div className="table-cell">
                                     <span className={`in-house-badge ${employee.in_house ? 'in-house' : 'contract'}`}>
                                         {employee.in_house ? 'In House' : 'Contract'}

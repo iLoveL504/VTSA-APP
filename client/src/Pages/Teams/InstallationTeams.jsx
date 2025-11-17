@@ -941,6 +941,7 @@ const TeamsDashboard = () => {
                 <span>Projects</span>
                 <span>Username</span>
               </div>
+              {console.log(manpowerStats)}
               {manpowerStats.personnelDetails?.map(person => (
                 <div key={person.id} className="table-row">
                   <span className="person-name">

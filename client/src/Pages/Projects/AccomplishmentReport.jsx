@@ -270,12 +270,12 @@ useEffect(() => {
               }}>
                 Save
               </button>            
-              <button
+              {/* <button
                 onClick={handlePrint}
                 className="action-btn btn-print"
               >
                 Print
-              </button>
+              </button> */}
             </div>
 
           </div>
