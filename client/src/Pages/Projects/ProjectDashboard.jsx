@@ -334,7 +334,8 @@ const ProjectDashboard = ({
     tasksIsLoading,
     error,
     employees,
-    allTeams
+    allTeams,
+    qaqcHistory
   } = useStoreState(state => state);
   console.log(allTeams)
   const { fetchAllProjectData } = useStoreActions(action => action);
@@ -365,7 +366,7 @@ const ProjectDashboard = ({
   const handleNavigateToDetails = () => {
     setActivePage('details')
   };
-
+console.log(qaqcHistory)
  // Loading state
   if (isLoaded || tasksIsLoading || isLoading) {
     return (

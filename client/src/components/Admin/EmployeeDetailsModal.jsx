@@ -5,17 +5,18 @@ const EmployeeDetailsModal = ({ employee, onClose, onEdit }) => {
     const getRoleIcon = (role) => {
         switch (role) {
             case 'Project Engineer':
-                return <Engineering className="role-icon" />
+                return <Engineering className="role-icon" sx={{ color: "#ffffffff" }} />
+
             case 'Foreman':
-                return <SupervisorAccount className="role-icon" />
+                return <SupervisorAccount className="role-icon" sx={{ color: "#ffffffff" }} />
             case 'Skilled Installer':
-                return <Build className="role-icon" />
+                return <Build className="role-icon" sx={{ color: "#ffffffff" }} />
             case 'Installer':
-                return <Construction className="role-icon" />
+                return <Construction className="role-icon" sx={{ color: "#ffffffff" }} />
             case 'Admin':
-                return <Assignment className="role-icon" />
+                return <Assignment className="role-icon" sx={{ color: "#ffffffff" }} />
             default:
-                return <Person className="role-icon" />
+                return <Person className="role-icon" sx={{ color: "#ffffffff" }} />
         }
     }
 
@@ -43,12 +44,6 @@ const EmployeeDetailsModal = ({ employee, onClose, onEdit }) => {
                         <div className="detail-item">
                             <label>Employee ID</label>
                             <span>#{employee.employee_id}</span>
-                        </div>
-                        <div className="detail-item">
-                            <label>Status</label>
-                            <span className={`status ${employee.is_active ? 'active' : 'inactive'}`}>
-                                {employee.is_active ? 'Active' : 'Inactive'}
-                            </span>
                         </div>
                         <div className="detail-item">
                             <label>Employment Type</label>

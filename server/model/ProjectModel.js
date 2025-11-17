@@ -1103,12 +1103,12 @@ static async getTaskPhotos(id) {
     await pool.query(`update projects set qaqc_inspection_date = ?, qaqc_inspection_reason = ?, qaqc_pending = 1, qaqc_approval = 1, qaqc_ongoing = 0, qaqc_is_assigned = 0 where id = ?`, [date, reason, projId])
   }
 
-  static async addQAQCInspectionRecord (projId, data) {
+  static async addQAQCInspectionRecord (projId, data, qaqcId) {
     const {inspection_type, inspection_reason, inspection_date} = data
     const [results] =  await pool.query(`
-        insert qaqc_inspection_history (project_id, inspection_type, inspection_reason, inspection_date)
-        values (?, ?, ?, ?)
-      `, [projId, inspection_type, inspection_reason, inspection_date])
+        insert qaqc_inspection_history (project_id, inspection_type, inspection_reason, inspection_date, qaqc_id)
+        values (?, ?, ?, ?, ?)
+      `, [projId, inspection_type, inspection_reason, inspection_date, qaqcId])
 
     const newInspectionId = results.insertId;
     //set the current qaqc inspection id of the projct
@@ -1119,7 +1119,7 @@ static async getTaskPhotos(id) {
     const {projId, qaqcId, inspection_date} = data
     await pool.query(`update project_manpower set qaqc_id = ? where project_id = ?`, [qaqcId, projId])
     await pool.query(`update projects set qaqc_pending = 0, qaqc_is_assigned = 1, qaqc_ongoing = 0, qaqc_inspection_date = ? where id = ?`, [inspection_date, projId])
-    await this.addQAQCInspectionRecord(projId, data)
+    await this.addQAQCInspectionRecord(projId, data, qaqcId)
 
   }
 
@@ -1131,8 +1131,8 @@ static async getTaskPhotos(id) {
 			join qaqc_inspection_history qh on qh.project_id = p.id
             left join employees e on e.employee_id = qh.qaqc_id
             left join project_inspection_photos pip on pip.inspection_id = qh.id
-            left join qaqc_punchlisting qp on qp.inspection_id = qh.id    
-      `)
+            left join qaqc_punchlisting qp on qp.inspection_id = qh.id where p.id = ?    
+      `, [projId])
 
 const grouped = results.reduce((acc, item) => {
   const projectId = item.id;

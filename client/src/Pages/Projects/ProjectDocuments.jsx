@@ -3,6 +3,7 @@ import '../../css/ProjectDocuments.css';
 import useAxiosFetch from "../../hooks/useAxiosFetch.js"
 import { useParams, useNavigate } from 'react-router-dom';
 import CircularProgress from '@mui/material/CircularProgress';
+import { useStoreState } from 'easy-peasy';
 
 const ProjectDocuments = () => {
     const navigate = useNavigate()
@@ -11,7 +12,8 @@ const ProjectDocuments = () => {
     const [activeTab, setActiveTab] = useState('dailyReports');
     const [searchTerm, setSearchTerm] = useState('');
     const [expandedChecklist, setExpandedChecklist] = useState(null);
-    
+    const { qaqcHistory } = useStoreState(state => state)
+    console.log(qaqcHistory)
     // Fetch actual daily reports data from API
     const {data: reportsData, fetchError: fetchReportError, isLoading: reportsIsLoading} = useAxiosFetch(`${backendURL}/api/projects/report/${projId}`)
     

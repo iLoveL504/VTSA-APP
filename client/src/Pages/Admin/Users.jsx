@@ -435,7 +435,7 @@ const getRoleIcon = (role) => {
                         <div className="table-cell">Employee</div>
                         <div className="table-cell">Role</div>
                         <div className="table-cell">Username</div>
-                        <div className="table-cell">Hire Date</div>
+                        <div className="table-cell">Date Created</div>
                         {/* <div className="table-cell">Status</div> */}
                         <div className="table-cell">In House</div>
                         <div className="table-cell actions-cell">Actions</div>

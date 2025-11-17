@@ -2,14 +2,17 @@ import { useState, useEffect } from 'react'
 
 const EmployeeModal = ({ employee, roles, onSave, onClose }) => {
     const [formData, setFormData] = useState({
-        username: '',
+        name: '',
         password: '',
         first_name: '',
         last_name: '',
         job: '',
+        islands: '',
         is_active: 1,
-        in_house: 1
+        in_house: '',
     })
+    console.log(formData)
+    const islands = ['Luzon', 'Visayas', 'Mindanao']
 
     useEffect(() => {
         if (employee) {
@@ -19,8 +22,10 @@ const EmployeeModal = ({ employee, roles, onSave, onClose }) => {
                 first_name: employee.first_name || '',
                 last_name: employee.last_name || '',
                 job: employee.job || '',
-                hire_date: employee.hire_date ? employee.hire_date.split('T')[0] : new Date().toISOString().split('T')[0],
-                is_active: employee.is_active || 1
+                is_active: employee.is_active || 1,
+                in_house: employee.in_house || 1,
+                island: employee.island_group || 'Luzon',
+
             })
         }
     }, [employee])
@@ -33,7 +38,11 @@ const EmployeeModal = ({ employee, roles, onSave, onClose }) => {
     }
 
     const handleChange = (e) => {
+        
         const { name, value } = e.target
+        console.log(name)
+        console.log(value)
+        console.log(formData)
         setFormData(prev => ({
             ...prev,
             [name]: value
@@ -47,11 +56,10 @@ const EmployeeModal = ({ employee, roles, onSave, onClose }) => {
                     <h2>{employee ? 'Edit Employee' : 'Add New Employee'}</h2>
                     <button className="close-btn" onClick={onClose}>×</button>
                 </div>
-                
                 <form onSubmit={handleSubmit}>
                     <div className="form-row">
                         <div className="form-group">
-                            <label>First Name *</label>
+                            <label>First Name </label>
                             <input
                                 type="text"
                                 name="first_name"
@@ -61,7 +69,7 @@ const EmployeeModal = ({ employee, roles, onSave, onClose }) => {
                             />
                         </div>
                         <div className="form-group">
-                            <label>Last Name *</label>
+                            <label>Last Name </label>
                             <input
                                 type="text"
                                 name="last_name"
@@ -74,7 +82,7 @@ const EmployeeModal = ({ employee, roles, onSave, onClose }) => {
 
                     <div className="form-row">
                         <div className="form-group">
-                            <label>Username *</label>
+                            <label>Username </label>
                             <input
                                 type="text"
                                 name="username"
@@ -84,7 +92,7 @@ const EmployeeModal = ({ employee, roles, onSave, onClose }) => {
                             />
                         </div>
                         <div className="form-group">
-                            <label>Password {!employee && '*'}</label>
+                            <label>Password {!employee && ''}</label>
                             <input
                                 type="password"
                                 name="password"
@@ -98,7 +106,24 @@ const EmployeeModal = ({ employee, roles, onSave, onClose }) => {
 
                     <div className="form-row">
                         <div className="form-group">
-                            <label>Role *</label>
+                            <label>Island </label>
+                            <select
+                                name="island"
+                                value={formData.islands}
+                                onChange={handleChange}
+                                required
+                            >
+                                <option value="">Select island</option>
+                                {islands.map(islands => (
+                                    <option key={islands} value={islands}>{islands}</option>
+                                ))}
+                            </select>
+                        </div>                        
+                    </div>
+
+                    <div className="form-row">
+                        <div className="form-group">
+                            <label>Role </label>
                             <select
                                 name="job"
                                 value={formData.job}
@@ -112,7 +137,7 @@ const EmployeeModal = ({ employee, roles, onSave, onClose }) => {
                             </select>
                         </div>
                         <div className="form-group">
-                            <label>Role *</label>
+                            <label>Contract </label>
                             <select
                                 name="in_house"
                                 value={formData.in_house}

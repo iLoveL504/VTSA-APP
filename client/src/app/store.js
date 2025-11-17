@@ -253,6 +253,7 @@ export default createStore({
   teamInfo: {},
   error: null,
   holidays: [],
+  qaqcHistory: [],
 
   // Actions
 // CORRECTED ACTIONS - Use action() wrapper for all of them
@@ -289,6 +290,9 @@ setLoading: action((state, payload) => {
 setError: action((state, payload) => {
   state.error = payload;
 }),
+setQaQCHistory: action((state, payload) => {
+  state.qaqcHistory = payload
+}),
   
   // Thunk action to fetch all project data
   fetchAllProjectData: thunk(async (actions, projId) => {
@@ -307,16 +311,18 @@ setError: action((state, payload) => {
         teamTechsRes,
         scheduleRes,
         taskPhotosRes,
-        holidays
+        holidays,
+        qaqcHis
       ] = await Promise.all([
         Axios.get(`${backendURL}/api/projects/${projId}`),
         Axios.get(`${backendURL}/api/projects/photos/${projId}`),
         Axios.get(`${backendURL}/api/teams/project-manpower/${projId}`),
         Axios.get(`${backendURL}/api/projects/schedule/${projId}`),
         Axios.get(`${backendURL}/api/projects/task-photos/${projId}`),
-        Axios.get(`${backendURL}/api/projects/holidays/${projId}`)
+        Axios.get(`${backendURL}/api/projects/holidays/${projId}`),
+        Axios.get(`${backendURL}/api/projects/qaqc/history/${projId}`)
       ]);
-      console.log(projectRes)
+      console.log(qaqcHis)
       // Update state with all data
       actions.setProjectData(projectRes.data);
       actions.setProjectPhotos(photosRes.data);
@@ -324,6 +330,7 @@ setError: action((state, payload) => {
       actions.setProjectSchedule(scheduleRes.data);
       actions.setTaskPhotos(taskPhotosRes.data);
       actions.setHolidays(holidays.data)
+      actions.setQaQCHistory(qaqcHis.data)
 
     } catch (error) {
       console.error('Error fetching project data:', error);
@@ -357,6 +364,7 @@ setError: action((state, payload) => {
     state.teamInfo = {};
     state.isLoading = false;
     state.error = null;
+    state.qaqcHistory = []
   }),
   // In your store file, add these new state properties and actions:
 

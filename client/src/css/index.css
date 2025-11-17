@@ -48,7 +48,7 @@ nav{
   position: fixed; /* Set the navbar to fixed position */
   top: 0;
   width: 100%; /* Full width */
-  z-index: 3000; /* Ensure the navbar is above other content */
+  z-index: 1000; /* Ensure the navbar is above other content */
 }
 
 /* nav div{

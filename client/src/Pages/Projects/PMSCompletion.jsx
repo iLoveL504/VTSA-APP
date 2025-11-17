@@ -5,7 +5,8 @@ import {
   Delete as DeleteIcon,
   Assignment as AssignmentIcon,
   Description as DescriptionIcon,
-  Verified as VerifiedIcon
+  Verified as VerifiedIcon,
+   Approval as StampIcon
 } from '@mui/icons-material';
 
 const PMSCompletion = ({ 
