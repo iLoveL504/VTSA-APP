@@ -8,6 +8,7 @@ import useToggle from '../../hooks/useToggle'
 import { useStoreState } from 'easy-peasy'
 import { useNavigate } from 'react-router-dom'
 import { useSharedSocket } from '../../Context/SocketContext'
+import '../../css/Navbar.css'
 
 const NavBar = ({ invertMenuToggle }) => {
   const { utilitiesSocket } = useSharedSocket()

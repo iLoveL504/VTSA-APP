@@ -27,8 +27,10 @@ const ProjectManagerMenu = () => {
           <Link to="/admin/users">
             <li>
                 <IoPerson style={{ color: 'white' }}/>
-                Users
-            </li>
+                <div>
+                  Users
+                </div>
+            </li> 
           </Link>
           <Link to="/projects">
             <li>

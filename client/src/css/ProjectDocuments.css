@@ -1,6 +1,6 @@
 .ProjectDocuments {
   padding: 2rem;
-  max-width: 1200px;
+  width: 100%;  
   margin: 0 auto;
   background: #f8fafc;
   min-height: 100vh;
@@ -922,3 +922,115 @@
         flex-direction: column;
     }
 }
+
+/* QAQC History Table Styles */
+.qaqc-history-table {
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+}
+
+.qaqc-history-table table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.qaqc-history-table th {
+    background: #f8f9fa;
+    padding: 12px 16px;
+    text-align: left;
+    font-weight: 600;
+    color: #495057;
+    border-bottom: 2px solid #e9ecef;
+    font-size: 0.875rem;
+}
+
+.qaqc-history-table td {
+    padding: 12px 16px;
+    border-bottom: 1px solid #e9ecef;
+    vertical-align: middle;
+}
+
+.qaqc-row:hover {
+    background-color: #f8f9fa;
+    transition: background-color 0.2s ease;
+}
+
+/* QAQC Specific Styles */
+.inspection-date .date-info,
+.inspector-info {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: #6c757d;
+}
+
+.inspection-reason {
+    font-weight: 500;
+    color: #495057;
+}
+
+.checklist-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: #e7f3ff;
+    color: #0066cc;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 0.8rem;
+    font-weight: 500;
+}
+
+.no-checklist,
+.no-photos,
+.no-punchlists {
+    color: #6c757d;
+    font-style: italic;
+    font-size: 0.875rem;
+}
+
+.photos-badge,
+.punchlists-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: #f8f9fa;
+    color: #495057;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 0.8rem;
+    font-weight: 500;
+}
+
+.status-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 0.8rem;
+    font-weight: 500;
+}
+
+.status-completed {
+    background: #d4edda;
+    color: #155724;
+}
+
+.status-pending {
+    background: #fff3cd;
+    color: #856404;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .qaqc-history-table {
+        overflow-x: auto;
+    }
+    
+    .qaqc-history-table table {
+        min-width: 800px;
+    }
+} 

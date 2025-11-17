@@ -330,7 +330,7 @@ setQaQCHistory: action((state, payload) => {
       actions.setProjectSchedule(scheduleRes.data);
       actions.setTaskPhotos(taskPhotosRes.data);
       actions.setHolidays(holidays.data)
-      actions.setQaQCHistory(qaqcHis.data)
+      actions.setQaQCHistory(qaqcHis.data[projId].inspections)
 
     } catch (error) {
       console.error('Error fetching project data:', error);

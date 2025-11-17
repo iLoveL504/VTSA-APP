@@ -1,6 +1,6 @@
 .DailyReportDetails {
   padding: 2rem;
-  max-width: 1000px;
+  width: 100%;
   margin: 0 auto;
   background: #f8fafc;
   min-height: 100vh;
@@ -90,10 +90,10 @@
   font-size: 2rem;
 }
 
-.report-meta {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  gap: 1rem;
+.DailyReportDetails .report-meta {
+    /* display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1rem; */
 }
 
 .meta-item {
