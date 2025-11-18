@@ -474,11 +474,6 @@ const PMSAssignment = () => {
                                 </div>
                             </div>
                             
-                            {sessionStorage.getItem('roles') === 'Project Manager' && (
-                                <button className="pms-create-btn">
-                                    + New Project
-                                </button>
-                            )}
                         </div>
                     </div>
                 </header>

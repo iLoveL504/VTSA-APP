@@ -140,12 +140,12 @@ const SchedulingCard = ({
   const getInspectionStatus = (type) => {
     switch(type) {
       case 'qaqc':
-        if (proj.qaqc_ongoing) return { status: 'ongoing', label: 'In Progress', date: proj.qaqc_inspection_date };
+        if (proj.qaqc_ongoing && proj.qaqc_is_assigned) return { status: 'ongoing', label: 'In Progress', date: proj.qaqc_inspection_date };
         if (proj.qaqc_is_assigned) return { status: 'scheduled', label: 'Scheduled', date: proj.qaqc_inspection_date };
         return { status: 'available', label: 'Not Scheduled', date: null };
       
       case 'tnc':
-        if (proj.tnc_ongoing) return { status: 'ongoing', label: 'In Progress', date: proj.tnc_assign_date };
+        if (proj.tnc_ongoing && proj.tnc_is_assigned) return { status: 'ongoing', label: 'In Progress', date: proj.tnc_assign_date };
         if (proj.tnc_is_assigned) return { status: 'scheduled', label: 'Scheduled', date: proj.tnc_assign_date };
         return { status: 'available', label: 'Not Scheduled', date: null };
       

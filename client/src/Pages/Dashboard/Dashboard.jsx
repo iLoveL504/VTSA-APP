@@ -4,6 +4,7 @@ import { useStoreState, useStoreActions } from 'easy-peasy';
 import ProjectManagerDashboard from './ProjectManagerDashboard';
 import ProjectEngineerDashboard from './ProjectEngineerDashboard';
 import QAQCDashboard from './QAQCCoordinatorDashboard';
+import TNCDashboard from './TNCCoordinatorDashboard'
 import '../../css/Dashboard.css';
 
 const Dashboard = () => {
@@ -44,6 +45,9 @@ const Dashboard = () => {
 
       case 'QAQC Coordinator':
         return <QAQCDashboard />
+
+      case 'TNC Coordinator':
+        return <TNCDashboard />
       
       default:
         return (

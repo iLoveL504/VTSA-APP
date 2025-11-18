@@ -5,7 +5,7 @@ import '../../css/PMSMain.css'
 const PMSMain = () => {
   return (
     <div className='Content PMSMain'>
-        <div className="project-header">Here in PMS main</div>
+        {/* <div className="project-header">Here in PMS main</div> */}
         <PMSAssignment />
 
     </div>

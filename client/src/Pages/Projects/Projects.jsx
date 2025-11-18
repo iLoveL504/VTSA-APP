@@ -22,41 +22,50 @@ console.log(designatedProjects)
     'Preliminaries',
     'Planning For Mobilization And Execution',
     'Installation',
-    'Testing and Commissioning (Passenger Elevator)',
+    'Test and Comm',
     'Pending'
   ]
 
   // Filter projects based on search term and filters
-  const filteredProjects = useMemo(() => {
-    let filtered = projects
-    
-    // Search filter
-    if (searchTerm) {
-      const term = searchTerm.toLowerCase()
-      filtered = filtered.filter(project => 
-        project.lift_name?.toLowerCase().includes(term) ||
-        project.client?.toLowerCase().includes(term) ||
-        project.region?.toLowerCase().includes(term) ||
-        project.city_municipality?.toLowerCase().includes(term)
-      )
-    }
-    
-    // Status filter
-    if (statusFilter !== 'all') {
-      filtered = filtered.filter(project => project.status === statusFilter)
-    }
-    
-    // Active filter (all, on-hold, request-hold)
-    if (activeFilter === 'on-hold') {
-      filtered = filtered.filter(project => project.on_hold)
-    } else if (activeFilter === 'request-hold') {
-      filtered = filtered.filter(project => project.request_hold)
-    } else if (activeFilter === 'active') {
-      filtered = filtered.filter(project => !project.on_hold && !project.request_hold)
-    }
-    
-    return filtered
-  }, [projects, searchTerm, statusFilter, activeFilter])
+const filteredProjects = useMemo(() => {
+  let filtered = projects
+  
+  // Search filter
+  if (searchTerm) {
+    const term = searchTerm.toLowerCase()
+    filtered = filtered.filter(project => 
+      project.lift_name?.toLowerCase().includes(term) ||
+      project.client?.toLowerCase().includes(term) ||
+      project.region?.toLowerCase().includes(term) ||
+      project.city_municipality?.toLowerCase().includes(term)
+    )
+  }
+  
+  // Handle behind-schedule filter first
+  if (activeFilter === 'behind-schedule') {
+    console.log('inside behind schedule')
+    console.log(filtered)
+    console.log(filtered.filter(project => project.is_behind === 1))
+    filtered = filtered.filter(project => project.is_behind === 1)
+  }
+  
+  // Status filter
+  if (statusFilter !== 'all') {
+    console.log(statusFilter)
+    filtered = filtered.filter(project => project.status === statusFilter)
+  }
+  
+  // Other active filters
+  if (activeFilter === 'on-hold') {
+    filtered = filtered.filter(project => project.on_hold)
+  } else if (activeFilter === 'request-hold') {
+    filtered = filtered.filter(project => project.request_hold)
+  } else if (activeFilter === 'active') {
+    filtered = filtered.filter(project => !project.on_hold && !project.request_hold)
+  }
+  
+  return filtered
+}, [projects, searchTerm, statusFilter, activeFilter])
 
   const handleCreateClick = () => {
     navigate('create')
@@ -213,6 +222,12 @@ console.log(designatedProjects)
               Active
             </button>
             <button
+              className={`filter-btn ${activeFilter === 'behind-schedule' ? 'active' : ''}`}
+              onClick={() => handleActiveFilterChange('behind-schedule')}
+            >
+              Behind Schedule
+            </button>
+            <button
               className={`filter-btn ${activeFilter === 'on-hold' ? 'active' : ''}`}
               onClick={() => handleActiveFilterChange('on-hold')}
             >
@@ -240,7 +255,7 @@ console.log(designatedProjects)
                 <div className="table-cell">Timeline</div>
                 <div className="table-cell">Progress</div>
                 <div className="table-cell">Status</div>
-                <div className="table-cell">Pending</div>
+                <div className="table-cell">Pending (Must be 90%)</div>
               </div>
             </div>
 

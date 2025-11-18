@@ -174,6 +174,16 @@
   border-bottom: 2px solid #f1f5f9;
 }
 
+.CreateProject .client-btn {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.client-btn button {
+  width: 100%;
+}
+
 .CreateProject .section-icon {
   font-size: 2rem !important;
   color: #315a95;

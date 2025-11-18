@@ -46,6 +46,7 @@ import ServiceReportPage from './Pages/PMS/ServiceReportPage.jsx'
 import CallbackPage from './Pages/PMS/CallbackPage.jsx'
 import PMSMain from './Pages/PMS/PMSMain.jsx'
 import CallbackReportPage from './Pages/PMS/CallbackReportPage.jsx'
+import ScheduleMaker from './Pages/Admin/ScheduleMaker.jsx'
 
 function App() {
   const backendURL = import.meta.env.VITE_BACKEND_URL || 'https://localhost:4000';
@@ -74,6 +75,7 @@ const { data: notifData } =
   const fetchAllTeams = useStoreActions(action => action.fetchAllTeams)
   const updateFilteredProjectStatuses = useStoreActions(actions => actions.updateFilteredProjectStatuses);
 
+  const {fetchManpower, fetchQaqcTechs, fetchTncTechs} = useStoreActions(action => action)
   const [empId, setEmpId] = useState(null)
   // array of project ids
   // hook for project status batch update
@@ -132,6 +134,17 @@ useEffect(() => {
   fetchProjects()
   fetchAllTeams()
 }, [])
+
+useEffect(() => {
+  if(sessionStorage.getItem('roles') === 'QAQC Coordinator') {
+    fetchManpower()
+    fetchQaqcTechs()
+  }
+  if(sessionStorage.getItem('roles') === 'TNC Coordinator') {
+    fetchManpower()
+    fetchTncTechs()
+  }
+}, [user]) 
 
 useEffect(() => {
   if (notifData) {
@@ -216,6 +229,9 @@ useEffect(() => {
 
           <Route path="inbox">
             <Route index element={<Inbox />} />
+          </Route>
+          <Route path="schedule">
+            <Route path='create' element={<ScheduleMaker />} />
           </Route>
 
   

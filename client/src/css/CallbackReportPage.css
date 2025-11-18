@@ -11,7 +11,7 @@
     padding: 20px;
     border-radius: 8px;
     margin-bottom: 30px;
-    border-left: 4px solid #764ba2;
+    border-left: 4px solid #245ea0;
 }
 
 .callback-report-header h1 {
@@ -20,7 +20,7 @@
 }
 
 .callback-badge {
-    background: #764ba2;
+    background: #245ea0;
     color: white;
     padding: 6px 12px;
     border-radius: 4px;
@@ -66,7 +66,7 @@
     padding: 2px 8px;
     border-radius: 12px;
     font-size: 0.8rem;
-    display: inline-block;
+    margin-right: 11rem;
     width: fit-content;
 }
 
@@ -127,7 +127,7 @@
 }
 
 .file-upload-label:hover {
-    border-color: #764ba2;
+    border-color: #245ea0;
 }
 
 .file-upload-label input {
@@ -179,7 +179,7 @@
 }
 
 .upload-button {
-    background: #764ba2;
+    background: #245ea0;
     color: white;
     border: none;
     padding: 12px 24px;
@@ -193,7 +193,7 @@
 }
 
 .upload-button:hover:not(:disabled) {
-    background: #5a3a7a;
+    background: #245ea0;
 }
 
 .upload-button:disabled {
@@ -280,7 +280,7 @@
 .documents-container h2 {
     margin-bottom: 20px;
     color: #333;
-    border-bottom: 2px solid #764ba2;
+    border-bottom: 2px solid #245ea0;
     padding-bottom: 10px;
 }
 
@@ -351,7 +351,7 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    background: #764ba2;
+    background: #ffffff;
     color: white;
     padding: 20px;
 }
@@ -428,12 +428,12 @@
 }
 
 .view-button {
-    background: #764ba2;
+    background: #245ea0;
     color: white;
 }
 
 .view-button:hover {
-    background: #5a3a7a;
+    background: #245ea0;
     color: white;
     text-decoration: none;
 }
@@ -459,7 +459,7 @@
 .evidence-gallery h2 {
     margin-bottom: 20px;
     color: #333;
-    border-bottom: 2px solid #764ba2;
+    border-bottom: 2px solid #245ea0;
     padding-bottom: 10px;
 }
 

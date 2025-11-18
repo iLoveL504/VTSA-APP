@@ -243,6 +243,10 @@ export default createStore({
     setServiceReports: action((state, payload) => {
         state.serviceReports = payload
     }),
+    callbackReports: [],
+    setCallbackReports: action((state, payload) => {
+        state.callbackReports = payload
+    }),
   currentProj: null,
   currentProjId: null,
   projectData: {},
@@ -755,4 +759,52 @@ silentRefreshProjects: thunk(async (actions) => {
     console.log('❌ Silent refresh failed:', err)
   }
 }),
+    manpower: [],
+    qaqcTechs: [],
+    tncTechs: [],
+
+    manpowerIsLoading: true,
+    qaqcTechsIsLoading: true,
+    tncTechsIsLoading: true,
+    setManpower: action((state, payload) => {
+        state.manpower = payload;
+    }),
+
+    setQaqcTechs: action((state, payload) => {
+        state.qaqcTechs = payload;
+    }),
+    setTncTechs: action((state, payload) => {
+        state.tncTechs = payload
+    }),
+    setManpowerIsLoading: action((state, payload) => {
+      state.manpowerIsLoading = payload
+    }),
+    setQaqcTechsIsLoading: action((state, payload) => {
+      state.qaqcTechsIsLoading = payload
+    }),
+    setTncTechsIsLoading: action((state, payload) => {
+      state.tncTechsIsLoading = payload
+    }),
+    fetchManpower: thunk(async (actions) => {
+        const backendURL = import.meta.env.VITE_BACKEND_URL || "http://localhost:4000";
+        const { data } = await Axios.get(`${backendURL}/api/teams/project-manpower`);
+        console.log(data)
+        actions.setManpowerIsLoading(false)
+        actions.setManpower(data);
+    }),
+
+    fetchQaqcTechs: thunk(async (actions) => {
+        const backendURL = import.meta.env.VITE_BACKEND_URL || "http://localhost:4000";
+        const { data } = await Axios.get(`${backendURL}/api/teams/qaqc-techs`);
+        console.log(data)
+        actions.setQaqcTechsIsLoading(false)
+        actions.setQaqcTechs(data);
+    }),
+    fetchTncTechs: thunk(async (actions) => {
+        const backendURL = import.meta.env.VITE_BACKEND_URL || "http://localhost:4000";
+        const { data } = await Axios.get(`${backendURL}/api/teams/tnc-techs`)
+        console.log(data)
+        actions.setTncTechsIsLoading(false)
+        actions.setTncTechs(data);
+    })
 })

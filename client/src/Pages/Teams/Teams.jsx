@@ -43,7 +43,7 @@ const Teams = () => {
               onClick={installationOnClick}
               className={activePage === 'installation' ? 'active' : ''}
             >
-              Installation Teams
+              Teams Dashboard
             </button>
             <button 
               onClick={otherTeamsOnClick}

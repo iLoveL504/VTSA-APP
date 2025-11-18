@@ -16,7 +16,7 @@ const ClientBabyBook = () => {
     const navigate = useNavigate()
     const {clientId} = useParams()
     console.log(clientId)
-    const setServiceReports = useStoreActions(actions => actions.setServiceReports)
+    const {setServiceReports, setCallbackReports} = useStoreActions(actions => actions)
     const [babyBook, setBabyBook] = useState()
     const [approveProposal, setApproveProposal] = useState(null)
     const backendURL = import.meta.env.VITE_BACKEND_URL || 'https://localhost:4000';
@@ -24,10 +24,11 @@ const ClientBabyBook = () => {
     const { data: projectData } = useAxiosFetch(`${backendURL}/api/pms/clients/${clientId}`)
     console.log(projectData)
     console.log(babyBook)
-
+    console.log(babyBookData)
     useEffect(() => {
         setBabyBook(babyBookData)
         setServiceReports(babyBookData?.service_reports)
+        setCallbackReports(babyBookData?.callback_reports)
     }, [babyBookData])
 
     useEffect(() => {
@@ -338,8 +339,9 @@ const callbackHistory = useMemo(() => {
                 <h2>Contract Documents</h2>
                 {babyBook.contract_documents && babyBook.contract_documents.length > 0 ? (
                     <div className="documents-grid">
+                        {console.log(babyBook)}
                         {babyBook.contract_documents.map((doc) => {
-                            const fileType = getFileType(doc.doc_url);
+                            const fileType = getFileType(doc.photo_url);
                             return (
                                 <div key={`contract-${doc.id}`} className="document-card">
                                     <div className="document-icon">
@@ -350,7 +352,7 @@ const callbackHistory = useMemo(() => {
                                         <p className="document-type">{fileType.toUpperCase()} File</p>
                                     </div>
                                     <a 
-                                        href={`${backendURL}${doc.doc_url}`} 
+                                        href={`${backendURL}${doc.photo_url}`} 
                                         target="_blank" 
                                         rel="noopener noreferrer"
                                         className="view-button"

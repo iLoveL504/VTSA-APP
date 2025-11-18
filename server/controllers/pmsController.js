@@ -149,9 +149,11 @@ export const PMSController = {
 
   async getBabyBook (req, res) {
     try {
+      console.log('here in get baby book')
       const { id } = req.params
       const result = await PMSModel.getBabyBook(Number(id))
-      res.json(result)
+      console.log(result)
+      res.status(200).json(result)
     } catch (err) {
       console.log(err)
       res.status(400).json({ error: err.message });      

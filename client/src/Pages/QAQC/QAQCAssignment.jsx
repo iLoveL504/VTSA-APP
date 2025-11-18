@@ -5,17 +5,16 @@ import QAQCList from '../../components/QAQCTNC/QAQCList.jsx'
 import { useSharedSocket } from '../../Context/SocketContext.js';
 import '../../css/QAQCPage.css'
 import { Axios } from '../../api/axios.js'
-import useAxiosFetch from '../../hooks/useAxiosFetch.js';
 
 const QAQCAssignment = () => {
     const { utilitiesSocket } = useSharedSocket()
-    const backendURL = import.meta.env.VITE_BACKEND_URL || "http://localhost:4000";
-    const { data: manpower, isLoading: manpowerIsLoading } = useAxiosFetch(`${backendURL}/api/teams/project-manpower`)
-    const { data: qaqcTechs} = useAxiosFetch(`${backendURL}/api/teams/qaqc-techs`)
+    const manpower = useStoreState(state => state.manpower)
+    const qaqcTechs = useStoreState(state => state.qaqcTechs)
+    const {manpowerIsLoading} = useStoreState(state => state)
     const navigate = useNavigate()
     const projects = useStoreState(state => state.projects)
     const employees = useStoreState(state => state.employees)
-    
+    console.log(manpower)
     const [searchTerm, setSearchTerm] = useState('')
     const [selectedEntry, setSelectedEntry] = useState({})
     const [assignModal, setAssignModal] = useState({ 

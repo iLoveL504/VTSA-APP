@@ -8,6 +8,16 @@ import { useReactToPrint } from "react-to-print";
 import { DatePickerInput } from '@mantine/dates';
 import { Axios } from "../../api/axios";
 
+// MUI Icons
+import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
+import PrintIcon from '@mui/icons-material/Print';
+import EditIcon from '@mui/icons-material/Edit';
+import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import CancelIcon from '@mui/icons-material/Cancel';
+import EventBusyIcon from '@mui/icons-material/EventBusy';
+import ScheduleIcon from '@mui/icons-material/Schedule';
+import TrendingUpIcon from '@mui/icons-material/TrendingUp';
+
 const TestChart = ({projSched, projSchedIsLoading, holidays }) => {
     const { projId } = useParams()
     const [view, setView] = useState(ViewMode.Day);
@@ -61,6 +71,9 @@ const TestChart = ({projSched, projSchedIsLoading, holidays }) => {
                     display: none !important;
                 }
                 .control-panel {
+                    display: none !important;
+                }
+                .current-task-panel {
                     display: none !important;
                 }
             }
@@ -247,224 +260,201 @@ const TestChart = ({projSched, projSchedIsLoading, holidays }) => {
         return (
             <div className="gantt-container">
                 <div className="empty-state">
-                    No tasks available for this project.
+                    <CalendarMonthIcon style={{ fontSize: '48px', color: '#dee2e6', marginBottom: '16px' }} />
+                    <p>No tasks available for this project.</p>
                 </div>
             </div>
         );
     }
 
     return (
-        <>
+        <div className="Content GanttChart">
             {/* Control Panel */}
-            <div className="control-panel" style={{ marginBottom: '20px', padding: '20px', background: '#ffffffff', borderRadius: '8px' }}>
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
+            <div className="control-panel">
+                <div className="panel-grid">
                     {/* Holidays Section */}
-                    <div>
-                        <h3 style={{ marginBottom: '10px' }}>Project Holidays</h3>
-                        {holidays && holidays.length > 0 ? (
-                            <div>
-                                {Object.entries(groupedHolidays).map(([month, monthHolidays]) => (
-                                    <div key={month} style={{ marginBottom: '10px' }}>
-                                        <strong style={{ color: '#666' }}>{month}</strong>
-                                        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '5px', marginTop: '5px' }}>
-                                            {monthHolidays.map((holiday, index) => (
-                                                <span 
-                                                    key={index}
-                                                    style={{
-                                                        background: '#50b1edff',
-                                                        border: '1px solid #50b1edff',
-                                                        padding: '4px 8px',
-                                                        borderRadius: '12px',
-                                                        fontSize: '12px',
-                                                        color: '#ffffffff'
-                                                    }}
-                                                >
-                                                    {holiday.formatted}
-                                                </span>
-                                            ))}
+                    <div className="panel-card">
+                        <div className="panel-header">
+                            <EventBusyIcon style={{ marginRight: '8px' }} />
+                            <h3>Project Holidays</h3>
+                        </div>
+                        <div className="panel-content">
+                            {holidays && holidays.length > 0 ? (
+                                <div className="holidays-list">
+                                    {Object.entries(groupedHolidays).map(([month, monthHolidays]) => (
+                                        <div key={month} className="holiday-month">
+                                            <strong className="month-label">{month}</strong>
+                                            <div className="holiday-tags">
+                                                {monthHolidays.map((holiday, index) => (
+                                                    <span key={index} className="holiday-tag">
+                                                        {holiday.formatted}
+                                                    </span>
+                                                ))}
+                                            </div>
                                         </div>
-                                    </div>
-                                ))}
-                            </div>
-                        ) : (
-                            <p style={{ color: '#666' }}>No holidays scheduled for this project</p>
-                        )}
+                                    ))}
+                                </div>
+                            ) : (
+                                <div className="empty-holidays">
+                                    <p>No holidays scheduled for this project</p>
+                                </div>
+                            )}
+                        </div>
                     </div>
 
                     {/* Installation Date Section */}
-                    <div>
-                        {/* Query here to be added where it checks if project is in installation */}
-                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
+                    <div className="panel-card">
+                        <div className="panel-header">
+                            <ScheduleIcon style={{ marginRight: '8px' }} />
                             <h3>Installation Start Date</h3>
                             {!isEditingInstallation && (
                                 <button 
                                     onClick={startEditInstallation}
-                                    style={{
-                                        background: 'none',
-                                        border: '1px solid #007bff',
-                                        color: '#007bff',
-                                        padding: '5px 10px',
-                                        borderRadius: '4px',
-                                        cursor: 'pointer'
-                                    }}
+                                    className="edit-button"
                                 >
+                                    <EditIcon style={{ fontSize: '16px', marginRight: '4px' }} />
                                     Edit
                                 </button>
                             )}
                         </div>
                         
-                        {isEditingInstallation ? (
-                            <div>
-                                <DatePickerInput
-                                    label="New Installation Start Date"
-                                    value={tempInstallationDate}
-                                    onChange={setTempInstallationDate}
-                                    placeholder="Select installation start date"
-                                    clearable={false}
-                                    style={{ marginBottom: '10px' }}
-                                />
-                                <div style={{ display: 'flex', gap: '10px' }}>
-                                    <button 
-                                        onClick={handleAdjustInstallation}
-                                        style={{
-                                            background: '#007bff',
-                                            color: 'white',
-                                            border: 'none',
-                                            padding: '8px 16px',
-                                            borderRadius: '4px',
-                                            cursor: 'pointer'
-                                        }}
-                                    >
-                                        Apply Changes
-                                    </button>
-                                    <button 
-                                        onClick={cancelEditInstallation}
-                                        style={{
-                                            background: '#6c757d',
-                                            color: 'white',
-                                            border: 'none',
-                                            padding: '8px 16px',
-                                            borderRadius: '4px',
-                                            cursor: 'pointer'
-                                        }}
-                                    >
-                                        Cancel
-                                    </button>
+                        <div className="panel-content">
+                            {isEditingInstallation ? (
+                                <div className="date-edit-form">
+                                    <DatePickerInput
+                                        label="New Installation Start Date"
+                                        value={tempInstallationDate}
+                                        onChange={setTempInstallationDate}
+                                        placeholder="Select installation start date"
+                                        clearable={false}
+                                        style={{ marginBottom: '16px', width: '100%' }}
+                                    />
+                                    <div className="edit-actions">
+                                        <button 
+                                            onClick={handleAdjustInstallation}
+                                            className="btn-primary"
+                                        >
+                                            <CheckCircleIcon style={{ fontSize: '16px', marginRight: '4px' }} />
+                                            Apply Changes
+                                        </button>
+                                        <button 
+                                            onClick={cancelEditInstallation}
+                                            className="btn-secondary"
+                                        >
+                                            <CancelIcon style={{ fontSize: '16px', marginRight: '4px' }} />
+                                            Cancel
+                                        </button>
+                                    </div>
                                 </div>
-                            </div>
-                        ) : (
-                            <div>
-                                <div style={{
-                                    background: '#e7f3ff',
-                                    border: '1px solid #007bff',
-                                    padding: '10px',
-                                    borderRadius: '4px',
-                                    marginBottom: '10px'
-                                }}>
-                                    {installationDate ? installationDate.toLocaleDateString('en-US', {
-                                        weekday: 'long',
-                                        year: 'numeric',
-                                        month: 'long',
-                                        day: 'numeric'
-                                    }) : 'Not set'}
+                            ) : (
+                                <div>
+                                    <div className="installation-date-display">
+                                        {installationDate ? installationDate.toLocaleDateString('en-US', {
+                                            weekday: 'long',
+                                            year: 'numeric',
+                                            month: 'long',
+                                            day: 'numeric'
+                                        }) : 'Not set'}
+                                    </div>
+                                    <p className="date-help-text">
+                                        Adjust this date to reschedule installation phase tasks
+                                    </p>
                                 </div>
-                                <p style={{ color: '#666', fontSize: '14px' }}>
-                                    Adjust this date to reschedule installation phase tasks
-                                </p>
-                            </div>
-                        )}
+                            )}
+                        </div>
                     </div>
                 </div>
             </div>
 
             <div className={`gantt-container gantt-readonly`}>
-            <div className="btn-container">
-                <div className="view-controls">
-                <button 
-                    className={`btn-view ${view === ViewMode.Day ? "active" : ""}`}
-                    onClick={() => setView(ViewMode.Day)}
-                >
-                    Day
-                </button>
-                <button 
-                    className={`btn-view ${view === ViewMode.Week ? "active" : ""}`}
-                    onClick={() => setView(ViewMode.Week)}
-                >
-                    Week
-                </button>
-                <button 
-                    className={`btn-view ${view === ViewMode.Month ? "active" : ""}`}
-                    onClick={() => setView(ViewMode.Month)}
-                >
-                    Month
-                </button>
-                </div>
-                
-                <div className="filter-controls">
-                <button 
-                    className="btn-view"
-                    onClick={handlePrint}
-                    style={{ marginLeft: '10px' }}
-                >
-                    <i className="fas fa-print"></i> Print
-                </button>
-                </div>
+                <div className="btn-container">
+                    <div className="view-controls">
+                        <button 
+                            className={`btn-view ${view === ViewMode.Day ? "active" : ""}`}
+                            onClick={() => setView(ViewMode.Day)}
+                        >
+                            <CalendarMonthIcon style={{ fontSize: '16px', marginRight: '6px' }} />
+                            Day View
+                        </button>
+                        <button 
+                            className={`btn-view ${view === ViewMode.Week ? "active" : ""}`}
+                            onClick={() => setView(ViewMode.Week)}
+                        >
+                            <TrendingUpIcon style={{ fontSize: '16px', marginRight: '6px' }} />
+                            Week View
+                        </button>
+                        <button 
+                            className={`btn-view ${view === ViewMode.Month ? "active" : ""}`}
+                            onClick={() => setView(ViewMode.Month)}
+                        >
+                            <ScheduleIcon style={{ fontSize: '16px', marginRight: '6px' }} />
+                            Month View
+                        </button>
+                    </div>
+                    
+                    <div className="action-controls">
+                        <button 
+                            className="btn-print"
+                            onClick={handlePrint}
+                        >
+                            <PrintIcon style={{ fontSize: '16px', marginRight: '6px' }} />
+                            Print Chart
+                        </button>
+                    </div>
 
-                {/* Current Task Info Panel */}
-                {(findCurrentTasks.length > 0 || findUpcomingTasks.length > 0) && (
-                    <div className="current-task-panel">
-                        <div className="current-task-info">
-                            <strong>Current Focus: </strong>
-                            {findCurrentTasks.length > 0 ? (
-                                <span className="ongoing-task">
-                                    {findCurrentTasks[0].name} (Ongoing)
-                                </span>
-                            ) : (
-                                <span className="upcoming-task">
-                                    {findUpcomingTasks[0].name} (Upcoming)
-                                </span>
-                            )}
+                    {/* Current Task Info Panel */}
+                    {(findCurrentTasks.length > 0 || findUpcomingTasks.length > 0) && (
+                        <div className="current-task-panel">
+                            <div className="current-task-info">
+                                <strong>Current Focus: </strong>
+                                {findCurrentTasks.length > 0 ? (
+                                    <span className="ongoing-task">
+                                        {findCurrentTasks[0].name} (Ongoing)
+                                    </span>
+                                ) : (
+                                    <span className="upcoming-task">
+                                        {findUpcomingTasks[0].name} (Upcoming)
+                                    </span>
+                                )}
+                            </div>
+                            <div className="current-date">
+                                <CalendarMonthIcon style={{ fontSize: '14px', marginRight: '4px' }} />
+                                <strong>Today: </strong>
+                                {currentDate.toLocaleDateString()}
+                            </div>
                         </div>
-                        <div className="current-date">
-                            <strong>Today: </strong>
-                            {currentDate.toLocaleDateString()}
+                    )}
+                </div>
+                
+                <div ref={contentRef}>
+                    {
+                    (projSched && !projSchedIsLoading) ? (
+                        <>
+                        <div 
+                            className="gantt-wrapper" 
+                            style={{
+                                maxHeight: isPrinting ? "none" : "900px",
+                                overflowY: isPrinting ? "visible" : "auto",
+                            }}
+                        >
+                            <Gantt
+                                ref={ganttRef}
+                                tasks={displayTasks}
+                                viewMode={view}
+                                columnWidth={getColumnWidth()}
+                            />
                         </div>
-                    </div>
-                )}
-            </div>
-                
-            <div ref={contentRef}>
-                {
-                (projSched && !projSchedIsLoading) ? (
-                    <>
-                    <div 
-                        className="gantt-wrapper" 
-                        style={{
-                            maxHeight: isPrinting ? "none" : "900px",
-                            overflowY: isPrinting ? "visible" : "auto",
-                            border: "1px solid #ccc",
-                            borderRadius: "8px",
-                            padding: "2rem"
-                        }}
-                    >
-                        <Gantt
-                            ref={ganttRef}
-                            tasks={displayTasks}
-                            viewMode={view}
-                            columnWidth={getColumnWidth()}
-                        />
-                    </div>
-                    </>
-                ) : (
-                    <div>
-                    Schedule is loading
-                    </div>
-                )
-                }
-                
-            </div>
+                        </>
+                    ) : (
+                        <div className="loading-state">
+                            <div className="loading-spinner"></div>
+                            <p>Loading project schedule...</p>
+                        </div>
+                    )
+                    }
+                </div>
             </div>        
-        </>
+        </div>
     );
 };
 

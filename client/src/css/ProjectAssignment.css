@@ -84,7 +84,7 @@
 /* Main Layout */
 .assignment-layout {
     display: grid;
-    grid-template-columns: 1fr 400px;
+    grid-template-columns: 1fr 0.5fr;
     gap: 0;
     height: calc(100vh - 160px);
 }
@@ -146,8 +146,8 @@
 }
 
 .projects-grid {
-    display: flex;
-    flex-direction: column;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(450px, 1fr));
 }
 
 .project-card {
@@ -257,7 +257,7 @@
     margin-bottom: 16px;
 }
 
-.detail-item {
+.ProjectAssignment .detail-item {
     display: flex;
     flex-direction: column;
     gap: 4px;

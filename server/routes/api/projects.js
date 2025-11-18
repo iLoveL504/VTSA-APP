@@ -40,7 +40,8 @@ import {
     projectHolidays,
     adjustInstallation,
     requestProjResume,
-    getProjQAQCHistory
+    getProjQAQCHistory,
+    getScheduleTemplate
 } from "../../controllers/projectController.js"
 const router = express.Router()
 import multer from 'multer'
@@ -192,6 +193,9 @@ router.route('/accomplishment/:id')
 
 router.route('/task/approval/:id')
     .put(upload.array('photos', 5), foremanApprove)
+
+router.route('/schedule-tasks')
+    .get(getScheduleTemplate)
 
 router.route('/:id')
     .get(findProject)

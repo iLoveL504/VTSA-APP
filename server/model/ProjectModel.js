@@ -120,14 +120,14 @@ static async calculateProjectStatus(project, tasks, currentDate) {
     }
     let willResume = false
     if (isOnHold) {
-      console.log(`project ${project.id} is inside onHold`)
+      //console.log(`project ${project.id} is inside onHold`)
       const today = dayjs().startOf('day') // local midnight
       const resume = dayjs(project.resume_date).startOf('day')
 
 console.log() //
       console.log(new Date() === new Date(project.resume_date))
       willResume = (project.will_resume && today.isSame(resume)) ? true : false
-      console.log(`project ${project.id} will resume: ${willResume}`)
+      // console.log(`project ${project.id} will resume: ${willResume}`)
       if (!willResume) {
         return {
             status: 'Pending',
@@ -168,6 +168,7 @@ console.log() //
     );
     
     if (!actualTask || !projectedTask || !foundParentTask) {
+      console.log(`project ${project.id} is here`)
         return {
             status: 'Unknown',
             current_task: project.current_task,
@@ -191,6 +192,8 @@ console.log() //
     const start_date = findDate('Preliminaries', 'task_start');
     const tnc_start_date = findDate('Testing and Commissioning', 'task_start');
     const manufacturing_end_date = findDate('Manufacturing and Importation Process', 'task_end');
+    const prepFinalHandoverDate = findDate('Final Cleaning / Hand over', 'task_start')
+    const templateSettingDate = findDate('Template Setting', 'task_start')
     
     // ---- STATUS FLAGS ----
     const in_tnc = project.tnc_assign_date ? 
@@ -209,6 +212,8 @@ console.log() //
     
     const foundCurrentTask = actualTask.task_name;
     const is_behind = actualTask.task_id !== projectedTask.task_id;
+
+    
     // console.log('---------------line 214---------------')
     // console.log(`project ${project.id} is in ${foundCurrentTask}`)
     // Resuming Project
@@ -233,6 +238,8 @@ console.log() //
         holdDays,
         isOnHold: false,
         willResume,
+        prepFinalHandoverDate,
+        templateSettingDate
     };
 }
 
@@ -255,7 +262,9 @@ static async updateSingleProjectStatus(projectId, statusInfo) {
         holdDays,
         isOnHold,
         willResume,
-        task_phase_id
+        task_phase_id,
+        prepFinalHandoverDate,
+        templateSettingDate
     } = statusInfo;
     // console.log(`project ${projectId} will resume: ${willResume}`)
     if (isOnHold && !willResume) {
@@ -299,7 +308,9 @@ static async updateSingleProjectStatus(projectId, statusInfo) {
             current_task_id = ?,
             is_behind = ?,
             days_since_hold = ?,
-            task_phase_id = ?
+            task_phase_id = ?,
+            prep_handover_date = ?,
+            template_setting_date = ?
         WHERE id = ?`,
         [
             start_date,
@@ -315,10 +326,12 @@ static async updateSingleProjectStatus(projectId, statusInfo) {
             is_behind,
             holdDays,
             task_phase_id,
+            prepFinalHandoverDate,
+            templateSettingDate,
             projectId
         ]
     );
-    console.log(`project ${projectId} is in ${current_task}`)
+    // console.log(`project ${projectId} is in ${current_task}`)
     // Handle QAQC and TNC flags
     if (in_qaqc) {
         await pool.query(
@@ -1545,8 +1558,22 @@ static async rectifyItems (projId) {
         update pms_projects set free_pms_end = DATE_ADD(handover_date, INTERVAL 1 YEAR) where id = ?
       `, [projId])
     //get team id
-    // const [getId] = await pool.query(`select team_id from project_manpower where project_id = ?`, [projId])
-    // const team_id = getId[0].team_id
+
+
+    // Before deleting the team members each one must first get their previous foreman ID for next rotation
+    const [foremanToGet] = await pool.query(`
+        select foreman_id from team_members where project_id = ? limit 1;
+      `, [projId])
+    const [membersToGet] = await pool.query(`
+       select emp_id from team_members where project_id = ?;
+      `, [projId])
+
+    const foremandId = foremanToGet[0].foreman_id  
+    const members = membersToGet.map(m => m.emp_id)
+    for (const member of members) {
+      await pool.query(`update employees set prev_foreman = ? where employee_id = ?`, [foremandId, member])
+    }
+    console.log('success')
 
     //clear team members
     await pool.query(`delete from team_members where project_id = ?`, [projId])
@@ -1563,6 +1590,14 @@ static async rectifyItems (projId) {
           [projId, filePath]
       );
     } 
+  }
+
+  static async getScheduleTemplate (template) {
+    console.log(`getting ${template} teplate`)
+    if(template === null || template === undefined) {
+      const [results] = await pool.query(`select * from default_tasks`)
+      return results
+    }
   }
 
 }

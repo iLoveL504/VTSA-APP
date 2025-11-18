@@ -440,17 +440,13 @@ static async getBabyBook (id) {
         `, [id])
     
     const [contract_documents] = await pool.query(`
-            select p.id, p.lift_name, pp.free_pms, cd.*
-            from projects p join pms_projects pp on p.id = pp.id
-            join client_baby_book cbb on cbb.pms_id = pp.id
-            join contracts c on c.baby_book_id = cbb.pms_id
-            join contract_documents cd on cd.contract_id = c.id where p.id = ?;
+            select photo_url from project_contract_photos where project_id = ?;
         `, [id])
     
     const [contract_photo] = await pool.query(`
-            select * from project_contract_photos where project_id = ?;
+            select photo_url from project_contract_photos where project_id = ?;
         `, [id])
-    
+    console.log(contract_photo)
     const baby_book = {
         handOverDocs: handoverDocs,
         service_reports: service_reports,

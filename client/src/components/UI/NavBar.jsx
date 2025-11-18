@@ -36,7 +36,7 @@ const NavBar = ({ invertMenuToggle }) => {
   useEffect(() => {
     if (inbox) {
       setUserMessages(inbox)
-      setUnreadMsgCount(inbox.filter(m => !m.read).length)
+      setUnreadMsgCount(inbox.filter(m => !m.is_read).length)
     }
   }, [inbox])
 
@@ -82,6 +82,7 @@ const NavBar = ({ invertMenuToggle }) => {
             className="notification-trigger"
             style={{ position: 'relative', cursor: 'pointer' }}
           >
+
             <IoMdMail className="BellIcon" size={30} style={{ color: 'white' }} />
             {unreadMsgCount > 0 && (
               <div className={`Notifications ${unreadMsgCount > 0 ? 'pulse' : ''}`}>

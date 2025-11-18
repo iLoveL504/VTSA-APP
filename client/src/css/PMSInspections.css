@@ -169,19 +169,19 @@
     gap: 1rem;
 }
 
-.detail-item {
+.PMSInspections .detail-item {
     display: flex;
     flex-direction: column;
     gap: 0.25rem;
 }
 
-.detail-item .label {
+.PMSInspection .detail-item .label {
     color: #64748b;
     font-weight: 500;
     font-size: 0.9rem;
 }
 
-.detail-item .value {
+.PMSInspection .detail-item .value {
     color: #1e293b;
     font-weight: 600;
     font-size: 1rem;

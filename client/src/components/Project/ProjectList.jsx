@@ -32,6 +32,11 @@ const ProjectList = ({onHold, searchTerm, statusFilter, viewMode}) => {
         filtered = filtered.filter(project => project.status === statusFilter)
       }
       
+      if (statusFilter === 'behind-schedule') {
+        console.log('hello from ere')
+        filtered = filtered.filter(project => project.is_behind === 1)
+      }
+
       // Apply hold filter
       if (onHold === 'on-hold') {
         filtered = filtered.filter(project => project.on_hold)
@@ -55,7 +60,10 @@ const ProjectList = ({onHold, searchTerm, statusFilter, viewMode}) => {
       if (statusFilter !== 'all') {
         filtered = filtered.filter(designatedProjects => designatedProjects.status === statusFilter)
       }
-      
+            if (statusFilter === 'behind-schedule') {
+        console.log('hello from ere')
+        filtered = filtered.filter(project => project.is_behind === 1)
+      }
       // Apply hold filter
       if (onHold === 'on-hold') {
         filtered = filtered.filter(designatedProjects => designatedProjects.on_hold)

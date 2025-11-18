@@ -14,12 +14,27 @@ import { useSharedSocket } from '../../Context/SocketContext';
 import useAxiosFetch from "../../hooks/useAxiosFetch";
 import FinalizeHandover from './FinalizeHandover';
 
+// Material-UI Icons
+import {
+  Search as SearchIcon,
+  Clear as ClearIcon,
+  ArrowBack as ArrowBackIcon,
+  Assignment as AssignmentIcon,
+  Engineering as EngineeringIcon,
+  CalendarToday as CalendarIcon,
+  LocationOn as LocationIcon,
+  Business as BusinessIcon,
+  CheckCircle as CheckCircleIcon,
+  Person as PersonIcon,
+  Add as AddIcon,
+  PlayArrow as PlayArrowIcon
+} from '@mui/icons-material';
+
 const PMSNewEntry = () => {
     const { utilitiesSocket } = useSharedSocket()
-     const backendURL = import.meta.env.VITE_BACKEND_URL || 'http://localhost:4000'
+    const backendURL = import.meta.env.VITE_BACKEND_URL || 'http://localhost:4000'
     const navigate = useNavigate()
     const {data: projects} = useAxiosFetch(`${backendURL}/api/projects`)
-    //const projects = useStoreState(state => state.projects)
     const employees = useStoreState(state => state.employees)
     const projectManagerId = useStoreState(state => state.projectManagerId)
     const [searchTerm, setSearchTerm] = useState('')
@@ -46,7 +61,6 @@ const PMSNewEntry = () => {
         setJointProjects(filtered)
         setPmsTechs(filteredTechs)
     }, [projects, employees])
-
 
     // Filter projects based on search term
     const filteredProjects = useMemo(() => {
@@ -121,7 +135,6 @@ const PMSNewEntry = () => {
             alert('Error assigning technician. Please try again.')
         } finally {
             setAssignmentLoading(false)
-            //window.location.reload()
         }
     }
 
@@ -152,270 +165,397 @@ const PMSNewEntry = () => {
         setSelectedTech('')
     }
 
+    const getStatusBadge = (project) => {
+        if (project.prepare_handover) {
+            return { text: 'Prepare Handover', variant: 'warning' };
+        } else if (project.pms_pending && !project.pms_is_assigned) {
+            return { text: 'Assign Technician', variant: 'pending' };
+        } else if (project.pms_is_assigned) {
+            return { text: 'Assigned', variant: 'assigned' };
+        } else {
+            return { text: 'Ongoing', variant: 'ongoing' };
+        }
+    };
+
     return (
-        <div className='Content PMSEntry'>
+        <div className='Content PMSEntry-modern'>
             {/* Custom Confirmation Modal */}
             {confirmModalOpen && (
                 <div className="modal-overlay">
-                    <div className="confirmation-modal">
-                        <div className="modal-header">
+                    <div className="confirmation-modal modern-modal">
+                        <div className="modal-header modern-modal-header">
+                            <AssignmentIcon className="modal-header-icon" />
                             <h3>Confirm Technician Assignment</h3>
                         </div>
-                        <div className="modal-content">
+                        <div className="modal-content modern-modal-content">
                             <p className="modal-description">
                                 Are you sure you want to assign <strong>{selectedTech?.first_name} {selectedTech?.last_name}</strong> to 
                                 the project <strong>"{selectedProject?.lift_name}"</strong> for <strong>Final Joint Inspection</strong>?
                             </p>
-                            <div className="confirmation-details">
-                                <div className="details-section">
-                                    <strong>Project Details:</strong>
-                                    <div className="detail-item">• Client: {selectedProject?.client}</div>
-                                    <div className="detail-item">• Joint Inspection: {selectedProject?.pms_joint_inspection ? new Date(selectedProject.pms_joint_inspection).toLocaleDateString('en-GB') : 'N/A'}</div>
-                                    <div className="detail-item">• Location: {selectedProject?.island_group}</div>
+                            <div className="confirmation-details modern-details-grid">
+                                <div className="details-section modern-details-section">
+                                    <div className="section-header">
+                                        <BusinessIcon className="section-icon" />
+                                        <strong>Project Details</strong>
+                                    </div>
+                                    <div className="detail-item modern-detail-item">
+                                        <span className="detail-label">Client:</span>
+                                        <span className="detail-value">{selectedProject?.client}</span>
+                                    </div>
+                                    <div className="detail-item modern-detail-item">
+                                        <span className="detail-label">Joint Inspection:</span>
+                                        <span className="detail-value">{selectedProject?.pms_joint_inspection ? new Date(selectedProject.pms_joint_inspection).toLocaleDateString('en-GB') : 'N/A'}</span>
+                                    </div>
+                                    <div className="detail-item modern-detail-item">
+                                        <span className="detail-label">Location:</span>
+                                        <span className="detail-value">{selectedProject?.island_group}</span>
+                                    </div>
                                 </div>
-                                <div className="details-section">
-                                    <strong>Technician Details:</strong>
-                                    <div className="detail-item">• Name: {selectedTech?.first_name} {selectedTech?.last_name}</div>
-                                    <div className="detail-item">• Region: {selectedTech?.island_group}</div>
-                                    <div className="detail-item">• Role: {selectedTech?.job}</div>
+                                <div className="details-section modern-details-section">
+                                    <div className="section-header">
+                                        <PersonIcon className="section-icon" />
+                                        <strong>Technician Details</strong>
+                                    </div>
+                                    <div className="detail-item modern-detail-item">
+                                        <span className="detail-label">Name:</span>
+                                        <span className="detail-value">{selectedTech?.first_name} {selectedTech?.last_name}</span>
+                                    </div>
+                                    <div className="detail-item modern-detail-item">
+                                        <span className="detail-label">Region:</span>
+                                        <span className="detail-value">{selectedTech?.island_group}</span>
+                                    </div>
+                                    <div className="detail-item modern-detail-item">
+                                        <span className="detail-label">Role:</span>
+                                        <span className="detail-value">{selectedTech?.job}</span>
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                        <div className="modal-actions">
+                        <div className="modal-actions modern-modal-actions">
                             <button 
                                 onClick={handleCancelAssign} 
-                                className="modal-btn modal-btn-cancel"
+                                className="modal-btn modal-btn-secondary"
                             >
                                 Cancel
                             </button>
                             <button 
                                 onClick={handleConfirmAssign} 
-                                className="modal-btn modal-btn-confirm"
+                                className="modal-btn modal-btn-primary"
+                                disabled={assignmentLoading}
                             >
-                                Confirm Assignment
+                                {assignmentLoading ? 'Assigning...' : 'Confirm Assignment'}
                             </button>
                         </div>
                     </div>
                 </div>
             )}
+
             {successModalOpen && (
-            <div className="modal-overlay">
-                <div className="confirmation-modal success-modal">
-                    <div className="modal-header success-header">
-                        <h3>Assignment Successful!</h3>
-                    </div>
-                    <div className="modal-content">
-                        <div className="success-icon">✓</div>
-                        <p className="modal-description">
-                            <strong>{selectedTech?.first_name} {selectedTech?.last_name}</strong> has been successfully assigned to 
-                            the project <strong>"{selectedProject?.lift_name}"</strong> for Final Joint Inspection.
-                        </p>
-                        <div className="confirmation-details">
-                            <div className="details-section">
-                                <strong>Assignment Details:</strong>
-                                <div className="detail-item">• Project: {selectedProject?.lift_name}</div>
-                                <div className="detail-item">• Technician: {selectedTech?.first_name} {selectedTech?.last_name}</div>
-                                <div className="detail-item">• Inspection Date: {selectedProject?.pms_joint_inspection ? new Date(selectedProject.pms_joint_inspection).toLocaleDateString('en-GB') : 'N/A'}</div>
+                <div className="modal-overlay">
+                    <div className="confirmation-modal modern-modal success-modal">
+                        <div className="modal-header modern-modal-header success-header">
+                            <CheckCircleIcon className="modal-header-icon success-icon" />
+                            <h3>Assignment Successful!</h3>
+                        </div>
+                        <div className="modal-content modern-modal-content">
+                            <p className="modal-description success-description">
+                                <strong>{selectedTech?.first_name} {selectedTech?.last_name}</strong> has been successfully assigned to 
+                                the project <strong>"{selectedProject?.lift_name}"</strong> for Final Joint Inspection.
+                            </p>
+                            <div className="confirmation-details modern-details-grid">
+                                <div className="details-section modern-details-section">
+                                    <div className="section-header">
+                                        <AssignmentIcon className="section-icon" />
+                                        <strong>Assignment Details</strong>
+                                    </div>
+                                    <div className="detail-item modern-detail-item">
+                                        <span className="detail-label">Project:</span>
+                                        <span className="detail-value">{selectedProject?.lift_name}</span>
+                                    </div>
+                                    <div className="detail-item modern-detail-item">
+                                        <span className="detail-label">Technician:</span>
+                                        <span className="detail-value">{selectedTech?.first_name} {selectedTech?.last_name}</span>
+                                    </div>
+                                    <div className="detail-item modern-detail-item">
+                                        <span className="detail-label">Inspection Date:</span>
+                                        <span className="detail-value">{selectedProject?.pms_joint_inspection ? new Date(selectedProject.pms_joint_inspection).toLocaleDateString('en-GB') : 'N/A'}</span>
+                                    </div>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                    <div className="modal-actions">
-                        <button 
-                            onClick={handleCloseSuccessModal}
-                            className="modal-btn modal-btn-confirm"
-                        >
-                            Continue
-                        </button>
+                        <div className="modal-actions modern-modal-actions">
+                            <button 
+                                onClick={handleCloseSuccessModal}
+                                className="modal-btn modal-btn-primary"
+                            >
+                                Continue
+                            </button>
+                        </div>
                     </div>
                 </div>
-            </div>
-        )}
+            )}
+
             {/* Header with Create Button and Search */}
             {selectedProject ? (
-                <div className='joint-inspection-section'>
-                    <div className="selected-project-header">
+                <div className='joint-inspection-section modern-detail-view'>
+                    <div className="selected-project-header modern-project-header">
                         <button 
                             onClick={handleBackToList}
-                            className="back-button"
+                            className="back-button modern-back-btn"
                         >
-                            ← Back to Projects
+                            <ArrowBackIcon className="back-icon" />
+                            Back to Projects
                         </button>
-                        <h4>{selectedProject.lift_name}</h4>
-                        <div className="project-details">
-                            <p><strong>Client:</strong> {selectedProject.client}</p>
-                            <p><strong>Joint Inspection Date:</strong> {new Date(selectedProject.pms_joint_inspection).toLocaleDateString('en-GB')}</p>
-                            <p><strong>Location:</strong> {selectedProject.island_group}</p>
+                        
+                        <div className="project-main-info">
+                            <div className="project-title-section">
+                                <BusinessIcon className="project-main-icon" />
+                                <div>
+                                    <h2>{selectedProject.lift_name}</h2>
+                                    <p className="project-subtitle">#{selectedProject.id} • {selectedProject.client}</p>
+                                </div>
+                            </div>
+                            <div className={`status-badge ${getStatusBadge(selectedProject).variant}`}>
+                                {getStatusBadge(selectedProject).text}
+                            </div>
+                        </div>
+
+                        <div className="project-details-grid">
+                            <div className="detail-card">
+                                <CalendarIcon className="detail-icon" />
+                                <div className="detail-content">
+                                    <span className="detail-label">Joint Inspection Date</span>
+                                    <span className="detail-value">{new Date(selectedProject.pms_joint_inspection).toLocaleDateString('en-GB')}</span>
+                                </div>
+                            </div>
+                            <div className="detail-card">
+                                <LocationIcon className="detail-icon" />
+                                <div className="detail-content">
+                                    <span className="detail-label">Location</span>
+                                    <span className="detail-value">{selectedProject.island_group}</span>
+                                </div>
+                            </div>
+                            <div className="detail-card">
+                                <EngineeringIcon className="detail-icon" />
+                                <div className="detail-content">
+                                    <span className="detail-label">Project Engineer</span>
+                                    <span className="detail-value">{selectedProject.pe_fullname || 'Not assigned'}</span>
+                                </div>
+                            </div>
                         </div>
                     </div>
 
                     {/* Technician Assignment Section */}
                     {selectedProject.pms_pending && !selectedProject.pms_is_assigned ? (
-                        <>
-                                <div className="assignment-section">
-                                <h5>Assign PMS Technician</h5>
-                                <div className="assignment-form">
-                                    <div className="form-group">
-                                        <label htmlFor="technician-select">Select Technician:</label>
-                                        <FormControl className="form-control-professional" size="small" fullWidth>
-                                            <InputLabel id="qaqc-reason-label">PMS Tech</InputLabel>
-                                            <Select
-                                                labelId="qaqc-reason-label"
-                                                id="qaqc-reason-select"
-                                                value={selectedTech || ''}
-                                                label="PMS Tech"
-                                                onChange={handleSelectedTech}
-                                            >
-                                                {pmsTechs.map((t, index) => (
-                                                    <MenuItem value={t} key={index}>({t.island_group}) {t.last_name} {t.first_name}</MenuItem>
-                                                ))}
-                                            </Select>
-                                        </FormControl>
-                                    </div>
-                                    
-                                    <button
-                                        onClick={handleAssignClick}
-                                        disabled={!selectedTech || assignmentLoading}
-                                        className="assign-button"
-                                    >
-                                        {assignmentLoading ? 'Assigning...' : 'Assign Technician'}
-                                    </button>
+                        <div className="assignment-section modern-assignment-section">
+                            <div className="section-header-modern">
+                                <AssignmentIcon className="section-icon" />
+                                <h3>Assign PMS Technician</h3>
+                                <p>Select a technician to conduct the final joint inspection</p>
+                            </div>
+                            
+                            <div className="assignment-form modern-form">
+                                <div className="form-group modern-form-group">
+                                    <label htmlFor="technician-select" className="form-label">
+                                        <PersonIcon className="label-icon" />
+                                        Select Technician
+                                    </label>
+                                    <FormControl className="form-control-modern" size="medium" fullWidth>
+                                        <InputLabel id="technician-select-label">PMS Technician</InputLabel>
+                                        <Select
+                                            labelId="technician-select-label"
+                                            id="technician-select"
+                                            value={selectedTech || ''}
+                                            label="PMS Technician"
+                                            onChange={handleSelectedTech}
+                                        >
+                                            {pmsTechs.map((t, index) => (
+                                                <MenuItem value={t} key={index}>
+                                                    <div className="technician-option">
+                                                        <div className="tech-name">{t.last_name} {t.first_name}</div>
+                                                        <div className="tech-region">({t.island_group})</div>
+                                                    </div>
+                                                </MenuItem>
+                                            ))}
+                                        </Select>
+                                    </FormControl>
                                 </div>
-                            </div>                        
-                        </>
-                        
+                                
+                                <button
+                                    onClick={handleAssignClick}
+                                    disabled={!selectedTech || assignmentLoading}
+                                    className={`assign-button modern-primary-btn ${!selectedTech || assignmentLoading ? 'disabled' : ''}`}
+                                >
+                                    {assignmentLoading ? (
+                                        <>
+                                            <div className="loading-spinner"></div>
+                                            Assigning Technician...
+                                        </>
+                                    ) : (
+                                        <>
+                                            <AssignmentIcon className="btn-icon" />
+                                            Assign Technician
+                                        </>
+                                    )}
+                                </button>
+                            </div>
+                        </div>                        
                     ) : selectedProject.prepare_handover ? (
                         <FinalizeHandover proj={selectedProject}/>
                     ) : (selectedProject.pms_ongoing || selectedProject.pms_is_assigned) ? (
-                        <>Final Joint Inspection is Ongoing</>
+                        <div className="ongoing-section">
+                            <div className="ongoing-content">
+                                <PlayArrowIcon className="ongoing-icon" />
+                                <h4>Final Joint Inspection is Ongoing</h4>
+                                <p>The inspection process has been initiated and is currently in progress.</p>
+                            </div>
+                        </div>
                     ) : (<></>)}
-                    
                 </div>
             ) : (
                 <>
                     {/* Main Projects List View */}
-                    <div className="projects-header">
+                    <div className="projects-header modern-header">
                         <div className="header-left">
-                            <h3>Pending Joint Inspections for new entries</h3>
+                            <div className="title-section">
+                                <AssignmentIcon className="header-icon" />
+                                <div>
+                                    <h1>Joint Inspection Assignments</h1>
+                                    <p>Manage PMS technician assignments for final joint inspections</p>
+                                </div>
+                            </div>
+                            <div className="projects-stats">
+                                <div className="stat-item">
+                                    <span className="stat-number">{filteredProjects.length}</span>
+                                    <span className="stat-label">Pending Assignments</span>
+                                </div>
+                            </div>
                         </div>
 
                         <div className="header-right">
                             {/* Search Bar */}
-                            <div className="search-container">
+                            <div className="search-container modern-search">
                                 <div className="search-input-wrapper">
+                                    <SearchIcon className="search-icon-modern" />
                                     <input
                                         type="text"
                                         placeholder="Search projects by name, client, or status..."
                                         value={searchTerm}
                                         onChange={handleSearchChange}
-                                        className="search-input"
+                                        className="search-input modern-search-input"
                                     />
                                     {searchTerm && (
                                         <button 
-                                            className="clear-search-btn"
+                                            className="clear-search-btn modern-clear-btn"
                                             onClick={handleClearSearch}
                                             aria-label="Clear search"
                                         >
-                                            ×
+                                            <ClearIcon />
                                         </button>
                                     )}
-                                    <span className="search-icon">🔍</span>
                                 </div>
                             </div>
 
                             {/* Create Project Button */}
                             <button 
                                 onClick={handleCreateClick} 
-                                className="create-project-btn"
-                                style={{display: sessionStorage.getItem('roles') === 'Project Manager' ? 'block' : 'none'}}
+                                className="create-project-btn modern-create-btn"
+                                style={{display: sessionStorage.getItem('roles') === 'Project Manager' ? 'flex' : 'none'}}
                             >
-                                + Add New Project
+                                <AddIcon className="btn-icon" />
+                                Add New Project
                             </button>
                         </div>
                     </div>
 
-                    {/* Projects Table */}
-                    <div className="pms-handover-table-header">
-                        <div className="table-row header-row">
-                            <div className="table-cell">Project</div>
-                            <div className="table-cell">PMS Inspection</div>
-                            <div className="table-cell">Progress</div>
-                            <div className="table-cell">Status</div>
-                            <div className="table-cell">Action</div>
-                        </div>
-                    </div>
-
-                    {/* Project List */}
-                    <div className="projects-list">
-                        {console.log(filteredProjects)}
+                    {/* Projects Grid */}
+                    <div className="projects-grid-modern">
                         {filteredProjects.length > 0 ? (
-                            filteredProjects.map(project => (
-                                <div
-                                    key={project.id}
-                                    className={`ProjectInfo joint-pms ${selectedProject?.id === project.id ? 'selected' : ''}`}
-                                    onClick={handleSelect(project)}
-                                >
-                                    <div className="project-basic-info">
-                                        <div className="project-name">{project.lift_name}</div>
-                                        <div className="project-client">{project.client}</div>
-                                        <div className="project-location">{project.island_group}</div>
-                                    </div>
-                                    <div className="inspection-date">
-                                        {new Date(project.pms_joint_inspection).toLocaleDateString('en-GB')}
-                                    </div>
-                                    <div className="progress-section">
-                                        <Box sx={{ width: '100%' }}>
-                                            <div className="progress-text">{project.progress}%</div>
-                                            <LinearProgress 
-                                                variant="determinate" 
-                                                value={project.progress} 
-                                                sx={{
-                                                    height: 8,
-                                                    borderRadius: 4,
-                                                    backgroundColor: '#e9ecef',
-                                                    '& .MuiLinearProgress-bar': {
+                            filteredProjects.map(project => {
+                                const status = getStatusBadge(project);
+                                return (
+                                    <div
+                                        key={project.id}
+                                        className={`project-card-modern ${selectedProject?.id === project.id ? 'selected' : ''}`}
+                                        onClick={handleSelect(project)}
+                                    >
+                                        <div className="project-card-header">
+                                            <div className="project-title">
+                                                <BusinessIcon className="project-icon" />
+                                                <div className="project-info">
+                                                    <h3>{project.lift_name}</h3>
+                                                    <p>#{project.id} • {project.client}</p>
+                                                </div>
+                                            </div>
+                                            <div className={`status-badge ${status.variant}`}>
+                                                {status.text}
+                                            </div>
+                                        </div>
+
+                                        <div className="project-details">
+                                            <div className="detail-row">
+                                                <CalendarIcon className="detail-icon-small" />
+                                                <span>{new Date(project.pms_joint_inspection).toLocaleDateString('en-GB')}</span>
+                                            </div>
+                                            <div className="detail-row">
+                                                <LocationIcon className="detail-icon-small" />
+                                                <span>{project.island_group}</span>
+                                            </div>
+                                        </div>
+
+                                        <div className="progress-section-modern">
+                                            <div className="progress-header">
+                                                <span className="progress-label">Project Progress</span>
+                                                <span className="progress-value">{project.progress}%</span>
+                                            </div>
+                                            <Box sx={{ width: '100%' }}>
+                                                <LinearProgress 
+                                                    variant="determinate" 
+                                                    value={project.progress} 
+                                                    sx={{
+                                                        height: 8,
                                                         borderRadius: 4,
-                                                        backgroundColor: '#315a95'
-                                                    }
-                                                }}
-                                            />          
-                                        </Box>
+                                                        backgroundColor: '#f1f5f9',
+                                                        '& .MuiLinearProgress-bar': {
+                                                            borderRadius: 4,
+                                                            backgroundColor: '#315a95'
+                                                        }
+                                                    }}
+                                                />          
+                                            </Box>
+                                        </div>
+
+                                        <div className="project-actions">
+                                            <button 
+                                                onClick={handleSelect(project)}
+                                                className={`action-btn ${status.variant}`}
+                                            >
+                                                {status.text}
+                                            </button>
+                                        </div>
                                     </div>
-                                    <div className="project-status">
-                                        <strong>
-                                            {project.prepare_handover ? 'Prepare Handover' : project.pms_pending && !project.pms_is_assigned ? 
-                                            'Assign Technician' : project.pms_is_assigned ? 
-                                                'Assigned' : 'Ongoing'}
-                                        </strong>
-                                    </div>
-                                    <div className="action-cell">
-                                        
-                                        <button 
-                                            onClick={handleSelect(project)}
-                                            className="assign-action-btn"
-                                        >
-                                            {project.prepare_handover ? 'Prepare Handover' : project.pms_pending && !project.pms_is_assigned ? 
-                                            'Assign Technician' : project.pms_is_assigned ? 
-                                                'Assigned' : 'Ongoing'}
-                                        </button>
-                                    </div>
-                                </div>
-                            ))
+                                )
+                            })
                         ) : (
-                            <div className="no-projects-message">
-                                {searchTerm ? 'No projects found matching your search' : 'No projects pending joint inspection'}
+                            <div className="empty-state-modern">
+                                <AssignmentIcon className="empty-icon" />
+                                <h3>
+                                    {searchTerm ? 'No projects found' : 'No pending joint inspections'}
+                                </h3>
+                                <p>
+                                    {searchTerm 
+                                        ? 'Try adjusting your search terms or clear the search to see all projects.'
+                                        : 'All joint inspections have been assigned or there are no scheduled inspections.'
+                                    }
+                                </p>
+                                {searchTerm && (
+                                    <button onClick={handleClearSearch} className="clear-search-link modern-clear-link">
+                                        Clear search
+                                    </button>
+                                )}
                             </div>
                         )}
                     </div>
-
-                    {/* No Results Message */}
-                    {filteredProjects.length === 0 && jointProjects.length > 0 && (
-                        <div className="no-results">
-                            <p>No projects found matching "{searchTerm}"</p>
-                            <button onClick={handleClearSearch} className="clear-search-link">
-                                Clear search
-                            </button>
-                        </div>
-                    )}
                 </>
             )}
         </div>

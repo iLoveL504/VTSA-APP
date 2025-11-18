@@ -5,6 +5,7 @@ import useFormValidate from "../../hooks/useFormValidate";
 import '../../css/CreateProject.css'
 import { useSharedSocket } from "../../Context/SocketContext.js";
 import philippines from 'philippines'
+import { useStoreState } from "easy-peasy";
 
 // Add these imports for icons
 import {
@@ -43,6 +44,7 @@ const regionToIslandGroup = {
   "Region XIII": "Mindanao",
   "ARMM": "Mindanao",
 };
+
 
 const validate = (values) => {
   let errors = {};
@@ -145,13 +147,28 @@ const CreateProject = () => {
   const [showSuccess, setShowSuccess] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [activeSection, setActiveSection] = useState(0);
-  
+  const [clients, setClients] = useState([])
+  const {projects} = useStoreState(state => state)
+
+
+  useEffect(() => {
+    if(projects) {
+      console.log(projects)
+        const clientList = projects.map(p => p.client)
+  const mySet = new Set(clientList)
+  const filteredClients = [...mySet]
+  console.log(filteredClients)
+        setClients(filteredClients)
+    }
+  }, [projects])
   // State for location dropdowns
   const [selectedRegion, setSelectedRegion] = useState("");
   const [selectedProvince, setSelectedProvince] = useState("");
   const [selectedCity, setSelectedCity] = useState("");
   const [filteredProvinces, setFilteredProvinces] = useState([]);
   const [filteredCities, setFilteredCities] = useState([]);
+
+  const [prevClient, setPrevClient] = useState(false)
   console.log(selectedCity)
   const equipmentTypes = [
     "Home/Residential Elevator",
@@ -468,7 +485,35 @@ const CreateProject = () => {
                 </div>
 
                 <div className="form-grid">
-                  <div className="form-group">
+
+
+                {prevClient ? (
+                  <div className="form-grid">
+                  <div className="form-group full-width">
+                    <label htmlFor="equipmentType">Previous Client *</label>
+                    <div className="select-wrapper">
+                      <select
+                        id="clientName"
+                        name="clientName"
+                        value={values.clientName}
+                        onChange={handleInputChange}
+                        onBlur={handleBlur}
+                        className={errors.clientName ? 'error' : ''}
+                      >
+                        <option value="">-- Select previous client --</option>
+                        {clients.map((type) => (
+                          <option key={type} value={type}>
+                            {type}
+                          </option>
+                        ))}
+                      </select>
+                      <div className="select-arrow">▼</div>
+                    </div>
+                    {errors.equipmentType && <span className="error-message">{errors.equipmentType}</span>}
+                  </div>
+                </div>
+                ) : (
+                    <div className="form-group">
                     <label htmlFor="clientName">Client Name *</label>
                     <input
                       type="text"
@@ -480,8 +525,17 @@ const CreateProject = () => {
                       placeholder="Enter client name"
                       className={errors.clientName ? 'error' : ''}
                     />
+    
                     {errors.clientName && <span className="error-message">{errors.clientName}</span>}
                   </div>
+                )}
+                <div className='client-btn'>
+                  <button onClick={(e) => {
+                      e.preventDefault()
+                      setPrevClient(prev => !prev)
+                      }}>Existing Client</button>
+                </div>
+
 
                   <div className="form-group">
                     <label htmlFor="liftName">Lift Name *</label>

@@ -933,9 +933,9 @@ const ProjectAssignment = () => {
                                         <h4>Selected Project Details</h4>
                                         <div className="project-detail-card">
                                             <div className="project-header">
-                                                <BusinessIcon className="project-detail-icon" />
+                                                <BusinessIcon className="project-detail-icon" style={{color:'white'}}/>
                                                 <div className="project-title">
-                                                    <h5>{selectedProject.lift_name}</h5>
+                                                    <h5 style={{color: 'white'}}>{selectedProject.lift_name}</h5>
                                                     <span className="project-id">#{selectedProject.id}</span>
                                                 </div>
                                             </div>

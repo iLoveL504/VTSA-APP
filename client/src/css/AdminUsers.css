@@ -725,7 +725,7 @@
   margin-bottom: 24px;
 }
 
-.detail-item {
+.AdminUsers .detail-item {
   display: flex;
   flex-direction: column;
   gap: 8px;
@@ -736,13 +736,13 @@
   transition: all 0.2s;
 }
 
-.detail-item:hover {
+.AdminUsers .detail-item:hover {
   background: #f1f5f9;
   transform: translateY(-2px);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
 }
 
-.detail-item label {
+.AdminUsers .detail-item label {
   font-size: 0.8rem;
   font-weight: 600;
   color: #64748b;
@@ -750,7 +750,7 @@
   letter-spacing: 0.5px;
 }
 
-.detail-item span {
+.AdminUsers .detail-item span {
   font-size: 1rem;
   font-weight: 500;
   color: #1e293b;

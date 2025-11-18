@@ -611,3 +611,13 @@ export const projHandoverDone = async (req, res) => {
     }
 }
 
+export const getScheduleTemplate = async (req, res) => {
+    try {
+        const schedule = await projects.getScheduleTemplate()
+        res.status(200).json(schedule)
+    } catch (e) {
+        console.error(e);
+        res.status(500).json({ success: false, message: "Error approving" });      
+    }
+}
+

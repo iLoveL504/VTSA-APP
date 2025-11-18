@@ -5,7 +5,7 @@ import '../../css/CallbackReportPage.css'
 
 const CallbackReportPage = () => {
     const { callbackId } = useParams()
-    const serviceReports = useStoreState(state => state.serviceReports)
+    const {callbackReports} = useStoreState(state => state)
     const addServiceReport = useStoreActions(actions => actions.addServiceReport)
     const deleteServiceReport = useStoreActions(actions => actions.deleteServiceReport)
     
@@ -18,10 +18,8 @@ const CallbackReportPage = () => {
     const fileInputRef = useRef(null)
 
     console.log('callbackId:', callbackId)
-    console.log('All service reports:', serviceReports)
-
     // Filter callback reports by callback_history_id
-    const filteredReports = serviceReports?.filter(
+    const filteredReports = callbackReports?.filter(
         report => report.callback_history_id?.toString() === callbackId
     ) || []
 

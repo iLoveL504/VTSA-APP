@@ -5,16 +5,14 @@ import TNCList from '../../components/QAQCTNC/TNCList.jsx'
 import { useSharedSocket } from '../../Context/SocketContext.js';
 import '../../css/TNCPage.css'
 import { Axios } from '../../api/axios.js'
-import useAxiosFetch from '../../hooks/useAxiosFetch.js';
 
 const TNCAssignment = () => {
-    const backendURL = import.meta.env.VITE_BACKEND_URL || 'https://localhost:4000';
     const { utilitiesSocket } = useSharedSocket()
     const navigate = useNavigate()
     const projects = useStoreState(state => state.projects)
     const employees = useStoreState(state => state.employees)
-    const {data: tncTechs} = useAxiosFetch(`${backendURL}/api/teams/tnc-techs`)
-
+    const {tncTechs} = useStoreState(state => state)
+    console.log(tncTechs)
     const [searchTerm, setSearchTerm] = useState('')
     const [selectedEntry, setSelectedEntry] = useState({})
     const [assignModal, setAssignModal] = useState({ 
@@ -71,6 +69,7 @@ const TNCAssignment = () => {
 
     const loadAvailableTechnicians = async () => {
         try {
+            console.log(tncTechs)
             // Get technicians not currently assigned to any active project
             const available = tncEmployees.filter(tech => {
                 const currentAssignment = tncTechs?.find(t => 
@@ -80,6 +79,7 @@ const TNCAssignment = () => {
                 );
                 return !currentAssignment;
             });
+            console.log(available)
             setAvailableTechs(available);
         } catch (error) {
             console.error('Error loading technicians:', error);

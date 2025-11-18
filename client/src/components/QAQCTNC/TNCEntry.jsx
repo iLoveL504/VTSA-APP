@@ -12,7 +12,7 @@ const summaryMap = {
     'Testing and Commissioning (Passenger Elavator)': 'Test-and-Comm'
 }
 
-const TNCEntry = ({project, setSelectedEntry, onAssignClick}) => {
+const TNCEntry = ({project, setSelectedEntry}) => {
 
   
   const handleSelect = (project) => (e) => {
@@ -21,14 +21,9 @@ const TNCEntry = ({project, setSelectedEntry, onAssignClick}) => {
     setSelectedEntry(project)
   }
 
-  const handleAssignClick = (e) => {
-    e.stopPropagation()
-    onAssignClick(project)
-  }
 
   // Check if project needs QAQC assignment
   const needsAssignment = project.tnc_assign_date ? true : false
-  const isTNCPending = project.tnc_pending ? true : false
 
   const getTNCStatus = () => {
     if (project.tnc_ongoing) return 'tnc-ongoing'
@@ -49,11 +44,6 @@ const TNCEntry = ({project, setSelectedEntry, onAssignClick}) => {
           {needsAssignment && <span className="pending-badge"> ⚡</span>}
         </div>
         <div className="project-client">{project.client}</div>
-        {(isTNCPending && !project.tnc_is_assigned) && (
-          <button className="assign-btn" onClick={handleAssignClick}>
-            Assign TNC
-          </button>
-        )}
       </div>
       
       <div className="progress-section">

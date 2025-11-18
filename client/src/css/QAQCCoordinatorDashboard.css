@@ -1,0 +1,976 @@
+.Content.QaqcDashboard {
+  padding: 20px;
+  background-color: #f8f9fa;
+  min-height: 100vh;
+}
+
+.Content.QaqcDashboard .dashboard-header {
+  margin-bottom: 30px;
+}
+
+.Content.QaqcDashboard .dashboard-header h1 {
+  color: #2c3e50;
+  font-size: 2.5rem;
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+
+.Content.QaqcDashboard .dashboard-header p {
+  color: #6c757d;
+  font-size: 1.1rem;
+  margin: 0;
+}
+
+/* Stats Grid */
+.Content.QaqcDashboard .stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 20px;
+  margin-bottom: 30px;
+}
+
+.Content.QaqcDashboard .stat-card {
+  background: white;
+  border-radius: 12px;
+  padding: 24px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+  border: 1px solid #e9ecef;
+  display: flex;
+  align-items: center;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.Content.QaqcDashboard .stat-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12);
+}
+
+.Content.QaqcDashboard .stat-icon {
+  width: 60px;
+  height: 60px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 16px;
+}
+
+.Content.QaqcDashboard .stat-content h3 {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #2c3e50;
+  margin: 0 0 4px 0;
+  line-height: 1;
+}
+
+.Content.QaqcDashboard .stat-content p {
+  color: #495057;
+  font-size: 1rem;
+  font-weight: 600;
+  margin: 0 0 4px 0;
+}
+
+.Content.QaqcDashboard .stat-trend {
+  color: #6c757d;
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+/* Dashboard Tabs */
+.Content.QaqcDashboard .dashboard-tabs {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+  border: 1px solid #e9ecef;
+  overflow: hidden;
+  display: flex;
+    flex-direction: column;
+}
+
+.Content.QaqcDashboard .tabs-header {
+  display: flex;
+  background: #f8f9fa;
+  border-bottom: 1px solid #e9ecef;
+  padding: 0 20px;
+}
+
+.Content.QaqcDashboard .tab-button {
+  display: flex;
+  align-items: center;
+  padding: 16px 24px;
+  background: none;
+  border: none;
+  color: #6c757d;
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border-bottom: 3px solid transparent;
+}
+
+.Content.QaqcDashboard .tab-button:hover {
+  color: #315a95;
+  background: rgba(49, 90, 149, 0.05);
+}
+
+.Content.QaqcDashboard .tab-button.active {
+  color: #315a95;
+  border-bottom-color: #315a95;
+  background: white;
+  font-weight: 600;
+}
+
+.Content.QaqcDashboard .dashboard-content {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 24px;
+  padding: 24px;
+}
+
+/* Section Headers */
+.Content.QaqcDashboard .section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid #e9ecef;
+}
+
+.Content.QaqcDashboard .section-header h3 {
+  color: #2c3e50;
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin: 0;
+}
+
+.Content.QaqcDashboard .section-badge {
+  background: #315a95;
+  color: white;
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.Content.QaqcDashboard .timeframe-controls {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.Content.QaqcDashboard .timeframe-controls label {
+  color: #495057;
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.Content.QaqcDashboard .control-select {
+  padding: 8px 12px;
+  border: 1px solid #e9ecef;
+  border-radius: 6px;
+  background: white;
+  color: #495057;
+  font-size: 0.875rem;
+}
+
+/* Projects Grid */
+.Content.QaqcDashboard .projects-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(450px, 1fr));
+  gap: 20px;
+  max-height: 800px;
+    overflow-y: auto;
+}
+
+.Content.QaqcDashboard .project-card {
+  background: #f8f9fa;
+  border-radius: 8px;
+  padding: 20px;
+  border: 1px solid #e9ecef;
+  transition: all 0.2s ease;
+}
+
+.Content.QaqcDashboard .project-card:hover {
+  background: white;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  transform: translateY(-1px);
+}
+
+.Content.QaqcDashboard .project-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 16px;
+}
+
+.Content.QaqcDashboard .project-header h4 {
+  color: #ffffff;
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin: 0;
+  flex: 1;
+  margin-right: 12px;
+}
+
+/* Status Badges */
+.Content.QaqcDashboard .status-badge {
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  white-space: nowrap;
+}
+
+.Content.QaqcDashboard .status-pending {
+  background: #fff3cd;
+  color: #856404;
+}
+
+.Content.QaqcDashboard .status-assigned {
+  background: #cce7ff;
+  color: #004085;
+}
+
+.Content.QaqcDashboard .status-in-progress {
+  background: #fff3cd;
+  color: #856404;
+}
+
+.Content.QaqcDashboard .status-completed {
+  background: #d4edda;
+  color: #155724;
+}
+
+.Content.QaqcDashboard .status-not-scheduled {
+  background: #e2e3e5;
+  color: #383d41;
+}
+
+/* Project Details */
+.Content.QaqcDashboard .project-details {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.Content.QaqcDashboard .detail-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.Content.QaqcDashboard .detail-label {
+  color: #6c757d;
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.Content.QaqcDashboard .detail-value {
+  color: #495057;
+  font-size: 0.875rem;
+  font-weight: 600;
+  text-align: right;
+}
+
+/* Assigned Technician */
+.Content.QaqcDashboard .assigned-tech {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px;
+  background: white;
+  border-radius: 6px;
+  border: 1px solid #e9ecef;
+  margin-bottom: 16px;
+}
+
+.Content.QaqcDashboard .tech-info {
+  display: flex;
+  align-items: center;
+  color: #495057;
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.Content.QaqcDashboard .inspection-date {
+  color: #28a745;
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+/* Upcoming Dates */
+.Content.QaqcDashboard .upcoming-dates {
+  margin-bottom: 16px;
+}
+
+.Content.QaqcDashboard .dates-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 12px;
+  color: #495057;
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.Content.QaqcDashboard .date-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 12px;
+  background: white;
+  border-radius: 6px;
+  border-left: 4px solid #e9ecef;
+  margin-bottom: 8px;
+}
+
+.Content.QaqcDashboard .date-item.priority-critical {
+  border-left-color: #dc3545;
+  background: #fff5f5;
+}
+
+.Content.QaqcDashboard .date-item.priority-high {
+  border-left-color: #fd7e14;
+  background: #fffbf0;
+}
+
+.Content.QaqcDashboard .date-item.priority-medium {
+  border-left-color: #ffc107;
+  background: #fffbf0;
+}
+
+.Content.QaqcDashboard .date-item.priority-low {
+  border-left-color: #28a745;
+  background: #f0fff4;
+}
+
+.Content.QaqcDashboard .date-type {
+  color: #495057;
+  font-size: 0.8rem;
+  font-weight: 500;
+}
+
+.Content.QaqcDashboard .date-info {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 2px;
+}
+
+.Content.QaqcDashboard .date-value {
+  color: #2c3e50;
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.Content.QaqcDashboard .days-remaining {
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+
+.Content.QaqcDashboard .date-item.priority-critical .days-remaining {
+  color: #dc3545;
+}
+
+.Content.QaqcDashboard .date-item.priority-high .days-remaining {
+  color: #fd7e14;
+}
+
+.Content.QaqcDashboard .date-item.priority-medium .days-remaining {
+  color: #856404;
+}
+
+.Content.QaqcDashboard .date-item.priority-low .days-remaining {
+  color: #155724;
+}
+
+/* Project Progress */
+.Content.QaqcDashboard .project-progress {
+  margin-top: 16px;
+}
+
+.Content.QaqcDashboard .progress-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.Content.QaqcDashboard .progress-header span {
+  color: #495057;
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.Content.QaqcDashboard .progress-bar {
+  width: 100%;
+  height: 6px;
+  background: #e9ecef;
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.Content.QaqcDashboard .progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #315a95, #4a7cc2);
+  border-radius: 3px;
+  transition: width 0.3s ease;
+}
+
+/* Technicians Grid */
+.Content.QaqcDashboard .technicians-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+    max-height: 800px;
+        overflow-y: auto;
+}
+
+.Content.QaqcDashboard .technician-card {
+  background: #f8f9fa;
+  border-radius: 8px;
+  padding: 16px;
+  border: 1px solid #e9ecef;
+}
+
+.Content.QaqcDashboard .tech-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.Content.QaqcDashboard .tech-header h4 {
+  color: #2c3e50;
+  font-size: 1rem;
+  font-weight: 600;
+  margin: 0;
+}
+
+.Content.QaqcDashboard .tech-status {
+  padding: 4px 8px;
+  border-radius: 12px;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.Content.QaqcDashboard .tech-status.available {
+  background: #d4edda;
+  color: #155724;
+}
+
+.Content.QaqcDashboard .tech-status.assigned {
+  background: #cce7ff;
+  color: #004085;
+}
+
+.Content.QaqcDashboard .tech-stats {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.Content.QaqcDashboard .tech-stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 8px;
+  background: white;
+  border-radius: 6px;
+}
+
+.Content.QaqcDashboard .stat-label {
+  color: #6c757d;
+  font-size: 0.75rem;
+  font-weight: 500;
+  margin-bottom: 4px;
+  text-align: center;
+}
+
+.Content.QaqcDashboard .stat-value {
+  color: #2c3e50;
+  font-size: 1.25rem;
+  font-weight: 700;
+}
+
+.Content.QaqcDashboard .current-assignment {
+  padding: 8px;
+  background: white;
+  border-radius: 6px;
+  margin-bottom: 8px;
+}
+
+.Content.QaqcDashboard .assignment-label {
+  color: #6c757d;
+  font-size: 0.75rem;
+  font-weight: 500;
+  display: block;
+  margin-bottom: 4px;
+}
+
+.Content.QaqcDashboard .assignment-project {
+  color: #2c3e50;
+  font-size: 0.875rem;
+  font-weight: 600;
+  display: block;
+  margin-bottom: 4px;
+}
+
+.Content.QaqcDashboard .availability-indicator {
+  display: flex;
+  align-items: center;
+  color: #28a745;
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+/* Empty State */
+.Content.QaqcDashboard .empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 20px;
+  color: #6c757d;
+  text-align: center;
+  grid-column: 1 / -1;
+}
+
+/* Responsive Design */
+@media (max-width: 1200px) {
+  .Content.QaqcDashboard .dashboard-content {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 768px) {
+  .Content.QaqcDashboard {
+    padding: 16px;
+  }
+  
+  .Content.QaqcDashboard .stats-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .Content.QaqcDashboard .tabs-header {
+    flex-direction: column;
+  }
+  
+  .Content.QaqcDashboard .tab-button {
+    justify-content: center;
+  }
+  
+  .Content.QaqcDashboard .projects-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .Content.QaqcDashboard .section-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+}
+
+@media (max-width: 480px) {
+  .Content.QaqcDashboard .dashboard-header h1 {
+    font-size: 2rem;
+  }
+  
+  .Content.QaqcDashboard .project-card {
+    padding: 16px;
+  }
+  
+  .Content.QaqcDashboard .project-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+  
+  .Content.QaqcDashboard .assigned-tech {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+}
+
+/* Add these styles to your QAQCCoordinatorDashboard.css */
+
+/* Upcoming Milestones Section */
+.Content.QaqcDashboard .upcoming-milestones {
+  margin-bottom: 16px;
+  padding: 16px;
+  background: linear-gradient(135deg, #fff9e6 0%, #fff3cd 100%);
+  border-radius: 8px;
+  border: 1px solid #ffeaa7;
+  box-shadow: 0 2px 8px rgba(255, 193, 7, 0.1);
+}
+
+.Content.QaqcDashboard .milestones-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 12px;
+  padding-bottom: 8px;
+  border-bottom: 2px solid #ffd43b;
+}
+
+.Content.QaqcDashboard .milestones-header span {
+  color: #856404;
+  font-size: 0.9rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.Content.QaqcDashboard .milestone-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 12px;
+  background: white;
+  border-radius: 6px;
+  border: 1px solid #ffeaa7;
+  margin-bottom: 8px;
+  transition: all 0.2s ease;
+}
+
+.Content.QaqcDashboard .milestone-item:hover {
+  transform: translateX(4px);
+  box-shadow: 0 2px 8px rgba(255, 193, 7, 0.2);
+  border-color: #ffd43b;
+}
+
+.Content.QaqcDashboard .milestone-item:last-child {
+  margin-bottom: 0;
+}
+
+.Content.QaqcDashboard .milestone-type {
+  color: #495057;
+  font-size: 0.8rem;
+  font-weight: 600;
+  background: #fff3cd;
+  padding: 4px 8px;
+  border-radius: 12px;
+  border: 1px solid #ffd43b;
+  min-width: 120px;
+  text-align: center;
+}
+
+.Content.QaqcDashboard .milestone-info {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 2px;
+}
+
+.Content.QaqcDashboard .milestone-date {
+  color: #2c3e50;
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.Content.QaqcDashboard .milestone-days {
+  font-size: 0.75rem;
+  font-weight: 500;
+  padding: 2px 6px;
+  border-radius: 8px;
+  text-align: center;
+  min-width: 80px;
+}
+
+/* Priority-based day count colors */
+.Content.QaqcDashboard .milestone-item:nth-child(1) .milestone-days {
+  background: #fff5f5;
+  color: #dc3545;
+  border: 1px solid #f8d7da;
+}
+
+.Content.QaqcDashboard .milestone-item:nth-child(2) .milestone-days {
+  background: #fffbf0;
+  color: #856404;
+  border: 1px solid #ffeaa7;
+}
+
+.Content.QaqcDashboard .milestone-item:nth-child(3) .milestone-days {
+  background: #f0fff4;
+  color: #155724;
+  border: 1px solid #c6f6d5;
+}
+
+/* Scheduled Inspection Section */
+.Content.QaqcDashboard .scheduled-inspection {
+  margin-bottom: 16px;
+  padding: 16px;
+  background: linear-gradient(135deg, #e7f3ff 0%, #d1ecf1 100%);
+  border-radius: 8px;
+  border: 1px solid #b3e0ff;
+  box-shadow: 0 2px 8px rgba(23, 162, 184, 0.1);
+}
+
+.Content.QaqcDashboard .inspection-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 12px;
+  padding-bottom: 8px;
+  border-bottom: 2px solid #17a2b8;
+}
+
+.Content.QaqcDashboard .inspection-header span {
+  color: #0c5460;
+  font-size: 0.9rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* Enhanced Date Items */
+.Content.QaqcDashboard .date-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 14px;
+  background: white;
+  border-radius: 8px;
+  border-left: 4px solid #e9ecef;
+  margin-bottom: 8px;
+  transition: all 0.3s ease;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.Content.QaqcDashboard .date-item:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.Content.QaqcDashboard .date-item.priority-critical {
+  border-left-color: #dc3545;
+  background: linear-gradient(135deg, #fff5f5 0%, #ffe6e6 100%);
+  border: 1px solid #f8d7da;
+}
+
+.Content.QaqcDashboard .date-item.priority-high {
+  border-left-color: #fd7e14;
+  background: linear-gradient(135deg, #fffbf0 0%, #fff5e6 100%);
+  border: 1px solid #ffeaa7;
+}
+
+.Content.QaqcDashboard .date-item.priority-medium {
+  border-left-color: #ffc107;
+  background: linear-gradient(135deg, #fffbf0 0%, #fff9e6 100%);
+  border: 1px solid #ffeaa7;
+}
+
+.Content.QaqcDashboard .date-item.priority-low {
+  border-left-color: #28a745;
+  background: linear-gradient(135deg, #f0fff4 0%, #e6ffe6 100%);
+  border: 1px solid #c6f6d5;
+}
+
+.Content.QaqcDashboard .date-type {
+  color: #495057;
+  font-size: 0.85rem;
+  font-weight: 600;
+  background: rgba(255, 255, 255, 0.8);
+  padding: 4px 10px;
+  border-radius: 12px;
+  border: 1px solid #e9ecef;
+}
+
+.Content.QaqcDashboard .date-info {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 4px;
+}
+
+.Content.QaqcDashboard .date-value {
+  color: #2c3e50;
+  font-size: 0.85rem;
+  font-weight: 700;
+}
+
+.Content.QaqcDashboard .days-remaining {
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.Content.QaqcDashboard .date-item.priority-critical .days-remaining {
+  background: #dc3545;
+  color: white;
+}
+
+.Content.QaqcDashboard .date-item.priority-high .days-remaining {
+  background: #fd7e14;
+  color: white;
+}
+
+.Content.QaqcDashboard .date-item.priority-medium .days-remaining {
+  background: #ffc107;
+  color: #856404;
+}
+
+.Content.QaqcDashboard .date-item.priority-low .days-remaining {
+  background: #28a745;
+  color: white;
+}
+
+/* Enhanced Project Header */
+.Content.QaqcDashboard .project-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 16px;
+  padding: 16px;
+  background: linear-gradient(135deg, #315a95 0%, #1a3a6b 100%);
+  border-radius: 8px;
+  color: white;
+}
+
+.Content.QaqcDashboard .project-header h4 {
+  color: #ffffff;
+  font-size: 1.2rem;
+  font-weight: 700;
+  margin: 0;
+  flex: 1;
+  margin-right: 12px;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+/* Enhanced Status Badges for Project Header */
+.Content.QaqcDashboard .project-header .status-badge {
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+/* Enhanced Progress Bar */
+.Content.QaqcDashboard .project-progress {
+  margin-top: 20px;
+  padding: 16px;
+  background: white;
+  border-radius: 8px;
+  border: 1px solid #e9ecef;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.Content.QaqcDashboard .progress-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.Content.QaqcDashboard .progress-header span {
+  color: #495057;
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.Content.QaqcDashboard .progress-header span:last-child {
+  color: #315a95;
+  font-weight: 700;
+  font-size: 1rem;
+}
+
+.Content.QaqcDashboard .progress-bar {
+  width: 100%;
+  height: 10px;
+  background: #e9ecef;
+  border-radius: 5px;
+  overflow: hidden;
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.Content.QaqcDashboard .progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #315a95, #4a7cc2, #63b6cb);
+  border-radius: 5px;
+  transition: width 0.5s ease;
+  position: relative;
+}
+
+.Content.QaqcDashboard .progress-fill::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(90deg, 
+    transparent 0%, 
+    rgba(255, 255, 255, 0.3) 50%, 
+    transparent 100%);
+  animation: shimmer 2s infinite;
+}
+
+@keyframes shimmer {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+
+/* Enhanced Project Card Hover Effects */
+.Content.QaqcDashboard .project-card {
+  background: #f8f9fa;
+  border-radius: 12px;
+  padding: 0;
+  border: 1px solid #e9ecef;
+  transition: all 0.3s ease;
+  overflow: hidden;
+}
+
+.Content.QaqcDashboard .project-card:hover {
+  background: white;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+  transform: translateY(-4px);
+  border-color: #315a95;
+}
+
+.Content.QaqcDashboard .project-card > *:not(.project-header) {
+  padding: 0 20px;
+}
+
+.Content.QaqcDashboard .project-card > *:last-child {
+  padding-bottom: 20px;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .Content.QaqcDashboard .upcoming-milestones,
+  .Content.QaqcDashboard .scheduled-inspection {
+    padding: 12px;
+  }
+  
+  .Content.QaqcDashboard .milestone-item,
+  .Content.QaqcDashboard .date-item {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+  
+  .Content.QaqcDashboard .milestone-info,
+  .Content.QaqcDashboard .date-info {
+    align-items: flex-start;
+    width: 100%;
+  }
+  
+  .Content.QaqcDashboard .project-header {
+    flex-direction: column;
+    gap: 12px;
+  }
+  
+  .Content.QaqcDashboard .project-header h4 {
+    margin-right: 0;
+  }
+}
