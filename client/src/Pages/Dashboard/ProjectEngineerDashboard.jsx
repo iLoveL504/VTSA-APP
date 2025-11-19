@@ -114,7 +114,7 @@ const ProjectEngineerDashboard = ({clearProjectData, clearProjectTasks}) => {
         .slice(0, 5)
     };
   }, [assignedProjects]);
-
+  console.log(dashboardData)
   // Handle project click
   const handleProjectClick = (projectId) => {
     navigate(`/projects/${projectId}`);

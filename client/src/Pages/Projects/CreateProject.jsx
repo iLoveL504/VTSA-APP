@@ -5,7 +5,7 @@ import useFormValidate from "../../hooks/useFormValidate";
 import '../../css/CreateProject.css'
 import { useSharedSocket } from "../../Context/SocketContext.js";
 import philippines from 'philippines'
-import { useStoreState } from "easy-peasy";
+import { useStoreState} from "easy-peasy";
 
 // Add these imports for icons
 import {
@@ -407,7 +407,6 @@ const CreateProject = () => {
       } else {
         alert("Unexpected server response. Please try again.");
       }
-
     } catch (err) {
       console.error("Error creating project:", err);
       setIsSubmitting(false);
@@ -637,7 +636,7 @@ const CreateProject = () => {
 
                 <div className="form-grid">
                   <div className="form-group full-width">
-                    <label htmlFor="equipmentType">Equipment Type *</label>
+                    <label htmlFor="equipmentType">Product Type *</label>
                     <div className="select-wrapper">
                       <select
                         id="equipmentType"
@@ -647,7 +646,7 @@ const CreateProject = () => {
                         onBlur={handleBlur}
                         className={errors.equipmentType ? 'error' : ''}
                       >
-                        <option value="">-- Select equipment type --</option>
+                        <option value="">Select Product type</option>
                         {equipmentTypes.map((type) => (
                           <option key={type} value={type}>
                             {type}
@@ -738,7 +737,7 @@ const CreateProject = () => {
                   </div>
 
                   <div className="form-group">
-                    <label htmlFor="travel">Travel *</label>
+                    <label htmlFor="travel">Travel (m) *</label>
                     <input
                       type="text"
                       id="travel"
@@ -888,7 +887,7 @@ const CreateProject = () => {
                   </div>
 
                   <div className="form-group">
-                    <label htmlFor="overheadHeight">Overhead Height</label>
+                    <label htmlFor="overheadHeight">Overhead Height (mm)</label>
                     <input
                       type="number"
                       id="overheadHeight"
@@ -904,7 +903,7 @@ const CreateProject = () => {
                   </div>
 
                   <div className="form-group">
-                    <label htmlFor="pitDepth">Pit Depth</label>
+                    <label htmlFor="pitDepth">Pit Depth (mm)</label>
                     <input
                       type="number"
                       id="pitDepth"

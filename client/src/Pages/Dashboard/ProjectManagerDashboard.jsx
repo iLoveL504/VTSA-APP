@@ -16,6 +16,8 @@ import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
 import FlagIcon from '@mui/icons-material/Flag';
 import AddIcon from '@mui/icons-material/Add';
 import ReportProblemIcon from '@mui/icons-material/ReportProblem';
+import TaskIcon from '@mui/icons-material/Task';
+import ScheduleIcon from '@mui/icons-material/Schedule';
 
 // Replacements for react-icons/md
 import ErrorIcon from '@mui/icons-material/Error';
@@ -34,6 +36,13 @@ import {
   MdBuild
 } from "react-icons/md";
 
+const formatLocalDate = (isoString) => {
+  if (!isoString) return "N/A";
+  const date = new Date(isoString);
+  date.setDate(date.getDate() + 1)
+  // Add 1 day to compensate for UTC to Philippines time conversion
+  return date.toLocaleDateString("en-GB", { timeZone: "Asia/Manila" });
+};
 
 
 const ProjectManagerDashboard = ({ onNewProject, clearProjectData, clearProjectTasks }) => {
@@ -541,6 +550,26 @@ const ProjectItem = ({ project, type, onProjectClick }) => {
     return diffDays;
   };
 
+  const getTaskStatus = () => {
+    if (!project.task_end || project.task_done) return 'normal';
+    const deadline = new Date(project.task_end);
+    const now = new Date();
+    const diffTime = deadline - now;
+    const daysLeft = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    
+    if (daysLeft < 0) return 'overdue';
+    if (daysLeft <= 2) return 'urgent';
+    return 'normal';
+  };
+
+  const getDaysUntilTaskDeadline = () => {
+    if (!project.task_end) return null;
+    const deadline = new Date(project.task_end);
+    const now = new Date();
+    const diffTime = deadline - now;
+    return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+  };
+
   const getTypeStyles = () => {
     switch (type) {
       case 'critical':
@@ -587,6 +616,9 @@ const ProjectItem = ({ project, type, onProjectClick }) => {
     }
   };
 
+  const taskStatus = getTaskStatus();
+  const daysUntilTask = getDaysUntilTaskDeadline();
+
   return (
     <div className="project-item" style={getTypeStyles()}>
       <div className="project-info">
@@ -603,6 +635,48 @@ const ProjectItem = ({ project, type, onProjectClick }) => {
           <span className="project-engineer">{project.pe_fullname || 'Unassigned'}</span>
         </div>
         <p className="project-client">{project.client}</p>
+        
+        {/* Current Task Information - Added to every project card */}
+        {project.current_task && !project.on_hold && (
+          <div className="current-task-info">
+            <div className="task-header">
+              <TaskIcon style={{ fontSize: '16px', marginRight: '6px', color: '#007bff' }} />
+              <span className="task-label">Current Task:</span>
+              <span className="task-name">{project.current_task}</span>
+              {project.task_done ? (
+                <span className="task-status-badge completed">
+                  <CheckCircleIcon style={{ fontSize: '14px', marginRight: '4px' }} />
+                  Completed
+                </span>
+              ) : (
+                <span className={`task-status-badge ${taskStatus}`}>
+                  {taskStatus === 'overdue' ? '⚠️ Overdue' : 
+                   taskStatus === 'urgent' ? '🔥 Urgent' : 'In Progress'}
+                </span>
+              )}
+            </div>
+            
+            {!project.task_done && project.task_start && project.task_end && (
+              <div className="task-dates">
+                <div className="task-date">
+                  <ScheduleIcon style={{ fontSize: '14px', marginRight: '4px', color: '#6c757d' }} />
+                  <span>Start: {formatLocalDate(project.task_start)}</span>
+                </div>
+                <div className="task-date">
+                  <CalendarMonthIcon style={{ fontSize: '14px', marginRight: '4px', color: '#6c757d' }} />
+                  <span>End: {formatLocalDate(project.task_end)}</span>
+                  {daysUntilTask !== null && (
+                    <span className={`task-deadline ${taskStatus}`}>
+                      ({taskStatus === 'overdue' ? `${Math.abs(daysUntilTask)} days overdue` : 
+                        taskStatus === 'urgent' ? `${daysUntilTask} days left` : 
+                        `${daysUntilTask} days remaining`})
+                    </span>
+                  )}
+                </div>
+              </div>
+            )}
+          </div>
+        )}
         
         {/* TNC Date Display for TNC projects */}
         {(type === 'tnc' || type === 'tnc-next') && project.tnc_start_date && (

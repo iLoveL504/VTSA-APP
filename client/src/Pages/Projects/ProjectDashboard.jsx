@@ -28,6 +28,7 @@ import { useSharedSocket } from '../../Context/SocketContext.js';
 const formatLocalDate = (isoString) => {
   if (!isoString) return "N/A";
   const date = new Date(isoString);
+  // Add 1 day to compensate for UTC to Philippines time conversion
   return date.toLocaleDateString("en-GB", { timeZone: "Asia/Manila" });
 };
 
@@ -585,10 +586,13 @@ console.log(qaqcHistory)
             {!proj?.schedule_created ? (
               <div className="no-schedule">
                 <p>No schedule created</p>
-                <button className="btn-create-schedule" onClick={handleCreateSchedule}>
-                  <AssignmentIcon className="btn-icon" />
-                  Create Schedule
-                </button>
+                {sessionStorage.getItem('roles') === 'Project Engineer' ? (
+                  <button className="btn-create-schedule" onClick={handleCreateSchedule}>
+                    <AssignmentIcon className="btn-icon" />
+                    Create Schedule
+                  </button>                  
+                ) : (<></>)}
+
               </div>
             ) : (
               <div className="schedule-created">

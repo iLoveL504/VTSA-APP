@@ -43,14 +43,14 @@
 
 .TeamSelection .table-header {
   display: grid;
-  grid-template-columns: 80px 1fr 1fr 1fr 120px;
+  grid-template-columns: 80px 1fr 1fr 1fr 120px 1fr 1fr;
   background: linear-gradient(135deg, #315a95 0%, #4a7cc2 100%);
   color: white;
 }
 
 .TeamSelection .table-row {
   display: grid;
-  grid-template-columns: 80px 1fr 1fr 1fr 120px;
+  grid-template-columns: 80px 1fr 1fr 1fr 120px 1fr 1fr;
   align-items: center;
   padding: 1rem 1.5rem;
   border-bottom: 1px solid #e2e8f0;
@@ -304,6 +304,11 @@
 
 .table-row:not(.header) {
   animation: fadeInUp 0.3s ease;
+}
+
+.TeamSelection .table-body {
+  overflow-y: auto;
+  max-height: 500px;
 }
 
 .table-body .table-row:nth-child(1) { animation-delay: 0.05s; }
@@ -719,3 +724,4 @@
   opacity: 0.6;
   pointer-events: none;
 }
+

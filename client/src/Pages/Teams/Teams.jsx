@@ -29,6 +29,7 @@ const Teams = () => {
   };
 
   const otherTeamsOnClick = () => {
+    console.log('clicking')
     setActivePage('other');
   };
 

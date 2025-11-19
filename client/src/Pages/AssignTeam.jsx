@@ -2,26 +2,46 @@ import React, { useState,useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import useAxiosFetch from '../hooks/useAxiosFetch.js';
 import { Axios } from '../api/axios.js';
-import { useStoreState } from 'easy-peasy';
+import { useStoreState, useStoreActions } from 'easy-peasy';
 import { useSharedSocket } from '../Context/SocketContext.js';
 import '../css/AssignTeam.css';
+
+// Material-UI Icons
+import {
+  LocationOn as LocationIcon
+} from '@mui/icons-material';
+
+const formatLocalDate = (isoString) => {
+  if (!isoString) return "N/A";
+  const date = new Date(isoString);
+  date.setDate(date.getDate() )
+  // Add 1 day to compensate for UTC to Philippines time conversion
+  return date.toLocaleDateString("en-GB", { timeZone: "Asia/Manila" });
+};
 
 const ViewProjectEngineers = () => {
   const backendURL = import.meta.env.VITE_BACKEND_URL || "http://localhost:4000";
   const employees = useStoreState(state => state.employees)
   const peProjects = useStoreState(state => state.peProjects)
-  
+  const projects = useStoreState(state => state.projects)
+  const {fetchProjects} = useStoreActions(action => action)
+
+  console.log(employees)
   const { utilitiesSocket } = useSharedSocket()
   const PEs = employees.filter(e => e.job === 'Project Engineer')
   const { projId } = useParams();
   const navigate = useNavigate()
- 
-  console.log(peProjects)
+  const [dProject, setDProject] = useState(null)
+  console.log(PEs)
 
   const {
     fetchError: availablePEFetchError,
     isLoading: availablePEIsLoading
   } = useAxiosFetch(`${backendURL}/api/teams/not-assigned-PE`);
+
+useEffect(() => {
+  fetchProjects()
+}, [])
 
   useEffect(() => {
     if(utilitiesSocket) {
@@ -29,6 +49,14 @@ const ViewProjectEngineers = () => {
       utilitiesSocket.emit('pe_projects')
     }
   }, [utilitiesSocket])
+
+  useEffect(() => {
+    if(projects) {
+      console.log(projects)
+      setDProject(projects.find(p => p.id === Number(projId)))
+      
+    }
+  }, [projects])
 
   const [selectedPE, setSelectedPE] = useState(null);
   const [peCurrentProjects, setPeCurrentProjects] = useState([])
@@ -71,8 +99,12 @@ const handleSubmit = async () => {
 
       utilitiesSocket.emit("new_notification", {
         subject: 'Project Created',
-        body: `Project ${projId} ${selectedPE.last_name} ${selectedPE.first_name} at ${assignedAt.toISOString("en-GB").split('T')[0]}`,
-        Ids: [id]
+        body: `Project ${projId} ${selectedPE.last_name} ${selectedPE.first_name} at ${formatLocalDate(assignedAt)}`,
+        Ids: [id],
+        functionality: {
+          function: "projects-navigate",
+          "project-id": projId
+        }
       }, (ack) => {
         clearTimeout(timeout);
         if (ack?.success) {
@@ -93,8 +125,8 @@ const handleSubmit = async () => {
   }
  };
 
-
-  if (availablePEIsLoading) {
+{console.log(dProject)}
+  if (availablePEIsLoading || dProject === null || dProject === undefined) {
     return (
       <div className="Content ProjectPage">
         <div className="Loading">
@@ -106,8 +138,8 @@ const handleSubmit = async () => {
 
   return (
     <div className="Content TeamSelection">
-      <h2>Available Project Engineers</h2>
-
+      <h2>Available Project Engineers for {dProject.lift_name} ({dProject.island_group})</h2>
+    {console.log(PEs)}
       {availablePEFetchError && (
         <div className="error-message">Error loading engineers: {availablePEFetchError}</div>
       )}
@@ -117,13 +149,12 @@ const handleSubmit = async () => {
           {PEs && PEs.length > 0 ? (
             <div className="table-container">
               <div className="table-header">
-
                   <div className="table-cell">Select</div>
                   <div className="table-cell">Name</div>
                   <div className="table-cell">Username</div>
+                  <div className="table-cell">Branch</div>
                   <div className="table-cell">Employee ID</div>
                   <div className="table-cell">Status</div>
-           
               </div>
               <div className="table-body">
                 {PEs.map((engineer) => (
@@ -149,6 +180,12 @@ const handleSubmit = async () => {
                     <div className="table-cell username-cell">
                       @{engineer.username}
                     </div>
+                    <div className="table-cell branch-cell">
+                      <div className="branch-info">
+                        <LocationIcon className="branch-icon" />
+                        {engineer.branch || 'Not assigned'}
+                      </div>
+                    </div>
                     <div className="table-cell id-cell">
                       {engineer.employee_id}
                     </div>
@@ -173,6 +210,12 @@ const handleSubmit = async () => {
     {selectedPE && (
       <div className='pe-info-badge'>
         {selectedPE.first_name} {selectedPE.last_name}
+        {selectedPE.branch && (
+          <span className="pe-branch">
+            <LocationIcon className="branch-icon" />
+            {selectedPE.branch}
+          </span>
+        )}
       </div>
     )}
   </div>
@@ -282,6 +325,12 @@ const handleSubmit = async () => {
         {selectedPE && (
           <div className="selected-info">
             <strong>Selected:</strong> {selectedPE.first_name} {selectedPE.last_name} (@{selectedPE.username})
+            {selectedPE.branch && (
+              <span className="selected-branch">
+                <LocationIcon className="branch-icon" />
+                {selectedPE.branch} Branch
+              </span>
+            )}
           </div>
         )}
       </div>

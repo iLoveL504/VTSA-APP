@@ -861,3 +861,112 @@
     align-self: flex-start;
   }
 }
+
+/* Current Task Information Styles */
+.Content.ProjectManagerDashboard .current-task-info {
+  background: #f8f9fa;
+  border-radius: 6px;
+  padding: 12px;
+  margin: 8px 0;
+  border-left: 3px solid #007bff;
+}
+
+.Content.ProjectManagerDashboard .task-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 6px;
+  flex-wrap: wrap;
+}
+
+.Content.ProjectManagerDashboard .task-label {
+  font-weight: 600;
+  color: #495057;
+  font-size: 0.875rem;
+}
+
+.Content.ProjectManagerDashboard .task-name {
+  color: #2c3e50;
+  font-weight: 500;
+  font-size: 0.875rem;
+  flex: 1;
+}
+
+.Content.ProjectManagerDashboard .task-status-badge {
+  padding: 4px 8px;
+  border-radius: 12px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.Content.ProjectManagerDashboard .task-status-badge.completed {
+  background: #d4edda;
+  color: #155724;
+}
+
+.Content.ProjectManagerDashboard .task-status-badge.normal {
+  background: #cce7ff;
+  color: #004085;
+}
+
+.Content.ProjectManagerDashboard .task-status-badge.urgent {
+  background: #fff3cd;
+  color: #856404;
+}
+
+.Content.ProjectManagerDashboard .task-status-badge.overdue {
+  background: #f8d7da;
+  color: #721c24;
+}
+
+.Content.ProjectManagerDashboard .task-dates {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.Content.ProjectManagerDashboard .task-date {
+  display: flex;
+  align-items: center;
+  color: #6c757d;
+  font-size: 0.8rem;
+  gap: 4px;
+}
+
+.Content.ProjectManagerDashboard .task-deadline {
+  font-weight: 600;
+  margin-left: 4px;
+}
+
+.Content.ProjectManagerDashboard .task-deadline.normal {
+  color: #17a2b8;
+}
+
+.Content.ProjectManagerDashboard .task-deadline.urgent {
+  color: #ffc107;
+}
+
+.Content.ProjectManagerDashboard .task-deadline.overdue {
+  color: #dc3545;
+}
+
+/* Responsive design for task information */
+@media (max-width: 768px) {
+  .Content.ProjectManagerDashboard .task-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 6px;
+  }
+  
+  .Content.ProjectManagerDashboard .task-dates {
+    flex-direction: column;
+    gap: 8px;
+  }
+  
+  .Content.ProjectManagerDashboard .current-task-info {
+    padding: 10px;
+  }
+}

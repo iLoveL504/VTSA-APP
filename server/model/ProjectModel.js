@@ -5,6 +5,13 @@ import LinkedList from '../../DataStructs/LinkedList.js';
 import dayjs from 'dayjs'
 dotenv.config()
 
+const formatLocalDate = (isoString) => {
+  if (!isoString) return "N/A";
+  const date = new Date(isoString);
+  // Add 1 day to compensate for UTC to Philippines time conversion
+  return date.toLocaleDateString("en-GB", { timeZone: "Asia/Manila" });
+};
+
 const summaryMap = {
   'Mechanical Installation': 'Installation',
   'Preliminaries': 'Preliminaries',
@@ -109,66 +116,76 @@ static async updateProjectStatusesBatch(projects) {
 }
 
 static async calculateProjectStatus(project, tasks, currentDate) {
+    // Use UTC dates consistently
     const now = new Date(currentDate);
+    const utcNow = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()));
     
     // ---- HOLD DAYS ----
     let holdDays = null;
     const isOnHold = !!project.on_hold;
     if (project.hold_date) {
         const holdDate = new Date(project.hold_date);
-        holdDays = Math.floor((now - holdDate) / (1000 * 60 * 60 * 24));
+        const utcHoldDate = new Date(Date.UTC(holdDate.getUTCFullYear(), holdDate.getUTCMonth(), holdDate.getUTCDate()));
+        holdDays = Math.floor((utcNow - utcHoldDate) / (1000 * 60 * 60 * 24));
     }
-    let willResume = false
+    
+    let willResume = false;
     if (isOnHold) {
-      //console.log(`project ${project.id} is inside onHold`)
-      const today = dayjs().startOf('day') // local midnight
-      const resume = dayjs(project.resume_date).startOf('day')
-
-console.log() //
-      console.log(new Date() === new Date(project.resume_date))
-      willResume = (project.will_resume && today.isSame(resume)) ? true : false
-      // console.log(`project ${project.id} will resume: ${willResume}`)
-      if (!willResume) {
-        return {
-            status: 'Pending',
-            isOnHold: true,
-            holdDays,
-            current_task: project.current_task,
-            task_phase: project.task_phase,
-            willResume
-        };        
-      } else {
-        return {
-            status: 'Testing and Comm',
-            isOnHold: true,
-            holdDays,
-            current_task: project.current_task,
-            current_task_id: 601,
-            task_phase: 'Testing and Commissioning',
-            willResume          
+        const today = dayjs().utc().startOf('day');
+        const resume = dayjs(project.resume_date).utc().startOf('day');
+        willResume = (project.will_resume && today.isSame(resume));
+        
+        if (!willResume) {
+            return {
+                status: 'Pending',
+                isOnHold: true,
+                holdDays,
+                current_task: project.current_task,
+                task_phase: project.task_phase,
+                willResume
+            };        
+        } else {
+            return {
+                status: 'Testing and Comm',
+                isOnHold: true,
+                holdDays,
+                current_task: project.current_task,
+                current_task_id: 601,
+                task_phase: 'Testing and Commissioning',
+                willResume          
+            };
         }
-      }
     }
     
     // ---- CURRENT TASKS ----
-    const foundParentTask = tasks.find(
-        t => t.task_type === 'summary' &&
-        now >= new Date(t.task_start) &&
-        now <= new Date(t.task_end)
-    );
+    // Convert all dates to UTC for comparison
+    const foundParentTask = tasks.find(t => {
+        if (t.task_type !== 'summary') return false;
+        
+        const taskStart = new Date(t.task_start);
+        const taskEnd = new Date(t.task_end);
+        const utcTaskStart = new Date(Date.UTC(taskStart.getUTCFullYear(), taskStart.getUTCMonth(), taskStart.getUTCDate()));
+        const utcTaskEnd = new Date(Date.UTC(taskEnd.getUTCFullYear(), taskEnd.getUTCMonth(), taskEnd.getUTCDate()));
+        
+        return utcNow >= utcTaskStart && utcNow <= utcTaskEnd;
+    });
     
-    const projectedTask = tasks.find(
-        t => t.task_type === 'task' &&
-        now >= new Date(t.task_start) &&
-        now <= new Date(t.task_end)
-    );
+    const projectedTask = tasks.find(t => {
+        if (t.task_type !== 'task') return false;
+        
+        const taskStart = new Date(t.task_start);
+        const taskEnd = new Date(t.task_end);
+        const utcTaskStart = new Date(Date.UTC(taskStart.getUTCFullYear(), taskStart.getUTCMonth(), taskStart.getUTCDate()));
+        const utcTaskEnd = new Date(Date.UTC(taskEnd.getUTCFullYear(), taskEnd.getUTCMonth(), taskEnd.getUTCDate()));
+        
+        return utcNow >= utcTaskStart && utcNow < utcTaskEnd;
+    });
     
     const actualTask = tasks.find(
         t => t.task_type === 'task' && (!t.task_done || t.task_actual_current)
     );
     
     if (!actualTask || !projectedTask || !foundParentTask) {
-      console.log(`project ${project.id} is here`)
         return {
             status: 'Unknown',
             current_task: project.current_task,
@@ -218,7 +235,6 @@ console.log() //
     // console.log(`project ${project.id} is in ${foundCurrentTask}`)
     // Resuming Project
     
-    
     return {
         status: summaryMap[foundParentTask.task_name] || 'N/A',
         start_date,
@@ -227,6 +243,9 @@ console.log() //
         tnc_start_date,
         installation_start_date,
         current_task: foundCurrentTask,
+        task_start: actualTask.task_start,
+        task_end: actualTask.task_end,
+        task_done: actualTask.task_done,
         task_phase: phaseName,
         phase_full_name: foundParentTask.task_name,
         in_tnc,
@@ -252,6 +271,9 @@ static async updateSingleProjectStatus(projectId, statusInfo) {
         tnc_start_date,
         installation_start_date,
         current_task,
+        task_start,
+        task_end,
+        task_done,
         task_phase,
         phase_full_name,
         in_tnc,
@@ -303,6 +325,9 @@ static async updateSingleProjectStatus(projectId, statusInfo) {
             tnc_start_date = ?,
             installation_start_date = ?,
             current_task = ?,
+            task_start = ?,
+            task_end = ?,
+            task_done = ?,
             task_phase = ?,
             in_tnc = ?,
             current_task_id = ?,
@@ -320,6 +345,9 @@ static async updateSingleProjectStatus(projectId, statusInfo) {
             tnc_start_date,
             installation_start_date,
             current_task,
+            task_start,
+            task_end,
+            task_done,
             phase_full_name,
             in_tnc,
             current_task_id,
@@ -478,39 +506,42 @@ static async getProjectSchedule(id) {
     const checkQuery = `show tables like 'project_${id}_schedule'`
     const [check] = await pool.query(checkQuery)
     if (check.length === 0) return []
-    const query = `SELECT * FROM project_${id}_schedule`;
+    
+    // Convert UTC dates to your timezone in the query
+    const query = `
+        SELECT *, 
+               CONVERT_TZ(task_start, '+00:00', '+08:00') as task_start_local,
+               CONVERT_TZ(task_end, '+00:00', '+08:00') as task_end_local
+        FROM project_${id}_schedule
+    `;
     const [results] = await pool.query(query);
-    if (!results) return
+    if (!results) return []
+    
     const sortedTasks = results.sort((a, b) => {
-        // First, sort by start date as the primary criteria
-        const dateDiff = new Date(a.task_start) - new Date(b.task_start);
+        // Use the local timezone dates for sorting
+        const dateDiff = new Date(a.task_start_local) - new Date(b.task_start_local);
         if (dateDiff !== 0) return dateDiff;
 
-        // For tasks starting at the same time, apply custom ordering
-        // Only reorder the specific concurrent projects (200, 201, 300, 301)
+        // ... rest of your sorting logic remains the same
         const customOrder = {
-            104: 1,  // Submission of PO to Factory (comes first)
-            200: 2,  // Structural/Civil Works
-            201: 3,  // Shaft Construction
-            300: 4,  // Manufacturing and Importation Process
-            301: 5   // Manufacturing and Importation
+            104: 1,
+            200: 2,
+            201: 3,
+            300: 4,
+            301: 5
         };
         
-        const orderA = customOrder[a.task_id] || 999; // Default high number for others
+        const orderA = customOrder[a.task_id] || 999;
         const orderB = customOrder[b.task_id] || 999;
         
-        // If both have custom ordering, use that
         if (orderA !== orderB) {
             return orderA - orderB;
         }
         
-        // For non-concurrent tasks or tasks with same custom order, 
-        // sort by task_id numerically
         if (a.task_id !== b.task_id) {
             return a.task_id - b.task_id;
         }
         
-        // Summary tasks before regular tasks
         if (a.task_type === "summary" && b.task_type !== "summary") return -1;
         if (a.task_type !== "summary" && b.task_type === "summary") return 1;
         
@@ -531,7 +562,6 @@ static async getProjectSchedule(id) {
 //adjust intsallation start
 static async adjustInstallationStart(projId, data) {
   const { date } = data
-  console.log(data)
   const getScheduleQuery = `select * from project_${projId}_schedule`
   const [schedule] = await pool.query(getScheduleQuery)
   const holidays = await this.holidaysPerProject(Number(projId))
@@ -655,7 +685,6 @@ static async getTaskPhotos(id) {
 
     static async completeTask(updates, percent, id) {
       console.log('here in complete task')
-      console.log(updates)
         if (updates.length === 0) {
             throw new Error("Nothing to update");
         }
@@ -819,6 +848,7 @@ static async getTaskPhotos(id) {
 
         const cleanScheduleQuery = `update project_${id}_schedule set task_actual_current = 0`
         await pool.query(cleanScheduleQuery)
+        console.log('UMAABOT BA DITO')
         const projectScheduleQuery = `update project_${id}_schedule set task_actual_current = 1 where task_id = ?`
         await pool.query(projectScheduleQuery, [currentTask_id])
 
@@ -1271,11 +1301,29 @@ static async qaqcPunchlisting (projId, photos) {
     for (const photo of punchlist) {
   const filePath = "/uploads/" + photo.filename;
     await pool.query(
-        `insert into qaqc_punchlisting (inspection_id, doc_url) values (?, ?)`,
-        [inspectionId, filePath]
+        `insert into qaqc_punchlisting (inspection_id, doc_url, project_id) values (?, ?, ?)`,
+        [inspectionId, filePath, projId]
     );
   }
 }
+
+//GET TNC QAQC FOREMAN EVIDENCE PHOTOS
+static async getQAQCPunchlist (inspectionId) {
+  const [results] = await pool.query(`select photo_url from qaqc_punchlisting where inspection_id = ?`, [inspectionId])
+  return results
+}
+
+static async getQAQCPhotos (inspectionId) {
+  const [results] = await pool.query(`select photo_url from project_inspection_photos where inspection_id = ?`, [inspectionId])
+  return results
+}
+
+static async getTaskEvidencePhotos (projId, taskId) {
+  const [results] = await pool.query(`select photo_url from task_photos where project_id = ? and task_id = ?`, [projId, taskId])
+  return results
+}
+
+
 
 static async rectifyItems (projId) {
   await pool.query(`update projects set qaqc_punchlist = 0 where id = ?`, [projId])

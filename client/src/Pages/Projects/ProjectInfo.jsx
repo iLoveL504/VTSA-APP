@@ -82,7 +82,8 @@ const ProjectInfo = () => {
       clearProjectData,
       clearProjectTasks
     } = useStoreActions(actions => actions); // Remove .projectStore since it's directly in root
-
+    console.log(fetchedData)
+    console.log(projSched)
     const [activePage, setActivePage] = useState('dashboard')
     const [isEditing, setIsEditing] = useState(false)
     const [formData, setFormData] = useState({})

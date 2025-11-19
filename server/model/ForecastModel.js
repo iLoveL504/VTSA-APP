@@ -4,7 +4,7 @@ import { UtilitiesModel as utility } from './UtilitiesModel.js';
 class ForecastModel {
   static async forecastTeam(date) {
     const [results] = await pool.query(`
-      SELECT employee_id, username, job, island_group, concat(last_name, ' ', first_name) as 'full_name' 
+      SELECT employee_id, username, job, island_group, branch, concat(last_name, ' ', first_name) as 'full_name' 
       FROM employees e
       WHERE EXISTS (
         SELECT 1
@@ -26,7 +26,7 @@ class ForecastModel {
 
   static async teamsNoProject() {
     const [results] = await pool.query(`
-      SELECT employee_id, island_group, username, job, concat(last_name, ' ', first_name) as 'full_name'
+      SELECT employee_id, island_group, branch, username, job, concat(last_name, ' ', first_name) as 'full_name'
       FROM employees e
       WHERE NOT EXISTS (
         SELECT 1

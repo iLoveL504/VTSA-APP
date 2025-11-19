@@ -25,7 +25,9 @@ import {
   Assignment as AssignmentIcon,
   PrecisionManufacturing as PrecisionManufacturingIcon,
   PersonAdd as PersonAddIcon,
-  PersonOff as PersonOffIcon
+  PersonOff as PersonOffIcon,
+  AccountTree as AccountTreeIcon,
+  CorporateFare as CorporateFareIcon
 } from '@mui/icons-material';
 import { useStoreState } from 'easy-peasy';
 
@@ -35,6 +37,8 @@ const TeamsDashboard = () => {
   const [viewMode, setViewMode] = useState('grid');
   const [statusFilter, setStatusFilter] = useState('all');
   const [activeTab, setActiveTab] = useState('manpower');
+  const [branchFilter, setBranchFilter] = useState('all');
+  
   console.log(allTeams)
 
   // Format date utility
@@ -85,6 +89,26 @@ const TeamsDashboard = () => {
     return <span className={`job-badge ${config.class}`}>{config.label}</span>;
   };
 
+  // Get branch badge
+  const getBranchBadge = (branch) => {
+    const branchConfig = {
+      'Pasig': { class: 'branch-pasig', label: 'Pasig' },
+      'Davao': { class: 'branch-davao', label: 'Davao' },
+      'Cebu': { class: 'branch-cebu', label: 'Cebu' },
+      'Manila': { class: 'branch-manila', label: 'Manila' }
+    };
+    
+    const config = branchConfig[branch] || { class: 'branch-default', label: branch };
+    return <span className={`branch-badge ${config.class}`}>{config.label}</span>;
+  };
+
+  // Helper function to get foreman name from ID
+  const getForemanName = (foremanId) => {
+    if (!foremanId) return 'Not assigned';
+    const foreman = employees.find(emp => emp.employee_id === foremanId);
+    return foreman ? `${foreman.first_name} ${foreman.last_name}` : 'Unknown foreman';
+  };
+
   // Toggle project expansion
   const toggleProject = (projectId) => {
     const newExpanded = new Set(expandedProjects);
@@ -96,7 +120,7 @@ const TeamsDashboard = () => {
     setExpandedProjects(newExpanded);
   };
 
-  // Calculate comprehensive manpower statistics
+  // Calculate comprehensive manpower statistics with branch information
   const manpowerStats = useMemo(() => {
     if (!allTeams || !employees) return {};
     
@@ -149,7 +173,7 @@ const TeamsDashboard = () => {
         }
       });
     });
-    console.log(employees.filter(e => (e.job !== 'Project Manager' && e.job !== 'Admin' && e.job !== 'QAQC Coordinator' || e.job !== 'TNC Coordinator' || e.job !== 'PMS Coordinator')))
+
     // Categorize all employees
     const allForemen = employees.filter(emp => emp.job === 'Foreman');
     const allSkilledInstallers = employees.filter(emp => emp.job === 'Skilled Installer');
@@ -160,10 +184,77 @@ const TeamsDashboard = () => {
       qaqc: employees.filter(emp => emp.job === 'QA/QC')
     };
 
+    // Get all unique branches
+    const allBranches = [...new Set(employees.map(emp => emp.branch).filter(Boolean))];
+
+    // Calculate branch-wise statistics
+    const branchStats = {};
+    allBranches.forEach(branch => {
+      const branchEmployees = employees.filter(emp => emp.branch === branch);
+      const branchForemen = branchEmployees.filter(emp => emp.job === 'Foreman');
+      const branchSkilledInstallers = branchEmployees.filter(emp => emp.job === 'Skilled Installer');
+      const branchInstallers = branchEmployees.filter(emp => emp.job === 'Installer');
+      const branchProjectEngineers = branchEmployees.filter(emp => emp.job === 'Project Engineer');
+      
+      branchStats[branch] = {
+        total: branchEmployees.length,
+        foremen: branchForemen.length,
+        skilledInstallers: branchSkilledInstallers.length,
+        installers: branchInstallers.length,
+        projectEngineers: branchProjectEngineers.length,
+        assigned: {
+          foremen: branchForemen.filter(f => assignedForemen.has(f.employee_id)).length,
+          skilledInstallers: branchSkilledInstallers.filter(si => assignedSkilledInstallers.has(si.employee_id)).length,
+          installers: branchInstallers.filter(i => assignedInstallers.has(i.employee_id)).length,
+          projectEngineers: branchProjectEngineers.filter(pe => assignedProjectEngineers.has(pe.employee_id)).length,
+        }
+      };
+    });
+
+    // Get personnel details with branch information
+    const personnelDetails = [
+      ...allForemen.map(f => ({
+        ...f,
+        job: 'Foreman',
+        projectCount: allTeams.filter(p => p.foreman?.id === f.employee_id).length,
+        branch: f.branch
+      })),
+      ...allSkilledInstallers.map(si => ({
+        ...si,
+        job: 'Skilled Installer',
+        projectCount: allTeams.filter(p => p.team.some(m => m.id === si.employee_id)).length,
+        prevForemanName: getForemanName(si.prev_foreman),
+        branch: si.branch
+      })),
+      ...allInstallers.map(i => ({
+        ...i,
+        job: 'Installer',
+        projectCount: allTeams.filter(p => p.team.some(m => m.id === i.employee_id)).length,
+        prevForemanName: getForemanName(i.prev_foreman),
+        branch: i.branch
+      })),
+      ...allProjectEngineers.map(pe => ({
+        ...pe,
+        job: 'Project Engineer',
+        projectCount: allTeams.filter(p => p.project_engineer?.id === pe.employee_id).length,
+        branch: pe.branch
+      }))
+    ];
+
     return {
       // Totals
-      totalEmployees: employees.filter(e => (e.job !== 'Project Manager' && e.job !== 'Admin' && e.job !== 'QAQC Coordinator' && e.job !== 'TNC Coordinator' && e.job !== 'PMS Coordinator')).length,
+      totalEmployees: employees.filter(e => 
+        e.job !== 'Project Manager' && 
+        e.job !== 'Admin' && 
+        e.job !== 'QAQC Coordinator' && 
+        e.job !== 'TNC Coordinator' && 
+        e.job !== 'PMS Coordinator'
+      ).length,
       totalAssigned: assignedPersonnel.size,
+      totalProjects: allTeams.length,
+      personnelDetails,
+      branchStats,
+      allBranches,
       
       // Foremen
       foremen: {
@@ -179,8 +270,14 @@ const TeamsDashboard = () => {
         total: allSkilledInstallers.length,
         assigned: assignedSkilledInstallers.size,
         available: allSkilledInstallers.length - assignedSkilledInstallers.size,
-        assignedList: allSkilledInstallers.filter(si => assignedSkilledInstallers.has(si.employee_id)),
-        availableList: allSkilledInstallers.filter(si => !assignedSkilledInstallers.has(si.employee_id))
+        assignedList: allSkilledInstallers.map(si => ({
+          ...si,
+          prevForemanName: getForemanName(si.prev_foreman)
+        })).filter(si => assignedSkilledInstallers.has(si.employee_id)),
+        availableList: allSkilledInstallers.map(si => ({
+          ...si,
+          prevForemanName: getForemanName(si.prev_foreman)
+        })).filter(si => !assignedSkilledInstallers.has(si.employee_id))
       },
       
       // Installers
@@ -188,8 +285,14 @@ const TeamsDashboard = () => {
         total: allInstallers.length,
         assigned: assignedInstallers.size,
         available: allInstallers.length - assignedInstallers.size,
-        assignedList: allInstallers.filter(i => assignedInstallers.has(i.employee_id)),
-        availableList: allInstallers.filter(i => !assignedInstallers.has(i.employee_id))
+        assignedList: allInstallers.map(i => ({
+          ...i,
+          prevForemanName: getForemanName(i.prev_foreman)
+        })).filter(i => assignedInstallers.has(i.employee_id)),
+        availableList: allInstallers.map(i => ({
+          ...i,
+          prevForemanName: getForemanName(i.prev_foreman)
+        })).filter(i => !assignedInstallers.has(i.employee_id))
       },
       
       // Project Engineers
@@ -221,10 +324,31 @@ const TeamsDashboard = () => {
     };
   }, [allTeams, employees]);
 
-  // Filter projects based on status
+  // Filter projects based on status and branch
   const filteredProjects = allTeams ? allTeams.filter(project => {
-    if (statusFilter === 'all') return true;
-    return project.status === statusFilter;
+    if (statusFilter === 'all' && branchFilter === 'all') return true;
+    
+    let statusMatch = true;
+    let branchMatch = true;
+    
+    if (statusFilter !== 'all') {
+      statusMatch = project.status === statusFilter;
+    }
+    
+    if (branchFilter !== 'all') {
+      // Check if any team member is from the selected branch
+      const hasBranchMember = 
+        (project.project_engineer?.branch === branchFilter) ||
+        (project.foreman?.branch === branchFilter) ||
+        project.team.some(member => member.branch === branchFilter) ||
+        (project.technicians.tnc_tech?.branch === branchFilter) ||
+        (project.technicians.qaqc_tech?.branch === branchFilter) ||
+        (project.technicians.pms_tech?.branch === branchFilter);
+      
+      branchMatch = hasBranchMember;
+    }
+    
+    return statusMatch && branchMatch;
   }) : [];
 
   if (!allTeams || !employees) {
@@ -275,6 +399,13 @@ const TeamsDashboard = () => {
           Personnel Tally
         </button>
         <button 
+          className={`tab-btn ${activeTab === 'branches' ? 'active' : ''}`}
+          onClick={() => setActiveTab('branches')}
+        >
+          <CorporateFareIcon className="tab-icon" />
+          Branch Overview
+        </button>
+        <button 
           className={`tab-btn ${activeTab === 'technicians' ? 'active' : ''}`}
           onClick={() => setActiveTab('technicians')}
         >
@@ -296,7 +427,6 @@ const TeamsDashboard = () => {
             <div className="manpower-stat-card total">
               <PeopleIcon className="manpower-stat-icon" />
               <div className="manpower-stat-content">
-                {console.log(employees)}
                 <span className="manpower-stat-number">{manpowerStats.totalEmployees}</span>
                 <span className="manpower-stat-label">Total Foremen and Installers</span>
               </div>
@@ -351,6 +481,9 @@ const TeamsDashboard = () => {
                         <div className="personnel-info">
                           <span className="personnel-name">{foreman.first_name} {foreman.last_name}</span>
                           <span className="personnel-username">@{foreman.username}</span>
+                          <div className="personnel-branch">
+                            {getBranchBadge(foreman.branch)}
+                          </div>
                         </div>
                         {getJobBadge('Foreman')}
                       </div>
@@ -375,6 +508,9 @@ const TeamsDashboard = () => {
                         <div className="personnel-info">
                           <span className="personnel-name">{foreman.first_name} {foreman.last_name}</span>
                           <span className="personnel-username">@{foreman.username}</span>
+                          <div className="personnel-branch">
+                            {getBranchBadge(foreman.branch)}
+                          </div>
                         </div>
                         {getJobBadge('Foreman')}
                       </div>
@@ -417,6 +553,12 @@ const TeamsDashboard = () => {
                         <div className="personnel-info">
                           <span className="personnel-name">{installer.first_name} {installer.last_name}</span>
                           <span className="personnel-username">@{installer.username}</span>
+                          <div className="personnel-branch">
+                            {getBranchBadge(installer.branch)}
+                          </div>
+                          <div className="prev-foreman-info">
+                            Previous Foreman: {installer.prevForemanName}
+                          </div>
                         </div>
                         {getJobBadge('Skilled Installer')}
                       </div>
@@ -441,6 +583,12 @@ const TeamsDashboard = () => {
                         <div className="personnel-info">
                           <span className="personnel-name">{installer.first_name} {installer.last_name}</span>
                           <span className="personnel-username">@{installer.username}</span>
+                          <div className="personnel-branch">
+                            {getBranchBadge(installer.branch)}
+                          </div>
+                          <div className="prev-foreman-info">
+                            Previous Foreman: {installer.prevForemanName}
+                          </div>
                         </div>
                         {getJobBadge('Skilled Installer')}
                       </div>
@@ -483,6 +631,12 @@ const TeamsDashboard = () => {
                         <div className="personnel-info">
                           <span className="personnel-name">{installer.first_name} {installer.last_name}</span>
                           <span className="personnel-username">@{installer.username}</span>
+                          <div className="personnel-branch">
+                            {getBranchBadge(installer.branch)}
+                          </div>
+                          <div className="prev-foreman-info">
+                            Previous Foreman: {installer.prevForemanName}
+                          </div>
                         </div>
                         {getJobBadge('Installer')}
                       </div>
@@ -507,6 +661,12 @@ const TeamsDashboard = () => {
                         <div className="personnel-info">
                           <span className="personnel-name">{installer.first_name} {installer.last_name}</span>
                           <span className="personnel-username">@{installer.username}</span>
+                          <div className="personnel-branch">
+                            {getBranchBadge(installer.branch)}
+                          </div>
+                          <div className="prev-foreman-info">
+                            Previous Foreman: {installer.prevForemanName}
+                          </div>
                         </div>
                         {getJobBadge('Installer')}
                       </div>
@@ -549,6 +709,9 @@ const TeamsDashboard = () => {
                         <div className="personnel-info">
                           <span className="personnel-name">{engineer.first_name} {engineer.last_name}</span>
                           <span className="personnel-username">@{engineer.username}</span>
+                          <div className="personnel-branch">
+                            {getBranchBadge(engineer.branch)}
+                          </div>
                         </div>
                         {getJobBadge('Project Engineer')}
                       </div>
@@ -573,6 +736,9 @@ const TeamsDashboard = () => {
                         <div className="personnel-info">
                           <span className="personnel-name">{engineer.first_name} {engineer.last_name}</span>
                           <span className="personnel-username">@{engineer.username}</span>
+                          <div className="personnel-branch">
+                            {getBranchBadge(engineer.branch)}
+                          </div>
                         </div>
                         {getJobBadge('Project Engineer')}
                       </div>
@@ -587,8 +753,7 @@ const TeamsDashboard = () => {
           </div>
         </div>
       ) : activeTab === 'projects' ? (
-        // ... (keep the existing projects tab code exactly as it was)
-        <>
+      <>
           {/* Statistics Cards */}
           <div className="stats-grid">
             <div className="stat-card primary">
@@ -697,6 +862,17 @@ const TeamsDashboard = () => {
                 <option value="Structural/Manufacturing">Structural</option>
                 <option value="Test and Comm">Testing</option>
               </select>
+
+              <select 
+                value={branchFilter}
+                onChange={(e) => setBranchFilter(e.target.value)}
+                className="branch-filter"
+              >
+                <option value="all">All Branches</option>
+                {manpowerStats.allBranches?.map(branch => (
+                  <option key={branch} value={branch}>{branch}</option>
+                ))}
+              </select>
             </div>
           </div>
 
@@ -775,6 +951,11 @@ const TeamsDashboard = () => {
                                 <div className="personnel-info">
                                   <span className="personnel-name">{project.project_engineer.fullname}</span>
                                   <span className="personnel-role">Project Engineer</span>
+                                  {project.project_engineer.branch && (
+                                    <div className="personnel-branch">
+                                      {getBranchBadge(project.project_engineer.branch)}
+                                    </div>
+                                  )}
                                 </div>
                                 {getJobBadge('Project Engineer')}
                               </div>
@@ -788,6 +969,11 @@ const TeamsDashboard = () => {
                                 <div className="personnel-info">
                                   <span className="personnel-name">{project.foreman.name}</span>
                                   <span className="personnel-role">Team Foreman</span>
+                                  {project.foreman.branch && (
+                                    <div className="personnel-branch">
+                                      {getBranchBadge(project.foreman.branch)}
+                                    </div>
+                                  )}
                                 </div>
                                 {getJobBadge('Foreman')}
                               </div>
@@ -810,6 +996,11 @@ const TeamsDashboard = () => {
                                 <div className="personnel-info">
                                   <span className="personnel-name">{project.technicians.tnc_tech.fullname}</span>
                                   <span className="personnel-role">Testing & Commissioning</span>
+                                  {project.technicians.tnc_tech.branch && (
+                                    <div className="personnel-branch">
+                                      {getBranchBadge(project.technicians.tnc_tech.branch)}
+                                    </div>
+                                  )}
                                 </div>
                                 {getJobBadge(project.technicians.tnc_tech.job)}
                               </div>
@@ -822,6 +1013,11 @@ const TeamsDashboard = () => {
                                 <div className="personnel-info">
                                   <span className="personnel-name">{project.technicians.qaqc_tech.fullname}</span>
                                   <span className="personnel-role">Quality Assurance</span>
+                                  {project.technicians.qaqc_tech.branch && (
+                                    <div className="personnel-branch">
+                                      {getBranchBadge(project.technicians.qaqc_tech.branch)}
+                                    </div>
+                                  )}
                                 </div>
                                 {getJobBadge(project.technicians.qaqc_tech.job)}
                               </div>
@@ -834,6 +1030,11 @@ const TeamsDashboard = () => {
                                 <div className="personnel-info">
                                   <span className="personnel-name">{project.technicians.pms_tech.fullname}</span>
                                   <span className="personnel-role">Preventive Maintenance</span>
+                                  {project.technicians.pms_tech.branch && (
+                                    <div className="personnel-branch">
+                                      {getBranchBadge(project.technicians.pms_tech.branch)}
+                                    </div>
+                                  )}
                                 </div>
                                 {getJobBadge(project.technicians.pms_tech.job)}
                               </div>
@@ -865,6 +1066,11 @@ const TeamsDashboard = () => {
                                     <div className="personnel-info">
                                       <span className="personnel-name">{member.fullname}</span>
                                       <span className="personnel-username">@{member.username}</span>
+                                      {member.branch && (
+                                        <div className="personnel-branch">
+                                          {getBranchBadge(member.branch)}
+                                        </div>
+                                      )}
                                     </div>
                                     {getJobBadge(member.job)}
                                   </div>
@@ -885,6 +1091,11 @@ const TeamsDashboard = () => {
                                     <div className="personnel-info">
                                       <span className="personnel-name">{member.fullname}</span>
                                       <span className="personnel-username">@{member.username}</span>
+                                      {member.branch && (
+                                        <div className="personnel-branch">
+                                          {getBranchBadge(member.branch)}
+                                        </div>
+                                      )}
                                     </div>
                                     {getJobBadge(member.job)}
                                   </div>
@@ -938,22 +1149,143 @@ const TeamsDashboard = () => {
               <div className="table-header">
                 <span>Name</span>
                 <span>Role</span>
+                <span>Branch</span>
+                <span>Previous Foreman</span>
                 <span>Projects</span>
                 <span>Username</span>
               </div>
-              {console.log(manpowerStats)}
               {manpowerStats.personnelDetails?.map(person => (
-                <div key={person.id} className="table-row">
+                <div key={person.employee_id} className="table-row">
                   <span className="person-name">
                     <BadgeIcon className="person-icon" />
-                    {person.name}
+                    {person.first_name} {person.last_name}
                   </span>
                   <span>{getJobBadge(person.job)}</span>
+                  <span>{getBranchBadge(person.branch)}</span>
+                  <span className="prev-foreman">
+                    {(person.job === 'Skilled Installer' || person.job === 'Installer') 
+                      ? person.prevForemanName 
+                      : '-'}
+                  </span>
                   <span className="project-count">{person.projectCount}</span>
                   <span className="username">@{person.username}</span>
                 </div>
               ))}
             </div>
+          </div>
+        </div>
+      ) : activeTab === 'branches' ? (
+        /* Branch Overview Tab */
+        <div className="branch-overview">
+          <div className="tally-header">
+            <h2>Branch Overview</h2>
+            <p>Personnel distribution and allocation across branches</p>
+          </div>
+
+          <div className="branch-stats-grid">
+            {manpowerStats.allBranches?.map(branch => (
+              <div key={branch} className="branch-stat-card">
+                <div className="branch-header">
+                  <LocationIcon className="branch-icon" />
+                  <h3>{branch}</h3>
+                </div>
+                <div className="branch-content">
+                  <div className="branch-total">
+                    <span className="branch-total-number">{manpowerStats.branchStats?.[branch]?.total || 0}</span>
+                    <span className="branch-total-label">Total Personnel</span>
+                  </div>
+                  
+                  <div className="branch-breakdown">
+                    <div className="branch-role">
+                      <SupervisorAccountIcon className="role-icon foreman" />
+                      <div className="role-info">
+                        <span className="role-count">
+                          {manpowerStats.branchStats?.[branch]?.assigned.foremen || 0}
+                          <span className="role-total">/{manpowerStats.branchStats?.[branch]?.foremen || 0}</span>
+                        </span>
+                        <span className="role-label">Foremen</span>
+                      </div>
+                    </div>
+                    
+                    <div className="branch-role">
+                      <BuildIcon className="role-icon skilled" />
+                      <div className="role-info">
+                        <span className="role-count">
+                          {manpowerStats.branchStats?.[branch]?.assigned.skilledInstallers || 0}
+                          <span className="role-total">/{manpowerStats.branchStats?.[branch]?.skilledInstallers || 0}</span>
+                        </span>
+                        <span className="role-label">Skilled Installers</span>
+                      </div>
+                    </div>
+                    
+                    <div className="branch-role">
+                      <ConstructionIcon className="role-icon installer" />
+                      <div className="role-info">
+                        <span className="role-count">
+                          {manpowerStats.branchStats?.[branch]?.assigned.installers || 0}
+                          <span className="role-total">/{manpowerStats.branchStats?.[branch]?.installers || 0}</span>
+                        </span>
+                        <span className="role-label">Installers</span>
+                      </div>
+                    </div>
+                    
+                    <div className="branch-role">
+                      <EngineeringIcon className="role-icon engineer" />
+                      <div className="role-info">
+                        <span className="role-count">
+                          {manpowerStats.branchStats?.[branch]?.assigned.projectEngineers || 0}
+                          <span className="role-total">/{manpowerStats.branchStats?.[branch]?.projectEngineers || 0}</span>
+                        </span>
+                        <span className="role-label">Project Engineers</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* Branch Personnel Details */}
+          <div className="branch-personnel-details">
+            <h3>Personnel by Branch</h3>
+            {manpowerStats.allBranches?.map(branch => (
+              <div key={branch} className="branch-personnel-section">
+                <h4>
+                  <LocationIcon className="branch-section-icon" />
+                  {branch} Branch
+                  <span className="personnel-count">
+                    ({manpowerStats.branchStats?.[branch]?.total || 0} personnel)
+                  </span>
+                </h4>
+                
+                <div className="branch-personnel-grid">
+                  {manpowerStats.personnelDetails
+                    ?.filter(person => person.branch === branch)
+                    .map(person => (
+                      <div key={person.employee_id} className="branch-personnel-item">
+                        <div className="personnel-avatar">
+                          {person.job === 'Foreman' && <SupervisorAccountIcon />}
+                          {person.job === 'Skilled Installer' && <BuildIcon />}
+                          {person.job === 'Installer' && <ConstructionIcon />}
+                          {person.job === 'Project Engineer' && <EngineeringIcon />}
+                        </div>
+                        <div className="personnel-info">
+                          <span className="personnel-name">{person.first_name} {person.last_name}</span>
+                          <span className="personnel-username">@{person.username}</span>
+                          <div className="personnel-meta">
+                            <span className="project-count">{person.projectCount} projects</span>
+                            {(person.job === 'Skilled Installer' || person.job === 'Installer') && (
+                              <span className="prev-foreman">Prev: {person.prevForemanName}</span>
+                            )}
+                          </div>
+                        </div>
+                        {getJobBadge(person.job)}
+                      </div>
+                    ))
+                  }
+                </div>
+              </div>
+            ))}
           </div>
         </div>
       ) : (
@@ -980,10 +1312,10 @@ const TeamsDashboard = () => {
               </div>
             </div>
             <div className="technician-stat-card">
-              <BuildCircleIcon className="technician-stat-icon pms" />
+              <BuildIcon className="technician-stat-icon qaqc" />
               <div className="technician-stat-content">
                 <span className="technician-stat-number">{manpowerStats.technicians?.pms?.assigned || 0}</span>
-                <span className="technician-stat-label">PMS Technicians</span>
+                <span className="technician-stat-label">PMS Technicians (For Joint Inspection)</span>
               </div>
             </div>
           </div>
@@ -996,20 +1328,47 @@ const TeamsDashboard = () => {
                 <span>Client</span>
                 <span>TNC Tech</span>
                 <span>QA/QC Tech</span>
-                <span>PMS Tech</span>
+                <span>PMS TECH</span>
               </div>
               {allTeams.map(project => (
                 <div key={project.project_id} className="table-row">
                   <span className="project-name">{project.lift_name}</span>
                   <span className="client-name">{project.client}</span>
                   <span className="technician-name">
-                    {project.technicians.tnc_tech ? project.technicians.tnc_tech.fullname : '-'}
+                    {project.technicians.tnc_tech ? (
+                      <div className="technician-with-branch">
+                        <span>{project.technicians.tnc_tech.fullname}</span>
+                        {project.technicians.tnc_tech.branch && (
+                          <div className="technician-branch">
+                            {getBranchBadge(project.technicians.tnc_tech.branch)}
+                          </div>
+                        )}
+                      </div>
+                    ) : '-'}
                   </span>
                   <span className="technician-name">
-                    {project.technicians.qaqc_tech ? project.technicians.qaqc_tech.fullname : '-'}
+                    {project.technicians.qaqc_tech ? (
+                      <div className="technician-with-branch">
+                        <span>{project.technicians.qaqc_tech.fullname}</span>
+                        {project.technicians.qaqc_tech.branch && (
+                          <div className="technician-branch">
+                            {getBranchBadge(project.technicians.qaqc_tech.branch)}
+                          </div>
+                        )}
+                      </div>
+                    ) : '-'}
                   </span>
                   <span className="technician-name">
-                    {project.technicians.pms_tech ? project.technicians.pms_tech.fullname : '-'}
+                    {project.technicians.pms_tech ? (
+                      <div className="technician-with-branch">
+                        <span>{project.technicians.pms_tech.fullname}</span>
+                        {project.technicians.pms_tech.branch && (
+                          <div className="technician-branch">
+                            {getBranchBadge(project.technicians.pms_tech.branch)}
+                          </div>
+                        )}
+                      </div>
+                    ) : '-'}
                   </span>
                 </div>
               ))}

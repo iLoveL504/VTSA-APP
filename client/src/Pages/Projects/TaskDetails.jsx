@@ -30,17 +30,17 @@ import {
 import ForemanCompletion from './ForemanCompletion'
 import ProjectEngineerCompletion from './ProjectEngineerCompletion'
 import QAQCCompletion from './QAQCCompletion'
-import ProjectEngineerScheduling from './ProjectEngineerScheduling'
 import TNCCompletion from './TNCCompletion.jsx';
 import PMSCompletion from './PMSCompletion.jsx';
 
-const TaskDetails = ({currentTask, currentParentTask, currentTaskPhase, proj, ConfirmationModal, fetchedData}) => {
+const TaskDetails = ({currentTask, currentTaskPhase, proj, ConfirmationModal, fetchedData}) => {
     // const omitPhases = [100, 200, 300, 400]
     console.log(ConfirmationModal)
     // const includeTncSchedule = !(omitPhases.includes(currentTask.task_parent))
     const { utilitiesSocket } = useSharedSocket()
     const {projId} = useParams()
     const employees = useStoreState(state => state.employees)
+    const {qaqcHistory} = useStoreState(state => state)
     const QAQCCoordinator = employees.find(e => e.job === 'QAQC Coordinator')
     const ProjectManager = employees.find(e => e.job === 'Project Manager')
     const TNCCoordinator = employees.find(e => e.job === 'TNC Coordinator')
@@ -49,7 +49,7 @@ const TaskDetails = ({currentTask, currentParentTask, currentTaskPhase, proj, Co
     const ProjectManagerId = ProjectManager.employee_id
     const TNCCoordinatorId = TNCCoordinator.employee_id
     const PMSCoordinatorId = PMSCoordinator.employee_id
-
+    console.log(qaqcHistory)
     const role = sessionStorage.getItem('roles')
     // const [qaqcDate, setQaqcDate] = useState(new Date())
     // const [tncDate, setTncDate] = useState(new Date())
@@ -201,14 +201,15 @@ const TaskDetails = ({currentTask, currentParentTask, currentTaskPhase, proj, Co
 
     const handleApprovalConfirm = async () => {
       try {
+        console.log(approvalModal.task)
         setApprovalModal({ isOpen: false, task: null });
         const task_id = approvalModal.task.task_id
         const task_name = approvalModal.task.task_name
-        const start_date = approvalModal.task.task_start.split('T')[0]
-        const end_date = approvalModal.task.task_end.split('T')[0]
+        const start_date = new Date(approvalModal.task.task_start).toISOString().split("T")[0];
+        const end_date = new Date(approvalModal.task.task_end).toISOString().split("T")[0];
         const task_duration = approvalModal.task.task_duration
         const task_percent = approvalModal.task.task_percent
-
+        console.log(start_date)
         const formData = new FormData()
         approvalModal.photos.forEach((file) => {
         formData.append('photos', file);
@@ -282,6 +283,7 @@ const TaskDetails = ({currentTask, currentParentTask, currentTaskPhase, proj, Co
                 await Axios.put(`/api/projects/schedule/${projId}`, payload)
                 
                 if (currentTask.task_name === 'Final Cleaning / Hand over') {
+                    console.log(completionModal.task)
                     const Ids = [PMSCoordinatorId, ProjectManagerId]
                     const formData = new FormData()
                     completionModal.photos.forEach(p => formData.append('photos', p)) 
@@ -583,10 +585,6 @@ const TaskDetails = ({currentTask, currentParentTask, currentTaskPhase, proj, Co
             {/* Task Overview Card */}
             <div className="TaskDetails__overview">
                 <div className="TaskDetails__context">
-                    <div className="TaskDetails__context-item">
-                        <span className="TaskDetails__context-label">Project</span>
-                        <span className="TaskDetails__context-value">{currentParentTask?.task_name}</span>
-                    </div>
                     <div className="TaskDetails__context-item">
                         <span className="TaskDetails__context-label">Phase</span>
                         <span className="TaskDetails__context-value">{currentTaskPhase?.task_name}</span>

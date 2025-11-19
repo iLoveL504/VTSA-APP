@@ -532,7 +532,7 @@ const ProjectDetails = ({
                                 <AttachFileIcon className="card-icon" />
                                 <h3>Contract Documents</h3>
                             </div>
-                            <div className="card-content">
+                            <div className="card-content contract">
                                 <div className="attachments-grid">
                                     {photos.data.map((p, index) => (
                                         <div key={index} className="attachment-item">

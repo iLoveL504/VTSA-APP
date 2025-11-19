@@ -1463,3 +1463,129 @@
         justify-content: center;
     }
 }
+
+/* Branch Badges */
+.branch-badge {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 8px;
+  background: #f0f0f0;
+  border-radius: 12px;
+  font-size: 0.75rem;
+  color: #666;
+  border: 1px solid #ddd;
+}
+
+.branch-icon {
+  font-size: 0.875rem !important;
+}
+
+.member-branch {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.75rem;
+  color: #666;
+}
+
+/* Modal Layout */
+.modal-content.large {
+  max-width: 1200px;
+  width: 95%;
+  max-height: 90vh;
+}
+
+.editing-layout {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem;
+  height: 60vh;
+  overflow: hidden;
+}
+
+.current-team-section,
+.available-personnel-section {
+  overflow-y: auto;
+  padding-right: 8px;
+}
+
+/* Team Member Styles in Modal */
+.team-member.removable {
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.team-member.removable:hover {
+  background-color: #f8f8f8;
+}
+
+.remove-btn {
+  background: #ff4444;
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 0.875rem;
+}
+
+/* Personnel Grid in Modal */
+.personnel-grid-modal {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.personnel-card-modal {
+  border: 2px solid #e0e0e0;
+  border-radius: 8px;
+  padding: 1rem;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.personnel-card-modal.selected {
+  border-color: #1976d2;
+  background-color: #f0f7ff;
+}
+
+.personnel-card-modal:hover {
+  border-color: #1976d2;
+}
+
+/* Team Summary */
+.team-summary {
+  margin-top: 1.5rem;
+  padding: 1rem;
+  background: #f8f9fa;
+  border-radius: 8px;
+}
+
+.summary-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.5rem;
+}
+
+.summary-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.25rem 0;
+}
+
+.summary-label {
+  font-size: 0.875rem;
+  color: #666;
+}
+
+.summary-count {
+  font-weight: bold;
+  color: #333;
+}

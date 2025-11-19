@@ -4,17 +4,20 @@ import { CgProfile } from "react-icons/cg"
 import { IoIosNotifications } from "react-icons/io"
 import { IoMdMail } from "react-icons/io"
 import { IoIosClose } from "react-icons/io"
+import { FaEye, FaExternalLinkAlt } from "react-icons/fa"
 import useToggle from '../../hooks/useToggle'
 import { useStoreState } from 'easy-peasy'
 import { useNavigate } from 'react-router-dom'
 import { useSharedSocket } from '../../Context/SocketContext'
 import '../../css/Navbar.css'
 
+
+
 const NavBar = ({ invertMenuToggle }) => {
   const { utilitiesSocket } = useSharedSocket()
   const user = useStoreState(state => state.user)
   const notifications = useStoreState(state => state.notifications)
-  const inbox= useStoreState(state => state.inbox) // <-- assuming you store inbox here
+  const inbox = useStoreState(state => state.inbox)
   const [notifToggle, invertNotifToggle] = useToggle()
   const [msgToggle, invertMsgToggle] = useToggle()
   const [notifs, setNotifs] = useState([])
@@ -22,7 +25,7 @@ const NavBar = ({ invertMenuToggle }) => {
   const [userMessages, setUserMessages] = useState([])
   const [unreadMsgCount, setUnreadMsgCount] = useState(0)
   const navigate = useNavigate()
-  console.log(inbox)
+
   useEffect(() => {
     if (notifications) {
       const userNotifications = notifications.filter(n => 
@@ -32,7 +35,7 @@ const NavBar = ({ invertMenuToggle }) => {
       setUnreadCount(userNotifications.filter(n => !n.mark_read).length)
     }
   }, [notifications])
-  console.log(notifications)
+
   useEffect(() => {
     if (inbox) {
       setUserMessages(inbox)
@@ -40,10 +43,19 @@ const NavBar = ({ invertMenuToggle }) => {
     }
   }, [inbox])
 
-  const handleNotificationClick = (notif) => {
-    console.log('Clicked:', notif)
+  const handleMarkAsRead = (notif) => {
+    console.log('Mark as read:', notif)
     const id = notif.id
     utilitiesSocket.emit("read_notification", {id})
+    
+    // Update local state immediately for better UX
+    setNotifs(prev => prev.map(n => 
+      n.id === notif.id ? { ...n, mark_read: true } : n
+    ))
+  }
+
+  const handleViewNotification = (notif) => {
+    console.log('View notification:', notif)
     navigate(`/notification/${notif.notification_id}`)
   }
 
@@ -53,6 +65,8 @@ const NavBar = ({ invertMenuToggle }) => {
 
   const markAllAsRead = () => {
     utilitiesSocket.emit('read_all_notifications', {id: user.employee_id})
+    // Update local state immediately
+    setNotifs(prev => prev.map(n => ({ ...n, mark_read: true })))
   }
 
   const markAllMessagesAsRead = () => {
@@ -82,7 +96,6 @@ const NavBar = ({ invertMenuToggle }) => {
             className="notification-trigger"
             style={{ position: 'relative', cursor: 'pointer' }}
           >
-
             <IoMdMail className="BellIcon" size={30} style={{ color: 'white' }} />
             {unreadMsgCount > 0 && (
               <div className={`Notifications ${unreadMsgCount > 0 ? 'pulse' : ''}`}>
@@ -119,7 +132,6 @@ const NavBar = ({ invertMenuToggle }) => {
               </div>
 
               <div className="notification-list">
-                {console.log(userMessages)}
                 {userMessages.length === 0 ? (
                   <p className="no-notifications">No new inbox</p>
                 ) : (
@@ -127,7 +139,6 @@ const NavBar = ({ invertMenuToggle }) => {
                     <div
                       key={msg.id}
                       className={`notification-item ${msg.read ? '' : 'unread'}`}
-                      onClick={() => handleMessageClick(msg)}
                     >
                       <div className="notif-icon">
                         <IoMdMail />
@@ -139,6 +150,14 @@ const NavBar = ({ invertMenuToggle }) => {
                           {new Date(msg.created_at).toLocaleDateString()}{' '}
                           {new Date(msg.created_at).toLocaleTimeString()}
                         </p>
+                      </div>
+                      <div className="notification-item-actions">
+                        <button 
+                          className="notification-action-btn small"
+                          onClick={() => handleMessageClick(msg)}
+                        >
+                          <FaExternalLinkAlt size={12} />
+                        </button>
                       </div>
                     </div>
                   ))
@@ -183,7 +202,7 @@ const NavBar = ({ invertMenuToggle }) => {
                   </button>
                 </div>
               </div>
-              {console.log(notifs)}
+
               <div className="notification-list">
                 {notifs.length === 0 ? (
                   <p className="no-notifications">No new notifications</p>
@@ -191,8 +210,7 @@ const NavBar = ({ invertMenuToggle }) => {
                   [...notifs].reverse().slice(0,10).map((notif) => (
                     <div
                       key={notif.notification_id}
-                      className="notification-item unread"
-                      onClick={() => handleNotificationClick(notif)}
+                      className={`notification-item ${notif.mark_read ? '' : 'unread'}`}
                     >
                       <div className="notif-icon">
                         <IoIosNotifications />
@@ -204,6 +222,24 @@ const NavBar = ({ invertMenuToggle }) => {
                           {new Date(notif.notify_date).toLocaleDateString()}{" "}
                           {new Date(notif.notify_date).toLocaleTimeString()}
                         </p>
+                      </div>
+                      <div className="notification-item-actions">
+                        {!notif.mark_read && (
+                          <button 
+                            className="notification-action-btn small mark-read"
+                            onClick={() => handleMarkAsRead(notif)}
+                            title="Mark as read"
+                          >
+                            <FaEye size={12} />
+                          </button>
+                        )}
+                        <button 
+                          className="notification-action-btn small view-details"
+                          onClick={() => handleViewNotification(notif)}
+                          title="View details"
+                        >
+                          <FaExternalLinkAlt size={12} />
+                        </button>
                       </div>
                     </div>
                   ))
@@ -219,8 +255,6 @@ const NavBar = ({ invertMenuToggle }) => {
           <p>{user.fullName}</p>
         </div>        
       </div>
-      {/* MESSAGES ICON */}
-
     </nav>
   )
 }

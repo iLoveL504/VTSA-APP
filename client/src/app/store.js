@@ -11,6 +11,12 @@ const summaryMap = {
   'Testing and Commissioning': 'Test and Comm'
 };
 
+const formatLocalDate = (isoString) => {
+  if (!isoString) return "N/A";
+  const date = new Date(isoString);
+  // Add 1 day to compensate for UTC to Philippines time conversion
+  return date.toLocaleDateString("en-GB", { timeZone: "Asia/Manila" });
+};
 
 //YYYY-MM-DD for testing
 // const d = new Date('2025-10-10')
@@ -190,12 +196,17 @@ export default createStore({
     }),
     projects: [],
     setProjects: action((state, payload) => {
-        state.projects = Array.isArray(payload) ? payload : []
+      state.projects = Array.isArray(payload) ? payload : []
+    }),
+    archivedProjects: [],
+    setArchivedProjects: action((state, payload) => {
+      state.archivedProjects = Array.isArray(payload) ? payload : []
     }),
     fetchProjects: thunk( async (actions) => {
       const backendURL = import.meta.env.VITE_BACKEND_URL || "http://localhost:4000";
       try {
         const projs = await Axios.get(`${backendURL}/api/projects`)
+        actions.setArchivedProjects(projs)
         actions.setProjects(projs.data)
       } catch (err) {
         console.log(err)
@@ -331,6 +342,15 @@ setQaQCHistory: action((state, payload) => {
       actions.setProjectData(projectRes.data);
       actions.setProjectPhotos(photosRes.data);
       actions.setProjectTeamTechs(teamTechsRes.data);
+          scheduleRes.data.forEach(d => {
+      const sd = new Date(d.task_start)
+      const ed = new Date(d.task_end)
+      sd.setDate(sd.getDate() + 1);
+      ed.setDate(ed.getDate() + 1);
+
+      d.task_start = sd
+      d.task_end = ed
+    })
       actions.setProjectSchedule(scheduleRes.data);
       actions.setTaskPhotos(taskPhotosRes.data);
       actions.setHolidays(holidays.data)
@@ -435,6 +455,15 @@ findProjectTasks: thunk(async (actions, { projectId, projectData }, { getState }
     // Fetch schedule data
     const scheduleRes = await Axios.get(`${backendURL}/api/projects/schedule/${projectId}`);
     const fetchedData = scheduleRes.data;
+    fetchedData.forEach(d => {
+      const sd = new Date(d.task_start)
+      const ed = new Date(d.task_end)
+      sd.setDate(sd.getDate() + 1);
+      ed.setDate(ed.getDate() + 1);
+
+      d.task_start = sd
+      d.task_end = ed
+    })
     actions.setFetchedData(fetchedData)
     
     if (!fetchedData || Object.keys(fetchedData).length === 0) {
@@ -509,13 +538,20 @@ findProjectTasks: thunk(async (actions, { projectId, projectData }, { getState }
     );
     
     // Find projected current task
-    const foundProjectedCurrentTask = fetchedData.find(t => 
-      t.task_type === 'task' && 
-      new Date(state.date) >= new Date(t.task_start) && 
-      new Date(state.date) < new Date(t.task_end)
-    );
-    
+const foundProjectedCurrentTask = fetchedData.find(t => {
+  if (t.task_type !== "task") return false;
+    console.log(new Date(t.task_start))
+    console.log(new Date(state.date))
+  return (
+    new Date(state.date) >= t.task_start &&
+    new Date(state.date) < t.task_end
+  );
+});
+    console.log(`Project ${projectId}---`)
+    console.log(formatLocalDate(foundProjectedCurrentTask.task_start))
+    console.log(formatLocalDate(state.date))
     console.log(foundProjectedCurrentTask);
+    console.log(`Project ${projectId}---`)
     
     // Set behind schedule flag
     if (foundCurrentTask && foundProjectedCurrentTask) {

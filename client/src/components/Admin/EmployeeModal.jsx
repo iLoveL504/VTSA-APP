@@ -1,3 +1,4 @@
+import { IconGitBranchDeleted } from '@tabler/icons-react'
 import { useState, useEffect } from 'react'
 
 const EmployeeModal = ({ employee, roles, onSave, onClose }) => {
@@ -7,13 +8,24 @@ const EmployeeModal = ({ employee, roles, onSave, onClose }) => {
         first_name: '',
         last_name: '',
         job: '',
-        islands: '',
+        branch: '',
         is_active: 1,
         in_house: '',
+        island_group: ''
     })
     console.log(formData)
-    const islands = ['Luzon', 'Visayas', 'Mindanao']
 
+    const branches = ['Baguio', 'Pampanga', 'Cebu', 'Davao', 'Pasig']
+    const branchesMap = {
+        Baguio: 'Luzon',
+        Pampanga: 'Luzon',
+        Cebu: 'Visayas',
+        Davao: 'Mindanao',
+        Pasig: 'Luzon'
+        
+    }
+    console.log(formData.branch)
+     console.log('Island is: ',branchesMap[formData.branch])
     useEffect(() => {
         if (employee) {
             setFormData({
@@ -24,11 +36,14 @@ const EmployeeModal = ({ employee, roles, onSave, onClose }) => {
                 job: employee.job || '',
                 is_active: employee.is_active || 1,
                 in_house: employee.in_house || 1,
-                island: employee.island_group || 'Luzon',
-
+                branch: employee.branch || 'Luzon',
+                island_group: employee.island_group || 'Luzon'
             })
+           
         }
     }, [employee])
+
+
 
     const handleSubmit = (e) => {
         e.preventDefault()
@@ -43,10 +58,21 @@ const EmployeeModal = ({ employee, roles, onSave, onClose }) => {
         console.log(name)
         console.log(value)
         console.log(formData)
-        setFormData(prev => ({
-            ...prev,
-            [name]: value
-        }))
+        setFormData(prev => {
+            if (name === 'branch') {
+                return {
+                ...prev,
+                branch: value,
+                island_group: branchesMap[value]
+                }
+            } else {
+                return {
+                ...prev,
+                [name]: value,
+                }                
+            }
+
+        })
     }
 
     return (
@@ -106,18 +132,22 @@ const EmployeeModal = ({ employee, roles, onSave, onClose }) => {
 
                     <div className="form-row">
                         <div className="form-group">
-                            <label>Island </label>
+                            <label>Branch </label>
                             <select
-                                name="island"
-                                value={formData.islands}
+                                name="branch"
+                                value={formData.branch}
                                 onChange={handleChange}
                                 required
                             >
-                                <option value="">Select island</option>
-                                {islands.map(islands => (
+                                <option value="">Select branch</option>
+                                {branches.map(islands => (
                                     <option key={islands} value={islands}>{islands}</option>
                                 ))}
                             </select>
+                        </div>                        
+                        <div className="form-group">
+                            <label>Island </label>
+                            <label>{formData.island_group}</label>
                         </div>                        
                     </div>
 
@@ -131,7 +161,7 @@ const EmployeeModal = ({ employee, roles, onSave, onClose }) => {
                                 required
                             >
                                 <option value="">Select a role</option>
-                                {roles.map(role => (
+                                {roles.filter(r => r !== 'Admin' && r !== 'Project Manager').map(role => (
                                     <option key={role} value={role}>{role}</option>
                                 ))}
                             </select>

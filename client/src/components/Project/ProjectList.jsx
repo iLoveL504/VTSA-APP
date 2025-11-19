@@ -14,7 +14,7 @@ const ProjectList = ({onHold, searchTerm, statusFilter, viewMode}) => {
 
   // Filter projects based on various criteria
   const filteredProjects = useMemo(() => {
-    let filtered = sessionStorage.getItem('roles') === 'Project Manager' ? projects : designatedProjects
+    let filtered = sessionStorage.getItem('roles') === 'Project Manager' || sessionStorage.getItem('roles') === 'Operations Manager' ? projects : designatedProjects
     
     if (role === 'manager' || role === 'Project Manager' || role === 'TNC Coordinator' || role === 'QAQC Coordinator') {
       // Apply search filter

@@ -162,6 +162,14 @@ const ProjectTeam = ({ teamInfo, proj, teamTechs, projId }) => {
                                         <>
                                             <span className="person-name">{projectEngineer.fullname}</span>
                                             <span className="person-id">ID: {projectEngineer.id}</span>
+                                            <span className="not-assigned">
+                                            <button
+                                                className="btn-assign-team"
+                                                onClick={() => navigate(`/projects/${proj.id}/team`)}
+                                            >
+                                                Edit Project Engineer
+                                            </button>
+                                        </span>
                                         </>
                                     ) : (
                                         <span className="not-assigned">

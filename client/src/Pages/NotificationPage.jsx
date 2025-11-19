@@ -28,7 +28,7 @@ const NotificationPage = () => {
       </div>
     )
   }
-
+  console.log(foundNotif)
   return (
     <div className='Content NotificationPage'>
       <a className="back-button" onClick={() => navigate(-1)}>
@@ -83,14 +83,22 @@ const NotificationPage = () => {
       </div>
       
       <div className='notification-actions'>
-        <button className="action-btn btn-secondary">
-          <i className="fas fa-undo"></i>
-          Mark Unread
-        </button>
-        <button className="action-btn btn-primary">
-          <i className="fas fa-trash"></i>
-          Delete
-        </button>
+        {console.log(foundNotif)}
+        {foundNotif.functionality.function === 'projects-navigate' ? (
+          <button 
+            className="action-btn btn-secondary"
+            onClick={() => {
+              navigate(`/projects/${foundNotif.functionality['project-id']}`)
+            }}
+          >
+            <i className="fas fa-undo"></i>
+            Navigate to Project
+          </button>
+        ) : (
+          <></>
+        )}
+
+
       </div>
     </div>
   )

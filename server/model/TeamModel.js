@@ -21,9 +21,9 @@ class TeamModel {
 
     static async getTeamsWithNoProject() {
         const [results] = await pool.query(`
-            SELECT t.team_id, t.Foreman, f.employee_id AS foreman_id,
+            SELECT t.team_id, t.Foreman, f.employee_id AS foreman_id, f.branch as \`foreman_branch\`,
                    CONCAT(e.first_name, ' ', e.last_name) AS full_name,
-                   e.employee_id, e.job, t.project_id, p.lift_name, p.created_at, p.manufacturing_end_date
+                   e.employee_id, e.job, e.branch, t.project_id, p.lift_name, p.created_at, p.manufacturing_end_date
             FROM teams t
             LEFT JOIN employees f ON f.employee_id = t.foreman_id
             LEFT JOIN team_members tm ON tm.foreman_id = t.team_id
@@ -81,6 +81,7 @@ class TeamModel {
         await pool.query(`update project_manpower set team_id = ? where project_id = ?`, [foremanId, id])
 
         await pool.query(`delete from team_members where foreman_id = ?`, [foremanId])
+        await pool.query(`delete from forecast_team_members where project_id = ?`, [id])
         const insertPromises = installers.map(i => (
             pool.query(`insert into team_members (foreman_id, emp_id, project_id) values (?, ?, ?)`, [foremanId, i, id])
         ))
@@ -189,13 +190,13 @@ class TeamModel {
         
     }
 
-   static async getTeamDashboard() {
+static async getTeamDashboard() {
     const [result1] = await pool.query(`
         SELECT pm.project_id, p.lift_name, p.client, pm.project_engineer_id, 
-               CONCAT(pe.last_name, ' ', pe.first_name) AS \`pe_fullname\`, pe.job,
-               pm.tnc_tech_id, CONCAT(tnc.last_name, ' ', tnc.first_name) AS \`tnc_fullname\`, tnc.job,
-               pm.qaqc_id, CONCAT(qaqc.last_name, ' ', qaqc.first_name) AS \`qaqc_fullname\`, qaqc.job,
-               pm.pms_id, CONCAT(pms.last_name, ' ', pms.first_name) AS \`pms_fullname\`, pms.job 
+               CONCAT(pe.last_name, ' ', pe.first_name) AS \`pe_fullname\`, pe.job, pe.branch as \`pe_branch\`,
+               pm.tnc_tech_id, CONCAT(tnc.last_name, ' ', tnc.first_name) AS \`tnc_fullname\`, tnc.job, tnc.branch as \`tnc_branch\`,
+               pm.qaqc_id, CONCAT(qaqc.last_name, ' ', qaqc.first_name) AS \`qaqc_fullname\`, qaqc.job, qaqc.branch as \`qaqc_branch\`,
+               pm.pms_id, CONCAT(pms.last_name, ' ', pms.first_name) AS \`pms_fullname\`, pms.job, pms.branch as \`pms_branch\`
         FROM project_manpower pm
         LEFT JOIN employees pe ON pm.project_engineer_id = pe.employee_id
         LEFT JOIN employees tnc ON pm.tnc_tech_id = tnc.employee_id
@@ -204,23 +205,24 @@ class TeamModel {
         JOIN projects p ON p.id = pm.project_id 
         WHERE p.archived = 0 AND p.status <> 'Completed';
     `);
-
+ 
     const [result2] = await pool.query(`
-        SELECT pm.id AS \`project_manpower_id\`, pm.project_engineer_id, pe.username AS \`pe_username\`, 
-               pm.team_id, t.Foreman, t.foreman_id, tm.emp_id, e.username AS \`e_username\`, 
+        SELECT pm.id AS \`project_manpower_id\`, pm.project_engineer_id, pe.username AS \`pe_username\`, pe.branch as \`pe_branch\`, 
+               pm.team_id, t.Foreman, t.foreman_id, f.branch as \`foreman_branch\`, 
+               tm.emp_id, e.username AS \`e_username\`, e.branch as \`e_branch\`,
                CONCAT(e.last_name, ' ', e.first_name) AS \`e_fullname\`, e.job, 
                p.id AS \`project_id\`, p.lift_name, p.status, 
                p.installation_start_date AS \`operations_start_date\`, p.project_end_date
         FROM project_manpower pm 
         LEFT JOIN employees pe ON pm.project_engineer_id = pe.employee_id
-        LEFT JOIN employees tnc ON pm.tnc_tech_id = tnc.employee_id
         LEFT JOIN teams t ON pm.team_id = t.team_id
         LEFT JOIN projects p ON pm.project_id = p.id
         LEFT JOIN team_members tm ON t.team_id = tm.foreman_id
+        LEFT JOIN employees f ON tm.foreman_id = f.employee_id
         LEFT JOIN employees e ON e.employee_id = tm.emp_id
         WHERE p.archived = 0 AND p.status <> 'Completed';
     `);
-
+      
     // Merge the data
     const projectsMap = new Map();
 
@@ -235,23 +237,27 @@ class TeamModel {
             project_engineer: {
                 id: projectTech.project_engineer_id,
                 fullname: projectTech.pe_fullname,
-                job: projectTech.job
+                job: projectTech.job,
+                branch: projectTech.pe_branch
             },
             technicians: {
                 tnc_tech: projectTech.tnc_tech_id ? {
                     id: projectTech.tnc_tech_id,
                     fullname: projectTech.tnc_fullname,
-                    job: 'Test and Commission'
+                    job: 'Test and Commission',
+                    branch: projectTech.tnc_branch
                 } : null,
                 qaqc_tech: projectTech.qaqc_id ? {
                     id: projectTech.qaqc_id,
                     fullname: projectTech.qaqc_fullname,
-                    job: 'QA/QC'
+                    job: 'QA/QC',
+                    branch: projectTech.qaqc_branch
                 } : null,
                 pms_tech: projectTech.pms_id ? {
                     id: projectTech.pms_id,
                     fullname: projectTech.pms_fullname,
-                    job: 'PMS'
+                    job: 'PMS',
+                    branch: projectTech.pms_branch
                 } : null
             },
             foreman: null,
@@ -275,7 +281,8 @@ class TeamModel {
                 project_engineer: {
                     id: teamMember.project_engineer_id,
                     fullname: null,
-                    job: null
+                    job: null,
+                    branch: teamMember.pe_branch
                 },
                 technicians: {
                     tnc_tech: null,
@@ -299,21 +306,28 @@ class TeamModel {
             project.project_end_date = teamMember.project_end_date;
         }
 
-        // Set foreman
+        // Update project engineer branch if missing
+        if (teamMember.project_engineer_id && !project.project_engineer.branch && teamMember.pe_branch) {
+            project.project_engineer.branch = teamMember.pe_branch;
+        }
+
+        // Set foreman with branch information
         if (teamMember.Foreman && !project.foreman) {
             project.foreman = {
                 id: teamMember.foreman_id,
-                name: teamMember.Foreman
+                name: teamMember.Foreman,
+                branch: teamMember.foreman_branch
             };
         }
 
-        // Add team member if valid
+        // Add team member if valid (with branch information)
         if (teamMember.emp_id && teamMember.e_fullname) {
             const teamMemberObj = {
                 id: teamMember.emp_id,
                 username: teamMember.e_username,
                 fullname: teamMember.e_fullname,
-                job: teamMember.job
+                job: teamMember.job,
+                branch: teamMember.e_branch
             };
 
             // Check if team member already exists to avoid duplicates

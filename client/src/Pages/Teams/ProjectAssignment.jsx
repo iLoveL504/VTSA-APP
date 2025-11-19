@@ -24,7 +24,9 @@ import {
   Search as SearchIcon,
   Warning as WarningIcon,
   CheckCircle as CheckCircleIcon,
-  GroupAdd as GroupAddIcon
+  GroupAdd as GroupAddIcon,
+  LocationOn as LocationIcon,
+  Close as CloseIcon
 } from '@mui/icons-material';
 
 const SaveTeamModal = ({ isOpen, onClose, project, forecastSocket, utilitiesSocket, team }) => {
@@ -37,12 +39,17 @@ const SaveTeamModal = ({ isOpen, onClose, project, forecastSocket, utilitiesSock
             if (ack?.success) {
                 window.alert('Team saved successfully!');
                 utilitiesSocket.emit('pe_projects', null, () => {
-                    window.location.reload();
+                    
                 });
+                console.log('goes inside new_notification')
                 utilitiesSocket.emit("new_notification", {
                     subject: `Project Assigned`,
                     body: `Project Assigned for ${project.lift_name} (${project.client})`,
-                    Ids
+                    Ids,
+                    functionality: {
+                    function: "projects-navigate",
+                    "project-id": project.id
+                    }
                 }, (ack) => {
                     if (ack?.success) {
                         utilitiesSocket.emit("refresh_project_data");
@@ -50,6 +57,7 @@ const SaveTeamModal = ({ isOpen, onClose, project, forecastSocket, utilitiesSock
                       console.log('error');
                     }
                 });
+                //window.location.reload();
             } else {
                 window.alert(ack?.error || 'Failed to save team');
             }
@@ -86,6 +94,12 @@ const SaveTeamModal = ({ isOpen, onClose, project, forecastSocket, utilitiesSock
                                         <span className="member-role">
                                             {t.foreman_full_name ? 'Foreman' : t.job}
                                         </span>
+                                        {t.branch && (
+                                            <span className="member-branch">
+                                                <LocationIcon className="branch-icon" />
+                                                {t.branch}
+                                            </span>
+                                        )}
                                     </div>
                                     <span className="member-id">ID#{t.foreman_id || t.emp_id}</span>
                                 </div>
@@ -113,8 +127,332 @@ const SaveTeamModal = ({ isOpen, onClose, project, forecastSocket, utilitiesSock
     );
 };
 
+// New Team Editing Modal
+const EditTeamModal = ({ 
+    isOpen, 
+    onClose, 
+    project, 
+    editedTeam, 
+    setEditedTeam, 
+    editTeamSelection, 
+    onSave 
+}) => {
+    const [searchTerm, setSearchTerm] = useState('');
+    const [jobFilter, setJobFilter] = useState('all');
+    const [branchFilter, setBranchFilter] = useState('all');
+
+    if (!isOpen) return null;
+
+    // Get unique branches from available personnel
+    const availableBranches = [...new Set(editTeamSelection.map(person => person.branch).filter(Boolean))];
+
+    // Filter available personnel
+    const filteredPersonnel = editTeamSelection.filter(person => {
+        // Search filter
+        if (searchTerm && !person.full_name.toLowerCase().includes(searchTerm.toLowerCase()) &&
+            !person.employee_id.toString().includes(searchTerm)) {
+            return false;
+        }
+        
+        // Job filter
+        if (jobFilter !== 'all' && person.job !== jobFilter) return false;
+        
+        // Branch filter
+        if (branchFilter !== 'all' && person.branch !== branchFilter) return false;
+        
+        return true;
+    });
+
+    const handleSave = (project) => {
+        console.log(project)
+        if (editedTeam.length === 0) {
+            window.alert('Please provide a team');
+            return;
+        }
+        if (editedTeam.filter(e => e.job === 'Foreman').length > 1) {
+            window.alert('Maximum of one (1) foreman allowed');
+            return;      
+        }
+        if (!editedTeam.find(e => e.job === 'Foreman')) {
+            window.alert('Team requires foreman');
+            return;
+        }
+        if (!editedTeam.find(e => e.job === 'Installer')) {
+            window.alert('Team requires at least one (1) Installer');
+            return;
+        }
+        if (!editedTeam.find(e => e.job === 'Skilled Installer')) {
+            window.alert('Team requires at least one (1) Skilled Installer');
+            return;
+        }
+        
+        onSave(project);
+        onClose();
+    };
+
+    return (
+        <div className="modal-overlay" onClick={onClose}>
+            <div className="modal-content large" onClick={(e) => e.stopPropagation()}>
+                <div className="modal-header">
+                    <EditIcon className="modal-icon" />
+                    <h3>Edit Team for {project?.lift_name} ({project.island_group})</h3>
+                    <button className="modal-close" onClick={onClose}>×</button>
+                </div>
+                {console.log(project)}
+                <div className="modal-body">
+                    <div className="editing-layout">
+                        {/* Current Team Section */}
+                        <div className="current-team-section">
+                            <h4>Current Team Composition</h4>
+                            
+                            {/* Foreman Section */}
+                            <div className="team-role-section">
+                                <div className="role-header">
+                                    <SupervisorAccountIcon className="role-icon" />
+                                    <span>Foreman (Required: 1)</span>
+                                    <span className="role-count">
+                                        {editedTeam.filter(t => t.job === 'Foreman').length}/1
+                                    </span>
+                                </div>
+                                <div className="role-members">
+                                    {editedTeam.filter(t => t.job === 'Foreman').map(member => (
+                                        <div 
+                                            key={member.employee_id} 
+                                            className="team-member removable"
+                                            onClick={() => {
+                                                setEditedTeam(prev => prev.filter(e => e.employee_id !== member.employee_id));
+                                            }}
+                                        >
+                                            <PersonIcon className="member-icon" />
+                                            <div className="member-info">
+                                                <span className="member-name">{member.full_name}</span>
+                                                <div className="member-meta">
+                                                    <span className="member-job">{member.job}</span>
+                                                    {member.branch && (
+                                                        <span className="member-branch">
+                                                            <LocationIcon className="branch-icon" />
+                                                            {member.branch}
+                                                        </span>
+                                                    )}
+                                                </div>
+                                            </div>
+                                            <button className="remove-btn">×</button>
+                                        </div>
+                                    ))}
+                                    {editedTeam.filter(t => t.job === 'Foreman').length === 0 && (
+                                        <div className="empty-role">No foreman assigned</div>
+                                    )}
+                                </div>
+                            </div>
+
+                            {/* Installers Section */}
+                            <div className="team-role-section">
+                                <div className="role-header">
+                                    <GroupsIcon className="role-icon" />
+                                    <span>Installation Team</span>
+                                    <span className="role-count">
+                                        {editedTeam.filter(t => t.job !== 'Foreman').length}
+                                    </span>
+                                </div>
+                                <div className="role-members">
+                                    {editedTeam.filter(t => t.job !== 'Foreman').map(member => (
+                                        <div 
+                                            key={member.employee_id} 
+                                            className="team-member removable"
+                                            onClick={() => {
+                                                setEditedTeam(prev => prev.filter(e => e.employee_id !== member.employee_id));
+                                            }}
+                                        >
+                                            <PersonIcon className="member-icon" />
+                                            <div className="member-info">
+                                                <span className="member-name">{member.full_name}</span>
+                                                <div className="member-meta">
+                                                    <span className="member-job">{member.job}</span>
+                                                    {member.branch && (
+                                                        <span className="member-branch">
+                                                            <LocationIcon className="branch-icon" />
+                                                            {member.branch}
+                                                        </span>
+                                                    )}
+                                                </div>
+                                            </div>
+                                            <button className="remove-btn">×</button>
+                                        </div>
+                                    ))}
+                                    {editedTeam.filter(t => t.job !== 'Foreman').length === 0 && (
+                                        <div className="empty-role">No installers assigned</div>
+                                    )}
+                                </div>
+                            </div>
+
+                            {/* Team Summary */}
+                            <div className="team-summary">
+                                <h5>Team Summary</h5>
+                                <div className="summary-grid">
+                                    <div className="summary-item">
+                                        <span className="summary-label">Foreman</span>
+                                        <span className="summary-count">
+                                            {editedTeam.filter(t => t.job === 'Foreman').length}/1
+                                        </span>
+                                    </div>
+                                    <div className="summary-item">
+                                        <span className="summary-label">Skilled Installers</span>
+                                        <span className="summary-count">
+                                            {editedTeam.filter(t => t.job === 'Skilled Installer').length}
+                                        </span>
+                                    </div>
+                                    <div className="summary-item">
+                                        <span className="summary-label">Installers</span>
+                                        <span className="summary-count">
+                                            {editedTeam.filter(t => t.job === 'Installer').length}
+                                        </span>
+                                    </div>
+                                    <div className="summary-item">
+                                        <span className="summary-label">Total Members</span>
+                                        <span className="summary-count">{editedTeam.length}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Available Personnel Section */}
+                        <div className="available-personnel-section">
+                            <h4>Available Personnel</h4>
+                            
+                            {/* Filters */}
+                            <div className="filters-section">
+                                <div className="search-box">
+                                    <SearchIcon className="search-icon" />
+                                    <input
+                                        type="text"
+                                        placeholder="Search by name or ID..."
+                                        value={searchTerm}
+                                        onChange={(e) => setSearchTerm(e.target.value)}
+                                        className="search-input"
+                                    />
+                                </div>
+                                
+                                <div className="filter-controls">
+                                    <div className="filter-group">
+                                        <FilterIcon className="filter-icon" />
+                                        <select 
+                                            value={jobFilter}
+                                            onChange={(e) => setJobFilter(e.target.value)}
+                                            className="filter-select"
+                                        >
+                                            <option value="all">All Roles</option>
+                                            <option value="Foreman">Foreman</option>
+                                            <option value="Skilled Installer">Skilled Installer</option>
+                                            <option value="Installer">Installer</option>
+                                        </select>
+                                    </div>
+                                    
+                                    <div className="filter-group">
+                                        <LocationIcon className="filter-icon" />
+                                        <select 
+                                            value={branchFilter}
+                                            onChange={(e) => setBranchFilter(e.target.value)}
+                                            className="filter-select"
+                                        >
+                                            <option value="all">All Branches</option>
+                                            {availableBranches.map(branch => (
+                                                <option key={branch} value={branch}>{branch}</option>
+                                            ))}
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* Personnel Grid */}
+                            <div className="personnel-grid-modal">
+                                {filteredPersonnel.length > 0 ? (
+                                    filteredPersonnel.map((person, index) => {
+                                        const isSelected = editedTeam.some(e => e.employee_id === person.employee_id);
+                                        
+                                        return (
+                                            <div 
+                                                key={index} 
+                                                className={`personnel-card-modal ${isSelected ? 'selected' : ''}`}
+                                                onClick={() => {
+                                                    setEditedTeam(prev => {
+                                                        if (isSelected) {
+                                                            return prev.filter(e => e.employee_id !== person.employee_id);
+                                                        } else {
+                                                            // Check if adding foreman when one already exists
+                                                            if (person.job === 'Foreman' && prev.some(e => e.job === 'Foreman')) {
+                                                                window.alert('Only one foreman can be assigned per team');
+                                                                return prev;
+                                                            }
+                                                            return [...prev, person];
+                                                        }
+                                                    });
+                                                }}
+                                            >   
+                                                <div className="personnel-header-modal">
+                                                    <div className={`role-badge role-${person.job.toLowerCase().replace(' ', '-')}`}>
+                                                        {person.job}
+                                                    </div>
+                                                    {person.branch && (
+                                                        <div className="branch-badge">
+                                                            <LocationIcon className="branch-icon" />
+                                                            {person.branch}
+                                                        </div>
+                                                    )}
+                                                </div>
+                                                <div className="personnel-body-modal">
+                                                    <PersonIcon className="personnel-avatar" />
+                                                    <div className="personnel-info">
+                                                        <div className="personnel-name">{person.full_name}</div>
+                                                        <div className="personnel-id">ID: {person.employee_id}</div>
+                                                        <div className="personnel-island">Island: {person.island_group}</div>
+                                                    </div>
+                                                </div>
+                                                <div className="personnel-footer-modal">
+                                                    {isSelected ? (
+                                                        <div className="selected-indicator">
+                                                            <CheckCircleIcon className="selected-icon" />
+                                                            Selected
+                                                        </div>
+                                                    ) : (
+                                                        <div className="select-indicator">
+                                                            <GroupAddIcon className="assign-icon" />
+                                                            Click to Select
+                                                        </div>
+                                                    )}
+                                                </div>
+                                            </div>
+                                        );
+                                    })
+                                ) : (
+                                    <div className="no-personnel">
+                                        <PersonIcon className="no-personnel-icon" />
+                                        <h4>No personnel found</h4>
+                                        <p>Try adjusting your filters or search terms</p>
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div className="modal-footer">
+                    <button className="btn-secondary" onClick={onClose}>
+                        <CancelIcon className="btn-icon" />
+                        Cancel
+                    </button>
+                    <button className="btn-primary" onClick={() => handleSave(project)}>
+                        <SaveIcon className="btn-icon" />
+                        Save Team Changes
+                    </button>
+                </div>
+            </div>
+        </div>
+    );
+};
+
 const ProjectAssignment = () => {
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [isEditModalOpen, setIsEditModalOpen] = useState(false);
     const [teamView, setTeamView] = useState('pending');
     const {forecastSocket, utilitiesSocket} = useSharedSocket()
 
@@ -131,15 +469,21 @@ const ProjectAssignment = () => {
     const [editedTeam, setEditedTeam] = useState([])
 
     const [selectedTab, setSelectedTab] = useState('preliminaries')
-    console.log(tentativeProjectTeams)
-    console.log(installationTeams)
+    
     // New state for filters
     const [jobFilter, setJobFilter] = useState('all');
     const [searchTerm, setSearchTerm] = useState('');
+    const [branchFilter, setBranchFilter] = useState('all');
 
     const itemRefs = useRef([]);
     const projects = useStoreState(state => state.projects)
     
+    // Get unique branches from available personnel
+    const availableBranches = [...new Set([
+        ...teamsNoProject.map(p => p.branch),
+        ...forecastData.map(p => p.branch)
+    ].filter(Boolean))];
+
     // Simplified project filtering by phase
     const getProjectsByPhase = (phase) => {
         switch(phase) {
@@ -182,13 +526,16 @@ const ProjectAssignment = () => {
         });
     };
 
-    // Filter personnel based on active tab, job filter, and search
+    // Filter personnel based on active tab, job filter, search, and branch
     const filteredPersonnel = teamsNoProject.concat(forecastData).filter(person => {
         // Group filter
         if (activeRoleTab !== 'all' && person.group !== activeRoleTab) return false;
         
         // Job filter
         if (jobFilter !== 'all' && person.job !== jobFilter) return false;
+        
+        // Branch filter
+        if (branchFilter !== 'all' && person.branch !== branchFilter) return false;
         
         // Search filter
         if (searchTerm && !person.full_name.toLowerCase().includes(searchTerm.toLowerCase()) &&
@@ -200,71 +547,92 @@ const ProjectAssignment = () => {
     });
 
     const editBlur = () => {
-      setEditingProjectId(null)
-      setEditTeamSelection([])
-      setEditedTeam([])
+      setEditingProjectId(null);
+      setEditTeamSelection([]);
+      setEditedTeam([]);
+      setIsEditModalOpen(false);
     }
 
     useEffect(() => {
         if(forecastSocket && utilitiesSocket) {
-            forecastSocket.emit('no_project_team')
-            forecastSocket.emit('tentative_project_team')
-            utilitiesSocket.emit('refresh_project_data')
-            forecastSocket.emit('installation_teams')
+            forecastSocket.emit('no_project_team');
+            forecastSocket.emit('tentative_project_team');
+            utilitiesSocket.emit('refresh_project_data');
+            forecastSocket.emit('installation_teams');
         }
-    }, [forecastSocket])
+    }, [forecastSocket]);
 
     useEffect(() => {
-        if (!forecastSocket || !selectedProject.installation_start_date) return 
-        forecastSocket.emit('forecast_team', selectedProject.installation_start_date.split("T")[0])
-    }, [selectedProject, forecastSocket])
+        if (!forecastSocket || !selectedProject.installation_start_date) return;
+        forecastSocket.emit('forecast_team', selectedProject.installation_start_date.split("T")[0]);
+    }, [selectedProject, forecastSocket]);
 
     const handleEditClick = async (projectId) => {
-        if (editingProjectId === projectId) {
-            // Save logic
-            if (editedTeam.length === 0) {
-                window.alert('Please provide a team')
-                return
-            }
-            if (editedTeam.filter(e => e.job === 'Foreman').length > 1) {
-                window.alert('Maximum of one (1) foreman allowed')
-                return      
-            }
-            if (!editedTeam.find(e =>  e.job === 'Foreman')) {
-                window.alert('Team requires foreman')
-                return
-            }
-            if (!editedTeam.find(e =>  e.job === 'Installer')) {
-                window.alert('Team requires at least one (1) Installer')
-                return
-            }
-            if (!editedTeam.find(e =>  e.job === 'Skilled Installer')) {
-                window.alert('Team requires at least one (1) Skilled Installer')
-                return
-            }
-            try {
-                const payload = { editedTeam }
-                const response = await Axios.post(`api/teams/edit/${projectId}`, payload)
-                if (!response?.data.success) {
-                    window.alert('Error in editing team')
-                }     
-            } catch (err) {
-                console.error(err)
-            }
-            window.location.reload()
-            setEditingProjectId(null);
+        
+        if(installationTeams[projectId] === undefined) {
+            setEditTeamSelection(teamsNoProject);
+            setEditedTeam([]);
         } else {
-            // Start editing    
-            if(installationTeams[projectId] === undefined) {
-                setEditTeamSelection(teamsNoProject)
-                setEditedTeam([])
-            } else {
-                const projInstallationTeam = [...installationTeams[projectId].team, ...teamsNoProject]
-                setEditTeamSelection(projInstallationTeam)
-                setEditedTeam(installationTeams[projectId].team)                
-            }
-            setEditingProjectId(projectId);
+            const projInstallationTeam = [...installationTeams[projectId].team, ...teamsNoProject];
+            setEditTeamSelection(projInstallationTeam);
+            setEditedTeam(installationTeams[projectId].team);                
         }
+        setEditingProjectId(projectId);
+        setIsEditModalOpen(true);
+    };
+
+    const handleSaveTeamEdit = async (project) => {
+        if (editedTeam.length === 0) {
+            window.alert('Please provide a team');
+            return;
+        }
+        if (editedTeam.filter(e => e.job === 'Foreman').length > 1) {
+            window.alert('Maximum of one (1) foreman allowed');
+            return;      
+        }
+        if (!editedTeam.find(e => e.job === 'Foreman')) {
+            window.alert('Team requires foreman');
+            return;
+        }
+        if (!editedTeam.find(e => e.job === 'Installer')) {
+            window.alert('Team requires at least one (1) Installer');
+            return;
+        }
+        if (!editedTeam.find(e => e.job === 'Skilled Installer')) {
+            window.alert('Team requires at least one (1) Skilled Installer');
+            return;
+        }
+        
+        try {
+            const payload = { editedTeam };
+            const response = await Axios.post(`api/teams/edit/${editingProjectId}`, payload);
+            if (!response?.data.success) {
+                window.alert('Error in editing team');
+                
+            }  
+            const rIds = editedTeam.map(e => e.employee_id)
+            console.log(rIds) 
+
+                utilitiesSocket.emit("new_notification", {
+                    subject: `New Project Assignment`,
+                    body: `Project Assigned for ${project.lift_name} (${project.client})`,
+                    Ids: rIds,
+                    functionality: {
+                    function: "projects-navigate",
+                    "project-id": project.id
+                    }
+                }, (ack) => {
+                    if (ack?.success) {
+                        utilitiesSocket.emit("refresh_project_data");
+                    } else {
+                      console.log('error');
+                    }
+                });  
+        } catch (err) {
+            console.error(err);
+        }
+        window.location.reload();
+        setEditingProjectId(null);
     };
 
     const handlePhaseClick = (phase) => {
@@ -280,11 +648,10 @@ const ProjectAssignment = () => {
 
     const ProjectCard = ({ project, index, hasTeam = false, phase = 'preliminaries' }) => {
         const fTeam = tentativeProjectTeams.filter(t => t.project_id === project.id);
-        console.log(hasTeam)
         const projectTeams = hasTeam 
             ? installationTeams[project.id]?.team || []
             : tentativeProjectTeams.filter(t => Number(t.project_id) === Number(project.id));
-        console.log(projectTeams)
+            
         const foreman = hasTeam 
             ? projectTeams.find(p => p.job === "Foreman")
             : projectTeams.find(p => p.foreman_id !== null);
@@ -326,6 +693,10 @@ const ProjectAssignment = () => {
 
                     <div className="project-client">
                         <span className="client-name">{project.client}</span>
+                    </div>
+
+                    <div className="project-client">
+                        <span className="client-name">({project.island_group})</span>
                     </div>
                 </div>
 
@@ -384,6 +755,12 @@ const ProjectAssignment = () => {
                                     <span className="member-name">
                                         {hasTeam ? foreman.full_name : (foreman.foreman_full_name || foreman.full_name)}
                                     </span>
+                                    {foreman.branch && (
+                                        <span className="member-branch">
+                                            <LocationIcon className="branch-icon" />
+                                            {foreman.branch}
+                                        </span>
+                                    )}
                                     {!hasTeam && (
                                         <button 
                                             className="remove-member"
@@ -420,6 +797,12 @@ const ProjectAssignment = () => {
                                         <PersonIcon className="member-icon" />
                                         <span className="member-name">{installer.full_name}</span>
                                         <span className="member-role">{installer.job}</span>
+                                        {installer.branch && (
+                                            <span className="member-branch">
+                                                <LocationIcon className="branch-icon" />
+                                                {installer.branch}
+                                            </span>
+                                        )}
                                         {!hasTeam && (
                                             <button 
                                                 className="remove-member"
@@ -463,23 +846,14 @@ const ProjectAssignment = () => {
 
                     {(hasTeam || installationTeams[project.id]?.team) && (
                         <button
-                            className={`btn-edit ${editingProjectId === project.id ? 'editing' : ''}`}
+                            className="btn-edit"
                             onClick={(e) => {
                                 e.stopPropagation();
-                                handleEditClick(project.id);
+                                handleEditClick(project.id, project);
                             }}
                         >
-                            {editingProjectId === project.id ? (
-                                <>
-                                    <CheckCircleIcon className="btn-icon" />
-                                    Save Changes
-                                </>
-                            ) : (
-                                <>
-                                    <EditIcon className="btn-icon" />
-                                    Edit Team
-                                </>
-                            )}
+                            <EditIcon className="btn-icon" />
+                            Edit Team
                         </button>
                     )}
                 </div>
@@ -619,7 +993,9 @@ const ProjectAssignment = () => {
                                                     className="search-input"
                                                 />
                                             </div>
-                                            
+                                            <div>
+                                                Installers and Foremen available by {new Date(selectedProject.installation_start_date).toLocaleDateString()}: {forecastData.length}
+                                            </div>
                                             <div className="filter-controls">
                                                 <div className="filter-group">
                                                     <FilterIcon className="filter-icon" />
@@ -632,6 +1008,20 @@ const ProjectAssignment = () => {
                                                         <option value="Foreman">Foreman</option>
                                                         <option value="Skilled Installer">Skilled Installer</option>
                                                         <option value="Installer">Installer</option>
+                                                    </select>
+                                                </div>
+                                                
+                                                <div className="filter-group">
+                                                    <LocationIcon className="filter-icon" />
+                                                    <select 
+                                                        value={branchFilter}
+                                                        onChange={(e) => setBranchFilter(e.target.value)}
+                                                        className="filter-select"
+                                                    >
+                                                        <option value="all">All Branches</option>
+                                                        {availableBranches.map(branch => (
+                                                            <option key={branch} value={branch}>{branch}</option>
+                                                        ))}
                                                     </select>
                                                 </div>
                                                 
@@ -698,6 +1088,12 @@ const ProjectAssignment = () => {
                                                                 <div className={`role-badge role-${person.job.toLowerCase().replace(' ', '-')}`}>
                                                                     {person.job}
                                                                 </div>
+                                                                {person.branch && (
+                                                                    <div className="branch-badge">
+                                                                        <LocationIcon className="branch-icon" />
+                                                                        {person.branch}
+                                                                    </div>
+                                                                )}
                                                             </div>
                                                             <div className="personnel-body">
                                                                 <PersonIcon className="personnel-avatar" />
@@ -772,142 +1168,8 @@ const ProjectAssignment = () => {
                             </>
                         )}
 
-                        {/* Team Editing for All Phases */}
-                        {editingProjectId && (
-                            <div className='team-editing'>
-                                <div className="editing-header">
-                                    <EditIcon className="editing-icon" />
-                                    <div className="editing-info">
-                                        <h3>Edit Team Composition</h3>
-                                        <p>Modify the team for {selectedProject.lift_name}</p>
-                                    </div>
-                                </div>
-
-                                {/* Current Team */}
-                                <div className="current-team">
-                                    <h4>Current Team</h4>
-                                    <div className="team-composition-editor">
-                                        <div className="team-role-editor">
-                                            <div className="role-header-editor">
-                                                <SupervisorAccountIcon className="role-icon" />
-                                                <span>Foreman (Required: 1)</span>
-                                                <span className="role-count">
-                                                    {editedTeam.filter(t => t.job === 'Foreman').length}/1
-                                                </span>
-                                            </div>
-                                            <div className="role-members-editor">
-                                                {editedTeam.filter(t => t.job === 'Foreman').map(member => (
-                                                    <div 
-                                                        key={member.employee_id} 
-                                                        className="team-member-editor"
-                                                        onClick={() => {
-                                                            setEditedTeam(prev => prev.filter(e => e.employee_id !== member.employee_id));
-                                                        }}
-                                                    >
-                                                        <PersonIcon className="member-icon" />
-                                                        <div className="member-details">
-                                                            <span className="member-name">{member.full_name}</span>
-                                                            <span className="member-id">ID: {member.employee_id}</span>
-                                                        </div>
-                                                        <button className="remove-btn">×</button>
-                                                    </div>
-                                                ))}
-                                                {editedTeam.filter(t => t.job === 'Foreman').length === 0 && (
-                                                    <div className="empty-role">No foreman assigned</div>
-                                                )}
-                                            </div>
-                                        </div>
-
-                                        <div className="team-role-editor">
-                                            <div className="role-header-editor">
-                                                <GroupsIcon className="role-icon" />
-                                                <span>Installation Team</span>
-                                                <span className="role-count">
-                                                    {editedTeam.filter(t => t.job !== 'Foreman').length}
-                                                </span>
-                                            </div>
-                                            <div className="role-members-editor">
-                                                {editedTeam.filter(t => t.job !== 'Foreman').map(member => (
-                                                    <div 
-                                                        key={member.employee_id} 
-                                                        className="team-member-editor"
-                                                        onClick={() => {
-                                                            setEditedTeam(prev => prev.filter(e => e.employee_id !== member.employee_id));
-                                                        }}
-                                                    >
-                                                        <PersonIcon className="member-icon" />
-                                                        <div className="member-details">
-                                                            <span className="member-name">{member.full_name}</span>
-                                                            <div className="member-meta">
-                                                                <span className="member-job">{member.job}</span>
-                                                                <span className="member-id">ID: {member.employee_id}</span>
-                                                            </div>
-                                                        </div>
-                                                        <button className="remove-btn">×</button>
-                                                    </div>
-                                                ))}
-                                                {editedTeam.filter(t => t.job !== 'Foreman').length === 0 && (
-                                                    <div className="empty-role">No installers assigned</div>
-                                                )}
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                {/* Available Personnel */}
-                                <div className="available-personnel">
-                                    <h4>Available Personnel</h4>
-                                    <div className="personnel-grid-editor">
-                                        {editTeamSelection.map((person, index) => (
-                                            <div 
-                                                key={index} 
-                                                className={`personnel-card-editor ${
-                                                    editedTeam.map(e => e.employee_id).includes(person.employee_id) ? 'selected' : ''
-                                                }`}
-                                                onClick={() => {
-                                                    setEditedTeam(prev => {
-                                                        const alreadyAdded = prev.some(e => e.employee_id === person.employee_id);
-                                                        if (alreadyAdded) {
-                                                            return prev.filter(e => e.employee_id !== person.employee_id);
-                                                        } else {
-                                                            return [...prev, person];
-                                                        }
-                                                    });
-                                                }}
-                                            >   
-                                                <div className="personnel-header-editor">
-                                                    <div className={`role-badge role-${person.job.toLowerCase().replace(' ', '-')}`}>
-                                                        {person.job}
-                                                    </div>
-                                                </div>
-                                                <div className="personnel-body-editor">
-                                                    <PersonIcon className="personnel-avatar" />
-                                                    <div className="personnel-info">
-                                                        <div className="personnel-name">{person.full_name}</div>
-                                                        <div className="personnel-id">ID: {person.employee_id}</div>
-                                                    </div>
-                                                </div>
-                                                <div className="personnel-footer-editor">
-                                                    {editedTeam.map(e => e.employee_id).includes(person.employee_id) ? (
-                                                        <div className="selected-indicator">
-                                                            <CheckCircleIcon className="selected-icon" />
-                                                            Selected
-                                                        </div>
-                                                    ) : (
-                                                        <div className="select-indicator">
-                                                            Click to Select
-                                                        </div>
-                                                    )}
-                                                </div>
-                                            </div>
-                                        ))}
-                                    </div>
-                                </div>
-                            </div>
-                        )}
-
                         {/* Phase Info for Installation and TNC */}
-                        {(selectedTab === 'installation' || selectedTab === 'tnc') && !editingProjectId && (
+                        {(selectedTab === 'installation' || selectedTab === 'tnc') && !isEditModalOpen && (
                             <div className="phase-info-panel">
                                 <div className="phase-header">
                                     <div className="phase-title">
@@ -981,6 +1243,16 @@ const ProjectAssignment = () => {
                 forecastSocket={forecastSocket}
                 utilitiesSocket={utilitiesSocket}
                 team={teamToSave}
+            />
+
+            <EditTeamModal
+                isOpen={isEditModalOpen}
+                onClose={editBlur}
+                project={selectedProject}
+                editedTeam={editedTeam}
+                setEditedTeam={setEditedTeam}
+                editTeamSelection={editTeamSelection}
+                onSave={handleSaveTeamEdit}
             />       
         </>
     )

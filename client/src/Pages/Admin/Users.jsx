@@ -57,8 +57,8 @@ const Users = ({ empIsLoading }) => {
 
     const statusOptions = [
         { value: 'all', label: 'All Status' },
-        { value: 'active', label: 'Active' },
-        { value: 'inactive', label: 'Inactive' }
+        { value: 'In House', label: 'In House' },
+        { value: 'Contract Based', label: 'Contract Based' }
     ]
 
     const sortOptions = [
@@ -75,11 +75,11 @@ const Users = ({ empIsLoading }) => {
                 `${employee.first_name} ${employee.last_name}`.toLowerCase().includes(searchEmployee.toLowerCase()) ||
                 employee.job.toLowerCase().includes(searchEmployee.toLowerCase()) ||
                 employee.username.toLowerCase().includes(searchEmployee.toLowerCase())
-            
+            console.log(employees)
             const matchesRole = selectedRole === 'all' || employee.job === selectedRole
             const matchesStatus = selectedStatus === 'all' || 
-                (selectedStatus === 'active' && employee.is_active === 1) ||
-                (selectedStatus === 'inactive' && employee.is_active === 0)
+                (selectedStatus === 'In House' && employee.in_house === 1) ||
+                (selectedStatus === 'Contract Based' && employee.in_house === 0)
 
             return matchesSearch && matchesRole && matchesStatus && employee.job !== 'manager'
         })
@@ -347,7 +347,7 @@ const getRoleIcon = (role) => {
                             className="filter-select"
                         >
                             <option value="all">All Roles</option>
-                            {roles.map(role => (
+                            {roles.filter(r => r !== 'Admin' && r !== 'Project Manager').map(role => (
                                 <option key={role} value={role}>{role}</option>
                             ))}
                         </select>

@@ -1,4 +1,5 @@
 import React, { useMemo } from 'react';
+import { useStoreState } from 'easy-peasy';
 import {
   CheckCircle as CheckCircleIcon,
   Warning as WarningIcon,
@@ -10,6 +11,7 @@ import {
 } from '@mui/icons-material';
 
 const ProjectEngineerCompletion = ({ currentTask, handleTaskComplete, proj, values, handleContractChange, updatePhotos }) => {
+    const backendURL = import.meta.env.VITE_BACKEND_URL || "http://localhost:4000";
   // Base approval requirements
   const approvalRequirements = {
     'Template Setting': ['Foreman', 'QAQC'],
@@ -17,6 +19,9 @@ const ProjectEngineerCompletion = ({ currentTask, handleTaskComplete, proj, valu
     'Final Cleaning / Hand over': ['QAQC', 'TNC', 'PMS'],
     'Final Testing / Hand over': ['QAQC', 'TNC', 'PMS'],
   };
+  
+  const {taskPhotos} = useStoreState(state => state)
+  console.log(taskPhotos)
 
   // Determine required approvals
   const requiredApprovals = useMemo(() => {
@@ -211,8 +216,45 @@ const ProjectEngineerCompletion = ({ currentTask, handleTaskComplete, proj, valu
               </button>
             </div>
           )}
+          
         </div>
+
       </div>
+        <div className="photos-section">
+          <h3>Photo Attachments</h3>
+          <div className="images-grid">
+            {taskPhotos.filter(t => t.task_id === currentTask.task_id).length > 0 ? (
+              <>
+              {taskPhotos.filter(t => t.task_id === currentTask.task_id).map((photo, index) => (
+                  <div key={index} className="image-card">
+                      <img 
+                          src={`${backendURL}${photo.photo_url}`} 
+                          alt={`Task photo ${index + 1}`}
+                          className="service-image"
+                      />
+                      <div className="photo-actions">
+                          <div className="image-actions">
+                              <a 
+                                  href={`${backendURL}${photo.photo_url}`} 
+                                  target="_blank" 
+                                  rel="noopener noreferrer"
+                                  className="view-button"
+                              >
+                                  View Full Size
+                              </a>
+                          </div>
+                      </div>
+                  </div>
+              ))}                
+              </>
+            ) : (
+              <div>
+                No photos at the moment
+              </div>
+            )}
+         
+          </div>
+        </div>
     </>
   );
 };

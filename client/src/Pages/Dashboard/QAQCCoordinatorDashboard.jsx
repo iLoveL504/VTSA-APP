@@ -493,13 +493,13 @@ const QaqcDashboard = () => {
             <EngineeringIcon style={{marginRight: '8px'}} />
             In Progress
           </button>
-          <button 
+          {/* <button 
             className={`tab-button ${activeTab === 'unassigned' ? 'active' : ''}`}
             onClick={() => setActiveTab('unassigned')}
           >
             <AssignmentIcon style={{marginRight: '8px'}} />
             Unassigned
-          </button>
+          </button> */}
         </div>
 
         <div className="dashboard-content">

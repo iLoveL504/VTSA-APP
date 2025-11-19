@@ -119,7 +119,7 @@
     font-weight: 600;
 }
 
-.project-client {
+.ProjectDetails .project-client {
     color: #f0f0f0;
     font-size: 1.1rem;
     font-weight: 500;
@@ -229,6 +229,15 @@
 
 .card-content {
     padding: 24px;
+}
+
+.card-content.contract{
+    height: 800px;
+}
+
+.card-content.contract .attachment-image{
+    cursor: default;
+    height: 800px;;
 }
 
 /* Basic Information Grid */

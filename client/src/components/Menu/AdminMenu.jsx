@@ -8,6 +8,7 @@ import { useNavigate, Link } from 'react-router-dom';
 import { BiSolidLogOut } from "react-icons/bi"
 
 const AdminMenu = () => {
+ //const [selectedTab, setSelectedTab] = useState(null)
   const navigate = useNavigate()
   const handleLogout = () => {
     sessionStorage.clear()
@@ -25,19 +26,15 @@ const AdminMenu = () => {
           <Link to="/admin/users">
             <li>
                 <IoPerson style={{ color: 'white' }}/>
-                Users
-            </li>
+                <div>
+                  Users
+                </div>
+            </li> 
           </Link>
-          {/* <Link to="/projects">
+          <Link to="/projects">
             <li>
                 <GoProjectRoadmap style={{ color: 'white' }}/>
                 Projects
-            </li>
-          </Link>
-          <Link to="/PMS">
-            <li>
-                <MdHomeRepairService style={{ color: 'white' }}/>
-                PMS
             </li>
           </Link>
           <Link to="/teams">
@@ -45,14 +42,21 @@ const AdminMenu = () => {
                 <RiTeamFill style={{ color: 'white' }}/>
                 Teams
             </li>
+          </Link>          
+          <Link to="/PMS">
+            <li>
+                <MdHomeRepairService style={{ color: 'white' }}/>
+                PMS and Baby Book
+            </li>
           </Link>
+
           <Link to="/baby-book">
             <li>
                 <IoIosDocument style={{ color: 'white' }}/>
-                Baby Book
+                Project Reports
             </li>
           </Link>
-             */}
+            
           
         </ul>
 

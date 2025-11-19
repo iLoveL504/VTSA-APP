@@ -20,11 +20,11 @@ class UserModel {
 
     //UPDATE
     static async updateUser (user, id) {
-        const { username, password, last_name, first_name, job, in_house, island } = user;
+        const { username, password, last_name, first_name, job, in_house, island_group, branch } = user;
         await pool.query(`
             update employees set username = ?, password = ?,
-            last_name = ?, first_name = ?, job = ?, in_house = ?, island_group = ? where employee_id = ? 
-        `, [username, password, last_name, first_name, job, in_house, island, id]);
+            last_name = ?, first_name = ?, job = ?, in_house = ?, island_group = ?, branch = ? where employee_id = ? 
+        `, [username, password, last_name, first_name, job, in_house, island_group, branch, id]);
     }
 
     //CREATE

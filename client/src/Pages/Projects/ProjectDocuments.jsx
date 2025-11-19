@@ -30,7 +30,7 @@ const ProjectDocuments = () => {
         qaqc.checklists?.[0]?.toLowerCase().includes(searchTerm.toLowerCase()) ||
         qaqc.inspection_reason?.toLowerCase().includes(searchTerm.toLowerCase())
     );
-
+    console.log(filteredQAQC)
     const formatDate = (dateString) => {
         if (!dateString) return 'N/A';
         const date = new Date(dateString);

@@ -68,12 +68,10 @@ const { data: notifData } =
   const setUser = useStoreActions(actions => actions.setUser)
   const user = useStoreState(state => state.user)
   const setNotifications = useStoreActions(actions => actions.setNotifications)
-  const projects = useStoreState(state => state.projects)
   const setPMSProjects = useStoreActions(actions => actions.setPMSProjects)
   const fetchProjects = useStoreActions(actions => actions.fetchProjects)
   const fetchDesignatedProjects = useStoreActions(action => action.fetchDesignatedProjects)
   const fetchAllTeams = useStoreActions(action => action.fetchAllTeams)
-  const updateFilteredProjectStatuses = useStoreActions(actions => actions.updateFilteredProjectStatuses);
 
   const {fetchManpower, fetchQaqcTechs, fetchTncTechs} = useStoreActions(action => action)
   const [empId, setEmpId] = useState(null)
@@ -82,11 +80,11 @@ const { data: notifData } =
   //const {lodaing: updateIsLoading} = useUpdateProjects(projectIDs)
 
 
-  useEffect(() => {
-    if (projects.length > 0) {
-      updateFilteredProjectStatuses();
-    }
-  }, [projects, updateFilteredProjectStatuses]);
+  // useEffect(() => {
+  //   if (projects.length > 0) {
+  //     updateFilteredProjectStatuses();
+  //   }
+  // }, [projects, updateFilteredProjectStatuses]);
 
   
   useEffect(() => {
