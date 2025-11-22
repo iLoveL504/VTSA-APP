@@ -57,7 +57,7 @@ const SaveTeamModal = ({ isOpen, onClose, project, forecastSocket, utilitiesSock
                       console.log('error');
                     }
                 });
-                //window.location.reload();
+                window.location.reload();
             } else {
                 window.alert(ack?.error || 'Failed to save team');
             }
@@ -461,6 +461,10 @@ const ProjectAssignment = () => {
     const tentativeProjectTeams = useStoreState(state => state.tentativeProjectTeams)
     
     const installationTeams = useStoreState(state => state.installationTeams)
+    console.log('Tentative Project Teams-----------')
+    console.log(tentativeProjectTeams)
+    console.log('Installation Project Teams-----------')
+    console.log(installationTeams)
     const [selectedProject, setSelectedProject] = useState({})
     const [activeRoleTab, setActiveRoleTab] = useState('all')
     const [teamToSave, setTeamToSave] = useState([])
@@ -647,6 +651,7 @@ const ProjectAssignment = () => {
     }
 
     const ProjectCard = ({ project, index, hasTeam = false, phase = 'preliminaries' }) => {
+        console.log(tentativeProjectTeams)
         const fTeam = tentativeProjectTeams.filter(t => t.project_id === project.id);
         const projectTeams = hasTeam 
             ? installationTeams[project.id]?.team || []

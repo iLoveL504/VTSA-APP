@@ -263,7 +263,7 @@ static async getAllPMS() {
     static async assignTechnicians(pmsId, technicianIds, date) {
         console.log(technicianIds)
         console.log(pmsId)
-
+        console.log('dito sa line 266')
         //If it returns 0 it assigns otherwise edit clear technician_ids to make room for team
         const [exists] = await pool.query(`SELECT COUNT(pms_technician_id) FROM pms_inspection_team WHERE pms_id = ?;`, [pmsId])
         const edit = exists.length > 0 ? true : false
@@ -299,6 +299,7 @@ static async getAllPMS() {
 
         //Get current contract id
         const [contract] = await pool.query(`select id from contracts where baby_book_id = ? and current_contract = 1`, [pmsId])
+        console.log()
         const contractId = contract[0].id
         const [results] =  await pool.query(`insert into pms_history (pms_id, contract_id) values (?, ?)`, [pmsId, contractId])
         const insertId = results.insertId
@@ -348,7 +349,7 @@ static async getAllPMS() {
             left join contracts c on c.baby_book_id = cbb.pms_id where p.id = ? and c.current_contract = 1;
             `, [pmsId])
         console.log('i got hte ocntract id')
-        
+        console.log(cId)
         const contractId = cId[0].contract_id
         if (service_reports !== undefined){
             for (const photo of service_reports) {
@@ -413,7 +414,7 @@ static async getBabyBook (id) {
         join client_baby_book cbb on cbb.pms_id = pp.id
         join contracts c on c.baby_book_id = cbb.pms_id
         join pms_history ph on ph.pms_id = pp.id
-        left join pms_inspection_documents pid on pid.contract_id = c.id
+       join pms_inspection_documents pid on pid.inspection_id = ph.id
         where p.id = ?;   
         `, [id])
     

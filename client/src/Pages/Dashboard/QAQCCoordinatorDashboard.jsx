@@ -359,7 +359,7 @@ const QaqcDashboard = () => {
               )}
 
               {/* Upcoming Project Milestones (for reference) */}
-              {project.upcomingMilestones.length > 0 && activeTab === 'needs-scheduling' && (
+              {/* {project.upcomingMilestones.length > 0 && activeTab === 'needs-scheduling' && (
                 <div className="upcoming-milestones">
                   <div className="milestones-header">
                     <WarningIcon style={{ fontSize: '16px', marginRight: '8px' }} />
@@ -375,7 +375,7 @@ const QaqcDashboard = () => {
                     </div>
                   ))}
                 </div>
-              )}
+              )} */}
 
               {/* Project Progress */}
               <div className="project-progress">

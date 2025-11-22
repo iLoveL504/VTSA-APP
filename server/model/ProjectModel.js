@@ -1607,30 +1607,11 @@ static async rectifyItems (projId) {
       `, [projId])
     //get team id
 
-
-    // Before deleting the team members each one must first get their previous foreman ID for next rotation
-    const [foremanToGet] = await pool.query(`
-        select foreman_id from team_members where project_id = ? limit 1;
-      `, [projId])
-    const [membersToGet] = await pool.query(`
-       select emp_id from team_members where project_id = ?;
-      `, [projId])
-
-    const foremandId = foremanToGet[0].foreman_id  
-    const members = membersToGet.map(m => m.emp_id)
-    for (const member of members) {
-      await pool.query(`update employees set prev_foreman = ? where employee_id = ?`, [foremandId, member])
-    }
-    console.log('success')
-
-    //clear team members
-    await pool.query(`delete from team_members where project_id = ?`, [projId])
-
-    //clear project team since it is now in handover
-    await pool.query(`delete from project_manpower where project_id = ?`, [projId])
-
-    await pool.query(`insert into client_baby_book (pms_id, book_name) values (?, ?)`, [projId, client])
+      await pool.query(`insert into client_baby_book (pms_id, book_name) values (?, ?)`, [projId, client])
     await pool.query(`insert into contracts (baby_book_id) values (?)`, [projId])
+    console.log(data)
+    console.log(photos)
+
       for (const photo of photos) {
       const filePath = "/uploads/" + photo.filename;
       await pool.query(
@@ -1638,6 +1619,29 @@ static async rectifyItems (projId) {
           [projId, filePath]
       );
     } 
+
+    // Before deleting the team members each one must first get their previous foreman ID for next rotation
+    // const [foremanToGet] = await pool.query(`
+    //     select foreman_id from team_members where project_id = ? limit 1;
+    //   `, [projId])
+    // const [membersToGet] = await pool.query(`
+    //    select emp_id from team_members where project_id = ?;
+    //   `, [projId])
+
+    // const foremandId = foremanToGet[0].foreman_id  
+    // const members = membersToGet.map(m => m.emp_id)
+    // for (const member of members) {
+    //   await pool.query(`update employees set prev_foreman = ? where employee_id = ?`, [foremandId, member])
+    // }
+    console.log('success')
+
+    //clear team members
+    //await pool.query(`delete from team_members where project_id = ?`, [projId])
+
+    //clear project team since it is now in handover
+    //await pool.query(`delete from project_manpower where project_id = ?`, [projId])
+
+
   }
 
   static async getScheduleTemplate (template) {

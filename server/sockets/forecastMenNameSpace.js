@@ -61,7 +61,9 @@ export default function forecastMenNameSpace(nsp) {
 
     socket.on('installation_teams', async () => {
       try {
+        
         const results = await forecast.projectFinalizedTeams()
+
         nsp.emit('fetched_finalized_teams', results)
       } catch {
 

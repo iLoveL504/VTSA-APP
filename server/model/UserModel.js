@@ -29,11 +29,12 @@ class UserModel {
 
     //CREATE
     static async addUser (user) {
-        const { username, password, first_name, last_name, job, island } = user
+        console.log(user)
+        const { username, password, first_name, last_name, job, island, branch } = user
         const [result] =  await pool.query(`
-            insert into employees (username, password, first_name, last_name, job, island_group)
-            values (?, ?, ?, ?, ?)    
-        `, [username, password, first_name, last_name, job, island])
+            insert into employees (username, password, first_name, last_name, job, branch, island_group)
+            values (?, ?, ?, ?, ?, ?)    
+        `, [username, password, first_name, last_name, job, branch, island])
 
         if (job === 'Foreman') {
             const foremanId = result.insertId

@@ -34,6 +34,12 @@ const PMSCoordinatorMenu = () => {
                 PMS Assignment
             </li>
           </Link>
+          <Link to="/PMS">
+            <li>
+                <MdHomeRepairService style={{ color: 'white' }}/>
+                PMS Contract Watchlist
+            </li>
+          </Link>
           <Link to="/baby-book">
             <li>
                 <IoIosDocument style={{ color: 'white' }}/>

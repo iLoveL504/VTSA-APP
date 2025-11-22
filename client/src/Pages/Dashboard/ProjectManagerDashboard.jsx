@@ -55,7 +55,7 @@ const ProjectManagerDashboard = ({ onNewProject, clearProjectData, clearProjectT
     const currentYear = now.getFullYear();
     const nextMonth = currentMonth === 11 ? 0 : currentMonth + 1;
     const nextMonthYear = currentMonth === 11 ? currentYear + 1 : currentYear;
-
+    console.log(projects  )
     return {
       // Project Statistics
       totalProjects: projects.length,
