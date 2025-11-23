@@ -170,8 +170,8 @@ static async calculateProjectStatus(project, tasks, currentDate) {
         if (t.task_type !== 'summary') return false;
         
         // Use the already-converted local timezone dates
-        const taskStart = new Date(t.task_start_local);
-        const taskEnd = new Date(t.task_end_local);
+        const taskStart = new Date(t.task_start);
+        const taskEnd = new Date(t.task_end);
         
         return phNow >= taskStart && phNow <= taskEnd;
     });
@@ -179,8 +179,8 @@ static async calculateProjectStatus(project, tasks, currentDate) {
     const projectedTask = tasks.find(t => {
         if (t.task_type !== 'task') return false;
         
-        const taskStart = new Date(t.task_start_local);
-        const taskEnd = new Date(t.task_end_local);
+        const taskStart = new Date(t.task_start);
+        const taskEnd = new Date(t.task_end);
         
         return phNow >= taskStart && phNow < taskEnd;
     });
@@ -190,7 +190,7 @@ static async calculateProjectStatus(project, tasks, currentDate) {
     );
 
     // ---- TASK DATES ----
-    const findDate = (name, key = 'task_start_local') => {
+    const findDate = (name, key = 'task_start') => {
         const task = tasks.find(t => t.task_name === name);
         if (!task || !task[key]) return null;
         
@@ -198,13 +198,13 @@ static async calculateProjectStatus(project, tasks, currentDate) {
         return isNaN(dateValue.getTime()) ? null : dateValue.toISOString().split('T')[0];
     };
     
-    const installation_start_date = findDate('Mechanical Installation', 'task_start_local');
-    const end_date = findDate('Final Cleaning / Hand over', 'task_end_local');
-    const start_date = findDate('Preliminaries', 'task_start_local');
-    const tnc_start_date = findDate('Testing and Commissioning', 'task_start_local');
-    const manufacturing_end_date = findDate('Manufacturing and Importation Process', 'task_end_local');
-    const prepFinalHandoverDate = findDate('Final Cleaning / Hand over', 'task_start_local');
-    const templateSettingDate = findDate('Template Setting', 'task_start_local');
+    const installation_start_date = findDate('Mechanical Installation', 'task_start');
+    const end_date = findDate('Final Cleaning / Hand over', 'task_end');
+    const start_date = findDate('Preliminaries', 'task_start');
+    const tnc_start_date = findDate('Testing and Commissioning', 'task_start');
+    const manufacturing_end_date = findDate('Manufacturing and Importation Process', 'task_end');
+    const prepFinalHandoverDate = findDate('Final Cleaning / Hand over', 'task_start');
+    const templateSettingDate = findDate('Template Setting', 'task_start');
 
     // ---- STATUS CALCULATION ----
     const phaseName = foundParentTask ? 
@@ -226,8 +226,8 @@ static async calculateProjectStatus(project, tasks, currentDate) {
                 tnc_start_date,
                 installation_start_date,
                 current_task: actualTask?.task_name,
-                task_start: actualTask?.task_start_local,
-                task_end: actualTask?.task_end_local,
+                task_start: actualTask?.task_start,
+                task_end: actualTask?.task_end,
                 task_done: actualTask?.task_done,
                 task_phase: phaseName,
                 phase_full_name: foundParentTask?.task_name,
@@ -250,8 +250,8 @@ static async calculateProjectStatus(project, tasks, currentDate) {
                 tnc_start_date,
                 installation_start_date,
                 current_task: actualTask?.task_name,
-                task_start: actualTask?.task_start_local,
-                task_end: actualTask?.task_end_local,
+                task_start: actualTask?.task_start,
+                task_end: actualTask?.task_end,
                 task_done: actualTask?.task_done,
                 task_phase: phaseName,
                 phase_full_name: foundParentTask?.task_name,
@@ -311,8 +311,8 @@ static async calculateProjectStatus(project, tasks, currentDate) {
         tnc_start_date,
         installation_start_date,
         current_task: foundCurrentTask,
-        task_start: actualTask?.task_start_local,
-        task_end: actualTask?.task_end_local,
+        task_start: actualTask?.task_start,
+        task_end: actualTask?.task_end,
         task_done: actualTask?.task_done,
         task_phase: phaseName,
         phase_full_name: foundParentTask?.task_name,
@@ -575,44 +575,43 @@ static async getProjectSchedule(id) {
     const [check] = await pool.query(checkQuery)
     if (check.length === 0) return []
     
-    // Convert UTC dates to Philippines timezone and set to midnight
-    const query = `
-        SELECT *, 
-               DATE(CONVERT_TZ(task_start, '+00:00', '+08:00')) as task_start_local,
-               DATE(CONVERT_TZ(task_end, '+00:00', '+08:00')) as task_end_local
-        FROM project_${id}_schedule
-    `;
+    // Get original UTC dates and convert them to Philippines timezone
+    const query = `SELECT * FROM project_${id}_schedule`;
     const [results] = await pool.query(query);
     if (!results) return []
     
-    // Convert the DATE strings to proper Date objects with Philippines midnight
-    const tasksWithMidnight = results.map(task => {
-        const convertToPhilippinesMidnight = (dateString) => {
-            if (!dateString) return null;
+    // Convert UTC dates to Philippines midnight and replace the original dates
+    const tasksWithLocalDates = results.map(task => {
+        const convertUTCToPhilippinesMidnight = (utcDateString) => {
+            if (!utcDateString) return null;
             try {
-                // Create date in Philippines timezone
-                const date = new Date(dateString + 'T00:00:00+08:00');
-                return isNaN(date.getTime()) ? null : date;
+                const utcDate = new Date(utcDateString);
+                if (isNaN(utcDate.getTime())) return null;
+                
+                // Convert to Philippines timezone midnight
+                const phDate = new Date(utcDate.toLocaleString("en-US", { timeZone: "Asia/Manila" }));
+                phDate.setHours(0, 0, 0, 0);
+                return phDate;
             } catch (error) {
-                console.warn(`Invalid date: ${dateString} for project ${id}, task ${task.task_id}`);
+                console.warn(`Invalid date conversion for project ${id}, task ${task.task_id}:`, utcDateString);
                 return null;
             }
         };
         
         return {
             ...task,
-            task_start_local: convertToPhilippinesMidnight(task.task_start_local),
-            task_end_local: convertToPhilippinesMidnight(task.task_end_local)
+            task_start: convertUTCToPhilippinesMidnight(task.task_start), // Replace with local
+            task_end: convertUTCToPhilippinesMidnight(task.task_end)       // Replace with local
         };
     });
     
-    const sortedTasks = tasksWithMidnight.sort((a, b) => {
+    const sortedTasks = tasksWithLocalDates.sort((a, b) => {
         // Handle null dates by putting them at the end
-        if (!a.task_start_local && !b.task_start_local) return 0;
-        if (!a.task_start_local) return 1;
-        if (!b.task_start_local) return -1;
+        if (!a.task_start && !b.task_start) return 0;
+        if (!a.task_start) return 1;
+        if (!b.task_start) return -1;
         
-        const dateDiff = a.task_start_local - b.task_start_local;
+        const dateDiff = a.task_start - b.task_start;
         if (dateDiff !== 0) return dateDiff;
 
         const customOrder = {
@@ -639,16 +638,6 @@ static async getProjectSchedule(id) {
         
         return 0;
     });
-
-    // Log sample dates for debugging (with null checks)
-    if (sortedTasks.length > 0) {
-        console.log(`Project ${id} schedule sample dates (Philippines midnight):`);
-        sortedTasks.slice(0, 3).forEach((task, i) => {
-            console.log(`Task ${i+1}: ${task.task_name}`);
-            console.log(`  Start: ${task.task_start_local ? task.task_start_local.toISOString() : 'NULL'} (${task.task_start_local ? task.task_start_local.toString() : 'NULL'})`);
-            console.log(`  End: ${task.task_end_local ? task.task_end_local.toISOString() : 'NULL'} (${task.task_end_local ? task.task_end_local.toString() : 'NULL'})`);
-        });
-    }
 
     return sortedTasks;
 }
