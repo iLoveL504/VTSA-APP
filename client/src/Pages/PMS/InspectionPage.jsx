@@ -23,8 +23,8 @@ const InspectionPage = () => {
         if (!client || !client.pms_inspection_date) return false;
         
         try {
-            const today = new Date(date).toISOString().split('T')[0];
-            const inspectionDate = new Date(client.pms_inspection_date).toISOString().split('T')[0];
+            // const today = new Date(date).toISOString().split('T')[0];
+            // const inspectionDate = new Date(client.pms_inspection_date).toISOString().split('T')[0];
             console.log(new Date(date))
             console.log(new Date(client.pms_inspection_date))
             return new Date(date) >= new Date(client.pms_inspection_date);
