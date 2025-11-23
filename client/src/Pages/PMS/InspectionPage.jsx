@@ -17,11 +17,7 @@ const InspectionPage = () => {
     const [files, setFiles] = useState([]);
     const [errors, setErrors] = useState({});
     const {date} = useStoreState(state => state)
-        const getLocalMidnight = () => {
-            const now = new Date()
-            now.setHours(0, 0, 0, 0)
-            return now
-        }
+
     // Check if inspection can be started (date condition)
     const canBeginInspection = () => {
         if (!client || !client.pms_inspection_date) return false;

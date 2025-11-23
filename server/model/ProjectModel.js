@@ -604,7 +604,7 @@ static async getProjectSchedule(id) {
         };
     });
     
-    const sortedTasks = tasksWithLocalDates.sort((a, b) => {
+    const sortedTasks = tasksWithFixedTimes.sort((a, b) => {
         // Handle null dates by putting them at the end
         if (!a.task_start && !b.task_start) return 0;
         if (!a.task_start) return 1;
