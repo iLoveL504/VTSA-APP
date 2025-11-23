@@ -36,7 +36,7 @@ const getLocalMidnight = () => {
 // }
 
 // Always current date but standardized to midnight
-const now = getLocalMidnight(new Date())
+
 //const modifiedDate = addDuration(now, 0)
 const localNow = getLocalMidnight()
 
