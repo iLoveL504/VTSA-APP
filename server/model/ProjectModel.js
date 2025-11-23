@@ -581,27 +581,26 @@ static async getProjectSchedule(id) {
     if (!results) return []
     
     // Convert UTC dates to Philippines midnight and replace the original dates
-    const tasksWithLocalDates = results.map(task => {
-        const convertUTCToPhilippinesMidnight = (utcDateString) => {
-            if (!utcDateString) return null;
+    const tasksWithFixedTimes = results.map(task => {
+        const fixTimeToMidnight = (dateString) => {
+            if (!dateString) return null;
             try {
-                const utcDate = new Date(utcDateString);
-                if (isNaN(utcDate.getTime())) return null;
+                const date = new Date(dateString);
+                if (isNaN(date.getTime())) return null;
                 
-                // Convert to Philippines timezone midnight
-                const phDate = new Date(utcDate.toLocaleString("en-US", { timeZone: "Asia/Manila" }));
-                phDate.setHours(0, 0, 0, 0);
-                return phDate;
+                // Set to 00:00:00 in local timezone
+                date.setHours(0, 0, 0, 0);
+                return date;
             } catch (error) {
-                console.warn(`Invalid date conversion for project ${id}, task ${task.task_id}:`, utcDateString);
+                console.warn(`Invalid date for project ${id}, task ${task.task_id}:`, dateString);
                 return null;
             }
         };
         
         return {
             ...task,
-            task_start: convertUTCToPhilippinesMidnight(task.task_start), // Replace with local
-            task_end: convertUTCToPhilippinesMidnight(task.task_end)       // Replace with local
+            task_start: fixTimeToMidnight(task.task_start),
+            task_end: fixTimeToMidnight(task.task_end)
         };
     });
     
