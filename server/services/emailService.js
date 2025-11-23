@@ -4,6 +4,7 @@ const sendAccountDetails = async (email, userData) => {
     try {
         // Debug: Check if environment variables are loaded
         console.log('🔧 Debug - Environment Variables:');
+        console.log('email epi key:', process.env.SENDGRID_API_KEY)
         console.log('SENDGRID_API_KEY exists:', !!process.env.SENDGRID_API_KEY);
         console.log('SENDGRID_API_KEY length:', process.env.SENDGRID_API_KEY?.length);
         console.log('SENDGRID_API_KEY starts with SG.:', process.env.SENDGRID_API_KEY?.startsWith('SG.'));
