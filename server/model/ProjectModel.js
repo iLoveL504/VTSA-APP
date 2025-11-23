@@ -575,22 +575,46 @@ static async getProjectSchedule(id) {
     const [check] = await pool.query(checkQuery)
     if (check.length === 0) return []
     
-    // Convert UTC dates to your timezone in the query
+    // Convert UTC dates to Philippines timezone and set to midnight
     const query = `
         SELECT *, 
-               CONVERT_TZ(task_start, '+00:00', '+08:00') as task_start_local,
-               CONVERT_TZ(task_end, '+00:00', '+08:00') as task_end_local
+               DATE(CONVERT_TZ(task_start, '+00:00', '+08:00')) as task_start_local,
+               DATE(CONVERT_TZ(task_end, '+00:00', '+08:00')) as task_end_local
         FROM project_${id}_schedule
     `;
     const [results] = await pool.query(query);
     if (!results) return []
     
-    const sortedTasks = results.sort((a, b) => {
-        // Use the local timezone dates for sorting
-        const dateDiff = new Date(a.task_start_local) - new Date(b.task_start_local);
+    // Convert the DATE strings to proper Date objects with Philippines midnight
+    const tasksWithMidnight = results.map(task => {
+        const convertToPhilippinesMidnight = (dateString) => {
+            if (!dateString) return null;
+            try {
+                // Create date in Philippines timezone
+                const date = new Date(dateString + 'T00:00:00+08:00');
+                return isNaN(date.getTime()) ? null : date;
+            } catch (error) {
+                console.warn(`Invalid date: ${dateString} for project ${id}, task ${task.task_id}`);
+                return null;
+            }
+        };
+        
+        return {
+            ...task,
+            task_start_local: convertToPhilippinesMidnight(task.task_start_local),
+            task_end_local: convertToPhilippinesMidnight(task.task_end_local)
+        };
+    });
+    
+    const sortedTasks = tasksWithMidnight.sort((a, b) => {
+        // Handle null dates by putting them at the end
+        if (!a.task_start_local && !b.task_start_local) return 0;
+        if (!a.task_start_local) return 1;
+        if (!b.task_start_local) return -1;
+        
+        const dateDiff = a.task_start_local - b.task_start_local;
         if (dateDiff !== 0) return dateDiff;
 
-        // ... rest of your sorting logic remains the same
         const customOrder = {
             104: 1,
             200: 2,
@@ -616,9 +640,18 @@ static async getProjectSchedule(id) {
         return 0;
     });
 
+    // Log sample dates for debugging (with null checks)
+    if (sortedTasks.length > 0) {
+        console.log(`Project ${id} schedule sample dates (Philippines midnight):`);
+        sortedTasks.slice(0, 3).forEach((task, i) => {
+            console.log(`Task ${i+1}: ${task.task_name}`);
+            console.log(`  Start: ${task.task_start_local ? task.task_start_local.toISOString() : 'NULL'} (${task.task_start_local ? task.task_start_local.toString() : 'NULL'})`);
+            console.log(`  End: ${task.task_end_local ? task.task_end_local.toISOString() : 'NULL'} (${task.task_end_local ? task.task_end_local.toString() : 'NULL'})`);
+        });
+    }
+
     return sortedTasks;
 }
-
   // Get Project Holidays
   static async holidaysPerProject (projId) {
       // console.log(`Line 486: ${projId}`)
