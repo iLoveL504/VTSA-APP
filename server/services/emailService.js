@@ -17,7 +17,7 @@ const sendAccountDetails = async (email, userData) => {
                 pass: process.env.SENDGRID_API_KEY  
             }
         });
-
+        console.log('verify')
         // Verify the connection
         await transporter.verify();
         console.log('✅ SendGrid connection verified');
