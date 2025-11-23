@@ -1192,6 +1192,7 @@ static async getTaskPhotos(id) {
   }
 
   static async foremanApprove (projId, data, photos) {
+    console.log('inside foreman approve')
     const { task_id, task_name, start_date, end_date, task_duration, task_percent} = data
     const query = `update project_${projId}_schedule set task_approval = 1 where task_id = ?;`
     await pool.query(query, [task_id])

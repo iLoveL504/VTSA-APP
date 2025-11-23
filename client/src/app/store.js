@@ -38,9 +38,7 @@ const getLocalMidnight = () => {
 // Always current date but standardized to midnight
 const now = getLocalMidnight(new Date())
 //const modifiedDate = addDuration(now, 0)
-const localNow = getLocalMidnight(
-    new Date(now.getTime() - now.getTimezoneOffset() * 60000)
-)
+const localNow = getLocalMidnight()
 
 console.log(new Date())
 console.log(localNow)
@@ -571,6 +569,9 @@ const foundProjectedCurrentTask = fetchedData.find(t => {
     
     // Set behind schedule flag
     if (foundCurrentTask && foundProjectedCurrentTask) {
+      console.log('then project is behind schedule---------')
+      console.log(foundCurrentTask)
+      console.log(foundProjectedCurrentTask)
       actions.setIsBehindSchedule(foundCurrentTask.task_id !== foundProjectedCurrentTask.task_id);
     }
     

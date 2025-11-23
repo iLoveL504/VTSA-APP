@@ -582,7 +582,9 @@ console.log(qaqcHistory)
           </div>
           <div className="card-content">
             {isBehindSchedule && projectedTask && (
+              
               <div className="schedule-warning">
+                {console.log(projectedTask)}
                 <WarningIcon className="warning-icon" />
                 <div className="warning-content">
                   <h4>Behind Schedule</h4>

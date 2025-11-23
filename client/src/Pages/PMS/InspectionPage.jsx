@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { Axios } from '../../api/axios';
 import useAxiosFetch from '../../hooks/useAxiosFetch';
 import '../../css/InspectionPage.css'
+import { useStoreState } from 'easy-peasy'
 
 const InspectionPage = () => {
     const navigate = useNavigate()
@@ -15,14 +16,17 @@ const InspectionPage = () => {
     const [completionStatus, setCompletionStatus] = useState('');
     const [files, setFiles] = useState([]);
     const [errors, setErrors] = useState({});
+    const {date} = useStoreState(state => state)
 
     // Check if inspection can be started (date condition)
     const canBeginInspection = () => {
         if (!client || !client.pms_inspection_date) return false;
         
         try {
-            const today = new Date().toISOString().split('T')[0];
+            const today = new Date(date).toISOString().split('T')[0];
             const inspectionDate = new Date(client.pms_inspection_date).toISOString().split('T')[0];
+            console.log(date)
+            console.log(new Date(client.pms_inspection_date))
             return today >= inspectionDate;
         } catch (error) {
             console.error('Error parsing dates:', error);

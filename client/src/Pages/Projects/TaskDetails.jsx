@@ -205,8 +205,8 @@ const TaskDetails = ({currentTask, currentTaskPhase, proj, ConfirmationModal, fe
         setApprovalModal({ isOpen: false, task: null });
         const task_id = approvalModal.task.task_id
         const task_name = approvalModal.task.task_name
-        const start_date = formatDateForMySQL(completionModal.task.task_start);
-        const end_date   = formatDateForMySQL(completionModal.task.task_end);
+        const start_date = formatDateForMySQL(approvalModal.task.task_start);
+        const end_date   = formatDateForMySQL(approvalModal.task.task_end);
         const task_duration = approvalModal.task.task_duration
         const task_percent = approvalModal.task.task_percent
         console.log(start_date)
