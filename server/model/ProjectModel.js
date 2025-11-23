@@ -116,39 +116,30 @@ static async updateProjectStatusesBatch(projects) {
 }
 
 static async calculateProjectStatus(project, tasks, currentDate) {
-    // Use UTC dates consistently
+    // Use Philippines timezone consistently throughout
     const now = new Date(currentDate);
-    const utcNow = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()));
-    console.log(utcNow.toLocaleDateString())
-    if (project.id === 44) {
-    //   console.log(tasks.map(t => {
-    //     const viewT = {
-    //       task_id: t.task_id,
-    //       task_name: t.task_name,
-    //       task_start: new Date(t.task_start).toLocaleDateString(), 
-    //       task_start_local: new Date(t.task_start_local).toLocaleDateString(), 
-    //       task_end: new Date(t.task_end).toLocaleDateString(), 
-    //       task_end_local: new Date(t.task_end_local).toLocaleDateString(), 
-    //       dates_equal: t.task_start === t.task_start_local
-    //     }
-    //     return viewT
-
-    // }))
-    }
+    
+    // Convert to Philippines timezone and set to midnight
+    const phNowString = now.toLocaleString("en-US", { timeZone: "Asia/Manila" });
+    const phNow = new Date(phNowString);
+    phNow.setHours(0, 0, 0, 0);
+    
+    console.log(`Project ${project.id} - Philippines midnight:`, phNow.toISOString());
 
     // ---- HOLD DAYS ----
     let holdDays = null;
     const isOnHold = !!project.on_hold;
     if (project.hold_date) {
         const holdDate = new Date(project.hold_date);
-        const utcHoldDate = new Date(Date.UTC(holdDate.getUTCFullYear(), holdDate.getUTCMonth(), holdDate.getUTCDate()));
-        holdDays = Math.floor((utcNow - utcHoldDate) / (1000 * 60 * 60 * 24));
+        const phHoldDate = new Date(holdDate.toLocaleString("en-US", { timeZone: "Asia/Manila" }));
+        phHoldDate.setHours(0, 0, 0, 0);
+        holdDays = Math.floor((phNow - phHoldDate) / (1000 * 60 * 60 * 24));
     }
     
     let willResume = false;
     if (isOnHold) {
-        const today = dayjs().utc().startOf('day');
-        const resume = dayjs(project.resume_date).utc().startOf('day');
+        const today = dayjs().tz("Asia/Manila").startOf('day');
+        const resume = dayjs(project.resume_date).tz("Asia/Manila").startOf('day');
         willResume = (project.will_resume && today.isSame(resume));
         
         if (!willResume) {
@@ -174,27 +165,24 @@ static async calculateProjectStatus(project, tasks, currentDate) {
     }
     
     // ---- CURRENT TASKS ----
-    // Convert all dates to UTC for comparison
+    // Use the local timezone dates from database query
     const foundParentTask = tasks.find(t => {
         if (t.task_type !== 'summary') return false;
         
-        const taskStart = new Date(t.task_start);
-        const taskEnd = new Date(t.task_end);
-        const utcTaskStart = new Date(Date.UTC(taskStart.getUTCFullYear(), taskStart.getUTCMonth(), taskStart.getUTCDate()));
-        const utcTaskEnd = new Date(Date.UTC(taskEnd.getUTCFullYear(), taskEnd.getUTCMonth(), taskEnd.getUTCDate()));
+        // Use the already-converted local timezone dates
+        const taskStart = new Date(t.task_start_local);
+        const taskEnd = new Date(t.task_end_local);
         
-        return utcNow >= utcTaskStart && utcNow <= utcTaskEnd;
+        return phNow >= taskStart && phNow <= taskEnd;
     });
     
     const projectedTask = tasks.find(t => {
         if (t.task_type !== 'task') return false;
         
-        const taskStart = new Date(t.task_start);
-        const taskEnd = new Date(t.task_end);
-        const utcTaskStart = new Date(Date.UTC(taskStart.getUTCFullYear(), taskStart.getUTCMonth(), taskStart.getUTCDate()));
-        const utcTaskEnd = new Date(Date.UTC(taskEnd.getUTCFullYear(), taskEnd.getUTCMonth(), taskEnd.getUTCDate()));
+        const taskStart = new Date(t.task_start_local);
+        const taskEnd = new Date(t.task_end_local);
         
-        return utcNow >= utcTaskStart && utcNow < utcTaskEnd;
+        return phNow >= taskStart && phNow < taskEnd;
     });
     
     const actualTask = tasks.find(
@@ -202,103 +190,118 @@ static async calculateProjectStatus(project, tasks, currentDate) {
     );
 
     // ---- TASK DATES ----
-    const findDate = (name, key = 'task_start') => {
+    const findDate = (name, key = 'task_start_local') => {
         const task = tasks.find(t => t.task_name === name);
         if (!task || !task[key]) return null;
         
-        // Convert to ISO string and extract date part only
         const dateValue = new Date(task[key]);
         return isNaN(dateValue.getTime()) ? null : dateValue.toISOString().split('T')[0];
     };
     
-    const installation_start_date = findDate('Mechanical Installation', 'task_start');
-    const end_date = findDate('Final Cleaning / Hand over', 'task_end');
-    const start_date = findDate('Preliminaries', 'task_start');
-    const tnc_start_date = findDate('Testing and Commissioning', 'task_start');
-    const manufacturing_end_date = findDate('Manufacturing and Importation Process', 'task_end');
-    const prepFinalHandoverDate = findDate('Final Cleaning / Hand over', 'task_start')
-    const templateSettingDate = findDate('Template Setting', 'task_start')    
+    const installation_start_date = findDate('Mechanical Installation', 'task_start_local');
+    const end_date = findDate('Final Cleaning / Hand over', 'task_end_local');
+    const start_date = findDate('Preliminaries', 'task_start_local');
+    const tnc_start_date = findDate('Testing and Commissioning', 'task_start_local');
+    const manufacturing_end_date = findDate('Manufacturing and Importation Process', 'task_end_local');
+    const prepFinalHandoverDate = findDate('Final Cleaning / Hand over', 'task_start_local');
+    const templateSettingDate = findDate('Template Setting', 'task_start_local');
 
-        // ---- STATUS CALCULATION ----
+    // ---- STATUS CALCULATION ----
     const phaseName = foundParentTask ? 
         (summaryMap[foundParentTask.task_name] || foundParentTask.task_name) : 
         'Unknown Phase';
     
+    // Handle edge cases where tasks aren't found
     if (!actualTask || !projectedTask || !foundParentTask) {
-      if (new Date() > new Date(project.project_end_date)) {
-        return {
-            status: 'Overdue',
-            start_date,
-            end_date,
-            manufacturing_end_date,
-            tnc_start_date,
-            installation_start_date,
-            current_task: actualTask.task_name,
-            task_start: actualTask?.task_start,
-            task_end: actualTask?.task_end,
-            task_done: actualTask?.task_done,
-            task_phase: phaseName,
-            phase_full_name: foundParentTask?.task_name,
-            in_tnc: 0,
-            current_task_id: actualTask?.task_id,
-            task_phase_id: foundParentTask?.task_id,
-            is_behind: 1,
-            holdDays,
-            isOnHold: false,
-            willResume,
-            prepFinalHandoverDate,
-            templateSettingDate
-        };        
-      } else {
-        return {
-            status: summaryMap[foundParentTask?.task_name] || 'N/A',
-            start_date,
-            end_date,
-            manufacturing_end_date,
-            tnc_start_date,
-            installation_start_date,
-            current_task: foundCurrentTask,
-            task_start: actualTask?.task_start,
-            task_end: actualTask?.task_end,
-            task_done: actualTask?.task_done,
-            task_phase: phaseName,
-            phase_full_name: foundParentTask?.task_name,
-            in_tnc,
-            current_task_id: actualTask?.task_id,
-            task_phase_id: foundParentTask?.task_id,
-            is_behind: is_behind ? 1 : 0,
-            holdDays,
-            isOnHold: false,
-            willResume,
-            prepFinalHandoverDate,
-            templateSettingDate
-        }; 
-      }
-
-
+        const projectEndDate = new Date(project.project_end_date);
+        const phProjectEndDate = new Date(projectEndDate.toLocaleString("en-US", { timeZone: "Asia/Manila" }));
+        phProjectEndDate.setHours(0, 0, 0, 0);
+        
+        if (phNow > phProjectEndDate) {
+            return {
+                status: 'Overdue',
+                start_date,
+                end_date,
+                manufacturing_end_date,
+                tnc_start_date,
+                installation_start_date,
+                current_task: actualTask?.task_name,
+                task_start: actualTask?.task_start_local,
+                task_end: actualTask?.task_end_local,
+                task_done: actualTask?.task_done,
+                task_phase: phaseName,
+                phase_full_name: foundParentTask?.task_name,
+                in_tnc: 0,
+                current_task_id: actualTask?.task_id,
+                task_phase_id: foundParentTask?.task_id,
+                is_behind: 1,
+                holdDays,
+                isOnHold: false,
+                willResume,
+                prepFinalHandoverDate,
+                templateSettingDate
+            };        
+        } else {
+            return {
+                status: summaryMap[foundParentTask?.task_name] || 'N/A',
+                start_date,
+                end_date,
+                manufacturing_end_date,
+                tnc_start_date,
+                installation_start_date,
+                current_task: actualTask?.task_name,
+                task_start: actualTask?.task_start_local,
+                task_end: actualTask?.task_end_local,
+                task_done: actualTask?.task_done,
+                task_phase: phaseName,
+                phase_full_name: foundParentTask?.task_name,
+                in_tnc: 0,
+                current_task_id: actualTask?.task_id,
+                task_phase_id: foundParentTask?.task_id,
+                is_behind: 0,
+                holdDays,
+                isOnHold: false,
+                willResume,
+                prepFinalHandoverDate,
+                templateSettingDate
+            }; 
+        }
     }
     
-
-    
     // ---- STATUS FLAGS ----
-    const in_tnc = project.tnc_assign_date ? 
-        (new Date(project.tnc_assign_date) <= now ? 1 : 0) : 0;
+    // Convert project dates to Philippines timezone for comparison
+    let in_tnc = 0;
+    if (project.tnc_assign_date) {
+        const tncDate = new Date(project.tnc_assign_date);
+        const phTncDate = new Date(tncDate.toLocaleString("en-US", { timeZone: "Asia/Manila" }));
+        phTncDate.setHours(0, 0, 0, 0);
+        in_tnc = phNow >= phTncDate ? 1 : 0;
+    }
     
-    const in_qaqc = project.qaqc_inspection_date ? 
-        (new Date(project.qaqc_inspection_date) <= now) : false;
+    let in_qaqc = false;
+    if (project.qaqc_inspection_date) {
+        const qaqcDate = new Date(project.qaqc_inspection_date);
+        const phQaqcDate = new Date(qaqcDate.toLocaleString("en-US", { timeZone: "Asia/Manila" }));
+        phQaqcDate.setHours(0, 0, 0, 0);
+        in_qaqc = phNow >= phQaqcDate;
+    }
     
-    const joint_inspection = project.pms_joint_inspection ? 
-        (new Date(project.pms_joint_inspection) <= now) : false;
-    
-
+    let joint_inspection = false;
+    if (project.pms_joint_inspection) {
+        const pmsDate = new Date(project.pms_joint_inspection);
+        const phPmsDate = new Date(pmsDate.toLocaleString("en-US", { timeZone: "Asia/Manila" }));
+        phPmsDate.setHours(0, 0, 0, 0);
+        joint_inspection = phNow >= phPmsDate;
+    }
     
     const foundCurrentTask = actualTask?.task_name;
-    const is_behind = actualTask?.task_id !== projectedTask?.task_id || 0;
+    const is_behind = actualTask?.task_id !== projectedTask?.task_id;
 
-    
-    // console.log('---------------line 214---------------')
-    // console.log(`project ${project.id} is in ${foundCurrentTask}`)
-    // Resuming Project
+    console.log(`Project ${project.id}:`);
+    console.log(`- Current task: ${foundCurrentTask}`);
+    console.log(`- Projected task: ${projectedTask?.task_name}`);
+    console.log(`- Parent phase: ${foundParentTask?.task_name}`);
+    console.log(`- Is behind: ${is_behind}`);
     
     return {
         status: summaryMap[foundParentTask?.task_name] || 'N/A',
@@ -308,8 +311,8 @@ static async calculateProjectStatus(project, tasks, currentDate) {
         tnc_start_date,
         installation_start_date,
         current_task: foundCurrentTask,
-        task_start: actualTask?.task_start,
-        task_end: actualTask?.task_end,
+        task_start: actualTask?.task_start_local,
+        task_end: actualTask?.task_end_local,
         task_done: actualTask?.task_done,
         task_phase: phaseName,
         phase_full_name: foundParentTask?.task_name,

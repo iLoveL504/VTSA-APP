@@ -458,6 +458,10 @@ findProjectTasks: thunk(async (actions, { projectId, projectData }, { getState }
     // Fetch schedule data
     const scheduleRes = await Axios.get(`${backendURL}/api/projects/schedule/${projectId}`);
     const fetchedData = scheduleRes.data;
+    console.log('date now: -----')
+    console.log(state.date)
+    console.log('fetchedData: ----')
+    console.log(fetchedData)
     fetchedData.forEach(d => {
       const sd = new Date(d.task_start)
       const ed = new Date(d.task_end)
