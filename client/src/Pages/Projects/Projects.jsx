@@ -88,6 +88,7 @@ const filteredProjects = useMemo(() => {
   }
   console.log(projects)
   const getStats = () => {
+    console.log(designatedProjects)
     let projectStats = sessionStorage.getItem('roles') !== 'Project Manager' ? 
                   designatedProjects
                       : projects

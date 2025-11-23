@@ -47,9 +47,9 @@ const NotificationPage = () => {
             <i className="fas fa-clock"></i>
             {foundNotif.time || 'Just now'}
           </span>
-          <span className={`notification-status ${foundNotif.read ? 'status-read' : 'status-unread'}`}>
-            <i className={`fas ${foundNotif.read ? 'fa-check-circle' : 'fa-circle'}`}></i>
-            {foundNotif.read ? 'Read' : 'Unread'}
+          <span className={`notification-status ${foundNotif.mark_read ? 'status-read' : 'status-unread'}`}>
+            <i className={`fas ${foundNotif.mark_read ? 'fa-check-circle' : 'fa-circle'}`}></i>
+            {foundNotif.mark_read ? 'Read' : 'Unread'}
           </span>
         </div>
       </div>
@@ -82,24 +82,32 @@ const NotificationPage = () => {
         )}
       </div>
       
-      <div className='notification-actions'>
-        {console.log(foundNotif)}
-        {foundNotif.functionality.function === 'projects-navigate' ? (
-          <button 
-            className="action-btn btn-secondary"
-            onClick={() => {
-              navigate(`/projects/${foundNotif.functionality['project-id']}`)
-            }}
-          >
-            <i className="fas fa-undo"></i>
-            Navigate to Project
-          </button>
-        ) : (
-          <></>
-        )}
+      {foundNotif ? (
+        <>
+          <div className='notification-actions'>
+            {console.log(foundNotif)}
+            {foundNotif.functionality.function === 'projects-navigate' ? (
+              <button 
+                className="action-btn btn-secondary"
+                onClick={() => {
+                  navigate(`/projects/${foundNotif.functionality['project-id']}`)
+                }}
+              >
+                <i className="fas fa-undo"></i>
+                Navigate to Project
+              </button>
+            ) : (
+              <>sdfds</>
+            )}
 
 
-      </div>
+          </div>        
+        </>
+      ) : (
+        <>
+        </>
+      )}
+
     </div>
   )
 }

@@ -88,7 +88,7 @@ const validate = (values) => {
   return errors;
 };
 
-const ConfirmationModal = ({ isOpen, onConfirm, onCancel, projectName }) => {
+const ConfirmationModal = ({ isOpen, onConfirm, onCancel, projectName, isLoading }) => {
   if (!isOpen) return null;
 
   return (
@@ -99,17 +99,36 @@ const ConfirmationModal = ({ isOpen, onConfirm, onCancel, projectName }) => {
           <h3>Confirm Project Creation</h3>
         </div>
         <div className="modal-body">
-          <p>Are you sure you want to create the project <strong>"{projectName}"</strong>?</p>
-          <p>This action will save all the lift specifications and create a new project.</p>
+          {isLoading ? (
+            <div className="loading-state">
+              <div className="loading-spinner-large"></div>
+              <h4>Creating Project...</h4>
+              <p>Please wait while we create your project. This may take a few moments.</p>
+            </div>
+          ) : (
+            <>
+              <p>Are you sure you want to create the project <strong>"{projectName}"</strong>?</p>
+              <p>This action will save all the lift specifications and create a new project.</p>
+            </>
+          )}
         </div>
-        <div className="modal-actions">
-          <button className="btn-cancel" onClick={onCancel}>
-            Cancel
-          </button>
-          <button className="btn-confirm" onClick={onConfirm}>
-            Yes, Create Project
-          </button>
-        </div>
+        {!isLoading && (
+          <div className="modal-actions">
+            <button className="btn-cancel" onClick={onCancel} disabled={isLoading}>
+              Cancel
+            </button>
+            <button className="btn-confirm" onClick={onConfirm} disabled={isLoading}>
+              {isLoading ? (
+                <>
+                  <div className="button-spinner"></div>
+                  Creating...
+                </>
+              ) : (
+                'Yes, Create Project'
+              )}
+            </button>
+          </div>
+        )}
       </div>
     </div>
   );
@@ -122,16 +141,54 @@ const SuccessMessage = ({ isOpen, projectName, onClose }) => {
     <div className="modal-overlay">
       <div className="modal-content success-modal">
         <div className="modal-header success-header">
-          <div className="success-icon">✓</div>
-          <h3>Project Created Successfully! 🎉</h3>
+          <div className="success-animation">
+            <div className="success-checkmark">
+              <div className="check-icon">
+                <CheckCircle className="success-icon" />
+              </div>
+              <div className="success-rings">
+                <div className="ring ring-1"></div>
+                <div className="ring ring-2"></div>
+                <div className="ring ring-3"></div>
+              </div>
+            </div>
+          </div>
+          <h3>Project Created Successfully!</h3>
         </div>
+        
         <div className="modal-body">
-          <p>The project <strong>"{projectName}"</strong> has been successfully created and saved to the database.</p>
-          <p>You will be redirected to the projects page shortly.</p>
+          <div className="success-content">
+            <div className="project-badge">
+              <Business className="badge-icon" />
+              <span>{projectName}</span>
+            </div>
+            <p className="success-message">
+              Your project has been successfully created and saved to the database. 
+              The project team can now be assigned and work can begin.
+            </p>
+            <div className="success-details">
+              <div className="detail-item">
+                <span className="detail-label">Status:</span>
+                <span className="detail-value active">Active</span>
+              </div>
+              <div className="detail-item">
+                <span className="detail-label">Created:</span>
+                <span className="detail-value">{new Date().toLocaleDateString('en-US', { 
+                  year: 'numeric', 
+                  month: 'long', 
+                  day: 'numeric',
+                  hour: '2-digit',
+                  minute: '2-digit'
+                })}</span>
+              </div>
+            </div>
+          </div>
         </div>
+        
         <div className="modal-actions">
-          <button className="btn-confirm" onClick={onClose}>
-            Continue to Projects
+          <button className="btn-confirm success-btn" onClick={onClose}>
+            <CheckCircle className="btn-icon" />
+            Continue to Project Team
           </button>
         </div>
       </div>
@@ -149,7 +206,7 @@ const CreateProject = () => {
   const [activeSection, setActiveSection] = useState(0);
   const [clients, setClients] = useState([])
   const {projects} = useStoreState(state => state)
-
+  const [isClientDropdownOpen, setIsClientDropdownOpen] = useState(false);
 
   useEffect(() => {
     if(projects) {
@@ -168,7 +225,6 @@ const CreateProject = () => {
   const [filteredProvinces, setFilteredProvinces] = useState([]);
   const [filteredCities, setFilteredCities] = useState([]);
 
-  const [prevClient, setPrevClient] = useState(false)
   console.log(selectedCity)
   const equipmentTypes = [
     "Home/Residential Elevator",
@@ -287,7 +343,7 @@ const CreateProject = () => {
   }) => {
     const [searchTerm, setSearchTerm] = useState("");
     const [isOpen, setIsOpen] = useState(false);
-
+    
     const filteredOptions = options.filter(option =>
       option.name.toLowerCase().includes(searchTerm.toLowerCase())
     );
@@ -367,52 +423,53 @@ const CreateProject = () => {
       setShowConfirmation(true);
     }
   };
+  console.log(values)
+const handleConfirm = async () => {
+  setIsSubmitting(true);
+  const islandGroup = regionToIslandGroup[values.region] || "Unknown";
+  const formData = new FormData();
 
-  const handleConfirm = async () => {
-    setIsSubmitting(true);
-    setShowConfirmation(false);
-    const islandGroup = regionToIslandGroup[values.region] || "Unknown";
-    const formData = new FormData();
+  // Append text fields
+  Object.entries(values).forEach(([key, value]) => {
+    if (key !== 'photos') {
+      formData.append(key, value);
+    }
+  });
 
-    // Append text fields
-    Object.entries(values).forEach(([key, value]) => {
-      if (key !== 'photos') {
-        formData.append(key, value);
-      }
+  formData.append('island_group', islandGroup)
+
+  // Append photos (if any)
+  if (values.photos && values.photos.length > 0) {
+    for (let i = 0; i < values.photos.length; i++) {
+      formData.append('photos', values.photos[i]);
+    }
+  }
+
+  try {
+    const response = await Axios.post("/api/projects", formData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
     });
 
-    formData.append('island_group', islandGroup)
-
-    // Append photos (if any)
-    if (values.photos && values.photos.length > 0) {
-      for (let i = 0; i < values.photos.length; i++) {
-        formData.append('photos', values.photos[i]);
-      }
-    }
-
-    try {
-      const response = await Axios.post("/api/projects", formData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      });
-
-      if (response.data?.success) {
-        setShowSuccess(true);
-        setIsSubmitting(false);
-        utilitiesSocket.emit('refresh_all_projects')
-        setTimeout(() => {
-          navigate(`/projects/${response.data?.projectId.id}/team`);
-        }, 3000);
-      } else {
-        alert("Unexpected server response. Please try again.");
-      }
-    } catch (err) {
-      console.error("Error creating project:", err);
+    if (response.data?.success) {
+      setShowConfirmation(false);
+      setShowSuccess(true);
+      setIsSubmitting(false);
+      utilitiesSocket.emit('refresh_all_projects')
+      setTimeout(() => {
+        navigate(`/projects/${response.data?.projectId.id}/team`);
+      }, 3000);
+    } else {
+      alert("Unexpected server response. Please try again.");
       setIsSubmitting(false);
     }
-  };
-
+  } catch (err) {
+    console.error("Error creating project:", err);
+    setIsSubmitting(false);
+    setShowConfirmation(false);
+  }
+};
   const handleCancel = () => {
     setShowConfirmation(false);
   };
@@ -472,102 +529,103 @@ const CreateProject = () => {
 
         <div className="form-content">
           <form onSubmit={handleFormSubmit}>
-            {/* Section 1: Project Details */}
-            {activeSection === 0 && (
-              <div className="form-section">
-                <div className="section-header">
-                  <Business className="section-icon" />
-                  <div>
-                    <h2>Project Details</h2>
-                    <p>Basic information about the project and client</p>
+{/* Section 1: Project Details */}
+{activeSection === 0 && (
+  <div className="form-section">
+    <div className="section-header">
+      <Business className="section-icon" />
+      <div>
+        <h2>Project Details</h2>
+        <p>Basic information about the project and client</p>
+      </div>
+    </div>
+
+    <div className="form-grid">
+      <div className="form-group full-width">
+        <label htmlFor="clientName">Client Name </label>
+        <div className="searchable-dropdown">
+          <input
+            type="text"
+            id="clientName"
+            name="clientName"
+            value={values.clientName}
+            onChange={handleInputChange}
+            onBlur={() => setTimeout(() => setIsClientDropdownOpen(false), 200)}
+            onFocus={() => setIsClientDropdownOpen(true)}
+            placeholder="Start typing client name or select from existing"
+            className={errors.clientName ? 'error' : ''}
+            autoComplete="off"
+          />
+          
+          {isClientDropdownOpen && values.clientName && clients.length > 0 && (
+            <div className="dropdown-options client-options">
+              {clients
+                .filter(client => 
+                  client.toLowerCase().includes(values.clientName.toLowerCase())
+                )
+                .slice(0, 5)
+                .map((client) => (
+                  <div
+                    key={client}
+                    className="dropdown-option"
+                    onMouseDown={() => {
+                      handleInputChange({ 
+                        target: { name: 'clientName', value: client } 
+                      });
+                      setIsClientDropdownOpen(false);
+                    }}
+                  >
+                    {client}
                   </div>
-                </div>
+                ))
+              }
+            </div>
+          )}
+        </div>
+        {errors.clientName && <span className="error-message">{errors.clientName}</span>}
+        
+        {clients.length > 0 && (
+          <div className="client-hint">
+            <small>
+              💡 <strong>{clients.length}</strong> existing client(s) found. 
+              Start typing to see suggestions.
+            </small>
+          </div>
+        )}
+      </div>
 
-                <div className="form-grid">
+      <div className="form-group">
+        <label htmlFor="liftName">Lift Name </label>
+        <input
+          type="text"
+          id="liftName"
+          name="liftName"
+          value={values.liftName}
+          onChange={handleInputChange}
+          onBlur={handleBlur}
+          placeholder="Enter lift name"
+          className={errors.liftName ? 'error' : ''}
+        />
+        {errors.liftName && <span className="error-message">{errors.liftName}</span>}
+      </div>
 
-
-                {prevClient ? (
-                  <div className="form-grid">
-                  <div className="form-group full-width">
-                    <label htmlFor="equipmentType">Previous Client *</label>
-                    <div className="select-wrapper">
-                      <select
-                        id="clientName"
-                        name="clientName"
-                        value={values.clientName}
-                        onChange={handleInputChange}
-                        onBlur={handleBlur}
-                        className={errors.clientName ? 'error' : ''}
-                      >
-                        <option value="">-- Select previous client --</option>
-                        {clients.map((type) => (
-                          <option key={type} value={type}>
-                            {type}
-                          </option>
-                        ))}
-                      </select>
-                      <div className="select-arrow">▼</div>
-                    </div>
-                    {errors.equipmentType && <span className="error-message">{errors.equipmentType}</span>}
-                  </div>
-                </div>
-                ) : (
-                    <div className="form-group">
-                    <label htmlFor="clientName">Client Name *</label>
-                    <input
-                      type="text"
-                      id="clientName"
-                      name="clientName"
-                      value={values.clientName}
-                      onChange={handleInputChange}
-                      onBlur={handleBlur}
-                      placeholder="Enter client name"
-                      className={errors.clientName ? 'error' : ''}
-                    />
-    
-                    {errors.clientName && <span className="error-message">{errors.clientName}</span>}
-                  </div>
-                )}
-                <div className='client-btn'>
-                  <button onClick={(e) => {
-                      e.preventDefault()
-                      setPrevClient(prev => !prev)
-                      }}>Existing Client</button>
-                </div>
-
-
-                  <div className="form-group">
-                    <label htmlFor="liftName">Lift Name *</label>
-                    <input
-                      type="text"
-                      id="liftName"
-                      name="liftName"
-                      value={values.liftName}
-                      onChange={handleInputChange}
-                      onBlur={handleBlur}
-                      placeholder="Enter lift name"
-                      className={errors.liftName ? 'error' : ''}
-                    />
-                    {errors.liftName && <span className="error-message">{errors.liftName}</span>}
-                  </div>
-
-                  <div className="form-group full-width">
-                    <label htmlFor="description">Project Description *</label>
-                    <textarea
-                      id="description"
-                      name="description"
-                      value={values.description}
-                      onChange={handleInputChange}
-                      onBlur={handleBlur}
-                      placeholder="Describe the project scope and requirements..."
-                      rows="4"
-                      className={errors.description ? 'error' : ''}
-                    />
-                    {errors.description && <span className="error-message">{errors.description}</span>}
-                  </div>
-                </div>
-              </div>
-            )}
+      <div className="form-group full-width">
+        <label htmlFor="description">Project Description </label>
+        <textarea
+          id="description"
+          name="description"
+          value={values.description}
+          onChange={handleInputChange}
+          onBlur={handleBlur}
+          placeholder="Describe the project scope and requirements..."
+          rows="4"
+          className={errors.description ? 'error' : ''}
+        />
+        {errors.description && <span className="error-message">{errors.description}</span>}
+      </div>
+    </div>
+  </div>
+)}
 
             {/* Section 2: Location */}
             {activeSection === 1 && (
@@ -582,7 +640,7 @@ const CreateProject = () => {
 
                 <div className="form-grid">
                   <div className="form-group">
-                    <label htmlFor="region">Region *</label>
+                    <label htmlFor="region">Region </label>
                     <SearchableDropdown
                       id="region"
                       name="region"
@@ -595,7 +653,7 @@ const CreateProject = () => {
                   </div>
 
                   <div className="form-group">
-                    <label htmlFor="province">Province *</label>
+                    <label htmlFor="province">Province </label>
                     <SearchableDropdown
                       id="province"
                       name="province"
@@ -608,7 +666,7 @@ const CreateProject = () => {
                   </div>
 
                   <div className="form-group">
-                    <label htmlFor="city">City/Municipality *</label>
+                    <label htmlFor="city">City/Municipality </label>
                     <SearchableDropdown
                       id="city"
                       name="city"
@@ -636,7 +694,7 @@ const CreateProject = () => {
 
                 <div className="form-grid">
                   <div className="form-group full-width">
-                    <label htmlFor="equipmentType">Product Type *</label>
+                    <label htmlFor="equipmentType">Product Type </label>
                     <div className="select-wrapper">
                       <select
                         id="equipmentType"
@@ -674,7 +732,7 @@ const CreateProject = () => {
 
                 <div className="form-grid">
                   <div className="form-group">
-                    <label htmlFor="capacity">Capacity (Kgs) *</label>
+                    <label htmlFor="capacity">Capacity (Kgs) </label>
                     <input
                       type="number"
                       id="capacity"
@@ -690,7 +748,7 @@ const CreateProject = () => {
                   </div>
 
                   <div className="form-group">
-                    <label htmlFor="speed">Speed (m/s) *</label>
+                    <label htmlFor="speed">Speed (m/s) </label>
                     <input
                       type="number"
                       id="speed"
@@ -707,7 +765,7 @@ const CreateProject = () => {
                   </div>
 
                   <div className="form-group">
-                    <label htmlFor="stops">Stops *</label>
+                    <label htmlFor="stops">Stops </label>
                     <input
                       type="text"
                       id="stops"
@@ -722,7 +780,7 @@ const CreateProject = () => {
                   </div>
 
                   <div className="form-group">
-                    <label htmlFor="servingFloor">Serving Floor *</label>
+                    <label htmlFor="servingFloor">Serving Floor </label>
                     <input
                       type="text"
                       id="servingFloor"
@@ -737,7 +795,7 @@ const CreateProject = () => {
                   </div>
 
                   <div className="form-group">
-                    <label htmlFor="travel">Travel (m) *</label>
+                    <label htmlFor="travel">Travel (m) </label>
                     <input
                       type="text"
                       id="travel"
@@ -752,7 +810,7 @@ const CreateProject = () => {
                   </div>
 
                   <div className="form-group">
-                    <label htmlFor="control">Control System *</label>
+                    <label htmlFor="control">Control System </label>
                     <input
                       type="text"
                       id="control"
@@ -767,7 +825,7 @@ const CreateProject = () => {
                   </div>
 
                   <div className="form-group">
-                    <label htmlFor="drive">Drive Type *</label>
+                    <label htmlFor="drive">Drive Type </label>
                     <input
                       type="text"
                       id="drive"
@@ -782,7 +840,7 @@ const CreateProject = () => {
                   </div>
 
                   <div className="form-group">
-                    <label htmlFor="doorOperator">Door Operator *</label>
+                    <label htmlFor="doorOperator">Door Operator </label>
                     <input
                       type="text"
                       id="doorOperator"
@@ -797,7 +855,7 @@ const CreateProject = () => {
                   </div>
 
                   <div className="form-group">
-                    <label htmlFor="powerSupply">Power Supply *</label>
+                    <label htmlFor="powerSupply">Power Supply </label>
                     <input
                       type="text"
                       id="powerSupply"
@@ -827,7 +885,7 @@ const CreateProject = () => {
 
                 <div className="form-grid">
                   <div className="form-group">
-                    <label htmlFor="shaft">Shaft Details *</label>
+                    <label htmlFor="shaft">Shaft Details </label>
                     <input
                       type="text"
                       id="shaft"
@@ -842,7 +900,7 @@ const CreateProject = () => {
                   </div>
 
                   <div className="form-group">
-                    <label htmlFor="shaftSize">Shaft Size *</label>
+                    <label htmlFor="shaftSize">Shaft Size </label>
                     <input
                       type="text"
                       id="shaftSize"
@@ -857,7 +915,7 @@ const CreateProject = () => {
                   </div>
 
                   <div className="form-group">
-                    <label htmlFor="carSize">Car Size *</label>
+                    <label htmlFor="carSize">Car Size </label>
                     <input
                       type="text"
                       id="carSize"
@@ -872,7 +930,7 @@ const CreateProject = () => {
                   </div>
 
                   <div className="form-group">
-                    <label htmlFor="doorSize">Door Size *</label>
+                    <label htmlFor="doorSize">Door Size </label>
                     <input
                       type="text"
                       id="doorSize"
@@ -921,46 +979,67 @@ const CreateProject = () => {
               </div>
             )}
 
-            {/* Section 6: Documents */}
-            {activeSection === 5 && (
-              <div className="form-section">
-                <div className="section-header">
-                  <AttachFile className="section-icon" />
-                  <div>
-                    <h2>Contract Documents</h2>
-                    <p>Attach relevant contract files and photos</p>
-                  </div>
-                </div>
+{/* Section 6: Documents */}
+{activeSection === 5 && (
+  <div className="form-section">
+    <div className="section-header">
+      <AttachFile className="section-icon" />
+      <div>
+        <h2>Contract Documents</h2>
+        <p>Attach relevant contract files and photos</p>
+      </div>
+    </div>
 
-                <div className="form-grid">
-                  <div className="form-group full-width">
-                    <label htmlFor="photos">Contract Attachment *</label>
-                    <div className="file-upload-area">
-                      <input 
-                        type="file"
-                        id="photos"
-                        name="photos"
-                        multiple
-                        accept="image/*,.pdf,.doc,.docx"
-                        onChange={handleContractChange}
-                        className="file-input"
-                      />
-                      <div className="upload-placeholder">
-                        <AttachFile className="upload-icon" />
-                        <p>Click to upload or drag and drop</p>
-                        <small>Supports images, PDF, DOC (Max 10MB)</small>
-                      </div>
-                    </div>
-                    {values.photos.length > 0 && (
-                      <div className="file-preview">
-                        <p>{values.photos.length} file(s) selected</p>
-                      </div>
-                    )}
-                    {errors.photos && <span className="error-message">{errors.photos}</span>}
+    <div className="form-grid">
+      <div className="form-group full-width">
+        <label htmlFor="photos">Contract Attachment </label>
+        <div className="file-upload-area">
+          <input 
+            type="file"
+            id="photos"
+            name="photos"
+            multiple
+            accept="image/*,.pdf,.doc,.docx"
+            onChange={handleContractChange}
+            className="file-input"
+          />
+          <div className="upload-placeholder">
+            <AttachFile className="upload-icon" />
+            <p>Click to upload or drag and drop</p>
+            <small>Supports images, PDF, DOC (Max 10MB)</small>
+          </div>
+        </div>
+        
+        {/* Fixed file preview section */}
+        {values.photos.length > 0 && (
+          <div className="file-preview">
+            <h4>Selected Files:</h4>
+            <div className="file-list">
+              {Array.from(values.photos).map((file, index) => (
+                <div key={index} className="file-item">
+                  <AttachFile className="file-icon" />
+                  <div className="file-info">
+                    <span className="file-name">{file.name}</span>
+                    <span className="file-size">
+                      {file.size > 1024 * 1024 
+                        ? `${(file.size / (1024 * 1024)).toFixed(2)} MB`
+                        : `${(file.size / 1024).toFixed(2)} KB`
+                      }
+                    </span>
                   </div>
+                  <span className="file-type">{file.type.split('/')[1]?.toUpperCase() || 'FILE'}</span>
                 </div>
-              </div>
-            )}
+              ))}
+            </div>
+            <p className="file-count">{values.photos.length} file(s) selected</p>
+          </div>
+        )}
+        
+        {errors.photos && <span className="error-message">{errors.photos}</span>}
+      </div>
+    </div>
+  </div>
+)}
 
             <div className="form-navigation">
               {activeSection > 0 && (
@@ -1002,6 +1081,7 @@ const CreateProject = () => {
         onConfirm={handleConfirm}
         onCancel={handleCancel}
         projectName={values.liftName || "Untitled Project"}
+        isLoading={isSubmitting}
       />
 
       <SuccessMessage

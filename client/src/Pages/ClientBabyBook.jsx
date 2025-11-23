@@ -11,6 +11,22 @@ import FormControl from '@mui/material/FormControl';
 import { useSharedSocket } from '../Context/SocketContext'
 import FormLabel from '@mui/material/FormLabel';
 
+// MUI Icons
+import {
+  Description as DescriptionIcon,
+  PictureAsPdf as PdfIcon,
+  Article as WordIcon,
+  TableChart as ExcelIcon,
+  AttachFile as FileIcon,
+  Folder as FolderIcon,
+  Assignment as ReportIcon,
+  Build as BuildIcon,
+  PhotoCamera as PhotoIcon,
+  Collections as CollectionsIcon,
+  Handshake as HandshakeIcon,
+  BusinessCenter as ContractIcon
+} from '@mui/icons-material'
+
 const ClientBabyBook = () => {
     const {utilitiesSocket} = useSharedSocket()
     const navigate = useNavigate()
@@ -103,15 +119,15 @@ const callbackHistory = useMemo(() => {
     const getFileIcon = (fileType) => {
         switch (fileType) {
             case 'image':
-                return '🖼️';
+                return <PhotoIcon sx={{ fontSize: 40, color: '#2873c3' }} />;
             case 'pdf':
-                return '📄';
+                return <PdfIcon sx={{ fontSize: 40, color: '#d32f2f' }} />;
             case 'word':
-                return '📝';
+                return <WordIcon sx={{ fontSize: 40, color: '#2b579a' }} />;
             case 'excel':
-                return '📊';
+                return <ExcelIcon sx={{ fontSize: 40, color: '#217346' }} />;
             default:
-                return '📎';
+                return <FileIcon sx={{ fontSize: 40, color: '#666' }} />;
         }
     }
 
@@ -169,9 +185,15 @@ const callbackHistory = useMemo(() => {
         <div className="baby-book-container">
             {/* Header Section */}
             <div className="baby-book-header" style={{textAlign: 'left'}}>
-                <h1>Baby Book - {projectData.lift_name || 'Project Documents'}</h1>
+                <h1>
+                    <FolderIcon sx={{ fontSize: 32, marginRight: 2, verticalAlign: 'middle', color: '#2873c3' }} />
+                    Baby Book - {projectData.lift_name || 'Project Documents'}
+                </h1>
                 <div className="contract-info" style={{textAlign:'left'}}>
-                    <h3>Client Information</h3>
+                    <h3>
+                        <DescriptionIcon sx={{ fontSize: 20, marginRight: 1 }} />
+                        Client Information
+                    </h3>
                     <div className="contract-info-grid">
                         <div style={{textAlign:'left'}}>
                             <p><strong>Contract Amount:</strong> {formatCurrency(projectData.contract_amount)}</p>
@@ -186,13 +208,19 @@ const callbackHistory = useMemo(() => {
                         </div>                
                     </div>
                 </div>
-                <h3>Inspection Dates</h3>
+                <h3>
+                    <BuildIcon sx={{ fontSize: 20, marginRight: 1 }} />
+                    Inspection Dates
+                </h3>
                 <p><strong>Last Inspection:</strong>{projectData.last_inspection_date !== null ? new Date(projectData.last_inspection_date).toLocaleDateString() : '-'}</p>
                 <p><strong>Upcoming Inspection:</strong>{new Date(projectData.pms_inspection_date).toLocaleDateString()}</p>
             </div>
 
             <div className='documents-section'>
-                <h2>Client contract continuation of PMS Contract</h2>
+                <h2>
+                    <HandshakeIcon sx={{ fontSize: 24, marginRight: 1 }} />
+                    Client contract continuation of PMS Contract
+                </h2>
                 <div className="contract-management">
                     <div>Client free preventive maintenance service (PMS) will end at - {new Date(projectData.free_pms_end).toLocaleDateString() || '-'}</div>
                     <div>
@@ -218,16 +246,39 @@ const callbackHistory = useMemo(() => {
             
             {/* Handover Documents Section */}
             <div className="documents-section">
-                <h2>Handover Documents</h2>
+                <h2>
+                    <DescriptionIcon sx={{ fontSize: 24, marginRight: 1 }} />
+                    Handover Documents
+                </h2>
                 {babyBook.handOverDocs && babyBook.handOverDocs.length > 0 ? (
                     <div className="documents-grid">
                         {babyBook.handOverDocs.map((doc) => {
                             const fileType = getFileType(doc.doc_url);
+                            const isImage = fileType === 'image';
+                            
                             return (
-                                <div key={`handover-${doc.id}`} className="document-card">
-                                    <div className="document-icon">
-                                        {getFileIcon(fileType)}
-                                    </div>
+                                <div key={`handover-${doc.id}`} className={`document-card ${isImage ? 'image-card' : ''}`}>
+                                    {isImage ? (
+                                        <div className="document-image-preview">
+                                            <img 
+                                                src={`${backendURL}${doc.doc_url}`} 
+                                                alt={doc.document_name || 'Handover Document'}
+                                                className="document-image"
+                                                onError={(e) => {
+                                                    e.target.style.display = 'none';
+                                                    e.target.nextSibling.style.display = 'flex';
+                                                }}
+                                            />
+                                            <div className="document-image-fallback">
+                                                {getFileIcon(fileType)}
+                                                <span>Image not available</span>
+                                            </div>
+                                        </div>
+                                    ) : (
+                                        <div className="document-icon">
+                                            {getFileIcon(fileType)}
+                                        </div>
+                                    )}
                                     <div className="document-info">
                                         <h4>{doc.document_name || 'Handover Document'}</h4>
                                         <p className="document-type">{fileType.toUpperCase()} File</p>
@@ -251,7 +302,10 @@ const callbackHistory = useMemo(() => {
 
             {/* Service Reports Section - Grouped */}
             <div className="documents-section">
-                <h2>Service Reports</h2>
+                <h2>
+                    <ReportIcon sx={{ fontSize: 24, marginRight: 1 }} />
+                    Service Reports
+                </h2>
                 {babyBook.service_reports && babyBook.service_reports.length > 0 ? (
                     <>
                         <div className="project-table-header">
@@ -283,7 +337,10 @@ const callbackHistory = useMemo(() => {
 
             {/* Callback Reports Section */}
             <div className="documents-section">
-                <h2>Callback Reports</h2>
+                <h2>
+                    <BuildIcon sx={{ fontSize: 24, marginRight: 1 }} />
+                    Callback Reports
+                </h2>
                 {callbackHistory.length > 0 ? (
                     <>
                         <div className="project-table-header">
@@ -318,7 +375,7 @@ const callbackHistory = useMemo(() => {
                                         <div className="callback-documents-info">
                                             {hasDocuments ? (
                                                 <span className="documents-count">
-                                                    📎 {callbackDocuments.length} doc(s) • 🖼️ {callbackEvidence.length} photo(s)
+                                                    <FileIcon sx={{ fontSize: 16 }} /> {callbackDocuments.length} doc(s) • <PhotoIcon sx={{ fontSize: 16 }} /> {callbackEvidence.length} photo(s)
                                                 </span>
                                             ) : (
                                                 <span className="no-documents">No documents</span>
@@ -336,17 +393,39 @@ const callbackHistory = useMemo(() => {
 
             {/* Contract Documents Section */}
             <div className="documents-section">
-                <h2>Contract Documents</h2>
+                <h2>
+                    <ContractIcon sx={{ fontSize: 24, marginRight: 1 }} />
+                    Contract Documents
+                </h2>
                 {babyBook.contract_documents && babyBook.contract_documents.length > 0 ? (
                     <div className="documents-grid">
-                        {console.log(babyBook)}
                         {babyBook.contract_documents.map((doc) => {
                             const fileType = getFileType(doc.photo_url);
+                            const isImage = fileType === 'image';
+                            
                             return (
-                                <div key={`contract-${doc.id}`} className="document-card">
-                                    <div className="document-icon">
-                                        {getFileIcon(fileType)}
-                                    </div>
+                                <div key={`contract-${doc.id}`} className={`document-card ${isImage ? 'image-card' : ''}`}>
+                                    {isImage ? (
+                                        <div className="document-image-preview">
+                                            <img 
+                                                src={`${backendURL}${doc.photo_url}`} 
+                                                alt={doc.contract_document_name || 'Contract Document'}
+                                                className="document-image"
+                                                onError={(e) => {
+                                                    e.target.style.display = 'none';
+                                                    e.target.nextSibling.style.display = 'flex';
+                                                }}
+                                            />
+                                            <div className="document-image-fallback">
+                                                {getFileIcon(fileType)}
+                                                <span>Image not available</span>
+                                            </div>
+                                        </div>
+                                    ) : (
+                                        <div className="document-icon">
+                                            {getFileIcon(fileType)}
+                                        </div>
+                                    )}
                                     <div className="document-info">
                                         <h4>{doc.contract_document_name || 'Contract Document'}</h4>
                                         <p className="document-type">{fileType.toUpperCase()} File</p>
@@ -370,7 +449,10 @@ const callbackHistory = useMemo(() => {
 
             {/* Contract Photos Section */}
             <div className="documents-section">
-                <h2>Project Photos</h2>
+                <h2>
+                    <CollectionsIcon sx={{ fontSize: 24, marginRight: 1 }} />
+                    Project Photos
+                </h2>
                 {babyBook.contract_photo && babyBook.contract_photo.length > 0 ? (
                     <div className="photos-grid">
                         {babyBook.contract_photo.map((photo) => (
@@ -381,11 +463,11 @@ const callbackHistory = useMemo(() => {
                                     className="photo-image"
                                     onError={(e) => {
                                         e.target.style.display = 'none';
-                                        e.target.nextSibling.style.display = 'block';
+                                        e.target.nextSibling.style.display = 'flex';
                                     }}
                                 />
-                                <div className="photo-placeholder" style={{display: 'none'}}>
-                                    <div className="photo-icon">🖼️</div>
+                                <div className="photo-placeholder">
+                                    <PhotoIcon sx={{ fontSize: 48, color: '#718096', marginBottom: 1 }} />
                                     <p>Image not available</p>
                                 </div>
                                 <a 

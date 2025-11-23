@@ -57,7 +57,7 @@ const TaskDetails = ({currentTask, currentTaskPhase, proj, ConfirmationModal, fe
     const [qaqcChecklistType, setQaqcChecklistType] = useState('')
     const [tncChecklistType, setTncChecklistType] = useState('')
    // const [pmsDate, setPmsDate] = useState(new Date())
-    
+
     const [confirmationModal, setConfirmationModal] = useState({
         isOpen: false,
         type: '',
@@ -205,8 +205,8 @@ const TaskDetails = ({currentTask, currentTaskPhase, proj, ConfirmationModal, fe
         setApprovalModal({ isOpen: false, task: null });
         const task_id = approvalModal.task.task_id
         const task_name = approvalModal.task.task_name
-        const start_date = new Date(approvalModal.task.task_start).toISOString().split("T")[0];
-        const end_date = new Date(approvalModal.task.task_end).toISOString().split("T")[0];
+        const start_date = formatDateForMySQL(completionModal.task.task_start);
+        const end_date   = formatDateForMySQL(completionModal.task.task_end);
         const task_duration = approvalModal.task.task_duration
         const task_percent = approvalModal.task.task_percent
         console.log(start_date)
@@ -289,8 +289,8 @@ const TaskDetails = ({currentTask, currentTaskPhase, proj, ConfirmationModal, fe
                     completionModal.photos.forEach(p => formData.append('photos', p)) 
                     const task_id = completionModal.task.task_id
                     const task_name = completionModal.task.task_name
-                    const start_date = completionModal.task.task_start.split('T')[0]
-                    const end_date = completionModal.task.task_end.split('T')[0]
+                    const start_date = formatDateForMySQL(completionModal.task.task_start);
+                    const end_date   = formatDateForMySQL(completionModal.task.task_end);
                     const task_duration = completionModal.task.task_duration
                     const task_percent = completionModal.task.task_percent
 
@@ -356,8 +356,8 @@ const TaskDetails = ({currentTask, currentTaskPhase, proj, ConfirmationModal, fe
                 
                 const task_id = completionModal.task.task_id
                 const task_name = completionModal.task.task_name
-                const start_date = completionModal.task.task_start.split('T')[0]
-                const end_date = completionModal.task.task_end.split('T')[0]
+                const start_date = formatDateForMySQL(completionModal.task.task_start);
+                const end_date   = formatDateForMySQL(completionModal.task.task_end);
                 const task_duration = completionModal.task.task_duration
                 const task_percent = completionModal.task.task_percent
 
@@ -388,10 +388,11 @@ const TaskDetails = ({currentTask, currentTaskPhase, proj, ConfirmationModal, fe
             } else if (type === 'pms') {
                 const formData = new FormData()
                 formData.append('inspection_type', type)
+                console.log(completionModal)
                 const task_id = completionModal.task.task_id
                 const task_name = completionModal.task.task_name
-                const start_date = completionModal.task.task_start.split('T')[0]
-                const end_date = completionModal.task.task_end.split('T')[0]
+                const start_date = formatDateForMySQL(completionModal.task.task_start);
+                const end_date   = formatDateForMySQL(completionModal.task.task_end);
                 const task_duration = completionModal.task.task_duration
                 const task_percent = completionModal.task.task_percent
 

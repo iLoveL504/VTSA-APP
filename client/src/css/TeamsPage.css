@@ -6,7 +6,7 @@
 }
 
 /* Header matching ProjectInfo layout - FULL WIDTH */
-.project-header {
+.TeamsPage .project-header {
   background: linear-gradient(135deg, #315a95 0%, #1e3a5f 100%);
   color: white;
   padding: 2rem;
@@ -26,14 +26,14 @@
 }
 
 /* Rest of your CSS remains the same */
-.project-header h2 {
+.TeamsPage .project-header h2 {
   font-size: 2rem;
   font-weight: 700;
   margin: 0;
   color: white;
 }
 
-.action-buttons {
+.TeamsPage .action-buttons {
   display: flex;
   gap: 1rem;
 }

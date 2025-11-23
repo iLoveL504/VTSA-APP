@@ -1,79 +1,99 @@
-import { IconGitBranchDeleted } from '@tabler/icons-react'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo, useCallback } from 'react'
 
-const EmployeeModal = ({ employee, roles, onSave, onClose }) => {
-    const [formData, setFormData] = useState({
-        name: '',
-        password: '',
-        first_name: '',
-        last_name: '',
-        job: '',
-        branch: '',
-        is_active: 1,
-        in_house: '',
-        island_group: ''
-    })
-    console.log(formData)
+const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/
 
-    const branches = ['Baguio', 'Pampanga', 'Cebu', 'Davao', 'Pasig']
-    const branchesMap = {
-        Baguio: 'Luzon',
-        Pampanga: 'Luzon',
-        Cebu: 'Visayas',
-        Davao: 'Mindanao',
-        Pasig: 'Luzon'
-        
+// Move outside component
+const BRANCHES = ['Baguio', 'Pampanga', 'Cebu', 'Davao', 'Pasig']
+const BRANCHES_MAP = {
+    Baguio: 'Luzon',
+    Pampanga: 'Luzon',
+    Cebu: 'Visayas',
+    Davao: 'Mindanao',
+    Pasig: 'Luzon'
+}
+
+const generatePassword = () => {
+    // Simplified password generation
+    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*'
+    let password = ''
+    for (let i = 0; i < 12; i++) {
+        password += chars.charAt(Math.floor(Math.random() * chars.length))
     }
-    console.log(formData.branch)
-     console.log('Island is: ',branchesMap[formData.branch])
+    return password
+}
+
+const EmployeeModal = ({ employee, roles, onSave, onClose, isLoading }) => {
+    const [validEmail, setValidEmail] = useState(true)
+    const [generatedPassword, setGeneratedPassword] = useState('')
+    const [formData, setFormData] = useState({
+        username: '', password: '', first_name: '', last_name: '', job: '',
+        branch: '', is_active: 1, in_house: 1, island_group: '', 
+        phone_number: '', email: ''
+    })
+
+    // Memoize all options
+    const branchOptions = useMemo(() => 
+        BRANCHES.map(b => <option key={b} value={b}>{b}</option>), [])
+
+    const roleOptions = useMemo(() => 
+        roles
+            .filter(r => r !== 'Admin' && r !== 'Project Manager')
+            .map(r => <option key={r} value={r}>{r}</option>), 
+        [roles]
+    )
+
+    // Initialize form data
     useEffect(() => {
         if (employee) {
             setFormData({
                 username: employee.username || '',
-                password: '', // Don't pre-fill password for security
+                password: '',
                 first_name: employee.first_name || '',
                 last_name: employee.last_name || '',
                 job: employee.job || '',
-                is_active: employee.is_active || 1,
-                in_house: employee.in_house || 1,
-                branch: employee.branch || 'Luzon',
-                island_group: employee.island_group || 'Luzon'
+                is_active: employee.is_active ?? 1,
+                in_house: employee.in_house ?? 1,
+                branch: employee.branch || '',
+                island_group: employee.island_group || '',
+                phone_number: employee.phone_number || '',
+                email: employee.email || ''
             })
-           
+        } else {
+            const newPassword = generatePassword()
+            setGeneratedPassword(newPassword)
+            setFormData(prev => ({ ...prev, password: newPassword }))
         }
     }, [employee])
 
-
-
-    const handleSubmit = (e) => {
+    // Optimize handlers
+    const handleSubmit = useCallback((e) => {
         e.preventDefault()
-        console.log(formData)
-
+        if (!validEmail) {
+            window.alert('Invalid Email')
+            return
+        }
         onSave(formData)
-    }
+    }, [validEmail, onSave, formData])
 
-    const handleChange = (e) => {
-        
+    const handleChange = useCallback((e) => {
         const { name, value } = e.target
-        console.log(name)
-        console.log(value)
-        console.log(formData)
-        setFormData(prev => {
-            if (name === 'branch') {
-                return {
-                ...prev,
-                branch: value,
-                island_group: branchesMap[value]
-                }
-            } else {
-                return {
-                ...prev,
-                [name]: value,
-                }                
-            }
 
-        })
-    }
+        if (name === 'email') {
+            setValidEmail(emailRegex.test(value))
+        }
+
+        setFormData(prev => ({
+            ...prev,
+            [name]: value,
+            ...(name === 'branch' && { island_group: BRANCHES_MAP[value] || '' })
+        }))
+    }, [])
+
+    const handleRegeneratePassword = useCallback(() => {
+        const newPassword = generatePassword()
+        setGeneratedPassword(newPassword)
+        setFormData(prev => ({ ...prev, password: newPassword }))
+    }, [])
 
     return (
         <div className="modal-overlay">
@@ -85,94 +105,145 @@ const EmployeeModal = ({ employee, roles, onSave, onClose }) => {
                 <form onSubmit={handleSubmit}>
                     <div className="form-row">
                         <div className="form-group">
-                            <label>First Name </label>
+                            <label>First Name *</label>
                             <input
                                 type="text"
                                 name="first_name"
                                 value={formData.first_name}
                                 onChange={handleChange}
                                 required
+                                disabled={isLoading}
                             />
                         </div>
                         <div className="form-group">
-                            <label>Last Name </label>
+                            <label>Last Name *</label>
                             <input
                                 type="text"
                                 name="last_name"
                                 value={formData.last_name}
                                 onChange={handleChange}
                                 required
+                                disabled={isLoading}
                             />
                         </div>
                     </div>
 
                     <div className="form-row">
                         <div className="form-group">
-                            <label>Username </label>
+                            <label>Email *</label>
+                            <input
+                                type="email"
+                                name="email"
+                                value={formData.email}
+                                onChange={handleChange}
+                                required
+                                disabled={isLoading}
+                            />
+                            {!validEmail && <span className="error-text">Email is not valid</span>}
+                        </div>
+                        <div className="form-group">
+                            <label>Username *</label>
                             <input
                                 type="text"
                                 name="username"
                                 value={formData.username}
                                 onChange={handleChange}
                                 required
-                            />
-                        </div>
-                        <div className="form-group">
-                            <label>Password {!employee && ''}</label>
-                            <input
-                                type="password"
-                                name="password"
-                                value={formData.password}
-                                onChange={handleChange}
-                                required={!employee}
-                                placeholder={employee ? "Leave blank to keep current" : ""}
+                                disabled={isLoading}
                             />
                         </div>
                     </div>
 
+                    {!employee && (
+                        <div className="form-row">
+                            <div className="form-group">
+                                <label>Generated Password</label>
+                                <div className="password-display">
+                                    <input
+                                        type="text"
+                                        value={generatedPassword}
+                                        readOnly
+                                        className="password-field"
+                                    />
+                                    <button 
+                                        type="button" 
+                                        onClick={handleRegeneratePassword}
+                                        className="regenerate-btn"
+                                        disabled={isLoading}
+                                    >
+                                        Regenerate
+                                    </button>
+                                </div>
+                                <small className="password-note">
+                                    This password will be automatically sent to the employee's email
+                                </small>
+                            </div>
+                            <div className="form-group">
+                                <label>Phone Number *</label>
+                                <input
+                                    type="tel"
+                                    name="phone_number"
+                                    value={formData.phone_number}
+                                    onChange={handleChange}
+                                    pattern="[0-9]{3}-[0-9]{3}-[0-9]{4}"
+                                    placeholder="123-456-7890"
+                                    required
+                                    disabled={isLoading}
+                                />
+                            </div>
+                        </div>
+                    )}
+
+                    {/* Similar optimizations for other form sections */}
+                    
                     <div className="form-row">
                         <div className="form-group">
-                            <label>Branch </label>
+                            <label>Branch *</label>
                             <select
                                 name="branch"
                                 value={formData.branch}
                                 onChange={handleChange}
                                 required
+                                disabled={isLoading}
                             >
                                 <option value="">Select branch</option>
-                                {branches.map(islands => (
-                                    <option key={islands} value={islands}>{islands}</option>
-                                ))}
+                                {branchOptions}
                             </select>
                         </div>                        
                         <div className="form-group">
-                            <label>Island </label>
-                            <label>{formData.island_group}</label>
+                            <label>Island</label>
+                            <input
+                                type="text"
+                                name="island_group"
+                                value={formData.island_group}
+                                onChange={handleChange}
+                                disabled
+                            />
                         </div>                        
                     </div>
 
                     <div className="form-row">
                         <div className="form-group">
-                            <label>Role </label>
+                            <label>Role *</label>
                             <select
                                 name="job"
                                 value={formData.job}
                                 onChange={handleChange}
                                 required
+                                disabled={isLoading}
                             >
                                 <option value="">Select a role</option>
-                                {roles.filter(r => r !== 'Admin' && r !== 'Project Manager').map(role => (
-                                    <option key={role} value={role}>{role}</option>
-                                ))}
+                                {roleOptions} {/* ← Now using memoized options */}
                             </select>
                         </div>
                         <div className="form-group">
-                            <label>Contract </label>
+                            <label>Contract *</label>
                             <select
                                 name="in_house"
                                 value={formData.in_house}
                                 onChange={handleChange}
                                 required
+                                disabled={isLoading}
                             >
                                 <option value={1}>In house</option>
                                 <option value={0}>Contract Based</option>
@@ -180,12 +251,11 @@ const EmployeeModal = ({ employee, roles, onSave, onClose }) => {
                         </div>
                     </div>
 
-
                     <div className="modal-actions">
-                        <button type="button" className="btn-secondary" onClick={onClose}>
+                        <button type="button" className="btn-secondary" onClick={onClose} disabled={isLoading}>
                             Cancel
                         </button>
-                        <button type="submit" className="btn-primary">
+                        <button type="submit" className="btn-primary" disabled={isLoading}>
                             {employee ? 'Update Employee' : 'Create Employee'}
                         </button>
                     </div>

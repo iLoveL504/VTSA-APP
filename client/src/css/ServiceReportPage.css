@@ -248,9 +248,9 @@
     color: #555;
 }
 
-.form-group input[type="file"],
-.form-group input[type="text"],
-.form-group textarea {
+.ServiceReportPage .form-group input[type="file"],
+.ServiceReportPage .form-group input[type="text"],
+.ServiceReportPage .form-group textarea {
     padding: 10px;
     border: 1px solid #ddd;
     border-radius: 4px;

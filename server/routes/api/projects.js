@@ -123,14 +123,14 @@ router.route('/qaqc/assign/:id')
 
 router.route('/qaqc/complete/:id')
     .post(upload.fields([
-        { name: 'evidence', maxCount: 10},
-        { name: 'documents', maxCount: 10}
+        { name: 'evidence', maxCount: 5},
+        { name: 'documents', maxCount: 5}
     ]), completeProjQAQC)
 
 router.route('/qaqc/punchlist/:id')
     .post(upload.fields([
-        { name: 'punchlist', maxCount: 10},
-        { name: 'punchlist_evidence', maxCount: 10}
+        { name: 'punchlist', maxCount: 5},
+        { name: 'punchlist_evidence', maxCount: 5}
     ]), qaqcPunchlisting)
 
 router.route('/qaqc/rectified/:id')
@@ -145,8 +145,8 @@ router.route('/tnc/assign/:id')
 
 router.route(`/tnc/approve-task/:id`)
     .post(upload.fields([
-        { name: 'evidence', maxCount: 10 },
-        { name: 'documents', maxCount: 10 },
+        { name: 'evidence', maxCount: 5 },
+        { name: 'documents', maxCount: 5 },
     ]), approveProjTaskTNC);
 
 router.route('/tnc/complete/:id')

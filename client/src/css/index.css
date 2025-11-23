@@ -1479,12 +1479,6 @@ button{
   }
 
   /* Buttons */
-  button {
-    padding: 0.875rem 1.25rem;
-    font-size: 0.9rem;
-    width: 100%;
-    justify-content: center;
-  }
 
   .form-actions {
     flex-direction: column;

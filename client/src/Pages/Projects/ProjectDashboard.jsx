@@ -143,16 +143,20 @@ const SchedulingCard = ({
       case 'qaqc':
         if (proj.qaqc_ongoing && proj.qaqc_is_assigned) return { status: 'ongoing', label: 'In Progress', date: proj.qaqc_inspection_date };
         if (proj.qaqc_is_assigned) return { status: 'scheduled', label: 'Scheduled', date: proj.qaqc_inspection_date };
+        if (proj.qaqc_pending) return { status: 'pending', label: 'Requested', date: proj.qaqc_inspection_date };
         return { status: 'available', label: 'Not Scheduled', date: null };
       
       case 'tnc':
         if (proj.tnc_ongoing && proj.tnc_is_assigned) return { status: 'ongoing', label: 'In Progress', date: proj.tnc_assign_date };
         if (proj.tnc_is_assigned) return { status: 'scheduled', label: 'Scheduled', date: proj.tnc_assign_date };
+        if (proj.tnc_pending) return { status: 'pending', label: 'Requested', date: proj.tnc_assign_date };
         return { status: 'available', label: 'Not Scheduled', date: null };
       
       case 'pms':
+        console.log(proj)
         if (proj.pms_ongoing) return { status: 'ongoing', label: 'In Progress', date: proj.pms_joint_inspection };
         if (proj.pms_is_assigned) return { status: 'scheduled', label: 'Scheduled', date: proj.pms_joint_inspection };
+        if (proj.pms_pending) return { status: 'pending', label: 'Requested', date: proj.pms_joint_inspection };
         return { status: 'available', label: 'Not Scheduled', date: null };
       
       default:
@@ -363,6 +367,12 @@ const ProjectDashboard = ({
   // const handleNavigateToProgress = () => {
   //   navigate(`/projects/${projId}/progress`);
   // };
+const formatNumber = (num) => {
+    if (num === null || num === undefined || isNaN(num)) {
+        return '0.00';
+    }
+    return num.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+};
 
   const handleNavigateToDetails = () => {
     setActivePage('details')
@@ -441,7 +451,7 @@ console.log(qaqcHistory)
             <div className="progress-stats">
               <div className="stat-item">
                 <span className="stat-label">Contract Amount</span>
-                <span className="stat-value">₱{proj?.contract_amount || '0.00'}</span>
+                <span className="stat-value">₱{formatNumber(Number(proj?.contract_amount)) || '0.00'}</span>
               </div>
               <div className="stat-item">
                 <span className="stat-label">Status</span>
@@ -460,6 +470,7 @@ console.log(qaqcHistory)
             <h3>Current Phase</h3>
           </div>
           <div className="card-content">
+            {console.log('project is on hold: ', proj)}
             {onHold ? (
               <div className="hold-state">
                 <WarningIcon className="hold-icon" />

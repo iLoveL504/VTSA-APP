@@ -500,7 +500,8 @@ const ProjectAssignment = () => {
             case 'installation':
                 return projects.filter(p => p.status === 'Installation');
             case 'tnc':
-                return projects.filter(p => p.status === 'Test and Comm');
+                return projects.filter(p => ['Test and Comm', 'Overdue'].includes(p.status));
+
             default:
                 return [];
         }
@@ -617,7 +618,7 @@ const ProjectAssignment = () => {
             const rIds = editedTeam.map(e => e.employee_id)
             console.log(rIds) 
 
-                utilitiesSocket.emit("new_notification", {
+            utilitiesSocket.emit("new_notification", {
                     subject: `New Project Assignment`,
                     body: `Project Assigned for ${project.lift_name} (${project.client})`,
                     Ids: rIds,

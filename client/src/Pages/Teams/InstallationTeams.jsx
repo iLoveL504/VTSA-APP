@@ -134,7 +134,7 @@ const TeamsDashboard = () => {
       qaqc: new Set(),
       pms: new Set()
     };
-
+    console.log(allTeams)
     // Track all assigned personnel from projects
     allTeams.forEach(project => {
       // Project Engineers
@@ -180,8 +180,9 @@ const TeamsDashboard = () => {
     const allInstallers = employees.filter(emp => emp.job === 'Installer');
     const allProjectEngineers = employees.filter(emp => emp.job === 'Project Engineer');
     const allTechnicians = {
-      tnc: employees.filter(emp => emp.job === 'Test and Commission'),
-      qaqc: employees.filter(emp => emp.job === 'QA/QC')
+      tnc: employees.filter(emp => emp.job === 'TNC Technician'),
+      qaqc: employees.filter(emp => emp.job === 'QAQC'),
+      pms: employees.filter(emp => emp.job === 'PMS Technician')
     };
 
     // Get all unique branches
@@ -319,6 +320,13 @@ const TeamsDashboard = () => {
           available: allTechnicians.qaqc.length - assignedTechnicians.qaqc.size,
           assignedList: allTechnicians.qaqc.filter(t => assignedTechnicians.qaqc.has(t.employee_id)),
           availableList: allTechnicians.qaqc.filter(t => !assignedTechnicians.qaqc.has(t.employee_id))
+        },
+        pms: {
+          total: allTechnicians.pms.length,
+          assigned: assignedTechnicians.pms.size,
+          available: allTechnicians.pms.length - assignedTechnicians.pms.size,
+          assignedList: allTechnicians.pms.filter(t => assignedTechnicians.pms.has(t.employee_id)),
+          availableList: allTechnicians.pms.filter(t => !assignedTechnicians.pms.has(t.employee_id))
         }
       }
     };
@@ -1314,6 +1322,7 @@ const TeamsDashboard = () => {
             <div className="technician-stat-card">
               <BuildIcon className="technician-stat-icon qaqc" />
               <div className="technician-stat-content">
+                {console.log(manpowerStats.technicians)}
                 <span className="technician-stat-number">{manpowerStats.technicians?.pms?.assigned || 0}</span>
                 <span className="technician-stat-label">PMS Technicians (For Joint Inspection)</span>
               </div>

@@ -15,7 +15,7 @@ export const getProjects = async (req, res) => {
 
 export const findProject = async (req, res) => {
     const {id} = req.params
-    console.log('find project line 18')
+    //console.log('find project line 18')
     console.log(id)
     const results = await projects?.findById(Number(id))
     //console.log(results)
@@ -527,7 +527,7 @@ export const getTaskPhotos = async (req, res) => {
     const {id} = req.params
     try {
         const results = await projects.getTaskPhotos(Number(id))
-        console.log('line 307')
+       // console.log('line 307')
         res.status(200).json(results)
     } catch (e) {
         console.error(e)

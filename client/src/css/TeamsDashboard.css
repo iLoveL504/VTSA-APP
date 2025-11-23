@@ -141,7 +141,7 @@
   background: #3b82f6;
 }
 
-.stat-content {
+.TeamsDashboard .stat-content {
   display: flex;
   flex-direction: column;
 }
@@ -185,28 +185,27 @@
 }
 
 .role-icon.foreman {
-  background: #fef3c7;
+  background: #ffea97;
   color: #92400e;
 }
 
 .role-icon.skilled {
-  background: #dbeafe;
+  background: #97c4ff;
   color: #1e40af;
 }
 
 .role-icon.installer {
-  background: #d1fae5;
+  background: #98ffca;
   color: #065f46;
 }
 
 .role-icon.engineer {
-  background: #e0e7ff;
+  background: #a1b7ff;
   color: #3730a3;
 }
 
 .role-info {
   display: flex;
-  flex-direction: column;
 }
 
 .role-count {
@@ -310,14 +309,14 @@
   flex: 1;
 }
 
-.project-title {
+.TeamsDashboard .project-title {
   display: flex;
   align-items: center;
   gap: 12px;
   margin-bottom: 12px;
 }
 
-.project-title h3 {
+.TeamsDashboard .project-title h3 {
   margin: 0;
   font-size: 1.25rem;
   color: #1e293b;

@@ -149,7 +149,7 @@
 }
 
 /* Required Field Indicator */
-.form-group label::after {
+.ProjectReport .form-group label::after {
   content: '*';
   color: #e53e3e;
   margin-left: 0.25rem;

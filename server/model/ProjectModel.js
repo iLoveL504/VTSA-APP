@@ -119,7 +119,23 @@ static async calculateProjectStatus(project, tasks, currentDate) {
     // Use UTC dates consistently
     const now = new Date(currentDate);
     const utcNow = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()));
-    
+    console.log(utcNow.toLocaleDateString())
+    if (project.id === 44) {
+    //   console.log(tasks.map(t => {
+    //     const viewT = {
+    //       task_id: t.task_id,
+    //       task_name: t.task_name,
+    //       task_start: new Date(t.task_start).toLocaleDateString(), 
+    //       task_start_local: new Date(t.task_start_local).toLocaleDateString(), 
+    //       task_end: new Date(t.task_end).toLocaleDateString(), 
+    //       task_end_local: new Date(t.task_end_local).toLocaleDateString(), 
+    //       dates_equal: t.task_start === t.task_start_local
+    //     }
+    //     return viewT
+
+    // }))
+    }
+
     // ---- HOLD DAYS ----
     let holdDays = null;
     const isOnHold = !!project.on_hold;
@@ -184,16 +200,7 @@ static async calculateProjectStatus(project, tasks, currentDate) {
     const actualTask = tasks.find(
         t => t.task_type === 'task' && (!t.task_done || t.task_actual_current)
     );
-    
-    if (!actualTask || !projectedTask || !foundParentTask) {
-        return {
-            status: 'Unknown',
-            current_task: project.current_task,
-            task_phase: project.task_phase,
-            is_behind: false
-        };
-    }
-    
+
     // ---- TASK DATES ----
     const findDate = (name, key = 'task_start') => {
         const task = tasks.find(t => t.task_name === name);
@@ -210,7 +217,68 @@ static async calculateProjectStatus(project, tasks, currentDate) {
     const tnc_start_date = findDate('Testing and Commissioning', 'task_start');
     const manufacturing_end_date = findDate('Manufacturing and Importation Process', 'task_end');
     const prepFinalHandoverDate = findDate('Final Cleaning / Hand over', 'task_start')
-    const templateSettingDate = findDate('Template Setting', 'task_start')
+    const templateSettingDate = findDate('Template Setting', 'task_start')    
+
+        // ---- STATUS CALCULATION ----
+    const phaseName = foundParentTask ? 
+        (summaryMap[foundParentTask.task_name] || foundParentTask.task_name) : 
+        'Unknown Phase';
+    
+    if (!actualTask || !projectedTask || !foundParentTask) {
+      if (new Date() > new Date(project.project_end_date)) {
+        return {
+            status: 'Overdue',
+            start_date,
+            end_date,
+            manufacturing_end_date,
+            tnc_start_date,
+            installation_start_date,
+            current_task: actualTask.task_name,
+            task_start: actualTask?.task_start,
+            task_end: actualTask?.task_end,
+            task_done: actualTask?.task_done,
+            task_phase: phaseName,
+            phase_full_name: foundParentTask?.task_name,
+            in_tnc: 0,
+            current_task_id: actualTask?.task_id,
+            task_phase_id: foundParentTask?.task_id,
+            is_behind: 1,
+            holdDays,
+            isOnHold: false,
+            willResume,
+            prepFinalHandoverDate,
+            templateSettingDate
+        };        
+      } else {
+        return {
+            status: summaryMap[foundParentTask?.task_name] || 'N/A',
+            start_date,
+            end_date,
+            manufacturing_end_date,
+            tnc_start_date,
+            installation_start_date,
+            current_task: foundCurrentTask,
+            task_start: actualTask?.task_start,
+            task_end: actualTask?.task_end,
+            task_done: actualTask?.task_done,
+            task_phase: phaseName,
+            phase_full_name: foundParentTask?.task_name,
+            in_tnc,
+            current_task_id: actualTask?.task_id,
+            task_phase_id: foundParentTask?.task_id,
+            is_behind: is_behind ? 1 : 0,
+            holdDays,
+            isOnHold: false,
+            willResume,
+            prepFinalHandoverDate,
+            templateSettingDate
+        }; 
+      }
+
+
+    }
+    
+
     
     // ---- STATUS FLAGS ----
     const in_tnc = project.tnc_assign_date ? 
@@ -222,13 +290,10 @@ static async calculateProjectStatus(project, tasks, currentDate) {
     const joint_inspection = project.pms_joint_inspection ? 
         (new Date(project.pms_joint_inspection) <= now) : false;
     
-    // ---- STATUS CALCULATION ----
-    const phaseName = foundParentTask ? 
-        (summaryMap[foundParentTask.task_name] || foundParentTask.task_name) : 
-        'Unknown Phase';
+
     
-    const foundCurrentTask = actualTask.task_name;
-    const is_behind = actualTask.task_id !== projectedTask.task_id;
+    const foundCurrentTask = actualTask?.task_name;
+    const is_behind = actualTask?.task_id !== projectedTask?.task_id || 0;
 
     
     // console.log('---------------line 214---------------')
@@ -236,23 +301,23 @@ static async calculateProjectStatus(project, tasks, currentDate) {
     // Resuming Project
     
     return {
-        status: summaryMap[foundParentTask.task_name] || 'N/A',
+        status: summaryMap[foundParentTask?.task_name] || 'N/A',
         start_date,
         end_date,
         manufacturing_end_date,
         tnc_start_date,
         installation_start_date,
         current_task: foundCurrentTask,
-        task_start: actualTask.task_start,
-        task_end: actualTask.task_end,
-        task_done: actualTask.task_done,
+        task_start: actualTask?.task_start,
+        task_end: actualTask?.task_end,
+        task_done: actualTask?.task_done,
         task_phase: phaseName,
-        phase_full_name: foundParentTask.task_name,
+        phase_full_name: foundParentTask?.task_name,
         in_tnc,
         in_qaqc: in_qaqc ? 1 : 0,
         joint_inspection: joint_inspection ? 1 : 0,
-        current_task_id: actualTask.task_id,
-        task_phase_id: foundParentTask.task_id,
+        current_task_id: actualTask?.task_id,
+        task_phase_id: foundParentTask?.task_id,
         is_behind: is_behind ? 1 : 0,
         holdDays,
         isOnHold: false,
@@ -1425,6 +1490,7 @@ static async rectifyItems (projId) {
   //PMS finishes in joint inspection
   static async completePMSJoint (projId, data, photos) {
   const { task_id, task_name, start_date, end_date, task_duration, task_percent} = data
+  console.log(data)
     await pool.query(`
         update projects set pms_approval = 0 where id = ?
       `, [projId])
@@ -1621,25 +1687,25 @@ static async rectifyItems (projId) {
     } 
 
     // Before deleting the team members each one must first get their previous foreman ID for next rotation
-    // const [foremanToGet] = await pool.query(`
-    //     select foreman_id from team_members where project_id = ? limit 1;
-    //   `, [projId])
-    // const [membersToGet] = await pool.query(`
-    //    select emp_id from team_members where project_id = ?;
-    //   `, [projId])
+    const [foremanToGet] = await pool.query(`
+        select foreman_id from team_members where project_id = ? limit 1;
+      `, [projId])
+    const [membersToGet] = await pool.query(`
+       select emp_id from team_members where project_id = ?;
+      `, [projId])
 
-    // const foremandId = foremanToGet[0].foreman_id  
-    // const members = membersToGet.map(m => m.emp_id)
-    // for (const member of members) {
-    //   await pool.query(`update employees set prev_foreman = ? where employee_id = ?`, [foremandId, member])
-    // }
+    const foremandId = foremanToGet[0].foreman_id  
+    const members = membersToGet.map(m => m.emp_id)
+    for (const member of members) {
+      await pool.query(`update employees set prev_foreman = ? where employee_id = ?`, [foremandId, member])
+    }
     console.log('success')
 
     //clear team members
-    //await pool.query(`delete from team_members where project_id = ?`, [projId])
+    await pool.query(`delete from team_members where project_id = ?`, [projId])
 
     //clear project team since it is now in handover
-    //await pool.query(`delete from project_manpower where project_id = ?`, [projId])
+    await pool.query(`delete from project_manpower where project_id = ?`, [projId])
 
 
   }

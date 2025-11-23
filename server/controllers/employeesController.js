@@ -1,4 +1,5 @@
 import { UserModel as users } from "../model/UserModel.js"
+import { sendAccountDetails } from "../services/emailService.js"
 
 export const getEmployees = async (req, res) => {
 
@@ -24,8 +25,14 @@ export const updateEmployee = async (req, res) => {
 
 export const createEmployee = async (req, res) => {
     try {
-     
+        const {email} = req.body
         await users.addUser(req.body)
+        console.log(email)
+        const emailResult = await sendAccountDetails(email, req.body)
+        if (!emailResult.success) {
+            console.warn('User created but email failed to send:', emailResult.error);
+        // You might want to log this for follow-up
+        }
         res.status(200).json({'message': 'user created'})
     } catch (e) {
         console.error(e);
@@ -52,7 +59,7 @@ export const getDesignatedProject = async (req, res) => {
     try{
         const results = await users.getDesignatedProject(Number(id), role)
     
-        if (results.length === 0) return res.status(404).json({"message": "not found"})
+        if (results.length === 0) return res.status(200).json([])
         res.status(200).json(results)
     } catch(e) {
         console.log(e)

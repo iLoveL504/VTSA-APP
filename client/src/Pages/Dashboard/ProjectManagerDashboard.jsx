@@ -48,7 +48,7 @@ const formatLocalDate = (isoString) => {
 const ProjectManagerDashboard = ({ onNewProject, clearProjectData, clearProjectTasks }) => {
   const navigate = useNavigate();
   // Project Manager Dashboard Data - Calculated from all projects
-  const {projects, isLoading} = useStoreState(state => state)
+  const {projects, allProjectsLoading} = useStoreState(state => state)
   const projectManagerData = useMemo(() => {
     const now = new Date();
     const currentMonth = now.getMonth();
@@ -60,7 +60,7 @@ const ProjectManagerDashboard = ({ onNewProject, clearProjectData, clearProjectT
       // Project Statistics
       totalProjects: projects.length,
       activeProjects: projects.filter(p => 
-        p.status && !['Completed', 'Handover Done'].includes(p.status)
+        p.status && !['Completed', 'Handover Done', 'Incoming', 'Unknown', 'Pending', 'Overdue'].includes(p.status)
       ).length,
       completedProjects: projects.filter(p => 
         p.status === 'Completed' || p.handover_done
@@ -271,8 +271,8 @@ const ProjectManagerDashboard = ({ onNewProject, clearProjectData, clearProjectT
       <div className="dashboard-content">
         {/* Left Column - Project Overview */}
         <div className="main-content">
-          {isLoading ? (
-                  <div className="Loading">
+          {allProjectsLoading ? (
+                <div className="Loading">
                     <p>Data is Loading...</p>
                     <Grid size="60" speed="1.5" color="rgba(84, 176, 210, 1)" />
                 </div>

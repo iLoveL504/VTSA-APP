@@ -11,8 +11,9 @@ import MenuItem from "@mui/material/MenuItem"
 import Select from "@mui/material/Select"
 import { Axios } from '../../api/axios';
 import { useSharedSocket } from '../../Context/SocketContext';
-import useAxiosFetch from "../../hooks/useAxiosFetch";
 import FinalizeHandover from './FinalizeHandover';
+import 'ldrs/react/Grid.css'
+import { Grid } from 'ldrs/react'
 
 // Material-UI Icons
 import {
@@ -27,45 +28,49 @@ import {
   CheckCircle as CheckCircleIcon,
   Person as PersonIcon,
   Add as AddIcon,
-  PlayArrow as PlayArrowIcon
+  PlayArrow as PlayArrowIcon,
 } from '@mui/icons-material';
 
 const PMSNewEntry = () => {
     const { utilitiesSocket } = useSharedSocket()
-    const backendURL = import.meta.env.VITE_BACKEND_URL || 'http://localhost:4000'
     const navigate = useNavigate()
-    const {data: projects} = useAxiosFetch(`${backendURL}/api/projects`)
     const employees = useStoreState(state => state.employees)
     const projectManagerId = useStoreState(state => state.projectManagerId)
+    const { allProjectsLoading, projects, allTeams } = useStoreState(state => state)
     const [searchTerm, setSearchTerm] = useState('')
-    const [jointProjects, setJointProjects] = useState([])
+    const [jointProjects, setJointProjects] = useState(null)
     const [selectedProject, setSelectedProject] = useState(null)
     const [pmsTechs, setPmsTechs] = useState([])
     const [selectedTech, setSelectedTech] = useState('')
     const [assignmentLoading, setAssignmentLoading] = useState(false)
     const [confirmModalOpen, setConfirmModalOpen] = useState(false)
     const [successModalOpen, setSuccessModalOpen] = useState(false)
+    console.log(allTeams)
 
     useEffect(() => {
         console.log(projects)
         // Filter projects that have joint inspection scheduled and are pending assignment
-        const filtered = projects.filter(p => 
-            p.pms_joint_inspection !== null 
-        )
-        
-        // Filter active PMS technicians
-        const filteredTechs = employees.filter(e => 
-            e.job === 'PMS Technician'
-        )
-        
-        setJointProjects(filtered)
-        setPmsTechs(filteredTechs)
+        if (projects) {
+            console.log('I only run once')
+            const filtered = projects.filter(p => 
+                p.pms_joint_inspection !== null 
+            )
+            
+            // Filter active PMS technicians
+            const filteredTechs = employees.filter(e => 
+                e.job === 'PMS Technician'
+            )
+            
+            setJointProjects(filtered)
+            setPmsTechs(filteredTechs)    
+        }
+
     }, [projects, employees])
 
     // Filter projects based on search term
     const filteredProjects = useMemo(() => {
         if (!searchTerm) return jointProjects
-        
+        console.log(jointProjects)
         const term = searchTerm.toLowerCase()
         return jointProjects.filter(project => 
             project.lift_name?.toLowerCase().includes(term) ||
@@ -118,7 +123,11 @@ const PMSNewEntry = () => {
                     subject: 'Approved and Assigned for Final Join Inspection',
                     body: `Final Joint Inspection to be conducted for ${selectedProject.lift_name} (Client: ${selectedProject.client})
                      at ${selectedProject.pms_joint_inspection}. Assigned PMS Technician: ${selectedTech.last_name} ${selectedTech.first_name}`,
-                    Ids
+                    Ids,
+                    functionality: {
+                    function: "projects-navigate",
+                    "project-id": selectedProject.id
+                    }
                 }, (ack) => {
                     clearTimeout(timeout);
                     if (ack?.success) {
@@ -129,6 +138,7 @@ const PMSNewEntry = () => {
                     }
                 });
             });
+            window.location.reload()
 
         } catch (error) {
             console.error('Error assigning technician:', error)
@@ -176,6 +186,16 @@ const PMSNewEntry = () => {
             return { text: 'Ongoing', variant: 'ongoing' };
         }
     };
+
+    const getPMSTechnician = (id) => {
+
+        const findProject = allTeams.find(p => p.project_id === id)
+        console.log(findProject)
+        if (!findProject.technicians.pms_tech === 'undefined' || !findProject.technicians.pms_tech === 'undefined') {
+            return findProject.technicians.pms_tech.fullname
+        } else return 'Not yet assigned'
+       
+    }
 
     return (
         <div className='Content PMSEntry-modern'>
@@ -373,7 +393,7 @@ const PMSNewEntry = () => {
                                                 <MenuItem value={t} key={index}>
                                                     <div className="technician-option">
                                                         <div className="tech-name">{t.last_name} {t.first_name}</div>
-                                                        <div className="tech-region">({t.island_group})</div>
+                                                        <div className="tech-region">({t.branch})</div>
                                                     </div>
                                                 </MenuItem>
                                             ))}
@@ -426,7 +446,7 @@ const PMSNewEntry = () => {
                             </div>
                             <div className="projects-stats">
                                 <div className="stat-item">
-                                    <span className="stat-number">{filteredProjects.length}</span>
+                                    <span className="stat-number">{filteredProjects?.length}</span>
                                     <span className="stat-label">Pending Assignments</span>
                                 </div>
                             </div>
@@ -469,97 +489,114 @@ const PMSNewEntry = () => {
                     </div>
 
                     {/* Projects Grid */}
-                    <div className="projects-grid-modern">
-                        {filteredProjects.length > 0 ? (
-                            filteredProjects.map(project => {
-                                const status = getStatusBadge(project);
-                                return (
-                                    <div
-                                        key={project.id}
-                                        className={`project-card-modern ${selectedProject?.id === project.id ? 'selected' : ''}`}
-                                        onClick={handleSelect(project)}
-                                    >
-                                        <div className="project-card-header">
-                                            <div className="project-title">
-                                                <BusinessIcon className="project-icon" />
-                                                <div className="project-info">
-                                                    <h3>{project.lift_name}</h3>
-                                                    <p>#{project.id} • {project.client}</p>
-                                                </div>
-                                            </div>
-                                            <div className={`status-badge ${status.variant}`}>
-                                                {status.text}
-                                            </div>
-                                        </div>
-
-                                        <div className="project-details">
-                                            <div className="detail-row">
-                                                <CalendarIcon className="detail-icon-small" />
-                                                <span>{new Date(project.pms_joint_inspection).toLocaleDateString('en-GB')}</span>
-                                            </div>
-                                            <div className="detail-row">
-                                                <LocationIcon className="detail-icon-small" />
-                                                <span>{project.island_group}</span>
-                                            </div>
-                                        </div>
-
-                                        <div className="progress-section-modern">
-                                            <div className="progress-header">
-                                                <span className="progress-label">Project Progress</span>
-                                                <span className="progress-value">{project.progress}%</span>
-                                            </div>
-                                            <Box sx={{ width: '100%' }}>
-                                                <LinearProgress 
-                                                    variant="determinate" 
-                                                    value={project.progress} 
-                                                    sx={{
-                                                        height: 8,
-                                                        borderRadius: 4,
-                                                        backgroundColor: '#f1f5f9',
-                                                        '& .MuiLinearProgress-bar': {
-                                                            borderRadius: 4,
-                                                            backgroundColor: '#315a95'
-                                                        }
-                                                    }}
-                                                />          
-                                            </Box>
-                                        </div>
-
-                                        <div className="project-actions">
-                                            <button 
-                                                onClick={handleSelect(project)}
-                                                className={`action-btn ${status.variant}`}
-                                            >
-                                                {status.text}
-                                            </button>
-                                        </div>
-                                    </div>
-                                )
-                            })
-                        ) : (
-                            <div className="empty-state-modern">
-                                <AssignmentIcon className="empty-icon" />
-                                <h3>
-                                    {searchTerm ? 'No projects found' : 'No pending joint inspections'}
-                                </h3>
-                                <p>
-                                    {searchTerm 
-                                        ? 'Try adjusting your search terms or clear the search to see all projects.'
-                                        : 'All joint inspections have been assigned or there are no scheduled inspections.'
-                                    }
-                                </p>
-                                {searchTerm && (
-                                    <button onClick={handleClearSearch} className="clear-search-link modern-clear-link">
-                                        Clear search
-                                    </button>
-                                )}
+{/* Projects Grid */}
+{/* Projects Grid */}
+<div className="projects-grid-modern">
+    {console.log(filteredProjects)}
+    
+    {allProjectsLoading ? (
+        <div className="loading-state-modern">
+            <div className="loading-spinner-large">
+                <Grid size="80" speed="1.5" color="rgba(84, 176, 210, 1)" />
+            </div>
+            <p className="loading-text">Loading joint inspection projects...</p>
+            <p className="loading-subtext">Please wait while we fetch the latest data</p>
+        </div>     
+    ) : jointProjects !== null ? (
+        filteredProjects.map(project => {
+            const status = getStatusBadge(project);
+            return (
+                <div
+                    key={project.id}
+                    className={`project-card-modern ${selectedProject?.id === project.id ? 'selected' : ''}`}
+                    onClick={handleSelect(project)}
+                >
+                    <div className="project-card-header">
+                        <div className="project-title">
+                            <BusinessIcon className="project-icon" />
+                            <div className="project-info">
+                                <h3>{project.lift_name}</h3>
+                                <p>#{project.id} • {project.client}</p>
                             </div>
-                        )}
+                        </div>
+                        <div className={`status-badge ${status.variant}`}>
+                            {status.text}
+                        </div>
                     </div>
-                </>
+
+                    <div className="project-details">
+                        <div className="detail-row">
+                            <CalendarIcon className="detail-icon-small" />
+                            <span>{new Date(project.pms_joint_inspection).toLocaleDateString('en-GB')}</span>
+                        </div>
+                        <div className="detail-row">
+                            <LocationIcon className="detail-icon-small" />
+                            <span>{project.island_group}</span>
+                        </div>
+                        <div className="detail-row">
+                            <EngineeringIcon className="detail-icon-small" />
+                            <span>{getPMSTechnician(project.id)}</span>
+                        </div>
+                    </div>
+
+                    <div className="progress-section-modern">
+                        <div className="progress-header">
+                            <span className="progress-label">Project Progress</span>
+                            <span className="progress-value">{project.progress}%</span>
+                        </div>
+                        <Box sx={{ width: '100%' }}>
+                            <LinearProgress 
+                                variant="determinate" 
+                                value={project.progress} 
+                                sx={{
+                                    height: 8,
+                                    borderRadius: 4,
+                                    backgroundColor: '#f1f5f9',
+                                    '& .MuiLinearProgress-bar': {
+                                        borderRadius: 4,
+                                        backgroundColor: '#315a95'
+                                    }
+                                }}
+                            />          
+                        </Box>
+                    </div>
+
+                    <div className="project-actions">
+                        <button 
+                            onClick={handleSelect(project)}
+                            className={`action-btn ${status.variant}`}
+                        >
+                            {status.text}
+                        </button>
+                    </div>
+                </div>
+            );
+        })
+    ) : (
+        <div className="empty-state-modern">
+            <AssignmentIcon className="empty-icon" />
+            <h3>
+                {searchTerm ? 'No projects found' : 'No pending joint inspections'}
+            </h3>
+            <p>
+                {searchTerm 
+                    ? 'Try adjusting your search terms or clear the search to see all projects.'
+                    : 'All joint inspections have been assigned or there are no scheduled inspections.'
+                }
+            </p>
+            {searchTerm && (
+                <button onClick={handleClearSearch} className="clear-search-link modern-clear-link">
+                    Clear search
+                </button>
             )}
+        </div>
+    )}
+</div>
+                </>
+           )}
         </div>
     )
 }
 
 export default PMSNewEntry
+

@@ -94,15 +94,17 @@ export default function utilitiesNamespace (usp) {
             }
         })
         // set contract amount
-        socket.on("set_contract", async (data) => {
+        socket.on("set_contract", async (data, callback) => {
             const {amount, projId} = data
             console.log(data)
             try {
                 await utilities.setContractAmount(Number(projId), amount)
                 const results = await projects.getAllProjects()
+                console.log('success contract')
+                callback({success: true})
                 socket.emit("update_done", results)
             } catch (e) {
-                console.error('Error during inspection:', error);
+                console.error('Error during inspection:', e);
             }
         })
         socket.on('proposal-approve', async (data) => {

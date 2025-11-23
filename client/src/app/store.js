@@ -70,6 +70,8 @@ export default createStore({
 
         console.log(desProj)
         actions.setDesignatedProjects(desProj.data)
+        console.log('here at designated')
+        actions.setLoading(false)
       } catch (err) {
         console.log(err)
       } finally {
@@ -164,9 +166,10 @@ export default createStore({
     addNotificationToState: action((state, payload) => {
         state.notifications.push(payload)
     }),
-    isLoading: false,
-    setIsLoading: action((state, payload) => {
-        state.isLoading = payload
+    isLoading: true,
+    allProjectsLoading: true,
+    setAllProjectsLoading: action((state, payload) => {
+        state.allProjectsLoading = payload
     }),
     searchResults: [],
     setSearchResults: action((state, payload) => {
@@ -202,12 +205,14 @@ export default createStore({
     setArchivedProjects: action((state, payload) => {
       state.archivedProjects = Array.isArray(payload) ? payload : []
     }),
-    fetchProjects: thunk( async (actions) => {
+    fetchProjects: thunk( async (actions ) => {
       const backendURL = import.meta.env.VITE_BACKEND_URL || "http://localhost:4000";
       try {
         const projs = await Axios.get(`${backendURL}/api/projects`)
-        actions.setArchivedProjects(projs)
+        const archivedProjects = projs.data.filter(p => p.archived)
+        actions.setArchivedProjects(archivedProjects)
         actions.setProjects(projs.data)
+        actions.setAllProjectsLoading(false)
       } catch (err) {
         console.log(err)
       }
@@ -488,7 +493,18 @@ findProjectTasks: thunk(async (actions, { projectId, projectData }, { getState }
     console.log(foundParentTask);
     
     if (!foundParentTask) {
+      
+      if(new Date() > new Date(projectData.project_end_date)) {
+        const handoverParent = fetchedData.find(t => t.task_id === 600)
+        const handoverTask = fetchedData.find(t => t.task_id === 607)
 
+        actions.setCurrentParentTask(handoverParent)
+        actions.setCurrentTask(handoverTask)
+        actions.setCurrentTaskPhase(handoverParent)
+        actions.setTasksIsLoading(false);
+        actions.setOnHold(false)
+        return
+      }
       console.log('inside foundParentTask:')
       console.log(projectData)
       if (projectData.will_resume) {

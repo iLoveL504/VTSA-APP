@@ -6,7 +6,10 @@ if (process.env.NODE_ENV !== "production") {
   
   console.log('this is after config')
   console.log('some token', process.env.ACCESS_TOKEN_SECRET)
-}
+  console.log('hello ', process.env.EMAIL_USER)
+} else (
+  console.log('hello ')
+)
 import express from 'express';
 import { logDate } from './middleware/logEvents.js';
 import cors from 'cors';

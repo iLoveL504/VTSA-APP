@@ -20,21 +20,28 @@ class UserModel {
 
     //UPDATE
     static async updateUser (user, id) {
-        const { username, password, last_name, first_name, job, in_house, island_group, branch } = user;
-        await pool.query(`
-            update employees set username = ?, password = ?,
-            last_name = ?, first_name = ?, job = ?, in_house = ?, island_group = ?, branch = ? where employee_id = ? 
-        `, [username, password, last_name, first_name, job, in_house, island_group, branch, id]);
+        const { username, password, last_name, first_name, job, in_house, island_group, branch, phone_number } = user;
+        if (password === null || password === undefined || password == '') {
+            await pool.query(`
+                update employees set username = ?, last_name = ?, first_name = ?, job = ?, in_house = ?, island_group = ?, branch = ?, phone_number = ? where employee_id = ? 
+            `, [username, last_name, first_name, job, in_house, island_group, branch, phone_number, id]);            
+        } else {
+            await pool.query(`
+                update employees set username = ?, password = ?,
+                last_name = ?, first_name = ?, job = ?, in_house = ?, island_group = ?, branch = ?, phone_number = ? where employee_id = ? 
+            `, [username, password, last_name, first_name, job, in_house, island_group, branch, phone_number, id]);  
+        }
+
     }
 
     //CREATE
     static async addUser (user) {
         console.log(user)
-        const { username, password, first_name, last_name, job, island, branch } = user
+        const { username, password, first_name, last_name, job, island, branch, email } = user
         const [result] =  await pool.query(`
-            insert into employees (username, password, first_name, last_name, job, branch, island_group)
-            values (?, ?, ?, ?, ?, ?)    
-        `, [username, password, first_name, last_name, job, branch, island])
+            insert into employees (username, email, password, first_name, last_name, job, branch, island_group)
+            values (?, ?, ?, ?, ?, ?, ?, ?)    
+        `, [username, email, password, first_name, last_name, job, branch, island])
 
         if (job === 'Foreman') {
             const foremanId = result.insertId

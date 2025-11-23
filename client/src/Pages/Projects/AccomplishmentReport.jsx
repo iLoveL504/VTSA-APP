@@ -132,7 +132,7 @@ useEffect(() => {
         const avgToDateAcc = allItems.length > 0 ? totalToDateAcc / allItems.length : 0;
 
         return { 
-        totalContract: totalContractAmount, 
+        totalContract: Number(totalContractAmount), 
         totalWt, 
         totalAmount, 
         totalFinalAmount,
@@ -143,12 +143,12 @@ useEffect(() => {
 
     const totals = calculateTotals();
 
-  const formatNumber = (num) => {
-      if (num === null || num === undefined || isNaN(num)) {
-          return '0.00';
-      }
-      return num.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-  };
+const formatNumber = (num) => {
+    if (num === null || num === undefined || isNaN(num)) {
+        return '0.00';
+    }
+    return num.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+};
     const formatPercent = (num) => {
         return num.toFixed(2) + '%';
     };
@@ -263,9 +263,20 @@ useEffect(() => {
                 className="amount-input"
               />
             </div>
-              <button onClick={() => {
+              <button onClick={async () => {
                 console.log(totalContractAmount)
-                utilitiesSocket.emit('set_contract', {amount: totalContractAmount, projId})
+                await new Promise((resolve, reject) => {
+                  utilitiesSocket.emit('set_contract', {amount: totalContractAmount, projId}, (ack) => {
+                      if (ack?.success) {
+                          utilitiesSocket.emit("update_task_status");
+                          console.log('refreshing project data')
+                          resolve();
+                      } else {
+                        reject(new Error("Server failed to process notification."));
+                      }
+                  })
+                })
+
                 console.log(totalContractAmount)
               }}>
                 Save
@@ -308,6 +319,7 @@ useEffect(() => {
 
         {/* Summary Cards */}
         <div className="summary-cards">
+          {console.log(totals)}
           <div className="summary-card card-contract">
             <div className="card-label">Total Contract</div>
             <div className="card-value">₱{formatNumber(totals.totalContract)}</div>

@@ -6,6 +6,7 @@ import { Axios } from '../../api/axios';
 const FinalizeHandover = ({proj}) => {
     const [showConfirmation, setShowConfirmation] = useState(false);
     const [uploadProgress, setUploadProgress] = useState({});
+    const [isLoading, setIsLoading] = useState(false); // Add loading state
 
     const initialState = useMemo(() => ({
         photos: [],
@@ -108,26 +109,34 @@ const FinalizeHandover = ({proj}) => {
         if (Object.keys(errors).length === 0) {
             console.log('Final values for PMS Entry:', values);
             const formData = new FormData()
+            setIsLoading(true); // Start loading
+            
             try {
                 values.photos.forEach(p => {
                     formData.append('photos', p)
                 })
                 formData.append('contract', values.contractType)
                 formData.append('client', proj.client)
-                const response = Axios.put(`/api/projects/complete-handover/${proj.id}`, formData)
+                const response = await Axios.put(`/api/projects/complete-handover/${proj.id}`, formData)
+                
                 if (!response?.data.success) {
                     window.alert('Something went wrong')
+                    return;
                 }
 
                 alert('New PMS Entry created successfully!');
+                window.location.reaoad()
             } catch (e) {
                 console.log(e)
-            }            
+                window.alert('Failed to create PMS Entry. Please try again.');
+            } finally {
+                setIsLoading(false); // Stop loading regardless of outcome
+                setShowConfirmation(false);
+            }
         } else {
             window.alert('Please fill all required fields')
+            setShowConfirmation(false);
         }
-
-        setShowConfirmation(false);
     }
 
     const cancelNewEntry = () => {
@@ -148,36 +157,48 @@ const FinalizeHandover = ({proj}) => {
                             <button 
                                 className="close-btn"
                                 onClick={cancelNewEntry}
+                                disabled={isLoading} // Disable close while loading
                             >
                                 <i className="fas fa-times"></i>
                             </button>
                         </div>
                         
                         <div className="modal-content">
-                            <div className="confirmation-warning">
-                                <i className="fas fa-exclamation-triangle"></i>
-                                <p>You are about to create a new PMS Entry. This action cannot be undone.</p>
-                            </div>
-                            
-                            <div className="entry-summary">
-                                <h4>Entry Summary</h4>
-                                <div className="summary-details">
-                                    <div className="summary-row">
-                                        <span className="summary-label">Handover Date:</span>
-                                        <span className="summary-value">{values.handoverDate}</span>
-                                    </div>
-                                    <div className="summary-row">
-                                        <span className="summary-label">Documents Uploaded:</span>
-                                        <span className="summary-value">{values.photos.length} files</span>
-                                    </div>
+                            {isLoading ? (
+                                <div className="loading-state">
+                                    <div className="loading-spinner"></div>
+                                    <p>Creating PMS Entry...</p>
+                                    <small>Please wait while we process your request</small>
                                 </div>
-                            </div>
+                            ) : (
+                                <>
+                                    <div className="confirmation-warning">
+                                        <i className="fas fa-exclamation-triangle"></i>
+                                        <p>You are about to create a new PMS Entry. This action cannot be undone.</p>
+                                    </div>
+                                    
+                                    <div className="entry-summary">
+                                        <h4>Entry Summary</h4>
+                                        <div className="summary-details">
+                                            <div className="summary-row">
+                                                <span className="summary-label">Handover Date:</span>
+                                                <span className="summary-value">{values.handoverDate}</span>
+                                            </div>
+                                            <div className="summary-row">
+                                                <span className="summary-label">Documents Uploaded:</span>
+                                                <span className="summary-value">{values.photos.length} files</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </>
+                            )}
                         </div>
                         
                         <div className="modal-actions">
                             <button 
                                 className="btn-secondary"
                                 onClick={cancelNewEntry}
+                                disabled={isLoading}
                             >
                                 <i className="fas fa-arrow-left"></i>
                                 Cancel
@@ -185,9 +206,19 @@ const FinalizeHandover = ({proj}) => {
                             <button 
                                 className="btn-primary"
                                 onClick={confirmNewEntry}
+                                disabled={isLoading}
                             >
-                                <i className="fas fa-check-circle"></i>
-                                Confirm & Create Entry
+                                {isLoading ? (
+                                    <>
+                                        <div className="button-spinner"></div>
+                                        Creating...
+                                    </>
+                                ) : (
+                                    <>
+                                        <i className="fas fa-check-circle"></i>
+                                        Confirm & Create Entry
+                                    </>
+                                )}
                             </button>
                         </div>
                     </div>
@@ -220,7 +251,7 @@ const FinalizeHandover = ({proj}) => {
                         {new Date().toLocaleDateString('en-GB')}
                     </div>
 
-                         <div className="form-control-professional">
+                    <div className="form-control-professional">
                         <label htmlFor="contracttType">Contract Type</label>
                         <select
                             id="contractType"
@@ -229,6 +260,7 @@ const FinalizeHandover = ({proj}) => {
                             onChange={handleInputChange}
                             onBlur={handleBlur}
                             required
+                            disabled={isLoading} // Disable form while loading
                         >
                             <option value="">-- Select contract --</option>
                             {contractTypes.map((type) => (
@@ -238,7 +270,8 @@ const FinalizeHandover = ({proj}) => {
                             ))}
                         </select>
                         {errors.contractType && <p className="error">{errors.contractType}</p>}
-                        </div>
+                    </div>
+
                     {/* Document Upload Section */}
                     <div className="document-upload-card required">
                         <div className="document-header">
@@ -260,6 +293,7 @@ const FinalizeHandover = ({proj}) => {
                                 multiple
                                 accept=".pdf,.doc,.docx,.xls,.xlsx,image/*"
                                 onChange={(e) => handleFileUpload(e, 'handover_doc')}
+                                disabled={isLoading} // Disable file upload while loading
                             />
                             <div className="upload-hint">
                                 <i className="fas fa-cloud-upload-alt"></i>
@@ -296,6 +330,7 @@ const FinalizeHandover = ({proj}) => {
                                         type="button"
                                         className="remove-file-btn"
                                         onClick={() => removeFile(file)}
+                                        disabled={isLoading} // Disable remove while loading
                                     >
                                         <i className="fas fa-times"></i>
                                     </button>
@@ -308,7 +343,12 @@ const FinalizeHandover = ({proj}) => {
                 {/* Action Section */}
                 <div className="action-section">
                     <div className="form-status">
-                        {isFormValid ? (
+                        {isLoading ? (
+                            <div className="status-processing">
+                                <div className="loading-spinner-small"></div>
+                                <span>Processing PMS Entry Creation...</span>
+                            </div>
+                        ) : isFormValid ? (
                             <div className="status-ready">
                                 <i className="fas fa-check-circle"></i>
                                 <span>All required information is complete</span>
@@ -322,13 +362,21 @@ const FinalizeHandover = ({proj}) => {
                     </div>
 
                     <button
-                        className={`create-entry-btn ${isFormValid ? 'active' : 'disabled'}`}
+                        className={`create-entry-btn ${isFormValid && !isLoading ? 'active' : 'disabled'}`}
                         onClick={handleNewEntry}
-                        disabled={!isFormValid}
+                        disabled={!isFormValid || isLoading}
                     >
-                        <i className="fas fa-plus-circle"></i>
-                        Create New PMS Entry
-
+                        {isLoading ? (
+                            <>
+                                <div className="button-spinner"></div>
+                                Creating Entry...
+                            </>
+                        ) : (
+                            <>
+                                <i className="fas fa-plus-circle"></i>
+                                Create New PMS Entry
+                            </>
+                        )}
                     </button>
                 </div>
             </div>
