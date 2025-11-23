@@ -4,6 +4,7 @@
   "type": "module",
   "main": "index.js",
   "dependencies": {
+    "@sendgrid/mail": "^8.1.6",
     "@tabler/icons": "^3.35.0",
     "bcrypt": "^6.0.0",
     "compression": "^1.8.1",

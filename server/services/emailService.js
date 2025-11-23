@@ -1,42 +1,16 @@
-import nodemailer from 'nodemailer';
+import sgMail from '@sendgrid/mail';
 
 const sendAccountDetails = async (email, userData) => {
     try {
-        console.log('🔧 Debug - Environment Variables:');
+        console.log('🔧 Using SendGrid API directly');
         console.log('SENDGRID_API_KEY exists:', !!process.env.SENDGRID_API_KEY);
-        console.log('SENDGRID_API_KEY starts with SG.:', process.env.SENDGRID_API_KEY?.startsWith('SG.'));
-        console.log('EMAIL_USER:', process.env.EMAIL_USER);
         
-        // Create transporter with more options
-        const transporter = nodemailer.createTransport({
-            host: 'smtp.sendgrid.net',
-            port: 587,
-            secure: false, // Use TLS
-            auth: {
-                user: 'apikey',
-                pass: process.env.SENDGRID_API_KEY  
-            },
-            connectionTimeout: 10000, // 10 seconds
-            greetingTimeout: 10000,
-            socketTimeout: 10000,
-            debug: true, // This will show SMTP communication
-            logger: true  // This will log the communication
-        });
+        // Set the API key
+        sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 
-        console.log('🔄 Attempting to verify SendGrid connection...');
-        
-        // Verify the connection with more details
-        await transporter.verify();
-        console.log('✅ SendGrid connection verified successfully');
-
-        console.log('📧 Preparing to send email to:', email);
-        
-        const mailOptions = {
-            from: {
-                name: 'Your Platform Name', // Add a sender name
-                address: process.env.EMAIL_USER
-            },
+        const msg = {
             to: email,
+            from: process.env.EMAIL_USER,
             subject: 'Your Account Details',
             html: `
                 <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
@@ -56,40 +30,23 @@ const sendAccountDetails = async (email, userData) => {
             `
         };
 
-        console.log('🚀 Sending email...');
-        const result = await transporter.sendMail(mailOptions);
-        console.log('✅ Email sent via SendGrid. Message ID:', result.messageId);
+        console.log('🚀 Sending email via SendGrid API...');
+        const result = await sgMail.send(msg);
+        console.log('✅ Email sent via SendGrid API. Status:', result[0].statusCode);
         
-        return { success: true, messageId: result.messageId };
+        return { 
+            success: true, 
+            messageId: result[0].headers['x-message-id'] 
+        };
         
     } catch (error) {
-        console.error('❌ SendGrid error details:');
-        console.error('Error name:', error.name);
-        console.error('Error code:', error.code);
+        console.error('❌ SendGrid API error:');
         console.error('Error message:', error.message);
-        console.error('Error stack:', error.stack);
-        
-        // Check for specific error types
-        if (error.code === 'EAUTH') {
-            console.error('🔐 Authentication failed. Possible issues:');
-            console.error('- API key is invalid or revoked');
-            console.error('- Sender not verified in SendGrid dashboard');
-            console.error('- API key permissions insufficient');
-        } else if (error.code === 'ECONNECTION') {
-            console.error('🌐 Connection failed. Possible issues:');
-            console.error('- Railway network restrictions');
-            console.error('- SendGrid service outage');
-            console.error('- Firewall blocking connection');
-        } else if (error.code === 'ETIMEDOUT') {
-            console.error('⏰ Connection timeout. Possible issues:');
-            console.error('- Network latency');
-            console.error('- SendGrid server issues');
-        }
+        console.error('Error response:', error.response?.body);
         
         return { 
             success: false, 
-            error: error.message,
-            code: error.code 
+            error: error.message 
         };
     }
 }
