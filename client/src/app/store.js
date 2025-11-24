@@ -466,7 +466,7 @@ findProjectTasks: thunk(async (actions, { projectId, projectData }, { getState }
       const adjustDate = (dateString) => {
         if (!dateString) return null;
         // Add 1 day to compensate for UTC storage in MySQL
-        return dayjs(dateString).add(1, 'day').startOf('day');
+        return dayjs(dateString).startOf('day');
       };
       
       const adjustedStart = adjustDate(d.task_start);

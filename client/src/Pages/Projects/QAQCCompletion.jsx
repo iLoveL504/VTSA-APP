@@ -11,7 +11,13 @@ import {
   CameraAlt as CameraIcon,
   Schedule as ScheduleIcon     // ✅ Add this
 } from '@mui/icons-material';
+import { useStoreState } from 'easy-peasy'
+import dayjs from 'dayjs'
+import utc from 'dayjs/plugin/utc.js';
+import timezone from 'dayjs/plugin/timezone.js';
 
+dayjs.extend(utc);
+dayjs.extend(timezone);
 
 const QAQCCompletion = ({ 
   proj, 
@@ -24,7 +30,7 @@ const QAQCCompletion = ({
   handleApproval
 }) => {
   const { projId } = useParams();
-
+  const {date} = useStoreState(state => state)
   const qaqcChecklists = {
     'Template Setting': 'Checklist Prior Template Setting',
     'Prior Testing and Commissioning': 'Checklist Prior Testing and Commissioning',
@@ -79,6 +85,8 @@ const QAQCCompletion = ({
     window.alert('Items rectified');
     window.location.reload();
   };
+  console.log('proj qaqc:', dayjs(proj.qaqc_inspection_date).format('YYYY-MM-DD'))
+  console.log('current date:', dayjs(date).format('YYYY-MM-DD'))
 
   return (
     <>

@@ -12,6 +12,12 @@ import Modal from "@mui/material/Modal";
 import "../css/Test1.css";
 import tasks from '../../../data/TasksData.js'
 import { DatePickerInput } from '@mantine/dates';
+import dayjs from 'dayjs';
+import utc from 'dayjs/plugin/utc.js';
+import timezone from 'dayjs/plugin/timezone.js';
+
+dayjs.extend(utc);
+dayjs.extend(timezone);
 
 // MUI Icons - Using more common alternatives
 import AddIcon from '@mui/icons-material/Add';

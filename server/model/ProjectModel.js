@@ -33,7 +33,7 @@ const summaryMap = {
 
 class ProjectModel {
     static getCurrentDateUTC() {
-        return dayjs().tz('Asia/Manila').startOf('day').utc().format('YYYY-MM-DD');
+        return dayjs().tz('Asia/Manila').startOf('day').format('YYYY-MM-DD');
     }
     
     static getCurrentDateManila() {
@@ -133,6 +133,17 @@ static async updateProjectStatusesBatch(projects) {
 }
 
 static async calculateProjectStatus(project, tasks, currentDate) {
+    if(project.id === 44) {
+      console.log('------------test 46 tasks-----------------')
+      console.log(project.id)
+      tasks.forEach(t => {
+        const x = {
+          task_name: t.task_name,
+          task_start: t.task_start
+        }
+        console.log(x)
+      })
+    }
     // Convert currentDate to dayjs object immediately
     const now = dayjs(currentDate).tz('Asia/Manila').startOf('day');
     
@@ -205,10 +216,12 @@ static async calculateProjectStatus(project, tasks, currentDate) {
 
     // ---- TASK DATES ----
     const findDate = (name, key = 'task_start') => {
+
         const task = tasks.find(t => t.task_name === name);
         if (!task || !task[key]) return null;
         
         try {
+          //  console.log(`${project.id} ${name} date: ${dayjs(task[key])} `)
             return dayjs(task[key]).tz('Asia/Manila').startOf('day').format('YYYY-MM-DD');
         } catch (error) {
             return null;
@@ -294,7 +307,10 @@ static async calculateProjectStatus(project, tasks, currentDate) {
     
     let in_qaqc = false;
     if (project.qaqc_inspection_date) {
+        
         const qaqcDate = dayjs(project.qaqc_inspection_date).tz('Asia/Manila').startOf('day');
+        console.log(project.id, '------------qaqc date: ', qaqcDate)
+        console.log(project.id, '------------now: ', now)
         in_qaqc = now.isSameOrAfter(qaqcDate);
     }
     
@@ -584,7 +600,6 @@ static async getProjectSchedule(id) {
     const query = `SELECT * FROM project_${id}_schedule`;
     const [results] = await pool.query(query);
     if (!results) return []
-    
 
     
     // Convert UTC dates from database to Manila timezone by adding 1 day
@@ -592,9 +607,9 @@ static async getProjectSchedule(id) {
         const adjustForManilaTimezone = (dateString) => {
             if (!dateString) return null;
             try {
-                // MySQL stores dates as UTC, so we need to add 1 day to get Manila date
-                const utcDate = dayjs.utc(dateString);
-                return utcDate.format('YYYY-MM-DD');
+                // Database stores UTC dates that represent Manila dates
+                // Convert UTC → Manila time
+                return dayjs.utc(dateString).tz('Asia/Manila').format('YYYY-MM-DD');
             } catch (error) {
                 console.warn(`Invalid date for project ${id}, task ${task.task_id}:`, dateString);
                 return null;
@@ -609,7 +624,6 @@ static async getProjectSchedule(id) {
         
         return adjustedTask;
     });
-
 
 
     const sortedTasks = tasksWithManilaDates.sort((a, b) => {
@@ -801,95 +815,126 @@ static async getTaskPhotos(id) {
          await pool.query(`update projects set progress = ?, qaqc_approval = 0, tnc_approval = 0 where id = ?`, [percent, id])
     }
 
-   static async makeProjectSchedule(data, id) {
+static async makeProjectSchedule(data, id) {
     const {tasks, holidays, isCalendarDays} = data
     const days = !isCalendarDays ? 'working' : 'calendar'
-  try {
-    const checkQuery = `show tables like 'project_${id}_schedule'`
-    const [results] = await pool.query(checkQuery)
-    if(results.length !== 0) {
-      const deleteQuery = `drop table project_${id}_schedule`
-      await pool.query(deleteQuery)
-    }
-    // Create the table (with new columns already included)
-    const createTableQuery = `
-      CREATE TABLE IF NOT EXISTS project_${id}_schedule (
-        id INT AUTO_INCREMENT PRIMARY KEY,
-        task_id INT,
-        task_name VARCHAR(255),
-        task_start DATE,
-        task_end DATE,
-        task_duration INT,
-        task_type VARCHAR(255),
-        task_parent INT,
-        task_approval TINYINT(1) DEFAULT 0,
-        task_done TINYINT(1) DEFAULT 0,
-        task_percent INT DEFAULT 0,
-        task_actual_current tinyint default 0,
-
-        -- Added columns
-        section_title VARCHAR(255),
-        item_code VARCHAR(10),
-        description VARCHAR(255),
-        unit VARCHAR(50),
-        wt DECIMAL(5,2) DEFAULT 0.00,
-        pres_acc DECIMAL(5,2) DEFAULT 0.00,
-        prev_acc DECIMAL(5,2) DEFAULT 0.00,
-        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-      );
-    `;
-    await pool.query(createTableQuery);
-
-    // Sort data by start date and hierar chy
-    const sortedTasks = tasks.sort((a, b) => {
-      const dateDiff = new Date(a.task_start) - new Date(b.task_start);
-      if (dateDiff !== 0) return dateDiff;
-      if (a.task_type === "summary" && b.task_type !== "summary") return -1;
-      if (a.task_type !== "summary" && b.task_type === "summary") return 1;
-      return 0;
-    });
-
-    // Insert all tasks with additional fields
-    const insertPromises = sortedTasks.map(async (t) => {
-      const insertQuery = `
-        INSERT INTO project_${id}_schedule 
-          (task_id, task_name, task_start, task_end, task_duration, task_type, task_parent, task_percent, section_title, item_code, wt, unit, description)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-      `;
-
-      const values = [
-        t.task_id || t.task_id,
-        t.task_name || t.task_name,
-        t.task_start || null,
-        t.task_end || null,
-        t.task_duration || 1,
-        t.task_type || 'task',
-        t.task_parent || null,
-        t.task_percent || 0,
-        t.section_title || null,
-        t.item_code || null,
-        t.wt || 0.00,
-        t.unit || 1,
-        t.task_name
-      ];
-
-      return pool.query(insertQuery, values);
-    });
-    const holidayInserts = holidays.map(h => (
-      pool.query(`insert into project_holidays (project_id, holiday) values (?, ?)`, [id, h])
-    ))
-
-    await Promise.all(insertPromises);
-    await Promise.all(holidayInserts);
-    const initializeQuery = `update project_${id}_schedule set task_actual_current = 1 where task_id = 101`
-    await pool.query(initializeQuery)
-    await pool.query(`update projects set schedule_created = 1, days = ? where id = ?`, [days, id])
     
-    return { success: true, message: `Schedule created with ${tasks.length} tasks` };
-  } catch (error) {
-    console.error('Error creating schedule:', error);
-    throw error;
-  }
+    console.log('📅 Raw tasks from frontend:');
+    tasks.forEach(t => {
+      const x = {
+        task_name: t.task_name,
+        original_start: t.task_start, // What frontend sent
+        original_end: t.task_end,
+        manila_start: dayjs.utc(t.task_start).tz('Asia/Manila').format('YYYY-MM-DD'),
+        manila_end: dayjs.utc(t.task_end).tz('Asia/Manila').format('YYYY-MM-DD')
+      }
+      console.log(x)
+    })
+
+    // Convert Manila dates to UTC for database storage
+    const tasksForDB = tasks.map(t => ({
+      ...t,
+      // Convert: Frontend Manila date → UTC for MySQL
+      task_start: dayjs.utc(t.task_start).tz('Asia/Manila').utc().format('YYYY-MM-DD'),
+      task_end: dayjs.utc(t.task_end).tz('Asia/Manila').utc().format('YYYY-MM-DD'),
+      raw_start: t.task_start
+    }));
+
+    console.log('💾 Tasks for database (UTC):');
+    tasksForDB.forEach(t => {
+      console.log({
+        task_name: t.task_name,
+        db_start: t.task_start, 
+        manila_display: dayjs.utc(t.task_start).tz('Asia/Manila').format('YYYY-MM-DD'),// Will be 2025-11-23 in UTC
+        db_end: t.task_end,
+        raw_start: t.raw_start
+      })
+    });
+
+    try {
+      const checkQuery = `show tables like 'project_${id}_schedule'`
+      const [results] = await pool.query(checkQuery)
+      if(results.length !== 0) {
+        const deleteQuery = `drop table project_${id}_schedule`
+        await pool.query(deleteQuery)
+      }
+      
+      const createTableQuery = `
+        CREATE TABLE IF NOT EXISTS project_${id}_schedule (
+          id INT AUTO_INCREMENT PRIMARY KEY,
+          task_id INT,
+          task_name VARCHAR(255),
+          task_start DATE,
+          task_end DATE,
+          task_duration INT,
+          task_type VARCHAR(255),
+          task_parent INT,
+          task_approval TINYINT(1) DEFAULT 0,
+          task_done TINYINT(1) DEFAULT 0,
+          task_percent INT DEFAULT 0,
+          task_actual_current tinyint default 0,
+          section_title VARCHAR(255),
+          item_code VARCHAR(10),
+          description VARCHAR(255),
+          unit VARCHAR(50),
+          wt DECIMAL(5,2) DEFAULT 0.00,
+          pres_acc DECIMAL(5,2) DEFAULT 0.00,
+          prev_acc DECIMAL(5,2) DEFAULT 0.00,
+          created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        );
+      `;
+      await pool.query(createTableQuery);
+
+      // Use the converted tasks for database insertion
+      const sortedTasks = tasksForDB.sort((a, b) => {
+        const dateDiff = new Date(a.task_start) - new Date(b.task_start);
+        if (dateDiff !== 0) return dateDiff;
+        if (a.task_type === "summary" && b.task_type !== "summary") return -1;
+        if (a.task_type !== "summary" && b.task_type === "summary") return 1;
+        return 0;
+      });
+
+      const insertPromises = sortedTasks.map(async (t) => {
+        const insertQuery = `
+          INSERT INTO project_${id}_schedule 
+            (task_id, task_name, task_start, task_end, task_duration, task_type, task_parent, task_percent, section_title, item_code, wt, unit, description)
+          VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        `;
+
+        const values = [
+          t.task_id || t.task_id,
+          t.task_name || t.task_name,
+          t.task_start || null,
+          t.task_end || null,
+          t.task_duration || 1,
+          t.task_type || 'task',
+          t.task_parent || null,
+          t.task_percent || 0,
+          t.section_title || null,
+          t.item_code || null,
+          t.wt || 0.00,
+          t.unit || 1,
+          t.task_name
+        ];
+
+        return pool.query(insertQuery, values);
+      });
+
+      const holidayInserts = holidays.map(h => (
+        pool.query(`insert into project_holidays (project_id, holiday) values (?, ?)`, [id, h])
+      ))
+
+      await Promise.all(insertPromises);
+      await Promise.all(holidayInserts);
+      const initializeQuery = `update project_${id}_schedule set task_actual_current = 1 where task_id = 101`
+      await pool.query(initializeQuery)
+      await pool.query(`update projects set schedule_created = 1, days = ? where id = ?`, [days, id])
+      
+      return { success: true, message: `Schedule created with ${tasks.length} tasks` };
+    } catch (error) {
+      console.error('Error creating schedule:', error);
+      throw error;
+    }
 }
 
 

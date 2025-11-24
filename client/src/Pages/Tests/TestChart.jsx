@@ -7,6 +7,12 @@ import Queue from "../../../../DataStructs/Queue";
 import "./CustomGanttChart.css"; // ✅ external styles
 import '../../css/ConfirmSchedule.css'
 import { useSharedSocket } from "../../Context/SocketContext.js";
+import dayjs from 'dayjs';
+import utc from 'dayjs/plugin/utc.js';
+import timezone from 'dayjs/plugin/timezone.js';
+
+dayjs.extend(utc);
+dayjs.extend(timezone);
 
 const CustomGanttChart = () => {
   const {utilitiesSocket} = useSharedSocket()
@@ -53,8 +59,8 @@ const CustomGanttChart = () => {
         const value = {
           task_id: s.task_id,
           task_name: s.task_name,
-          task_start: s.task_start.toISOString().split("T")[0],
-          task_end: s.task_end.toISOString().split("T")[0],
+          task_start: dayjs(s.task_start).tz('Asia/Manila').format('YYYY-MM-DD'), // Keep as Manila date
+          task_end: dayjs(s.task_end).tz('Asia/Manila').format('YYYY-MM-DD'),
           task_duration: s.task_duration,
           task_type: s.task_type,
           task_parent: s.task_parent,
