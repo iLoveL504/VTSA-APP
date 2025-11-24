@@ -3,7 +3,17 @@ import { UtilitiesModel as utility } from './UtilitiesModel.js';
 import dotenv from 'dotenv'
 import LinkedList from '../../DataStructs/LinkedList.js';
 import dayjs from 'dayjs'
+import utc from 'dayjs/plugin/utc.js'
+import timezone from 'dayjs/plugin/timezone.js'
+import isSameOrBefore from 'dayjs/plugin/isSameOrBefore.js'
+import isSameOrAfter from 'dayjs/plugin/isSameOrAfter.js'
 dotenv.config()
+
+dayjs.extend(utc)
+dayjs.extend(timezone)
+dayjs.extend(isSameOrAfter);
+dayjs.extend(isSameOrBefore);
+dayjs.tz.setDefault('Asia/Manila')
 
 const formatLocalDate = (isoString) => {
   if (!isoString) return "N/A";
@@ -22,6 +32,13 @@ const summaryMap = {
 };
 
 class ProjectModel {
+    static getCurrentDateUTC() {
+        return dayjs().tz('Asia/Manila').startOf('day').utc().format('YYYY-MM-DD');
+    }
+    
+    static getCurrentDateManila() {
+        return dayjs().tz('Asia/Manila').startOf('day');
+    }
     static async findById(id){
         const [results] = await pool.query(
             `           SELECT 
@@ -93,7 +110,7 @@ static async getAllProjects() {
 }
 
 static async updateProjectStatusesBatch(projects) {
-    const currentDate = new Date().toISOString().split('T')[0]; // Use current date
+    const currentDate = this.getCurrentDateUTC(); // Use current date
     
     for (const project of projects) {
         if (project.schedule_created !== 1) continue;
@@ -116,30 +133,23 @@ static async updateProjectStatusesBatch(projects) {
 }
 
 static async calculateProjectStatus(project, tasks, currentDate) {
-    // Use Philippines timezone consistently throughout
-    const now = new Date(currentDate);
+    // Convert currentDate to dayjs object immediately
+    const now = dayjs(currentDate).tz('Asia/Manila').startOf('day');
     
-    // Convert to Philippines timezone and set to midnight
-    const phNowString = now.toLocaleString("en-US", { timeZone: "Asia/Manila" });
-    const phNow = new Date(phNowString);
-    phNow.setHours(0, 0, 0, 0);
-    
-    console.log(`Project ${project.id} - Philippines midnight:`, phNow.toISOString());
+    console.log(`Project ${project.id} - Manila midnight:`, now.format('YYYY-MM-DD'));
 
     // ---- HOLD DAYS ----
     let holdDays = null;
     const isOnHold = !!project.on_hold;
     if (project.hold_date) {
-        const holdDate = new Date(project.hold_date);
-        const phHoldDate = new Date(holdDate.toLocaleString("en-US", { timeZone: "Asia/Manila" }));
-        phHoldDate.setHours(0, 0, 0, 0);
-        holdDays = Math.floor((phNow - phHoldDate) / (1000 * 60 * 60 * 24));
+        const holdDate = dayjs(project.hold_date).tz('Asia/Manila').startOf('day');
+        holdDays = now.diff(holdDate, 'd');
     }
     
     let willResume = false;
     if (isOnHold) {
-        const today = dayjs().tz("Asia/Manila").startOf('day');
-        const resume = dayjs(project.resume_date).tz("Asia/Manila").startOf('day');
+        const today = dayjs().tz('Asia/Manila').startOf('day');
+        const resume = dayjs(project.resume_date).tz('Asia/Manila').startOf('day');
         willResume = (project.will_resume && today.isSame(resume));
         
         if (!willResume) {
@@ -165,24 +175,28 @@ static async calculateProjectStatus(project, tasks, currentDate) {
     }
     
     // ---- CURRENT TASKS ----
-    // Use the local timezone dates from database query
+    // Convert all task dates to dayjs for comparison
     const foundParentTask = tasks.find(t => {
         if (t.task_type !== 'summary') return false;
         
-        // Use the already-converted local timezone dates
-        const taskStart = new Date(t.task_start);
-        const taskEnd = new Date(t.task_end);
+        // Convert task dates to dayjs objects
+        const taskStart = t.task_start ? dayjs(t.task_start).tz('Asia/Manila').startOf('day') : null;
+        const taskEnd = t.task_end ? dayjs(t.task_end).tz('Asia/Manila').startOf('day') : null;
         
-        return phNow >= taskStart && phNow <= taskEnd;
+        if (!taskStart || !taskEnd) return false;
+        
+        return now.isSameOrAfter(taskStart) && now.isSameOrBefore(taskEnd);
     });
     
     const projectedTask = tasks.find(t => {
         if (t.task_type !== 'task') return false;
         
-        const taskStart = new Date(t.task_start);
-        const taskEnd = new Date(t.task_end);
+        const taskStart = t.task_start ? dayjs(t.task_start).tz('Asia/Manila').startOf('day') : null;
+        const taskEnd = t.task_end ? dayjs(t.task_end).tz('Asia/Manila').startOf('day') : null;
         
-        return phNow >= taskStart && phNow < taskEnd;
+        if (!taskStart || !taskEnd) return false;
+        
+        return now.isSameOrAfter(taskStart) && now.isBefore(taskEnd);
     });
     
     const actualTask = tasks.find(
@@ -194,8 +208,11 @@ static async calculateProjectStatus(project, tasks, currentDate) {
         const task = tasks.find(t => t.task_name === name);
         if (!task || !task[key]) return null;
         
-        const dateValue = new Date(task[key]);
-        return isNaN(dateValue.getTime()) ? null : dateValue.toISOString().split('T')[0];
+        try {
+            return dayjs(task[key]).tz('Asia/Manila').startOf('day').format('YYYY-MM-DD');
+        } catch (error) {
+            return null;
+        }
     };
     
     const installation_start_date = findDate('Mechanical Installation', 'task_start');
@@ -213,11 +230,10 @@ static async calculateProjectStatus(project, tasks, currentDate) {
     
     // Handle edge cases where tasks aren't found
     if (!actualTask || !projectedTask || !foundParentTask) {
-        const projectEndDate = new Date(project.project_end_date);
-        const phProjectEndDate = new Date(projectEndDate.toLocaleString("en-US", { timeZone: "Asia/Manila" }));
-        phProjectEndDate.setHours(0, 0, 0, 0);
+        const projectEndDate = project.project_end_date ? 
+            dayjs(project.project_end_date).tz('Asia/Manila').startOf('day') : null;
         
-        if (phNow > phProjectEndDate) {
+        if (projectEndDate && now.isAfter(projectEndDate)) {
             return {
                 status: 'Overdue',
                 start_date,
@@ -269,39 +285,29 @@ static async calculateProjectStatus(project, tasks, currentDate) {
     }
     
     // ---- STATUS FLAGS ----
-    // Convert project dates to Philippines timezone for comparison
+    // Use dayjs for all project date comparisons
     let in_tnc = 0;
     if (project.tnc_assign_date) {
-        const tncDate = new Date(project.tnc_assign_date);
-        const phTncDate = new Date(tncDate.toLocaleString("en-US", { timeZone: "Asia/Manila" }));
-        phTncDate.setHours(0, 0, 0, 0);
-        in_tnc = phNow >= phTncDate ? 1 : 0;
+        const tncDate = dayjs(project.tnc_assign_date).tz('Asia/Manila').startOf('day');
+        in_tnc = now.isSameOrAfter(tncDate) ? 1 : 0;
     }
     
     let in_qaqc = false;
     if (project.qaqc_inspection_date) {
-        const qaqcDate = new Date(project.qaqc_inspection_date);
-        const phQaqcDate = new Date(qaqcDate.toLocaleString("en-US", { timeZone: "Asia/Manila" }));
-        phQaqcDate.setHours(0, 0, 0, 0);
-        in_qaqc = phNow >= phQaqcDate;
+        const qaqcDate = dayjs(project.qaqc_inspection_date).tz('Asia/Manila').startOf('day');
+        in_qaqc = now.isSameOrAfter(qaqcDate);
     }
     
     let joint_inspection = false;
     if (project.pms_joint_inspection) {
-        const pmsDate = new Date(project.pms_joint_inspection);
-        const phPmsDate = new Date(pmsDate.toLocaleString("en-US", { timeZone: "Asia/Manila" }));
-        phPmsDate.setHours(0, 0, 0, 0);
-        joint_inspection = phNow >= phPmsDate;
+        const pmsDate = dayjs(project.pms_joint_inspection).tz('Asia/Manila').startOf('day');
+        joint_inspection = now.isSameOrAfter(pmsDate);
     }
     
     const foundCurrentTask = actualTask?.task_name;
     const is_behind = actualTask?.task_id !== projectedTask?.task_id;
 
-    console.log(`Project ${project.id}:`);
-    console.log(`- Current task: ${foundCurrentTask}`);
-    console.log(`- Projected task: ${projectedTask?.task_name}`);
-    console.log(`- Parent phase: ${foundParentTask?.task_name}`);
-    console.log(`- Is behind: ${is_behind}`);
+
     
     return {
         status: summaryMap[foundParentTask?.task_name] || 'N/A',
@@ -575,42 +581,44 @@ static async getProjectSchedule(id) {
     const [check] = await pool.query(checkQuery)
     if (check.length === 0) return []
     
-    // Get original UTC dates and convert them to Philippines timezone
     const query = `SELECT * FROM project_${id}_schedule`;
     const [results] = await pool.query(query);
     if (!results) return []
     
-    // Convert UTC dates to Philippines midnight and replace the original dates
-    const tasksWithFixedTimes = results.map(task => {
-        const fixTimeToMidnight = (dateString) => {
+
+    
+    // Convert UTC dates from database to Manila timezone by adding 1 day
+    const tasksWithManilaDates = results.map(task => {
+        const adjustForManilaTimezone = (dateString) => {
             if (!dateString) return null;
             try {
-                const date = new Date(dateString);
-                if (isNaN(date.getTime())) return null;
-                
-                // Set to 00:00:00 in local timezone
-                date.setHours(0, 0, 0, 0);
-                return date;
+                // MySQL stores dates as UTC, so we need to add 1 day to get Manila date
+                const utcDate = dayjs.utc(dateString);
+                const manilaDate = utcDate.add(1, 'day');
+                return manilaDate.format('YYYY-MM-DD');
             } catch (error) {
                 console.warn(`Invalid date for project ${id}, task ${task.task_id}:`, dateString);
                 return null;
             }
         };
         
-        return {
+        const adjustedTask = {
             ...task,
-            task_start: fixTimeToMidnight(task.task_start),
-            task_end: fixTimeToMidnight(task.task_end)
+            task_start: adjustForManilaTimezone(task.task_start),
+            task_end: adjustForManilaTimezone(task.task_end)
         };
+        
+        return adjustedTask;
     });
-    
-    const sortedTasks = tasksWithFixedTimes.sort((a, b) => {
-        // Handle null dates by putting them at the end
+
+
+
+    const sortedTasks = tasksWithManilaDates.sort((a, b) => {
         if (!a.task_start && !b.task_start) return 0;
         if (!a.task_start) return 1;
         if (!b.task_start) return -1;
         
-        const dateDiff = a.task_start - b.task_start;
+        const dateDiff = a.task_start.localeCompare(b.task_start);
         if (dateDiff !== 0) return dateDiff;
 
         const customOrder = {

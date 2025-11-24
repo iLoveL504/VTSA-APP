@@ -23,15 +23,22 @@ import { Grid as LoaderGrid } from 'ldrs/react';
 import { Select, MenuItem, FormControl } from '@mui/material';
 import { Axios } from '../../api/axios.js';
 import { useSharedSocket } from '../../Context/SocketContext.js';
+import dayjs from 'dayjs';
+import utc from 'dayjs/plugin/utc.js';
+import timezone from 'dayjs/plugin/timezone.js';
 
-// Utility function
+dayjs.extend(utc);
+dayjs.extend(timezone);
+
 const formatLocalDate = (isoString) => {
   if (!isoString) return "N/A";
-  const date = new Date(isoString);
-  // Add 1 day to compensate for UTC to Philippines time conversion
-  return date.toLocaleDateString("en-GB", { timeZone: "Asia/Manila" });
+  console.log(isoString)
+  // Parse the UTC date and display it in Manila timezone
+  // But keep the date the same (don't shift by timezone offset)
+  const date = dayjs.utc(isoString);
+  console.log(date.format('DD/MM/YYYY'))
+  return date.format('DD/MM/YYYY');
 };
-
 // Move SchedulingCard component outside the main component
 const SchedulingCard = ({ 
   proj, 
@@ -521,7 +528,7 @@ console.log(qaqcHistory)
                 <div className="task-dates">
                   <CalendarIcon className="date-icon" />
                   <span>
-                    {formatLocalDate(currentTask.task_start)} - {formatLocalDate(currentTask.task_end)}
+                    {currentTask.task_start.format('DD/MM/YYYY')} - {currentTask.task_end.format('DD/MM/YYYY')}
                   </span>
                 </div>
                 <div className="task-meta">

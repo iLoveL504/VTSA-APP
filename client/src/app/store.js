@@ -1,7 +1,17 @@
 import { createStore, action, thunk, computed } from "easy-peasy"
 import {Axios} from '../api/axios.js'
 import dayjs from 'dayjs'
+import utc from 'dayjs/plugin/utc.js'
+import timezone from 'dayjs/plugin/timezone.js'
+import isSameOrBefore from 'dayjs/plugin/isSameOrBefore.js'
+import isSameOrAfter from 'dayjs/plugin/isSameOrAfter.js'
 // Add this near the top of your store file, after the imports
+
+dayjs.extend(utc)
+dayjs.extend(timezone)
+dayjs.extend(isSameOrAfter);
+dayjs.extend(isSameOrBefore);
+
 const summaryMap = {
   'Mechanical Installation': 'Installation',
   'Preliminaries': 'Preliminaries',
@@ -11,34 +21,16 @@ const summaryMap = {
   'Testing and Commissioning': 'Test and Comm'
 };
 
-const formatLocalDate = (isoString) => {
-  if (!isoString) return "N/A";
-  const date = new Date(isoString);
-  // Add 1 day to compensate for UTC to Philippines time conversion
-  return date.toLocaleDateString("en-GB", { timeZone: "Asia/Manila" });
-};
-
-//YYYY-MM-DD for testing
-// const d = new Date('2025-10-10')
-//always current date
-const getLocalMidnight = () => {
-    const now = new Date()
-    now.setHours(0, 0, 0, 0)
-    return now
+const getManilaMidnight = () => {
+    return dayjs().tz('Asia/Manila').startOf('day').toDate();
 }
 
+// const formatLocalDate = (isoString) => {
+//   if (!isoString) return "N/A";
+//   return dayjs(isoString).tz('Asia/Manila').format('DD/MM/YYYY');
+// };
 
-// const addDuration = (start, days) => {
-//     const date = new Date(start)
-//     date.setDate(date.getDate() + days)
-//     date.setHours(0, 0, 0, 0)
-//     return date
-// }
-
-// Always current date but standardized to midnight
-
-//const modifiedDate = addDuration(now, 0)
-const localNow = getLocalMidnight()
+const localNow = getManilaMidnight()
 
 console.log(new Date())
 console.log(localNow)
@@ -313,59 +305,62 @@ setQaQCHistory: action((state, payload) => {
 }),
   
   // Thunk action to fetch all project data
-  fetchAllProjectData: thunk(async (actions, projId) => {
-    const backendURL = import.meta.env.VITE_BACKEND_URL || "http://localhost:4000";
-    console.log(projId)
-    console.log('here in store')
-    console.log(backendURL)
-    try {
-      actions.setLoading(true);
-      actions.setError(null);
+// Thunk action to fetch all project data - FIXED with frontend date adjustment
+fetchAllProjectData: thunk(async (actions, projId) => {
+  const backendURL = import.meta.env.VITE_BACKEND_URL || "http://localhost:4000";
+  try {
+    actions.setLoading(true);
+    actions.setError(null);
 
-      // Fetch all data in parallel
-      const [
-        projectRes,
-        photosRes,
-        teamTechsRes,
-        scheduleRes,
-        taskPhotosRes,
-        holidays,
-        qaqcHis
-      ] = await Promise.all([
-        Axios.get(`${backendURL}/api/projects/${projId}`),
-        Axios.get(`${backendURL}/api/projects/photos/${projId}`),
-        Axios.get(`${backendURL}/api/teams/project-manpower/${projId}`),
-        Axios.get(`${backendURL}/api/projects/schedule/${projId}`),
-        Axios.get(`${backendURL}/api/projects/task-photos/${projId}`),
-        Axios.get(`${backendURL}/api/projects/holidays/${projId}`),
-        Axios.get(`${backendURL}/api/projects/qaqc/history/${projId}`)
-      ]);
-      console.log(qaqcHis)
-      // Update state with all data
-      actions.setProjectData(projectRes.data);
-      actions.setProjectPhotos(photosRes.data);
-      actions.setProjectTeamTechs(teamTechsRes.data);
-          scheduleRes.data.forEach(d => {
-      const sd = new Date(d.task_start)
-      const ed = new Date(d.task_end)
-      sd.setDate(sd.getDate() + 1);
-      ed.setDate(ed.getDate() + 1);
+    const [
+      projectRes,
+      photosRes,
+      teamTechsRes,
+      scheduleRes,
+      taskPhotosRes,
+      holidays,
+      qaqcHis
+    ] = await Promise.all([
+      Axios.get(`${backendURL}/api/projects/${projId}`),
+      Axios.get(`${backendURL}/api/projects/photos/${projId}`),
+      Axios.get(`${backendURL}/api/teams/project-manpower/${projId}`),
+      Axios.get(`${backendURL}/api/projects/schedule/${projId}`),
+      Axios.get(`${backendURL}/api/projects/task-photos/${projId}`),
+      Axios.get(`${backendURL}/api/projects/holidays/${projId}`),
+      Axios.get(`${backendURL}/api/projects/qaqc/history/${projId}`)
+    ]);
 
-      d.task_start = sd
-      d.task_end = ed
-    })
-      actions.setProjectSchedule(scheduleRes.data);
-      actions.setTaskPhotos(taskPhotosRes.data);
-      actions.setHolidays(holidays.data)
-      actions.setQaQCHistory(qaqcHis.data[projId].inspections)
-
-    } catch (error) {
-      console.error('Error fetching project data:', error);
-      actions.setError('Failed to load project data');
-    } finally {
-      actions.setLoading(false);
-    }
-  }),
+    // Update state with all data
+    actions.setProjectData(projectRes.data);
+    actions.setProjectPhotos(photosRes.data);
+    actions.setProjectTeamTechs(teamTechsRes.data);
+    
+    // Convert schedule dates and ADD 1 DAY to compensate for UTC->Manila
+    const adjustedSchedule = scheduleRes.data.map(d => {
+      const adjustDate = (dateString) => {
+        if (!dateString) return null;
+        // Add 1 day to compensate for UTC storage in MySQL
+        return dayjs(dateString).add(1, 'day').startOf('day').toDate();
+      };
+      
+      return {
+        ...d,
+        task_start: adjustDate(d.task_start),
+        task_end: adjustDate(d.task_end)
+      };
+    });
+    
+    actions.setProjectSchedule(adjustedSchedule);
+    actions.setTaskPhotos(taskPhotosRes.data);
+    actions.setHolidays(holidays.data)
+    actions.setQaQCHistory(qaqcHis.data[projId].inspections)
+  } catch (error) {
+    console.error('Error fetching project data:', error);
+    actions.setError('Failed to load project data');
+  } finally {
+    actions.setLoading(false);
+  }
+}),
 
   // Thunk action to fetch team info (depends on project data)
   fetchTeamInfo: thunk(async (actions, { projData }) => {
@@ -448,6 +443,7 @@ setFetchedData: action((state, payload) => {
 }),
 
 // Thunk to find project tasks (replaces the custom hook)
+// Thunk to find project tasks - FIXED with frontend date adjustment
 findProjectTasks: thunk(async (actions, { projectId, projectData }, { getState }) => {
   const backendURL = import.meta.env.VITE_BACKEND_URL || 'http://localhost:4000';
   const state = getState();
@@ -458,22 +454,44 @@ findProjectTasks: thunk(async (actions, { projectId, projectData }, { getState }
     // Fetch schedule data
     const scheduleRes = await Axios.get(`${backendURL}/api/projects/schedule/${projectId}`);
     const fetchedData = scheduleRes.data;
-    console.log('date now: -----')
-    console.log(state.date)
-    console.log('fetchedData: ----')
-    console.log(fetchedData)
-    fetchedData.forEach(d => {
-      const sd = new Date(d.task_start)
-      const ed = new Date(d.task_end)
-      sd.setDate(sd.getDate() + 1);
-      ed.setDate(ed.getDate() + 1);
-
-      d.task_start = sd
-      d.task_end = ed
-    })
-    actions.setFetchedData(fetchedData)
     
-    if (!fetchedData || Object.keys(fetchedData).length === 0) {
+    console.log('📅 RAW DATES FROM API:', fetchedData.map(d => ({
+      task_id: d.task_id,
+      task_start: d.task_start,
+      task_end: d.task_end
+    })));
+    
+    // Convert dates to dayjs objects and ADD 1 DAY to compensate for UTC->Manila
+    const tasksWithAdjustedDates = fetchedData.map(d => {
+      const adjustDate = (dateString) => {
+        if (!dateString) return null;
+        // Add 1 day to compensate for UTC storage in MySQL
+        return dayjs(dateString).add(1, 'day').startOf('day');
+      };
+      
+      const adjustedStart = adjustDate(d.task_start);
+      const adjustedEnd = adjustDate(d.task_end);
+      
+      console.log(`Task ${d.task_id}: ${d.task_name}`);
+      console.log(`  - API start: ${d.task_start} → Adjusted: ${adjustedStart?.format('YYYY-MM-DD')}`);
+      console.log(`  - API end: ${d.task_end} → Adjusted: ${adjustedEnd?.format('YYYY-MM-DD')}`);
+      
+      return {
+        ...d,
+        task_start: adjustedStart,
+        task_end: adjustedEnd
+      };
+    });
+    
+    console.log('✅ ADJUSTED DATES (+1 day):', tasksWithAdjustedDates.map(d => ({
+      task_id: d.task_id,
+      task_start: d.task_start?.format('YYYY-MM-DD'),
+      task_end: d.task_end?.format('YYYY-MM-DD')
+    })));
+    
+    actions.setFetchedData(tasksWithAdjustedDates);
+    
+    if (!tasksWithAdjustedDates || tasksWithAdjustedDates.length === 0) {
       console.log('Project has no schedule yet');
       actions.setProjectExists(false);
       actions.setNoTask(true);
@@ -481,24 +499,27 @@ findProjectTasks: thunk(async (actions, { projectId, projectData }, { getState }
       return;
     }
     
-    console.log('date now: ', state.date);
-    console.log(fetchedData);
+    const currentDate = dayjs(state.date).tz('Asia/Manila').startOf('day');
+    console.log('🗓️ Current store date:', currentDate.format('YYYY-MM-DD'));
+    
     actions.setProjectExists(true);
     
-    // Find parent task
-    const foundParentTask = fetchedData.find(t => 
+    // Find parent task using ADJUSTED dates
+    const foundParentTask = tasksWithAdjustedDates.find(t => 
       t.task_type === 'summary' && 
-      new Date(state.date) >= new Date(t.task_start) && 
-      new Date(state.date) <= new Date(t.task_end)
+      currentDate.isSameOrAfter(t.task_start) && 
+      currentDate.isSameOrBefore(t.task_end)
     );
     
-    console.log(foundParentTask);
+    console.log('🔍 Found parent task:', foundParentTask);
     
     if (!foundParentTask) {
+      const projectEndDate = projectData.project_end_date ? 
+        dayjs(projectData.project_end_date).tz('Asia/Manila').startOf('day') : null;
       
-      if(new Date() > new Date(projectData.project_end_date)) {
-        const handoverParent = fetchedData.find(t => t.task_id === 600)
-        const handoverTask = fetchedData.find(t => t.task_id === 607)
+      if (currentDate.isAfter(projectEndDate)) {
+        const handoverParent = tasksWithAdjustedDates.find(t => t.task_id === 600)
+        const handoverTask = tasksWithAdjustedDates.find(t => t.task_id === 607)
 
         actions.setCurrentParentTask(handoverParent)
         actions.setCurrentTask(handoverTask)
@@ -507,13 +528,10 @@ findProjectTasks: thunk(async (actions, { projectId, projectData }, { getState }
         actions.setOnHold(false)
         return
       }
-      console.log('inside foundParentTask:')
-      console.log(projectData)
+      
       if (projectData.will_resume) {
-        const bufferParent = fetchedData.find(t => t.task_id === 600)
-        const bufferTask = fetchedData.find(t => t.task_id === 601)
-        console.log(bufferParent)
-        console.log(bufferTask)
+        const bufferParent = tasksWithAdjustedDates.find(t => t.task_id === 600)
+        const bufferTask = tasksWithAdjustedDates.find(t => t.task_id === 601)
 
         actions.setCurrentParentTask(bufferParent)
         actions.setCurrentTask(bufferTask)
@@ -521,26 +539,23 @@ findProjectTasks: thunk(async (actions, { projectId, projectData }, { getState }
         actions.setOnHold(true)
         return
       }
+      
       if (projectData.status === 'Completed') {
         actions.setProjectCompleted(true);
         actions.setTasksIsLoading(false);
         return;        
       }
-
     }
     
     if (projectData?.on_hold) {
-
       actions.setCurrentTask(projectData.current_task);
       actions.setCurrentParentTask(projectData.task_phase);
-    //  
-
       actions.setOnHold(true);
       actions.setTasksIsLoading(false);
       return;
     }
     
-    if (foundParentTask.task_name === 'Structural/Civil Works') {
+    if (foundParentTask && foundParentTask.task_name === 'Structural/Civil Works') {
       actions.setCurrentParentTask({
         ...foundParentTask, 
         task_name: 'Structural/Civil Works and Manufacturing'
@@ -549,46 +564,36 @@ findProjectTasks: thunk(async (actions, { projectId, projectData }, { getState }
       actions.setCurrentParentTask(foundParentTask);
     }
     
-    // Find current task based on current date
-    const foundCurrentTask = fetchedData.find(t => 
+    // Find current task based on current date using ADJUSTED dates
+    const foundCurrentTask = tasksWithAdjustedDates.find(t => 
       (t.task_actual_current || t.task_done === 0) && 
       t.task_type === 'task'
     );
     
-    // Find projected current task
-const foundProjectedCurrentTask = fetchedData.find(t => {
-  if (t.task_type !== "task") return false;
-    console.log(new Date(t.task_start))
-    console.log(new Date(state.date))
-  return (
-    new Date(state.date) >= t.task_start &&
-    new Date(state.date) < t.task_end
-  );
-});
-    console.log(`Project ${projectId}---`)
-    console.log(formatLocalDate(foundProjectedCurrentTask.task_start))
-    console.log(formatLocalDate(state.date))
-    console.log(foundProjectedCurrentTask);
-    console.log(`Project ${projectId}---`)
+    // Find projected current task using ADJUSTED dates
+    const foundProjectedCurrentTask = tasksWithAdjustedDates.find(t => 
+      t.task_type === "task" &&
+      currentDate.isSameOrAfter(t.task_start) &&
+      currentDate.isBefore(t.task_end)
+    );
+    
+    console.log('📊 Task Analysis:');
+    console.log('Current date:', currentDate.format('YYYY-MM-DD'));
+    console.log('Found current task:', foundCurrentTask?.task_name, foundCurrentTask?.task_start?.format('YYYY-MM-DD'));
+    console.log('Found projected task:', foundProjectedCurrentTask?.task_name, foundProjectedCurrentTask?.task_start?.format('YYYY-MM-DD'));
     
     // Set behind schedule flag
     if (foundCurrentTask && foundProjectedCurrentTask) {
-      console.log('then project is behind schedule---------')
-      console.log(foundCurrentTask)
-      console.log(foundProjectedCurrentTask)
       actions.setIsBehindSchedule(foundCurrentTask.task_id !== foundProjectedCurrentTask.task_id);
     }
     
     // Find current task phase
     if (foundCurrentTask) {
-      const foundCurrentTaskPhase = fetchedData.find(t => 
+      const foundCurrentTaskPhase = tasksWithAdjustedDates.find(t => 
         t.task_id === foundCurrentTask.task_parent
       );
       actions.setCurrentTaskPhase(foundCurrentTaskPhase);
     }
-    
-    console.log(foundCurrentTask);
-    console.log(foundProjectedCurrentTask);
     
     actions.setCurrentTask(foundCurrentTask);
     actions.setProjectedTask(foundProjectedCurrentTask);
