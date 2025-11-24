@@ -594,8 +594,7 @@ static async getProjectSchedule(id) {
             try {
                 // MySQL stores dates as UTC, so we need to add 1 day to get Manila date
                 const utcDate = dayjs.utc(dateString);
-                const manilaDate = utcDate.add(1, 'day');
-                return manilaDate.format('YYYY-MM-DD');
+                return utcDate.format('YYYY-MM-DD');
             } catch (error) {
                 console.warn(`Invalid date for project ${id}, task ${task.task_id}:`, dateString);
                 return null;

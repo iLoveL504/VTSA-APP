@@ -340,7 +340,7 @@ fetchAllProjectData: thunk(async (actions, projId) => {
       const adjustDate = (dateString) => {
         if (!dateString) return null;
         // Add 1 day to compensate for UTC storage in MySQL
-        return dayjs(dateString).add(1, 'day').startOf('day').toDate();
+        return dayjs(dateString).startOf('day').toDate();
       };
       
       return {
