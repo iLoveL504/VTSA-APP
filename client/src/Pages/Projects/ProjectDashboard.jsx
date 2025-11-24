@@ -499,7 +499,7 @@ console.log(qaqcHistory)
                 <div className="phase-dates">
                   <CalendarIcon className="date-icon" />
                   <span>
-                    {formatLocalDate(currentParentTask.task_start)} - {formatLocalDate(currentParentTask.task_end)}
+                    {dayjs(currentParentTask.task_start).format('DD/MM/YYYY')} - {dayjs(currentParentTask.task_end).format('DD/MM/YYYY')}
                   </span>
                 </div>
                 <div className="phase-duration">

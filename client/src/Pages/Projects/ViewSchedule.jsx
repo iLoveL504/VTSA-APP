@@ -7,7 +7,12 @@ import '../../css/ViewSchedule.css'
 import { useReactToPrint } from "react-to-print";
 import { DatePickerInput } from '@mantine/dates';
 import { Axios } from "../../api/axios";
+import dayjs from 'dayjs'
+import utc from 'dayjs/plugin/utc.js';
+import timezone from 'dayjs/plugin/timezone.js';
 
+dayjs.extend(utc);
+dayjs.extend(timezone);
 // MUI Icons
 import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
 import PrintIcon from '@mui/icons-material/Print';
@@ -198,20 +203,19 @@ const TestChart = ({projSched, projSchedIsLoading, holidays }) => {
                 const isParent = task.task_type === "summary";
                 const isCurrent = String(task.task_id) === currentTaskId;
 
-                const startDate = new Date(task.task_start);
-                const endDate = new Date(task.task_end);
-                startDate.setHours(0, 0, 0, 0);
-                endDate.setHours(0, 0, 0, 0);
-                if (isNaN(startDate.getTime()) || isNaN(endDate.getTime()) || endDate <= startDate) {
+                const startDate = dayjs(task.task_start)
+                const endDate = dayjs(task.task_end)
+                if (!startDate.isValid() || !endDate.isValid()) {
                     console.error("Invalid task:", task);
                     return null;
                 }
 
+
                 return {
                     id: String(task.task_id),
                     name: task.task_name || `Task ${task.task_id}`,
-                    start: startDate,
-                    end: endDate,
+                    start: startDate.toDate(),
+                    end: endDate.toDate(),
                     progress: task.task_progress ?? 0,
                     project: task.task_parent || undefined,
                     type: isParent ? "project" : "task",
