@@ -201,6 +201,7 @@ export default createStore({
         const projs = await Axios.get(`${backendURL}/api/projects`)
         const archivedProjects = projs.data.filter(p => p.archived)
         actions.setArchivedProjects(archivedProjects)
+        console.log(projs)
         actions.setProjects(projs.data)
         actions.setAllProjectsLoading(false)
       } catch (err) {

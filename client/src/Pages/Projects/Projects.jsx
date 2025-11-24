@@ -337,15 +337,7 @@ const Projects = ({updateIsLoading}) => {
         </div>
       </div>
 
-      {/* Debug Info (remove in production) */}
-      <div style={{padding: '10px', background: '#f5f5f5', marginBottom: '10px', fontSize: '12px'}}>
-        <strong>Debug Info:</strong> 
-        Role: "{role}" | 
-        Status Filter: "{statusFilter}" | 
-        Active Filter: "{activeFilter}" | 
-        Base Projects: {getBaseProjects().length} |
-        Filtered Projects: {filteredProjects.length}
-      </div>
+
 
       {/* Projects Display */}
       <div className={`projects-display ${viewMode}`}>

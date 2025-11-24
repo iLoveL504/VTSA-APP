@@ -79,7 +79,7 @@ static async getAllProjects() {
               left join employees e on e.employee_id = pm.project_engineer_id 
           WHERE p.handover_done = 0;
         `);
-
+          console.log(results)
         // Update statuses for projects with schedules
         const projectsWithSchedule = results.filter(p => p.schedule_created === 1);
         if (projectsWithSchedule.length > 0) {
@@ -114,7 +114,6 @@ static async updateProjectStatusesBatch(projects) {
     
     for (const project of projects) {
         if (project.schedule_created !== 1) continue;
-        console.log(project.id)
         try {
             // Get project schedule
             const tasks = await this.getProjectSchedule(project.id);
@@ -133,21 +132,9 @@ static async updateProjectStatusesBatch(projects) {
 }
 
 static async calculateProjectStatus(project, tasks, currentDate) {
-    if(project.id === 44) {
-      console.log('------------test 46 tasks-----------------')
-      console.log(project.id)
-      tasks.forEach(t => {
-        const x = {
-          task_name: t.task_name,
-          task_start: t.task_start
-        }
-        console.log(x)
-      })
-    }
     // Convert currentDate to dayjs object immediately
     const now = dayjs(currentDate).tz('Asia/Manila').startOf('day');
     
-    console.log(`Project ${project.id} - Manila midnight:`, now.format('YYYY-MM-DD'));
 
     // ---- HOLD DAYS ----
     let holdDays = null;
@@ -309,8 +296,6 @@ static async calculateProjectStatus(project, tasks, currentDate) {
     if (project.qaqc_inspection_date) {
         
         const qaqcDate = dayjs(project.qaqc_inspection_date).tz('Asia/Manila').startOf('day');
-        console.log(project.id, '------------qaqc date: ', qaqcDate)
-        console.log(project.id, '------------now: ', now)
         in_qaqc = now.isSameOrAfter(qaqcDate);
     }
     
@@ -717,8 +702,6 @@ static async adjustInstallationStart(projId, data) {
     });
     adjustedSchedule.importTasksWithDates(schedule)
     adjustedSchedule.printListData()
-    console.log('-------here in line 567-------')
-    console.log(date)
     adjustedSchedule.adjustInstallationStart(projId, new Date(date))
     //adjustedSchedule.printListData()
   
@@ -819,7 +802,6 @@ static async makeProjectSchedule(data, id) {
     const {tasks, holidays, isCalendarDays} = data
     const days = !isCalendarDays ? 'working' : 'calendar'
     
-    console.log('📅 Raw tasks from frontend:');
     tasks.forEach(t => {
       const x = {
         task_name: t.task_name,
@@ -828,7 +810,6 @@ static async makeProjectSchedule(data, id) {
         manila_start: dayjs.utc(t.task_start).tz('Asia/Manila').format('YYYY-MM-DD'),
         manila_end: dayjs.utc(t.task_end).tz('Asia/Manila').format('YYYY-MM-DD')
       }
-      console.log(x)
     })
 
     // Convert Manila dates to UTC for database storage
@@ -839,17 +820,6 @@ static async makeProjectSchedule(data, id) {
       task_end: dayjs.utc(t.task_end).tz('Asia/Manila').utc().format('YYYY-MM-DD'),
       raw_start: t.task_start
     }));
-
-    console.log('💾 Tasks for database (UTC):');
-    tasksForDB.forEach(t => {
-      console.log({
-        task_name: t.task_name,
-        db_start: t.task_start, 
-        manila_display: dayjs.utc(t.task_start).tz('Asia/Manila').format('YYYY-MM-DD'),// Will be 2025-11-23 in UTC
-        db_end: t.task_end,
-        raw_start: t.raw_start
-      })
-    });
 
     try {
       const checkQuery = `show tables like 'project_${id}_schedule'`
