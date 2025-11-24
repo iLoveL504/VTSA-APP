@@ -40,10 +40,10 @@ const InspectionPage = () => {
     };
 
     // Format date for display (compensates for UTC storage)
-    const formatDisplayDate = (dateString) => {
-        if (!dateString) return 'N/A';
-        return dayjs(dateString).add(1, 'day').format('DD/MM/YYYY');
-    };
+    // const formatDisplayDate = (dateString) => {
+    //     if (!dateString) return 'N/A';
+    //     return dayjs(dateString).add(1, 'day').format('DD/MM/YYYY');
+    // };
 
     // Get the actual inspection date (for display)
     const getActualInspectionDate = () => {
