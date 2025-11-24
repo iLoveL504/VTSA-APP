@@ -193,7 +193,7 @@ const SchedulingCard = ({
               </span>
               {status.date && (
                 <span className="scheduled-date">
-                  {formatLocalDate(status.date)}
+                  {dayjs(status.date).format('YYYY-MM-DD')}
                 </span>
               )}
             </div>
@@ -350,8 +350,10 @@ const ProjectDashboard = ({
     qaqcHistory
   } = useStoreState(state => state);
   console.log(allTeams)
+  const projectTeam = allTeams.find(t => t.project_id === Number(projId))
+  console.log(projectTeam)
   const { fetchAllProjectData } = useStoreActions(action => action);
-
+  console.log(proj)
   // Get coordinators
   const QAQCCoordinator = employees?.find(e => e.job === 'QAQC Coordinator');
   const ProjectManager = employees?.find(e => e.job === 'Project Manager');
@@ -477,17 +479,19 @@ console.log(qaqcHistory)
             <h3>Current Phase</h3>
           </div>
           <div className="card-content">
-            {console.log('project is on hold: ', proj)}
-            {onHold ? (
+            {console.log('project is on hold: ', onHold)}
+            {proj.on_hold ? (
               <div className="hold-state">
                 <WarningIcon className="hold-icon" />
                 <h4>Project On Hold</h4>
                 <p>{proj?.hold_reason || 'No reason provided'}</p>
-                {proj?.will_resume && (
+                {proj?.will_resume ? (
                   <p className="resume-date">
                     Resuming on: {formatLocalDate(proj.resume_date)}
                   </p>
-                )}
+                ) : (<div>
+                  
+                </div>)}
                 {/* <button className="btn-resume" onClick={handleResumeProject}>
                   <PlayArrowIcon className="btn-icon" />
                   Resume Project
@@ -528,7 +532,7 @@ console.log(qaqcHistory)
                 <div className="task-dates">
                   <CalendarIcon className="date-icon" />
                   <span>
-                    {currentTask.task_start.format('DD/MM/YYYY')} - {currentTask.task_end.format('DD/MM/YYYY')}
+                    {currentTask.task_start?.format('DD/MM/YYYY')} - {currentTask.task_end?.format('DD/MM/YYYY')}
                   </span>
                 </div>
                 <div className="task-meta">
@@ -597,7 +601,7 @@ console.log(qaqcHistory)
                   <h4>Behind Schedule</h4>
                   <p>Projected: {projectedTask.task_name}</p>
                   <p className="warning-dates">
-                    {formatLocalDate(projectedTask.task_start)} - {formatLocalDate(projectedTask.task_end)}
+                    {dayjs(projectedTask.task_start).format('YYYY-MM-DD')} - {dayjs(projectedTask.task_end).format('YYYY-MM-DD')}
                   </p>
                 </div>
               </div>
@@ -666,6 +670,160 @@ console.log(qaqcHistory)
             </button>
           </div>
         </div>
+
+{/* Team Card */}
+<div className="dashboard-card team-card">
+  <div className="card-header">
+    <EngineeringIcon className="card-icon" />
+    <h3>Project Team</h3>
+  </div>
+  <div className="card-content">
+    {projectTeam ? (
+      <div className="team-section">
+        {/* Project Engineer */}
+        <div className="team-role-section">
+          <h4 className="team-role-title">Project Engineer</h4>
+          {projectTeam.project_engineer ? (
+            <div className="team-member primary">
+              <div className="member-avatar">
+                {projectTeam.project_engineer.fullname?.split(' ').map(n => n[0]).join('') || 'PE'}
+              </div>
+              <div className="member-info">
+                <span className="member-name">{projectTeam.project_engineer.fullname}</span>
+                <span className="member-role">Project Engineer</span>
+                <span className="member-branch">{projectTeam.project_engineer.branch}</span>
+              </div>
+            </div>
+          ) : (
+            <div className="no-member">Not Assigned</div>
+          )}
+        </div>
+
+        {/* Foreman */}
+        <div className="team-role-section">
+          <h4 className="team-role-title">Foreman</h4>
+          {projectTeam.foreman ? (
+            <div className="team-member primary">
+              <div className="member-avatar">
+                {projectTeam.foreman.name?.split(' ').map(n => n[0]).join('') || 'FM'}
+              </div>
+              <div className="member-info">
+                <span className="member-name">{projectTeam.foreman.name}</span>
+                <span className="member-role">Foreman</span>
+                <span className="member-branch">{projectTeam.foreman.branch}</span>
+              </div>
+            </div>
+          ) : (
+            <div className="no-member">Not Assigned</div>
+          )}
+        </div>
+
+        {/* Technicians */}
+        <div className="team-role-section">
+          <h4 className="team-role-title">Technicians</h4>
+          <div className="technicians-grid">
+            {/* QAQC Technician */}
+            <div className="technician-item">
+              <span className="tech-role">QA/QC</span>
+              {projectTeam.technicians?.qaqc_tech ? (
+                <div className="team-member compact">
+                  <div className="member-avatar small">
+                    {projectTeam.technicians.qaqc_tech.fullname?.split(' ').map(n => n[0]).join('') || 'QC'}
+                  </div>
+                  <div className="member-info">
+                    <span className="member-name">{projectTeam.technicians.qaqc_tech.fullname}</span>
+                    <span className="member-branch">{projectTeam.technicians.qaqc_tech.branch}</span>
+                  </div>
+                </div>
+              ) : (
+                <div className="no-member compact">Not Assigned</div>
+              )}
+            </div>
+
+            {/* TNC Technician */}
+            <div className="technician-item">
+              <span className="tech-role">TNC</span>
+              {projectTeam.technicians?.tnc_tech ? (
+                <div className="team-member compact">
+                  <div className="member-avatar small">
+                    {projectTeam.technicians.tnc_tech.fullname?.split(' ').map(n => n[0]).join('') || 'TN'}
+                  </div>
+                  <div className="member-info">
+                    <span className="member-name">{projectTeam.technicians.tnc_tech.fullname}</span>
+                    <span className="member-branch">{projectTeam.technicians.tnc_tech.branch}</span>
+                  </div>
+                </div>
+              ) : (
+                <div className="no-member compact">Not Assigned</div>
+              )}
+            </div>
+
+            {/* PMS Technician */}
+            <div className="technician-item">
+              <span className="tech-role">PMS</span>
+              {projectTeam.technicians?.pms_tech ? (
+                <div className="team-member compact">
+                  <div className="member-avatar small">
+                    {projectTeam.technicians.pms_tech.fullname?.split(' ').map(n => n[0]).join('') || 'PM'}
+                  </div>
+                  <div className="member-info">
+                    <span className="member-name">{projectTeam.technicians.pms_tech.fullname}</span>
+                    <span className="member-branch">{projectTeam.technicians.pms_tech.branch}</span>
+                  </div>
+                </div>
+              ) : (
+                <div className="no-member compact">Not Assigned</div>
+              )}
+            </div>
+          </div>
+        </div>
+
+        {/* Installation Team */}
+        <div className="team-role-section">
+          <h4 className="team-role-title">Installation Team ({projectTeam.team?.length || 0})</h4>
+          <div className="team-members-list">
+            {projectTeam.team && projectTeam.team.length > 0 ? (
+              projectTeam.team.map((member, index) => (
+                <div key={member.id || index} className="team-member compact">
+                  <div className="member-avatar small">
+                    {member.fullname?.split(' ').map(n => n[0]).join('') || 'TM'}
+                  </div>
+                  <div className="member-info">
+                    <span className="member-name">{member.fullname}</span>
+                    <span className="member-role">{member.job}</span>
+                    <span className="member-branch">{member.branch}</span>
+                  </div>
+                </div>
+              ))
+            ) : (
+              <div className="no-member">No team members assigned</div>
+            )}
+          </div>
+        </div>
+
+        {/* View Full Team Button */}
+        <button 
+          className="btn-view-team" 
+          onClick={() => setActivePage('teams')}
+        >
+          <EngineeringIcon className="btn-icon" />
+          Manage Team
+        </button>
+      </div>
+    ) : (
+      <div className="no-team-data">
+        <p>No team information available</p>
+        <button 
+          className="btn-view-team" 
+          onClick={() => ('/teams')}
+        >
+          <EngineeringIcon className="btn-icon" />
+          Set Up Team
+        </button>
+      </div>
+    )}
+  </div>
+</div>
 
         {/* Quick Actions Card */}
         <div className="dashboard-card actions-card">

@@ -104,18 +104,21 @@ const ProjectInfo = () => {
     const [role, setRole] = useState(null)
     
     useEffect(() => {
+      console.log('does it go in useEffect')
       const fetchAllData = async () => {
         if (!projId || dataLoaded) return; // Fetch guard prevents re-fetching
 
         try {
           // Fetch main project data if not already loaded
           if (!proj || Object.keys(proj).length === 0) {
+            console.log(proj)
             await fetchAllProjectData(projId);
           }
 
           // Once project data is available, fetch dependent data
           if (proj && proj.id) {
             // Fetch team info and project tasks in parallel
+            console.log('hello')
             await Promise.all([
               fetchTeamInfo({ projId, projData: proj }),
               findProjectTasks({ projectId: projId, projectData: proj })

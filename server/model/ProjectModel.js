@@ -1597,7 +1597,10 @@ static async rectifyItems (projId) {
     await pool.query(`delete from team_members where project_id = ?`, [projId])
 
     //clear project team since it is now in handover
-    await pool.query(`update project_manpower set team_id = null, qaqc_id = null, pms_id = null, tnc_tech_id = null where project_id = ?`, [projId])
+  }
+  static async rejectProjHold (projId) {
+    await pool.query(`update projects set on_hold = 0, request_hold = 0`, [projId])
+    //clear project team since it is now in handover
   }
   //Resume Process
   static async requestProjResume (projId, date) {

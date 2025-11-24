@@ -308,6 +308,7 @@ setQaQCHistory: action((state, payload) => {
 // Thunk action to fetch all project data - FIXED with frontend date adjustment
 fetchAllProjectData: thunk(async (actions, projId) => {
   const backendURL = import.meta.env.VITE_BACKEND_URL || "http://localhost:4000";
+  console.log('inside fetch')
   try {
     actions.setLoading(true);
     actions.setError(null);

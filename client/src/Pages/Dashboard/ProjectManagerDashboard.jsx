@@ -255,15 +255,6 @@ const ProjectManagerDashboard = ({ onNewProject, clearProjectData, clearProjectT
   </div>
 </div>
 
-<div className="stat-card">
-  <div className="stat-icon" style={{backgroundColor: 'rgba(23, 162, 184, 0.1)'}}>
-    <CheckCircleIcon style={{color: '#17a2b8'}} /> {/* completed */}
-  </div>
-  <div className="stat-content">
-    <h3>{projectManagerData.completedProjects}</h3>
-    <p>Completed</p>
-  </div>
-</div>
 
 
       </div>

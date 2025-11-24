@@ -123,7 +123,7 @@
     flex: 1; /* This makes the content area grow to fill available space */
   display: flex;
   flex-direction: column;
-  overflow: auto; /* Add scroll if content overflows */
+  overflow-y: auto; /* Add scroll if content overflows */
 }
 
 /* Progress Card */
@@ -738,4 +738,240 @@
 
 .MuiMenu-paper {
   z-index: 9999 !important;
+}
+
+/* Team Card Styles */
+.team-card .card-content {
+  padding: 20px 24px;
+  overflow-y: auto;
+}
+
+.team-section {
+  display: flex;
+  flex-direction: column;
+    overflow-y: auto;
+  gap: 20px;
+}
+
+.team-role-section {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.team-role-title {
+  font-size: 0.9rem;
+  color: #315a95;
+  font-weight: 600;
+  margin: 0;
+  padding-bottom: 4px;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+/* Team Member Styles */
+.team-member {
+  display: flex;
+  align-items: center;
+  padding: 12px;
+  background: #f8fafc;
+  border-radius: 8px;
+  border: 1px solid #e2e8f0;
+  transition: all 0.2s ease;
+}
+
+.team-member:hover {
+  background: #f1f5f9;
+  border-color: #cbd5e1;
+}
+
+.team-member.primary {
+  background: linear-gradient(135deg, #f0f4ff 0%, #e0e7ff 100%);
+  border-color: #c7d2fe;
+}
+
+.team-member.compact {
+  padding: 8px 12px;
+}
+
+.member-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #315a95, #4f7cc9);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  font-size: 0.8rem;
+  margin-right: 12px;
+  flex-shrink: 0;
+}
+
+.member-avatar.small {
+  width: 32px;
+  height: 32px;
+  font-size: 0.7rem;
+}
+
+.member-info {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-width: 0;
+}
+
+.member-name {
+  font-weight: 600;
+  color: #1e293b;
+  font-size: 0.9rem;
+  margin-bottom: 2px;
+}
+
+.member-role {
+  font-size: 0.75rem;
+  color: #64748b;
+  margin-bottom: 2px;
+  text-transform: capitalize;
+}
+
+.member-branch {
+  font-size: 0.7rem;
+  color: #94a3b8;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* Technicians Grid */
+.technicians-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 12px;
+}
+
+.technician-item {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.tech-role {
+  font-size: 0.7rem;
+  color: #64748b;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* Team Members List */
+.team-members-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-height: 150px;
+  overflow-y: auto;
+  padding-right: 4px;
+}
+
+.team-members-list::-webkit-scrollbar {
+  width: 4px;
+}
+
+.team-members-list::-webkit-scrollbar-track {
+  background: #f1f5f9;
+  border-radius: 2px;
+}
+
+.team-members-list::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 2px;
+}
+
+.team-members-list::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+/* No Member/No Team States */
+.no-member {
+  padding: 12px;
+  background: #f8fafc;
+  border: 1px dashed #cbd5e1;
+  border-radius: 8px;
+  color: #94a3b8;
+  font-size: 0.85rem;
+  text-align: center;
+}
+
+.no-member.compact {
+  padding: 8px 12px;
+  font-size: 0.8rem;
+}
+
+.no-team-data {
+  text-align: center;
+  padding: 40px 20px;
+  color: #64748b;
+}
+
+.no-team-data p {
+  margin: 0 0 16px 0;
+}
+
+/* View Team Button */
+.btn-view-team {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  padding: 12px 20px;
+  background: #315a95;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  margin-top: auto;
+}
+
+.btn-view-team:hover {
+  background: #25467a;
+  transform: translateY(-1px);
+}
+
+/* Responsive Design for Team Card */
+@media (max-width: 768px) {
+  .technicians-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .team-member {
+    padding: 10px;
+  }
+  
+  .member-avatar {
+    width: 36px;
+    height: 36px;
+    margin-right: 10px;
+  }
+  
+  .team-role-title {
+    font-size: 0.85rem;
+  }
+}
+
+/* Animation for team members */
+.team-member {
+  animation: slideInUp 0.3s ease-out;
+}
+
+@keyframes slideInUp {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }

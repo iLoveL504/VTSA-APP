@@ -201,7 +201,6 @@ const Users = ({ empIsLoading }) => {
             try {
                 await Axios.delete(`/api/employees/${employeeId}`)
                 usersSocket.emit("refresh_users")
-                alert('Employee deleted successfully')
             } catch (error) {
                 console.error('Error deleting employee:', error)
                 alert('Error deleting employee: ' + (error.response?.data?.message || error.message))

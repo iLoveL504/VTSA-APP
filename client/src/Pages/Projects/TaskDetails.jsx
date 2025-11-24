@@ -360,7 +360,7 @@ const TaskDetails = ({currentTask, currentTaskPhase, proj, ConfirmationModal, fe
                 const end_date   = formatDateForMySQL(completionModal.task.task_end);
                 const task_duration = completionModal.task.task_duration
                 const task_percent = completionModal.task.task_percent
-
+                const Ids = [proj.project_engineer_id]
                 formData.append('task_id', task_id)
                 formData.append('task_name', task_name)
                 formData.append('start_date', start_date)
@@ -378,6 +378,26 @@ const TaskDetails = ({currentTask, currentTaskPhase, proj, ConfirmationModal, fe
                     });
                     if (response?.data.success) {
                         window.alert("TNC inspection completed successfully!");
+                        await new Promise((resolve, reject) => {
+                            const timeout = setTimeout(() => {
+                                reject(new Error("Socket emit timeout"));
+                            }, 5000); 
+
+                            utilitiesSocket.emit("new_notification", {
+                                subject: 'QAQC Inspection Conducted',
+                                body: `QAQC Inspection Completed for ${proj.lift_name} (Client: ${proj.client})`,
+                                Ids
+                            }, (ack) => {
+                                clearTimeout(timeout);
+                                if (ack?.success) {
+                                    utilitiesSocket.emit("refresh_project_data");
+                                    resolve();
+                                } else {
+                                reject(new Error("Server failed to process notification."));
+                                }
+                            });
+                        });
+                        
                     } else {
                         window.alert("Something went wrong completing the TNC inspection.");
                     }
@@ -549,12 +569,13 @@ const TaskDetails = ({currentTask, currentTaskPhase, proj, ConfirmationModal, fe
                     />
                 )
             default:
-                return null
+                return <div></div>
         }
     }
 
     return (
         <div className="Content TaskDetails">
+            
             {/* Status Messages */}
             {saveStatus === 'success' ? (
                 <div className="TaskDetails__status-message TaskDetails__status-message--success">
@@ -610,8 +631,6 @@ const TaskDetails = ({currentTask, currentTaskPhase, proj, ConfirmationModal, fe
                     </div>
                 </div>
             </div>
-
-            {/* Role-based Completion Section */}
             {renderRoleCompletion()}
 
             {/* Modals */}

@@ -1491,7 +1491,7 @@
 
 /* Modal Layout */
 .modal-content.large {
-  max-width: 100px;
+  max-width: 1800px;
   width: 95%;
   max-height: 90vh;
 }

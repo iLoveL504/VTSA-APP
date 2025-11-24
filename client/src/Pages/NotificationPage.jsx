@@ -86,7 +86,7 @@ const NotificationPage = () => {
         <>
           <div className='notification-actions'>
             {console.log(foundNotif)}
-            {foundNotif.functionality.function === 'projects-navigate' ? (
+            {foundNotif.functionality?.function === 'projects-navigate' ? (
               <button 
                 className="action-btn btn-secondary"
                 onClick={() => {
@@ -97,7 +97,7 @@ const NotificationPage = () => {
                 Navigate to Project
               </button>
             ) : (
-              <>sdfds</>
+              <></>
             )}
 
 

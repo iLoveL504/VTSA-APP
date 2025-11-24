@@ -208,7 +208,7 @@ static async getTeamDashboard() {
  
     const [result2] = await pool.query(`
         SELECT pm.id AS \`project_manpower_id\`, pm.project_engineer_id, pe.username AS \`pe_username\`, pe.branch as \`pe_branch\`, 
-               pm.team_id, t.Foreman, t.foreman_id, f.branch as \`foreman_branch\`, 
+               pm.team_id, concat(f.last_name, ' ', f.first_name) as \`Foreman\`, t.foreman_id, f.branch as \`foreman_branch\`, 
                tm.emp_id, e.username AS \`e_username\`, e.branch as \`e_branch\`,
                CONCAT(e.last_name, ' ', e.first_name) AS \`e_fullname\`, e.job, 
                p.id AS \`project_id\`, p.lift_name, p.status, 

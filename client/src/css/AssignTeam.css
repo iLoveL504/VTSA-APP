@@ -301,21 +301,21 @@
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
-.project-header {
+.assign-engineer-container .project-header {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
   margin-bottom: 1rem;
 }
 
-.project-header h4 {
+.assign-engineer-container .project-header h4 {
   margin: 0;
   color: #1e293b;
   font-size: 1.1rem;
   font-weight: 600;
 }
 
-.project-status {
+assign-engineer-container .project-status {
   padding: 0.25rem 0.75rem;
   border-radius: 12px;
   font-size: 0.75rem;

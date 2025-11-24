@@ -59,7 +59,7 @@ const CustomGanttChart = () => {
         const value = {
           task_id: s.task_id,
           task_name: s.task_name,
-          task_start: dayjs(s.task_start).tz('Asia/Manila').format('YYYY-MM-DD'), // Keep as Manila date
+          task_start: dayjs(s.task_start).tz('Asia/Manila').format('YYYY-MM-DD'),
           task_end: dayjs(s.task_end).tz('Asia/Manila').format('YYYY-MM-DD'),
           task_duration: s.task_duration,
           task_type: s.task_type,

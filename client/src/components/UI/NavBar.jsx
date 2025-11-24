@@ -14,7 +14,7 @@ import '../../css/Navbar.css'
 
 
 const NavBar = ({ invertMenuToggle }) => {
-  const { utilitiesSocket } = useSharedSocket()
+  const { utilitiesSocket, messagesSocket } = useSharedSocket()
   const user = useStoreState(state => state.user)
   const notifications = useStoreState(state => state.notifications)
   const inbox = useStoreState(state => state.inbox)
@@ -25,6 +25,15 @@ const NavBar = ({ invertMenuToggle }) => {
   const [userMessages, setUserMessages] = useState([])
   const [unreadMsgCount, setUnreadMsgCount] = useState(0)
   const navigate = useNavigate()
+
+    useEffect(() => {
+        if (messagesSocket && user) {
+            console.log('User ID:', user.employee_id)       
+            messagesSocket.emit('join_user', user.employee_id)
+            messagesSocket.emit('fetch_inbox', user.employee_id)
+        }
+        
+    }, [messagesSocket, user])
 
   useEffect(() => {
     if (notifications) {

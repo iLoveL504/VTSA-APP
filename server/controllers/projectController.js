@@ -564,6 +564,20 @@ export const approveProjHold = async (req, res) => {
     }
 }
 
+export const rejectProjHold = async (req, res) => {
+    const {id} = req.params
+    try {
+        await projects.rejectProjHold(Number(id))
+        res.status(200).json({
+            success: true,
+            message: "rejected"
+        })
+    } catch (e) {
+        console.error(e);
+        res.status(500).json({ success: false, message: "Error approving" });         
+    }
+}
+
 export const requestProjResume = async (req, res) => {
     const {id} = req.params
     const {resume_date} = req.body

@@ -136,10 +136,36 @@ const Project = ({project, viewMode = 'list'}) => {
           utilitiesSocket.emit('refresh_all_projects')
   }
 
-  const handleRejectHold = (e) => {
+  const handleRejectHold = async (e) => {
     e.stopPropagation()
     console.log('Reject hold for project:', project.id)
-    // Add your hold rejection logic here
+     const response = await Axios.put(`/api/projects/reject-hold/${project.id}`)
+      if (!response.data?.success) {
+          window.alert("Something went wrong during assignment.");
+          return;
+      }
+      const peId = project.project_engineer_id
+      const Ids = [peId]
+          await new Promise((resolve, reject) => {
+              const timeout = setTimeout(() => {
+                  reject(new Error("Socket emit timeout"));
+              }, 5000); 
+
+              utilitiesSocket.emit("new_notification", {
+                  subject: 'Hold Request Approved',
+                  body: `Your hold request for ${project.lift_name} (Client: ${project.client}) has been rejected`,
+                  Ids
+              }, (ack) => {
+                  clearTimeout(timeout);
+                  if (ack?.success) {
+                      utilitiesSocket.emit("refresh_project_data");
+                      resolve();
+                  } else {
+                  reject(new Error("Server failed to process notification."));
+                  }
+              });
+          }); 
+          utilitiesSocket.emit('refresh_all_projects')
   }
 
   const handleResumeClick = (e) => {

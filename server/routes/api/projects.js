@@ -30,6 +30,7 @@ import {
     requestProjPMS,
     requestProjHold,
     approveProjHold,
+    rejectProjHold,
     approveProjPMS,
     completePMSJoint,
     prepareProjHandover,
@@ -173,6 +174,9 @@ router.route(`/request-hold/:id`)
 
 router.route(`/approve-hold/:id`)    
     .put(approveProjHold)
+
+router.route(`/reject-hold/:id`)    
+    .put(rejectProjHold)
 
 router.route(`/request-resume/:id`)
     .put(requestProjResume)
