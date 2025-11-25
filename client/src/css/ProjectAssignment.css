@@ -1157,7 +1157,7 @@
     border: 1px solid #e2e8f0;
 }
 
-.project-header {
+.ProjectAssignment .project-header {
     display: flex;
     align-items: center;
     gap: 12px;

@@ -195,11 +195,11 @@ const Users = ({ empIsLoading }) => {
         setShowModal(true)
     }, [])
 
-    const handleDeleteEmployee = useCallback(async (employeeId) => {
+    const handleDeleteEmployee = useCallback(async (employeeId, job) => {
         if (window.confirm('Are you sure you want to delete this employee? This action cannot be undone.')) {
             setIsLoading(true)
             try {
-                await Axios.delete(`/api/employees/${employeeId}`)
+                await Axios.delete(`/api/employees/${employeeId}?job=${encodeURIComponent(job)}`)
                 usersSocket.emit("refresh_users")
             } catch (error) {
                 console.error('Error deleting employee:', error)
@@ -388,7 +388,7 @@ const Users = ({ empIsLoading }) => {
                         </button>
                         <button 
                             className="btn-delete"
-                            onClick={() => handleDeleteEmployee(employee.employee_id)}
+                            onClick={() => handleDeleteEmployee(employee.employee_id, employee.job)}
                             disabled={isLoading}
                             title="Delete Employee"
                         >

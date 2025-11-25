@@ -47,10 +47,6 @@ const NotificationPage = () => {
             <i className="fas fa-clock"></i>
             {foundNotif.time || 'Just now'}
           </span>
-          <span className={`notification-status ${foundNotif.mark_read ? 'status-read' : 'status-unread'}`}>
-            <i className={`fas ${foundNotif.mark_read ? 'fa-check-circle' : 'fa-circle'}`}></i>
-            {foundNotif.mark_read ? 'Read' : 'Unread'}
-          </span>
         </div>
       </div>
       

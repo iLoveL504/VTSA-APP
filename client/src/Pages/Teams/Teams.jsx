@@ -23,13 +23,12 @@ const Teams = () => {
     }
     return {};
   }, [teamData, teamIsLoading]);
-  console.log(teamsByGroup)
+
   const installationOnClick = () => {
     setActivePage('installation');
   };
 
   const otherTeamsOnClick = () => {
-    console.log('clicking')
     setActivePage('other');
   };
 
@@ -40,18 +39,18 @@ const Teams = () => {
         <div className="project-header-content">
           <h2>Teams Management</h2>
           <div className="action-buttons">
-            <button 
+            <div 
               onClick={installationOnClick}
               className={activePage === 'installation' ? 'active' : ''}
             >
               Teams Dashboard
-            </button>
-            <button 
+            </div>
+            <div 
               onClick={otherTeamsOnClick}
               className={activePage === 'other' ? 'active' : ''}
             >
               Plan Manpower
-            </button>
+            </div>
           </div>
         </div>
       </div>
@@ -71,9 +70,6 @@ const Teams = () => {
             teamsByGroup={teamsByGroup}
           />
         )}
-        {/* <div>
-          Some side content right here
-        </div> */}
       </div>
     </div>
   )

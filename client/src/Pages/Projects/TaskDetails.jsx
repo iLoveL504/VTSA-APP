@@ -337,7 +337,7 @@ const TaskDetails = ({currentTask, currentTaskPhase, proj, ConfirmationModal, fe
                 evidenceFiles.forEach((file) => formData.append("evidence", file));
                 checklistFiles.forEach((file) => formData.append("documents", file));
                 formData.append('inspection_id', proj.current_qaqc_id)
-                
+                formData.append('qaqc_name', sessionStorage.getItem('fullName'))
                 await Axios.post(`/api/projects/qaqc/complete/${projId}`, formData)
             } else if (type === 'tnc') {
                 const formData = new FormData();

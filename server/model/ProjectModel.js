@@ -79,7 +79,7 @@ static async getAllProjects() {
               left join employees e on e.employee_id = pm.project_engineer_id 
           WHERE p.handover_done = 0;
         `);
-          console.log(results)
+          // console.log(results)
         // Update statuses for projects with schedules
         const projectsWithSchedule = results.filter(p => p.schedule_created === 1);
         if (projectsWithSchedule.length > 0) {
@@ -101,7 +101,6 @@ static async getAllProjects() {
             
             return updatedResults;
         }
-        console.log('got all results easy peasy')
         return results;
     } catch (error) {
         console.error('Error in getAllProjects:', error);
@@ -1281,10 +1280,9 @@ static async makeProjectSchedule(data, id) {
   static async getQAQCHistory (projId) {
     const [results] = await pool.query(`
       select p.id, p.lift_name, qh.inspection_reason, qh.inspection_date, qh.inspection_complete,
-            qh.qaqc_id, concat(e.last_name, ' ', e.first_name) as \`full_name\`, pip.photo_url, pip.checklist, qp.doc_url as \`punchlist_url\`
+            qh.qaqc_id, qh.qaqc_name, pip.photo_url, pip.checklist, qp.doc_url as \`punchlist_url\`
             from projects p 
-			join qaqc_inspection_history qh on qh.project_id = p.id
-            left join employees e on e.employee_id = qh.qaqc_id
+			      join qaqc_inspection_history qh on qh.project_id = p.id
             left join project_inspection_photos pip on pip.inspection_id = qh.id
             left join qaqc_punchlisting qp on qp.inspection_id = qh.id where p.id = ?    
       `, [projId])
@@ -1344,7 +1342,7 @@ const grouped = results.reduce((acc, item) => {
   }
 
 static async completeProjQAQC (projId, data, photos) {
-  const { inspection_id, checklist } = data;
+  const { inspection_id, checklist, qaqc_name } = data;
   const { documents, evidence } = photos
   // get a connection for transaction
   const conn = await pool.getConnection();
@@ -1353,8 +1351,8 @@ static async completeProjQAQC (projId, data, photos) {
 
     // mark inspection record complete
     await conn.query(
-      `UPDATE qaqc_inspection_history SET inspection_complete = 1 WHERE id = ?`,
-      [inspection_id]
+      `UPDATE qaqc_inspection_history SET inspection_complete = 1, qaqc_name = ? WHERE id = ?`,
+      [qaqc_name, inspection_id]
     );
 
     // insert photos
@@ -1630,7 +1628,7 @@ static async rectifyItems (projId) {
     adjustedSchedule.resumeProject(new Date(resume_date))
     
     const editedSchedule = adjustedSchedule.toArray()
-    console.log(editedSchedule)
+    // console.log(editedSchedule)
        const checkQuery = `show tables like 'project_${projId}_schedule'`
     const [results] = await pool.query(checkQuery)
     if(results.length !== 0) {

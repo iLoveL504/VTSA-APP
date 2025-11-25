@@ -54,7 +54,29 @@ class UserModel {
     }
 
     //DELETE
-    static async deleteUser (id) {
+    static async deleteUser (id, job) {
+        const excludeJobs = ['Installer', 'Skilled Installer']
+        if (!excludeJobs.includes(job)){
+            switch (job) {
+                case 'Project Engineer':
+                    await pool.query(`update project_manpower set project_engineer_id = null where project_engineer_id = ?`, [id])
+                    break
+                case 'QAQC':
+                    await pool.query(`update project_manpower set qaqc_id = null, where qaqc_id = ?`,[id])
+                    break
+                case 'TNC Technician':
+                    await pool.query(`update project_manpower set tnc_tech_id = null where tnc_tech_id = ?`, [id])
+                    break
+                case 'PMS Technician':
+                    await pool.query(`update project_manpower set pms_id = null, where pms_id = ?`,[id])
+                    break
+                case 'Foreman':
+                    await pool.query(`update project_manpower set team_id = null where team_id = ?`, [id])
+                    await pool.query(`delete from team_members where foreman_id = ?`, [id])
+
+            }
+        }
+
         await pool.query(`
             delete from employees where employee_id = ?   
         `, [id])

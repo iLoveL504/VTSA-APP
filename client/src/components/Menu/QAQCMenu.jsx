@@ -17,12 +17,6 @@ const QAQCMenu = () => {
   return (
     <>
         <ul>
-          <Link to="/dashboard">
-            <li>
-                <MdDashboard style={{ color: 'white' }}/>
-                Dashboard
-            </li>
-          </Link>
           <Link to="/projects">
             <li>
                 <GoProjectRoadmap style={{ color: 'white' }}/>

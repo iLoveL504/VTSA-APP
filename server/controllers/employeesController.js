@@ -42,10 +42,10 @@ export const createEmployee = async (req, res) => {
 
 export const deleteEmployee = async (req, res) => {
     const {id} = req.params
-
+    const job = req.query.job
     try {
         console.log('delete employee')
-        await users.deleteUser(id)
+        await users.deleteUser(id, job)
         res.status(200).json({'message': 'user deleted'})
     } catch (e) {
         console.error(e);

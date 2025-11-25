@@ -321,7 +321,7 @@ const handleCreateSchedule = () => {
         <div className="Content ProjectPage">
           
             <div className="project-header">
-                <h2>{values.lift_name || proj?.lift_name}</h2>
+                <h2>Project Page</h2>
                     <div className="action-buttons">
                         <div 
                                 onClick={dashboardOnClick}

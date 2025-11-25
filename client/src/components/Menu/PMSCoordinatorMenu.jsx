@@ -16,10 +16,10 @@ const PMSCoordinatorMenu = () => {
   return (
     <>
         <ul>
-          <Link to="/dashboard">
+          <Link to="/PMS">
             <li>
-                <MdDashboard style={{ color: 'white' }}/>
-                Dashboard
+                <MdHomeRepairService style={{ color: 'white' }}/>
+                PMS Assignment
             </li>
           </Link>
           <Link to="/PMS/new-entry">
@@ -28,18 +28,13 @@ const PMSCoordinatorMenu = () => {
                 New PMS Entry
             </li>
           </Link>
-          <Link to="/PMS">
-            <li>
-                <MdHomeRepairService style={{ color: 'white' }}/>
-                PMS Assignment
-            </li>
-          </Link>
-          <Link to="/PMS">
+
+          {/* <Link to="/PMS">
             <li>
                 <MdHomeRepairService style={{ color: 'white' }}/>
                 PMS Contract Watchlist
             </li>
-          </Link>
+          </Link> */}
           <Link to="/baby-book">
             <li>
                 <IoIosDocument style={{ color: 'white' }}/>

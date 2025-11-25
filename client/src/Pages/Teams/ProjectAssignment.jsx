@@ -850,7 +850,7 @@ const ProjectAssignment = () => {
                         </button>
                     )}
 
-                    {(hasTeam || installationTeams[project.id]?.team) && (
+                    {((hasTeam || installationTeams[project.id]?.team) && project.id === selectedProject.id) &&(
                         <button
                             className="btn-edit"
                             onClick={(e) => {

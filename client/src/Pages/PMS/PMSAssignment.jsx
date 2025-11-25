@@ -697,7 +697,6 @@ const PMSAssignment = () => {
     const { data: pmsProjects } = useAxiosFetch(`${backendURL}/api/pms/clients`)
     const { data: pmsTeams } = useAxiosFetch(`${backendURL}/api/pms/techs`)
     const employees = useStoreState(state => state.employees);
-    
     const [searchTerm, setSearchTerm] = useState('');
     const [selectedEntry, setSelectedEntry] = useState({});
     const [assignModal, setAssignModal] = useState({ isOpen: false, project: null, type: '', mode: 'assign', assigned:[] });
@@ -1261,16 +1260,6 @@ const PMSAssignment = () => {
                             </div>
                         </div>
 
-                        <div className="actions-section">
-                            <button className="action-btn">
-                                <RefreshIcon />
-                                Refresh
-                            </button>
-                            <button className="action-btn primary">
-                                <FilterIcon />
-                                Filters
-                            </button>
-                        </div>
                     </header>
 
                     {/* Projects Grid */}

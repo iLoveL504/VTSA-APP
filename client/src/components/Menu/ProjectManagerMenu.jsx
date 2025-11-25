@@ -44,12 +44,12 @@ const ProjectManagerMenu = () => {
                 Teams
             </li>
           </Link>          
-          <Link to="/PMS">
+          {/* <Link to="/PMS">
             <li>
                 <MdHomeRepairService style={{ color: 'white' }}/>
                 PMS and Baby Book
             </li>
-          </Link>
+          </Link> */}
 
           <Link to="/baby-book">
             <li>

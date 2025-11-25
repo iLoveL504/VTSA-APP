@@ -2,79 +2,140 @@
   padding: 0;
   background: #f8fafc;
   min-height: 90vh;
-  width: 100%; /* Ensure full width */
+  width: 100%;
 }
 
-/* Header matching ProjectInfo layout - FULL WIDTH */
+/* ===== PROJECT HEADER MATCHING PROJECTINFO STYLES ===== */
 .TeamsPage .project-header {
-  background: linear-gradient(135deg, #315a95 0%, #1e3a5f 100%);
+  background: #315a95;
   color: white;
-  padding: 2rem;
-  border-radius: 0 0 20px 20px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  padding: 1.5rem 2rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   width: 100%;
-  /* Remove any max-width constraints */
 }
 
-.project-header-content {
+.TeamsPage .project-header-content {
   display: flex;
-  justify-content: space-between;
-  align-items: center;
-  width: 100%;
-  max-width: 1200px; /* This controls the content width, not the header background */
- /* This centers the content */
+  max-width: 1400px;
 }
 
-/* Rest of your CSS remains the same */
 .TeamsPage .project-header h2 {
-  font-size: 2rem;
+  font-size: 1.75rem;
   font-weight: 700;
   margin: 0;
+  margin-right: 1rem;
   color: white;
 }
 
+/* ===== ACTION BUTTONS - MATCHING PROJECTINFO STYLES ===== */
 .TeamsPage .action-buttons {
   display: flex;
-  gap: 1rem;
-}
-
-.TeamsPage .action-buttons button {
-  padding: 0.75rem 1.5rem;
-  border: 2px solid rgba(255, 255, 255, 0.3);
-  border-radius: 8px;
-  font-weight: 600;
-  transition: all 0.3s ease;
+  gap: 0.5rem;
   background: rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(10px);
-  color: white;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.TeamsPage .action-buttons > div {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.25rem;
+  border-radius: 6px;
   cursor: pointer;
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: rgba(255, 255, 255, 0.9);
+  border: 1px solid transparent;
+  transition: background-color 0.2s ease;
 }
 
-.action-buttons button:hover,
-.action-buttons button.active {
-  background: rgba(255, 255, 255, 0.2);
-  transform: translateY(-2px);
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+.TeamsPage .action-buttons > div:hover {
+  background: rgba(255, 255, 255, 0.15);
+  color: white;
 }
 
-.installation-teams{
+.TeamsPage .action-buttons > div.active {
+  background: rgba(255, 255, 255, 0.25);
+  color: white;
+}
+
+/* ===== RESPONSIVE DESIGN ===== */
+@media (max-width: 1024px) {
+  .TeamsPage .project-header {
+    padding: 1.25rem 1.5rem;
+  }
+  
+  .TeamsPage .project-header h2 {
+    font-size: 1.5rem;
+  }
+  
+  .TeamsPage .action-buttons > div {
+    padding: 0.6rem 1rem;
+    font-size: 0.85rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .TeamsPage .project-header-content {
+    flex-direction: column;
+    gap: 1rem;
+    text-align: center;
+  }
+  
+  .TeamsPage .project-header h2 {
+    font-size: 1.4rem;
+  }
+  
+  .TeamsPage .action-buttons {
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  
+  .TeamsPage .action-buttons > div {
+    flex: 1;
+    min-width: 140px;
+    justify-content: center;
+  }
+}
+
+@media (max-width: 480px) {
+  .TeamsPage .project-header {
+    padding: 1rem 1.25rem;
+  }
+  
+  .TeamsPage .project-header h2 {
+    font-size: 1.25rem;
+  }
+  
+  .TeamsPage .action-buttons {
+    gap: 0.25rem;
+  }
+  
+  .TeamsPage .action-buttons > div {
+    padding: 0.5rem 0.75rem;
+    font-size: 0.8rem;
+    min-width: 120px;
+  }
+}
+
+/* ===== MAIN CONTENT AREA ===== */
+.teams-content {
+  display: flex;
+  padding: 0 0.5rem 0.5rem;
+  margin: 0 auto;
+  justify-content: center;
+  width: 100%;
+}
+
+.installation-teams {
   padding: 1rem 0.5rem 2rem;
   max-width: 1200px;
   margin: 0 auto;
   width: 100%;
 }
 
-/* Main content area - Keep this centered */
-.teams-content {
-  display: flex;
-  padding: 0 0.5rem 0.5rem;
-
-  margin: 0 auto;
-  justify-content: center;
-  width: 100%;
-}
-
-/* Minimal Teams Styling - No Layout Changes */
+/* ===== TEAM CARD STYLES ===== */
 .team-card {
   border: 1px solid #e1e8ed;
   border-radius: 8px;
@@ -228,5 +289,3 @@
   color: #6c757d;
   text-transform: uppercase;
 }
-
-/* Forecasted Team Styles */

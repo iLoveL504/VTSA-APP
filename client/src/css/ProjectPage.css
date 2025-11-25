@@ -1,113 +1,68 @@
-.Content.ProjectPage{
-  padding:0;
+.Content.ProjectPage {
+  padding: 0;
+  position: relative;
+  min-height: 100vh;
 }
 
-/* Floating Daily Report Button */
+/* ===== FLOATING DAILY REPORT BUTTON ===== */
 .Content.ProjectPage .floating-daily-report-btn {
-    position: fixed !important;
-    bottom: 2rem !important;
-    right: 2rem !important;
-    background: linear-gradient(135deg, #315a95 0%, #4a7cc2 100%) !important;
-    color: white !important;
-    border: none !important;
-    border-radius: 50px !important;
-    padding: 1rem 1.5rem !important;
-    font-weight: 600 !important;
-    font-size: 1rem !important;
-    cursor: pointer !important;
-    box-shadow: 0 6px 20px rgba(49, 90, 149, 0.3) !important;
-    align-items: center !important;
-    gap: 0.5rem !important;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
-    z-index: 1000 !important;
-    text-decoration: none !important;
+  position: fixed;
+  bottom: 2rem;
+  right: 2rem;
+  background: #315a95;
+  color: white;
+  border: none;
+  border-radius: 50px;
+  padding: 1rem 1.5rem;
+  font-weight: 600;
+  font-size: 1rem;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(49, 90, 149, 0.3);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  z-index: 1000;
+  transition: all 0.2s ease;
 }
 
 .Content.ProjectPage .floating-daily-report-btn:hover {
-    background: linear-gradient(135deg, #26467c 0%, #3b6ab8 100%) !important;
-    transform: translateY(-3px) !important;
-    box-shadow: 0 8px 25px rgba(49, 90, 149, 0.4) !important;
+  background: #26467c;
+  box-shadow: 0 6px 16px rgba(49, 90, 149, 0.4);
 }
 
-.Content.ProjectPage .floating-daily-report-btn:active {
-    transform: translateY(-1px) !important;
-}
-
-/* Animation for floating button */
-@keyframes float {
-    0% {
-        transform: translateY(0px);
-    }
-    50% {
-        transform: translateY(-5px);
-    }
-    100% {
-        transform: translateY(0px);
-    }
-}
-
-.Content.ProjectPage .floating-daily-report-btn {
-    animation: float 3s ease-in-out infinite;
-}
-
-/* Ensure the button doesn't overlap with other content */
 .Content.ProjectPage .ProjectPage {
-    position: relative;
-    padding-bottom: 5rem;
+  padding-bottom: 5rem;
 }
 
 @media (max-width: 768px) {
-    .Content.ProjectPage .floating-daily-report-btn {
-        bottom: 1.5rem !important;
-        right: 1.5rem !important;
-        padding: 0.8rem 1.2rem !important;
-        font-size: 0.9rem !important;
-    }
-    
-    .Content.ProjectPage .ProjectPage {
-        padding-bottom: 4rem;
-    }
+  .Content.ProjectPage .floating-daily-report-btn {
+    bottom: 1.5rem;
+    right: 1.5rem;
+    padding: 0.8rem 1.2rem;
+    font-size: 0.9rem;
+  }
+  
+  .Content.ProjectPage .ProjectPage {
+    padding-bottom: 4rem;
+  }
 }
 
 @media (max-width: 480px) {
-    .Content.ProjectPage .floating-daily-report-btn {
-        bottom: 1rem !important;
-        right: 1rem !important;
-        padding: 0.7rem 1rem !important;
-        font-size: 0.8rem !important;
-        border-radius: 40px !important;
-    }
-    
-    .Content.ProjectPage .floating-daily-report-btn i {
-        font-size: 0.9rem !important;
-    }
-    
-    .Content.ProjectPage .ProjectPage {
-        padding-bottom: 3.5rem;
-    }
+  .Content.ProjectPage .floating-daily-report-btn {
+    bottom: 1rem;
+    right: 1rem;
+    padding: 0.7rem 1rem;
+    font-size: 0.8rem;
+  }
 }
 
-
-
-/* Project Header - Div-based Navigation */
+/* ===== PROJECT HEADER ===== */
 .Content.ProjectPage .project-header {
-  background: linear-gradient(135deg, #1e3a5f 0%, #315a95 100%);
+  background: #315a95;
   color: white;
   padding: 1.5rem 2rem;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
-  position: relative;
-  overflow: hidden;
-}
-
-.Content.ProjectPage .project-header::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 100%;
-  background: linear-gradient(45deg, rgba(255,255,255,0.1) 0%, transparent 50%);
-  pointer-events: none;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  display:flex;
 }
 
 .Content.ProjectPage .project-header-content {
@@ -116,98 +71,50 @@
   align-items: center;
   max-width: 1400px;
   margin: 0 auto;
-  position: relative;
-  z-index: 1;
 }
 
 .Content.ProjectPage .project-header h2 {
   font-size: 1.75rem;
   font-weight: 700;
   margin: 0;
+  margin-right: 1rem;
   color: white;
-  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-  letter-spacing: -0.02em;
 }
 
-/* Navigation Container */
+/* ===== ACTION BUTTONS - SIMPLIFIED ===== */
 .Content.ProjectPage .action-buttons {
   display: flex;
   gap: 0.5rem;
   background: rgba(255, 255, 255, 0.1);
-  border-radius: 12px;
-  backdrop-filter: blur(10px);
+  border-radius: 8px;
   border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
-/* Navigation Items */
 .Content.ProjectPage .action-buttons > div {
   display: flex;
   align-items: center;
   gap: 0.5rem;
   padding: 0.75rem 1.25rem;
-  border-radius: 8px;
+  border-radius: 6px;
   cursor: pointer;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   font-weight: 600;
   font-size: 0.9rem;
   color: rgba(255, 255, 255, 0.9);
   border: 1px solid transparent;
-  position: relative;
-  overflow: hidden;
-}
-
-.Content.ProjectPage .action-buttons > div::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: -100%;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
-  transition: left 0.6s ease;
-}
-
-.Content.ProjectPage .action-buttons > div:hover::before {
-  left: 100%;
+  transition: background-color 0.2s ease;
 }
 
 .Content.ProjectPage .action-buttons > div:hover {
   background: rgba(255, 255, 255, 0.15);
-  border-color: rgba(255, 255, 255, 0.3);
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
   color: white;
 }
 
-.Content.ProjectPage .action-buttons > div:active {
-  transform: translateY(0);
-}
-
-/* Active State */
 .Content.ProjectPage .action-buttons > div.active {
   background: rgba(255, 255, 255, 0.25);
-  border-color: rgba(255, 255, 255, 0.4);
   color: white;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
 }
 
-/* Icons */
-.Content.ProjectPage .action-buttons > div::after {
-  font-size: 1.1rem;
-  transition: transform 0.3s ease;
-}
-
-.Content.ProjectPage .action-buttons > div:hover::after {
-  transform: scale(1.1);
-}
-
-/* Focus states for accessibility */
-.Content.ProjectPage .action-buttons > div:focus {
-  outline: 2px solid rgba(255, 255, 255, 0.6);
-  outline-offset: 2px;
-}
-
-/* Responsive Design */
+/* ===== RESPONSIVE DESIGN ===== */
 @media (max-width: 1024px) {
   .Content.ProjectPage .project-header {
     padding: 1.25rem 1.5rem;
@@ -257,7 +164,6 @@
   
   .Content.ProjectPage .action-buttons {
     gap: 0.25rem;
-    padding: 0.25rem;
   }
   
   .Content.ProjectPage .action-buttons > div {
@@ -265,306 +171,172 @@
     font-size: 0.8rem;
     min-width: 120px;
   }
-  
-  .Content.ProjectPage .action-buttons > div::after {
-    font-size: 1rem;
-  }
 }
 
-/* Animation for page transitions */
-@keyframes navSlideIn {
-  from {
-    opacity: 0;
-    transform: translateY(-10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-.Content.ProjectPage .action-buttons > div {
-  animation: navSlideIn 0.4s ease-out;
-}
-
-/* High contrast mode support */
-@media (prefers-contrast: high) {
-  .Content.ProjectPage .project-header {
-    background: #1e3a5f;
-    border-bottom: 2px solid white;
-  }
-  
-  .Content.ProjectPage .action-buttons > div {
-    border: 1px solid white;
-  }
-}
-
-/* Reduced motion support */
-@media (prefers-reduced-motion: reduce) {
-  .Content.ProjectPage .action-buttons > div {
-    animation: none;
-  }
-  
-  .Content.ProjectPage .action-buttons > div:hover {
-    transform: none;
-  }
-  
-  .Content.ProjectPage .action-buttons > div::before {
-    display: none;
-  }
-}
-
-/* Project Page Styles - Modern Redesign */
-
-.Content.ProjectPage .action-buttons button:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-}
-
+/* ===== STATUS MESSAGES ===== */
 .Content.ProjectPage .status {
   padding: 1rem;
   margin: 1rem auto;
   max-width: 1200px;
-  border-radius: 12px;
+  border-radius: 8px;
   font-weight: 600;
   text-align: center;
-  animation: slideIn 0.3s ease;
 }
 
-.Content.ProjectPage .ProjectDetails .missing{
-  font-weight: 300;
-  color: #ff4343;
+.Content.ProjectPage .status.success {
+  background: #d4edda;
+  color: #155724;
+  border: 1px solid #c3e6cb;
 }
 
-/* Task Overview Section */
+.Content.ProjectPage .status.error {
+  background: #f8d7da;
+  color: #721c24;
+  border: 1px solid #f5c6cb;
+}
+
+/* ===== TASK OVERVIEW SECTION ===== */
 .Content.ProjectPage .task-overview-section {
-    margin-bottom: 2rem;
-    padding: 1rem;
-    background: #f8f9fa;
-    border-radius: 12px;
-    border-left: 4px solid #54b0d2;
-    width: 100%;
-    max-width: 1600px;
+  margin-bottom: 2rem;
+  padding: 1rem;
+  background: #f8f9fa;
+  border-radius: 8px;
+  border-left: 4px solid #54b0d2;
+  width: 100%;
+  max-width: 1600px;
 }
 
 .Content.ProjectPage .task-overview-section h3 {
-    color: #2d3748;
-    margin-bottom: 1.5rem;
-    font-size: 1.5rem;
-    font-weight: 600;
+  color: #2d3748;
+  margin-bottom: 1.5rem;
+  font-size: 1.5rem;
+  font-weight: 600;
 }
 
 .Content.ProjectPage .task-cards-container {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 1.5rem;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
 }
 
 .Content.ProjectPage .task-card {
-    background: white;
-    padding: 1.5rem;
-    border-radius: 12px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-    border: 1px solid #e2e8f0;
-    /* transition: transform 0.2s ease, box-shadow 0.2s ease; */
-    cursor: pointer;
+  background: white;
+  padding: 1.5rem;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  border: 1px solid #e2e8f0;
+  cursor: pointer;
 }
 
 .Content.ProjectPage .task-card:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
 }
 
 .Content.ProjectPage .task-card h4 {
-    color: #4a5568;
-    margin-bottom: 1rem;
-    font-size: 1.1rem;
-    font-weight: 600;
-    border-bottom: 2px solid #e2e8f0;
-    padding-bottom: 0.5rem;
+  color: #4a5568;
+  margin-bottom: 1rem;
+  font-size: 1.1rem;
+  font-weight: 600;
+  border-bottom: 2px solid #e2e8f0;
+  padding-bottom: 0.5rem;
 }
 
-/* Current Task Card Specific Styles */
 .Content.ProjectPage .current-task-card {
-    border-top: 4px solid #3182ce;
+  border-top: 4px solid #3182ce;
 }
 
 .Content.ProjectPage .current-task-card h4 {
-    color: #3182ce;
-    border-bottom-color: #3182ce;
+  color: #3182ce;
 }
 
-/* Parent Task Card Specific Styles */
 .Content.ProjectPage .parent-task-card {
-    border-top: 4px solid #38a169;
+  border-top: 4px solid #38a169;
 }
 
 .Content.ProjectPage .parent-task-card h4 {
-    color: #38a169;
-    border-bottom-color: #38a169;
+  color: #38a169;
 }
 
-/* Task Card Content */
-/* .Content.ProjectPage .task-name {
-    font-size: 1.2rem;
-    font-weight: 600;
-    color: #2d3748;
-    margin-bottom: 1rem;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    flex-wrap: wrap;
-    gap: 0.5rem;
-} */
-
-.Content.ProjectPage .task-date, 
+.Content.ProjectPage .task-date,
 .Content.ProjectPage .task-duration {
-    color: #718096;
-    font-size: 0.95rem;
-    margin-bottom: 0.5rem;
+  color: #718096;
+  font-size: 0.95rem;
+  margin-bottom: 0.5rem;
 }
 
 .Content.ProjectPage .task-progress {
-    margin-top: 1rem;
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
+  margin-top: 1rem;
 }
 
 .Content.ProjectPage .progress-bar {
-    width: 100%;
-    height: 8px;
-    background: #e2e8f0;
-    border-radius: 4px;
-    overflow: hidden;
+  width: 100%;
+  height: 8px;
+  background: #e2e8f0;
+  border-radius: 4px;
+  overflow: hidden;
 }
 
 .Content.ProjectPage .progress-fill {
-    height: 100%;
-    background: linear-gradient(90deg, #4299e1, #3182ce);
-    border-radius: 4px;
-    transition: width 0.3s ease;
+  height: 100%;
+  background: #4299e1;
+  border-radius: 4px;
 }
 
 .Content.ProjectPage .parent-task-card .progress-fill {
-    background: linear-gradient(90deg, #48bb78, #38a169);
+  background: #48bb78;
 }
 
 .Content.ProjectPage .task-progress span {
-    font-size: 0.9rem;
-    color: #4a5568;
-    font-weight: 500;
+  font-size: 0.9rem;
+  color: #4a5568;
+  font-weight: 500;
 }
 
-/* Responsive Design */
 @media (max-width: 768px) {
-    .Content.ProjectPage .task-cards-container {
-        grid-template-columns: 1fr;
-        gap: 1rem;
-    }
-    
-    .Content.ProjectPage .task-card {
-        padding: 1rem;
-    }
-    
-    .Content.ProjectPage .task-name {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 0.5rem;
-    }
+  .Content.ProjectPage .task-cards-container {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+  
+  .Content.ProjectPage .task-card {
+    padding: 1rem;
+  }
 }
 
-/* Complete Button Styles (updated for new layout) */
+/* ===== BUTTON STYLES ===== */
 .Content.ProjectPage .complete-btn {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.4rem;
-    background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
-    color: #92400e;
-    padding: 0.5rem 1rem;
-    border-radius: 25px;
-    font-size: 0.9rem;
-    font-weight: 600;
-    border: 2px solid #fde68a;
-    cursor: pointer;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    box-shadow: 0 2px 6px rgba(146, 64, 14, 0.1);
-    white-space: nowrap;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  background: #fef3c7;
+  color: #92400e;
+  padding: 0.5rem 1rem;
+  border-radius: 25px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  border: 2px solid #fde68a;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
 }
 
 .Content.ProjectPage .complete-btn:hover {
-    background: linear-gradient(135deg, #fde68a 0%, #fcd34d 100%);
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(146, 64, 14, 0.2);
-    border-color: #fcd34d;
+  background: #fde68a;
 }
 
 .Content.ProjectPage .complete-btn.completed {
-    background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%);
-    color: #2e7d32;
-    border-color: #c8e6c9;
-}
-
-.Content.ProjectPage .complete-btn.completed:hover {
-    background: linear-gradient(135deg, #d4edda 0%, #b8e0bb 100%);
-    border-color: #b8e0bb;
+  background: #e8f5e9;
+  color: #2e7d32;
+  border-color: #c8e6c9;
 }
 
 .Content.ProjectPage .complete-btn:disabled {
-  background-color: #ccc;
+  background: #ccc;
   color: #666;
   cursor: not-allowed;
-  opacity: 0.7;
 }
 
-@keyframes pulse {
-    0% {
-        transform: scale(1);
-    }
-    50% {
-        transform: scale(1.1);
-    }
-    100% {
-        transform: scale(1);
-    }
-}
-
-/* Responsive design */
-@media (max-width: 768px) {
-    .Content.ProjectPage .complete-btn {
-        padding: 0.4rem 0.8rem;
-        font-size: 0.85rem;
-        margin-left: 0.6rem;
-    }
-    
-    .Content.ProjectPage .complete-btn i {
-        font-size: 0.85rem;
-    }
-}
-
-@media (max-width: 480px) {
-    .Content.ProjectPage .complete-btn {
-        padding: 0.35rem 0.7rem;
-        font-size: 0.8rem;
-        margin-left: 0.5rem;
-    }
-    
-    .Content.ProjectPage .task-name {
-        display: flex;
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 0.5rem;
-    }
-    
-    .Content.ProjectPage .complete-btn {
-        align-self: flex-start;
-        margin-left: 0;
-    }
-}
-
-/* Request QAQC Button Styles */
 .Content.ProjectPage .btn-request-qaqc {
-  background: linear-gradient(135deg, #27ae60, #219a52);
+  background: #27ae60;
   color: white;
   border: none;
   padding: 0.75rem 1.5rem;
@@ -572,137 +344,38 @@
   font-size: 0.9rem;
   font-weight: 600;
   cursor: pointer;
-  transition: all 0.3s ease;
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
-  box-shadow: 0 2px 8px rgba(39, 174, 96, 0.3);
   margin-top: 0.5rem;
+  transition: background-color 0.2s ease;
 }
 
 .Content.ProjectPage .btn-request-qaqc:hover {
-  background: linear-gradient(135deg, #219a52, #27ae60);
-  transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(39, 174, 96, 0.4);
+  background: #219a52;
 }
 
-.Content.ProjectPage .btn-request-qaqc:active {
-  transform: translateY(0);
-}
-
-/* Disabled State */
 .Content.ProjectPage .btn-request-qaqc:disabled {
-  background: linear-gradient(135deg, #bdc3c7, #95a5a6);
-  color: #7f8c8d;
+  background: #bdc3c7;
   cursor: not-allowed;
-  transform: none;
-  box-shadow: none;
-  opacity: 0.7;
-}
-
-.Content.ProjectPage .btn-request-qaqc:disabled:hover {
-  background: linear-gradient(135deg, #bdc3c7, #95a5a6);
-  transform: none;
-  box-shadow: none;
-}
-
-/* Icon for the button */
-.Content.ProjectPage .btn-request-qaqc::before {
-  content: "🔍";
-  font-size: 1rem;
-}
-
-/* Responsive adjustments */
-@media (max-width: 768px) {
-  .Content.ProjectPage .btn-request-qaqc {
-    width: 100%;
-    justify-content: center;
-    padding: 0.875rem 1rem;
-  }
-  
-  .Content.ProjectPage .complete-btn {
-    width: 100%;
-    margin-left: 0;
-    margin-top: 0.5rem;
-    justify-content: center;
-  }
-  
-  .Content.ProjectPage .task-name {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-  }
-}
-
-.Content.ProjectPage .current-task-card {
-    padding: 1rem;
-    background: white;
-    border-radius: 6px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-}
-
-/* .Content.ProjectPage .task-name {
-    font-size: 1.2rem;
-    font-weight: bold;
-    color: #2c3e50;
-    margin-bottom: 0.5rem;
-} */
-
-.Content.ProjectPage .task-date {
-    color: #6c757d;
-    margin-bottom: 0.5rem;
-}
-
-.Content.ProjectPage .task-status {
-    font-weight: 500;
-    margin-bottom: 1rem;
-}
-
-.Content.ProjectPage .task-status.completed {
-    color: #28a745;
-}
-
-.Content.ProjectPage .task-status.pending {
-    color: #dc3545;
 }
 
 .Content.ProjectPage .update-task-btn {
-    background: #54b0d2;
-    color: white;
-    border: none;
-    padding: 0.5rem 1rem;
-    border-radius: 4px;
-    cursor: pointer;
-    font-size: 0.9rem;
+  background: #54b0d2;
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: background-color 0.2s ease;
 }
 
 .Content.ProjectPage .update-task-btn:hover {
-    background: #3a8fb0;
+  background: #3a8fb0;
 }
 
-@keyframes slideIn {
-  from {
-    opacity: 0;
-    transform: translateY(-10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-.Content.ProjectPage .status.success {
-  background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%);
-  color: #155724;
-  border: 1px solid #b8dfc1;
-}
-
-.Content.ProjectPage .status.error {
-  background: linear-gradient(135deg, #f8d7da 0%, #f5c6cb 100%);
-  color: #721c24;
-  border: 1px solid #f1b0b7;
-}
-
+/* ===== FORM STYLES ===== */
 .Content.ProjectPage .project-form {
   max-width: 1600px;
   margin: 0 auto;
@@ -716,8 +389,8 @@
 .Content.ProjectPage .form-section {
   background: white;
   padding: 2rem;
-  border-radius: 16px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   border: 1px solid #e2e8f0;
 }
 
@@ -751,13 +424,12 @@
 .Content.ProjectPage .form-row input,
 .Content.ProjectPage .form-row textarea,
 .Content.ProjectPage .form-row select {
-  padding: 1rem;
+  padding: 0.75rem;
   border: 2px solid #e2e8f0;
-  border-radius: 10px;
-  font-family: 'Source Sans 3', sans-serif;
+  border-radius: 6px;
   font-size: 1rem;
-  transition: all 0.3s ease;
   background: #f8fafc;
+  transition: border-color 0.2s ease;
 }
 
 .Content.ProjectPage .form-row input:focus,
@@ -766,8 +438,6 @@
   outline: none;
   border-color: #315a95;
   background: white;
-  box-shadow: 0 0 0 3px rgba(49, 90, 149, 0.1);
-  transform: translateY(-1px);
 }
 
 .Content.ProjectPage .form-row input:disabled,
@@ -791,66 +461,23 @@
 }
 
 .Content.ProjectPage .member-tag {
-  background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
+  background: #e3f2fd;
   padding: 0.5rem 1rem;
   border-radius: 20px;
   font-size: 0.9rem;
   color: #1976d2;
   font-weight: 600;
   border: 1px solid #90caf9;
-  transition: all 0.3s ease;
 }
 
-.Content.ProjectPage .member-tag:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 2px 8px rgba(25, 118, 210, 0.2);
-}
-
-/* Specific section layouts */
-.Content.ProjectPage .form-section:first-child {
-  grid-column: 1 / -1;
-}
-
-.Content.ProjectPage .form-section:nth-child(2) {
-  grid-column: 1;
-}
-
-.Content.ProjectPage .form-section:nth-child(3) {
-  grid-column: 2;
-}
-
-.Content.ProjectPage .form-section:nth-child(4) {
-  grid-column: 1 / -1;
-}
-
-.Content.ProjectPage .form-section:nth-child(5) {
-  grid-column: 1 / -1;
-}
-
-/* Responsive design */
 @media (max-width: 1024px) {
   .Content.ProjectPage .project-form {
     grid-template-columns: 1fr;
     gap: 1.5rem;
   }
-  
-  .Content.ProjectPage .form-section:nth-child(2),
-  .Content.ProjectPage .form-section:nth-child(3) {
-    grid-column: 1;
-  }
 }
 
 @media (max-width: 768px) {
-  .Content.ProjectPage .project-header-content {
-    flex-direction: column;
-    gap: 1rem;
-    text-align: center;
-  }
-  
-  .Content.ProjectPage .action-buttons {
-    justify-content: center;
-  }
-  
   .Content.ProjectPage .project-form {
     padding: 0 1rem 2rem;
   }
@@ -860,166 +487,46 @@
   }
 }
 
-/* Enhanced input states */
-.Content.ProjectPage .form-row input[type="date"] {
-  cursor: pointer;
-}
-
-.Content.ProjectPage .form-row input[type="number"] {
-  -moz-appearance: textfield;
-}
-
-.Content.ProjectPage .form-row input[type="number"]::-webkit-outer-spin-button,
-.Content.ProjectPage .form-row input[type="number"]::-webkit-inner-spin-button {
-  -webkit-appearance: none;
-  margin: 0;
-}
-
-/* Smooth transitions */
-.Content.ProjectPage .form-section,
-.Content.ProjectPage .form-row input,
-.Content.ProjectPage .form-row textarea,
-.Content.ProjectPage .form-row select,
-.Content.ProjectPage .member-tag {
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-/* Hover effects for better interactivity */
-.Content.ProjectPage .form-section:hover {
-  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
-  transform: translateY(-2px);
-}
-
-/* Focus states for accessibility */
-.Content.ProjectPage .form-row input:focus-visible,
-.Content.ProjectPage .form-row textarea:focus-visible,
-.Content.ProjectPage .form-row select:focus-visible {
-  outline: 2px solid #315a95;
-  outline-offset: 2px;
-}
-
-/* Custom scrollbar for team members */
-.Content.ProjectPage .team-members {
-  max-height: 200px;
-  overflow-y: auto;
-  scrollbar-width: thin;
-  scrollbar-color: #cbd5e0 #f1f5f9;
-}
-
-.Content.ProjectPage .team-members::-webkit-scrollbar {
-  width: 6px;
-}
-
-.Content.ProjectPage .team-members::-webkit-scrollbar-track {
-  background: #f1f5f9;
-  border-radius: 3px;
-}
-
-.Content.ProjectPage .team-members::-webkit-scrollbar-thumb {
-  background: #cbd5e0;
-  border-radius: 3px;
-}
-
-.Content.ProjectPage .team-members::-webkit-scrollbar-thumb:hover {
-  background: #94a3b8;
-}
-
-/* Responsive adjustments */
-@media (max-width: 1024px) {
-  .Content.ProjectPage .header-row,
-  .Content.ProjectPage .ProjectInfo {
-    grid-template-columns: 2fr 1fr 1fr;
-    grid-template-rows: auto auto;
-    gap: 0.5rem;
-  }
-  
-  .Content.ProjectPage .table-cell:nth-child(n+4),
-  .Content.ProjectPage .ProjectInfo > div:nth-child(n+4) {
-    grid-column: span 1;
-  }
-}
-
-@media (max-width: 768px) {
-  .Content.ProjectPage .header-row,
-  .Content.ProjectPage .ProjectInfo {
-    grid-template-columns: 1fr;
-    gap: 0.5rem;
-  }
-  
-  .Content.ProjectPage .project-header {
-    flex-direction: column;
-    gap: 1rem;
-    align-items: stretch;
-  }
-  
-  .Content.ProjectPage .project-header h1 {
-    text-align: center;
-  }
-  
-  .Content.ProjectPage .project-header button {
-    width: 100%;
-  }
-}
-
-/* Modal Styles - Contained within Content Area */
+/* ===== MODAL STYLES ===== */
 .Content.ProjectPage .modal-overlay {
   position: fixed;
-  top: 10vh;
+  top: 0;
   left: 0;
   right: 0;
   bottom: 0;
   background: rgba(0, 0, 0, 0.6);
-  backdrop-filter: blur(4px);
   display: flex;
   justify-content: center;
-  align-items: flex-start;
+  align-items: center;
   z-index: 2001;
   padding: 2rem 1rem;
-  overflow-y: auto;
 }
 
 .Content.ProjectPage .modal-content {
   background: white;
-  border-radius: 16px;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-  max-width: 800px;
+  border-radius: 8px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+  max-width: 600px;
   width: 100%;
-  max-height: calc(90vh - 10vh);
+  max-height: 90vh;
   overflow-y: auto;
-  animation: modalSlideIn 0.3s ease-out;
-  margin-top: 0;
-}
-
-@keyframes modalSlideIn {
-  from {
-    opacity: 0;
-    transform: translateY(-20px) scale(0.95);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0) scale(1);
-  }
 }
 
 .Content.ProjectPage .modal-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 1.5rem 2rem;
+  padding: 1.5rem;
   border-bottom: 1px solid #e2e8f0;
-  background: linear-gradient(135deg, #315a95 0%, #1e3a5f 100%);
+  background: #315a95;
   color: white;
-  border-radius: 16px 16px 0 0;
-  position: sticky;
-  top: 0;
-  z-index: 1;
+  border-radius: 8px 8px 0 0;
 }
 
 .Content.ProjectPage .modal-header h3 {
   margin: 0;
-  font-size: 1.5rem;
+  font-size: 1.25rem;
   font-weight: 700;
-  font-family: 'Montserrat', sans-serif;
 }
 
 .Content.ProjectPage .modal-close {
@@ -1033,132 +540,25 @@
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  transition: all 0.3s ease;
-  font-family: 'Montserrat', sans-serif;
-}
-
-.Content.ProjectPage .modal-close:hover {
-  background: rgba(255, 255, 255, 0.3);
-  transform: rotate(90deg);
 }
 
 .Content.ProjectPage .modal-body {
-  padding: 2rem;
+  padding: 1.5rem;
 }
 
 .Content.ProjectPage .modal-body p {
   color: #64748b;
-  margin-bottom: 2rem;
+  margin-bottom: 1.5rem;
   text-align: center;
-  font-size: 1.1rem;
-  font-family: 'Source Sans 3', sans-serif;
   line-height: 1.5;
 }
 
-.Content.ProjectPage .schedule-options {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 1.5rem;
-  margin-bottom: 2rem;
-}
-
-.Content.ProjectPage .schedule-option {
-  display: flex;
-  align-items: flex-start;
-  gap: 1.5rem;
-  padding: 1.5rem;
-  border: 2px solid #e2e8f0;
-  border-radius: 12px;
-  cursor: pointer;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  background: white;
-}
-
-.Content.ProjectPage .schedule-option:hover {
-  border-color: #315a95;
-  transform: translateY(-2px);
-  box-shadow: 0 8px 25px rgba(49, 90, 149, 0.15);
-}
-
-.Content.ProjectPage .schedule-option:active {
-  transform: translateY(0);
-}
-
-.Content.ProjectPage .option-icon {
-  width: 60px;
-  height: 60px;
-  border-radius: 12px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 1.5rem;
-  flex-shrink: 0;
-}
-
-.Content.ProjectPage .schedule-option:first-child .option-icon {
-  background: linear-gradient(135deg, #ffd700 0%, #ffed4e 100%);
-  color: #92400e;
-}
-
-.Content.ProjectPage .schedule-option:last-child .option-icon {
-  background: linear-gradient(135deg, #10b981 0%, #34d399 100%);
-  color: #065f46;
-}
-
-.Content.ProjectPage .option-content {
-  flex: 1;
-}
-
-.Content.ProjectPage .option-content h4 {
-  margin: 0 0 0.5rem 0;
-  color: #1e293b;
-  font-size: 1.2rem;
-  font-weight: 700;
-  font-family: 'Montserrat', sans-serif;
-}
-
-.Content.ProjectPage .option-content p {
-  color: #64748b;
-  margin: 0 0 1rem 0;
-  text-align: left;
-  font-size: 1rem;
-  font-family: 'Source Sans 3', sans-serif;
-}
-
-.Content.ProjectPage .option-content ul {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-}
-
-.Content.ProjectPage .option-content li {
-  color: #64748b;
-  padding: 0.25rem 0;
-  position: relative;
-  padding-left: 1.5rem;
-  font-size: 0.9rem;
-  font-family: 'Source Sans 3', sans-serif;
-  line-height: 1.4;
-}
-
-.Content.ProjectPage .option-content li:before {
-  content: '✓';
-  position: absolute;
-  left: 0;
-  color: #10b981;
-  font-weight: bold;
-}
-
 .Content.ProjectPage .modal-footer {
-  padding: 1.5rem 2rem;
+  padding: 1.5rem;
   border-top: 1px solid #e2e8f0;
   display: flex;
   justify-content: flex-end;
   background: #f8fafc;
-  border-radius: 0 0 16px 16px;
-  position: sticky;
-  bottom: 0;
-  background: white;
 }
 
 .Content.ProjectPage .btn-secondary {
@@ -1166,11 +566,9 @@
   color: white;
   border: none;
   padding: 0.75rem 1.5rem;
-  border-radius: 8px;
+  border-radius: 6px;
   font-weight: 600;
   cursor: pointer;
-  transition: all 0.3s ease;
-  font-family: 'Montserrat', sans-serif;
   display: flex;
   align-items: center;
   gap: 0.5rem;
@@ -1178,446 +576,147 @@
 
 .Content.ProjectPage .btn-secondary:hover {
   background: #475569;
-  transform: translateY(-1px);
 }
 
-/* No Schedule Card */
-.Content.ProjectPage .no-schedule-card {
-  grid-column: 1 / -1;
-  text-align: center;
-  padding: 3rem 2rem;
-  background: white;
-  border-radius: 12px;
-  border: 2px dashed #cbd5e0;
-}
-
-.Content.ProjectPage .no-schedule-card button {
-  background: linear-gradient(135deg, #315a95 0%, #4a7cc2 100%);
-  color: white;
-  border: none;
-  padding: 1rem 2rem;
-  border-radius: 8px;
-  font-size: 1.1rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  font-family: 'Montserrat', sans-serif;
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  margin: 0 auto;
-}
-
-.Content.ProjectPage .no-schedule-card button:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 25px rgba(49, 90, 149, 0.3);
-}
-
-/* Focus states for accessibility */
-.Content.ProjectPage .modal-close:focus-visible,
-.Content.ProjectPage .schedule-option:focus-visible,
-.Content.ProjectPage .btn-secondary:focus-visible {
-  outline: 2px solid #315a95;
-  outline-offset: 2px;
-}
-
-/* Reduced motion support */
-@media (prefers-reduced-motion: reduce) {
-  .Content.ProjectPage .modal-content {
-    animation: none;
-  }
-  
-  .Content.ProjectPage .modal-close:hover,
-  .Content.ProjectPage .schedule-option:hover,
-  .Content.ProjectPage .btn-secondary:hover,
-  .Content.ProjectPage .no-schedule-card button:hover {
-    transform: none;
-  }
-}
-
-/* ===== RESPONSIVE DESIGN FOR MODAL ===== */
-
-/* Small phones (up to 480px) */
-@media (max-width: 480px) {
-  .Content.ProjectPage .modal-overlay {
-    top: 8vh;
-    padding: 1rem 0.5rem;
-  }
-  
-  .Content.ProjectPage .modal-content {
-    max-height: calc(92vh - 8vh);
-  }
-  
-  .Content.ProjectPage .modal-header {
-    padding: 1.25rem 1.5rem;
-  }
-  
-  .Content.ProjectPage .modal-header h3 {
-    font-size: 1.25rem;
-  }
-  
-  .Content.ProjectPage .modal-body {
-    padding: 1.5rem;
-  }
-  
-  .Content.ProjectPage .modal-body p {
-    font-size: 1rem;
-    margin-bottom: 1.5rem;
-  }
-  
-  .Content.ProjectPage .schedule-options {
-    gap: 1rem;
-    margin-bottom: 1.5rem;
-  }
-  
-  .Content.ProjectPage .schedule-option {
-    flex-direction: column;
-    text-align: center;
-    gap: 1rem;
-    padding: 1.25rem;
-  }
-  
-  .Content.ProjectPage .option-content p {
-    text-align: center;
-  }
-  
-  .Content.ProjectPage .option-icon {
-    width: 50px;
-    height: 50px;
-    font-size: 1.25rem;
-  }
-  
-  .Content.ProjectPage .option-content h4 {
-    font-size: 1.1rem;
-  }
-  
-  .Content.ProjectPage .modal-footer {
-    padding: 1.25rem 1.5rem;
-  }
-  
-  .Content.ProjectPage .btn-secondary {
-    width: 100%;
-    justify-content: center;
-  }
-  
-  .Content.ProjectPage .no-schedule-card {
-    padding: 2rem 1rem;
-  }
-  
-  .Content.ProjectPage .no-schedule-card button {
-    width: 100%;
-    padding: 0.875rem 1.5rem;
-    font-size: 1rem;
-  }
-}
-
-/* Medium phones (481px to 767px) */
-@media (min-width: 481px) and (max-width: 767px) {
-  .Content.ProjectPage .modal-overlay {
-    top: 9vh;
-  }
-  
-  .Content.ProjectPage .modal-content {
-    max-width: 500px;
-    max-height: calc(91vh - 9vh);
-  }
-  
-  .Content.ProjectPage .modal-header {
-    padding: 1.5rem;
-  }
-  
-  .Content.ProjectPage .modal-body {
-    padding: 1.75rem;
-  }
-  
-  .Content.ProjectPage .schedule-option {
-    padding: 1.5rem;
-  }
-}
-
-/* Tablets (768px to 1024px) */
-@media (min-width: 768px) and (max-width: 1024px) {
-  .Content.ProjectPage .modal-overlay {
-    top: 10vh;
-  }
-  
-  .Content.ProjectPage .modal-content {
-    max-width: 550px;
-    max-height: calc(90vh - 10vh);
-  }
-}
-
-/* Landscape orientation for mobile */
-@media (max-width: 767px) and (orientation: landscape) {
-  .Content.ProjectPage .modal-overlay {
-    top: 8vh;
-    padding: 0.5rem;
-  }
-  
-  .Content.ProjectPage .modal-content {
-    max-height: calc(85vh - 8vh);
-  }
-  
-  .Content.ProjectPage .modal-body {
-    padding: 1rem 2rem;
-  }
-  
-  .Content.ProjectPage .schedule-options {
-    grid-template-columns: 1fr;
-    gap: 1rem;
-  }
-}
-
-/* When menu is open */
-.Content.ProjectPage .Menu:not(.Hidden) ~ section .modal-overlay {
-  left: 220px;
-}
-
-.Content.ProjectPage .Menu.Hidden ~ section .modal-overlay {
-  left: 0;
-}
-
-/* Touch device optimizations */
-@media (hover: none) and (pointer: coarse) {
-  .Content.ProjectPage .schedule-option {
-    min-height: 44px;
-  }
-  
-  .Content.ProjectPage .modal-close,
-  .Content.ProjectPage .btn-secondary,
-  .Content.ProjectPage .no-schedule-card button {
-    min-height: 44px;
-    min-width: 44px;
-  }
-  
-  /* Remove hover effects for touch devices */
-  .Content.ProjectPage .schedule-option:hover {
-    transform: none;
-    border-color: #e2e8f0;
-  }
-  
-  .Content.ProjectPage .schedule-option:active {
-    border-color: #315a95;
-    background-color: #f8fafc;
-  }
-  
-  .Content.ProjectPage .btn-secondary:hover,
-  .Content.ProjectPage .no-schedule-card button:hover {
-    transform: none;
-  }
-}
-
-/* High-DPI displays */
-@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
-  .Content.ProjectPage .modal-content {
-    border: 0.5px solid #e2e8f0;
-  }
-}
-
-/* Lagging Schedule Warning Styles */
+/* ===== WARNING AND INFO SECTIONS ===== */
 .Content.ProjectPage .lagging-task-info {
-    background: linear-gradient(135deg, #fff3cd 0%, #ffeaa7 100%);
-    border-left: 4px solid #ffc107;
-    padding: 1rem 1.5rem;
-    border-radius: 8px;
-    margin-bottom: 1.5rem;
-    border: 1px solid #ffc107;
-    animation: pulseWarning 2s ease-in-out infinite;
+  background: #fff3cd;
+  border-left: 4px solid #ffc107;
+  padding: 1rem 1.5rem;
+  border-radius: 6px;
+  margin-bottom: 1.5rem;
+  border: 1px solid #ffc107;
 }
 
 .Content.ProjectPage .lagging-task-info h2 {
-    color: #856404;
-    font-size: 1.2rem;
-    font-weight: 700;
-    margin-bottom: 0.75rem;
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-}
-
-.Content.ProjectPage .lagging-task-info h2::before {
-    content: "⚠️";
-    font-size: 1.1rem;
+  color: #856404;
+  font-size: 1.2rem;
+  font-weight: 700;
+  margin-bottom: 0.75rem;
 }
 
 .Content.ProjectPage .lagging-task-title {
-    font-size: 1rem;
-    font-weight: 600;
-    color: #856404;
-    margin-bottom: 0.5rem;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #856404;
+  margin-bottom: 0.5rem;
 }
 
 .Content.ProjectPage .lagging-task-dates {
-    color: #856404;
-    font-size: 0.9rem;
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    flex-wrap: wrap;
-}
-
-@keyframes pulseWarning {
-    0%, 100% {
-        box-shadow: 0 0 0 0 rgba(255, 193, 7, 0.4);
-    }
-    50% {
-        box-shadow: 0 0 0 6px rgba(255, 193, 7, 0);
-    }
-}
-
-/* Responsive adjustments */
-@media (max-width: 768px) {
-    .Content.ProjectPage .lagging-task-info {
-        padding: 0.875rem 1.25rem;
-        margin-bottom: 1rem;
-    }
-    
-    .Content.ProjectPage .lagging-task-info h2 {
-        font-size: 1.1rem;
-    }
-    
-    .Content.ProjectPage .lagging-task-title {
-        font-size: 0.95rem;
-    }
-    
-    .Content.ProjectPage .lagging-task-dates {
-        font-size: 0.85rem;
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 0.25rem;
-    }
+  color: #856404;
+  font-size: 0.9rem;
 }
 
 .Content.ProjectPage .overarching-task-info {
-    background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
-    border-left: 4px solid #8b5cf6;
-    padding: 1rem 1.5rem;
-    border-radius: 8px;
-    margin-bottom: 1.5rem;
-    border: 1px solid #e2e8f0;
+  background: #f8fafc;
+  border-left: 4px solid #8b5cf6;
+  padding: 1rem 1.5rem;
+  border-radius: 6px;
+  margin-bottom: 1.5rem;
+  border: 1px solid #e2e8f0;
 }
 
 .Content.ProjectPage .overarching-task-title {
-    font-size: 1.1rem;
-    font-weight: 600;
-    color: #1e293b;
-    margin-bottom: 0.5rem;
-}
-
-.Content.ProjectPage .overarching-task-title strong {
-    color: #000000;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #1e293b;
+  margin-bottom: 0.5rem;
 }
 
 .Content.ProjectPage .overarching-task-dates {
-    color: #64748b;
-    font-size: 0.9rem;
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    flex-wrap: wrap;
+  color: #64748b;
+  font-size: 0.9rem;
 }
 
-/* Responsive adjustments */
-@media (max-width: 768px) {
-    .Content.ProjectPage .overarching-task-info {
-        padding: 0.875rem 1.25rem;
-        margin-bottom: 1rem;
-    }
-    
-    .Content.ProjectPage .overarching-task-title {
-        font-size: 1rem;
-    }
-    
-    .Content.ProjectPage .overarching-task-dates {
-        font-size: 0.85rem;
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 0.25rem;
-    }
-}
-
-/* Project Progress Section */
+/* ===== PROJECT PROGRESS ===== */
 .Content.ProjectPage .project-progress-section {
-    background: white;
-    padding: 1.5rem;
-    border-radius: 12px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-    margin-bottom: 2rem;
-    border: 1px solid #e2e8f0;
+  background: white;
+  padding: 1.5rem;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  margin-bottom: 2rem;
+  border: 1px solid #e2e8f0;
 }
 
 .Content.ProjectPage .project-progress-section h3 {
-    color: #315a95;
-    margin-bottom: 1rem;
-    font-size: 1.3rem;
-    font-weight: 600;
+  color: #315a95;
+  margin-bottom: 1rem;
+  font-size: 1.3rem;
+  font-weight: 600;
 }
 
 .Content.ProjectPage .progress-container {
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
 }
 
 .Content.ProjectPage .progress-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
 .Content.ProjectPage .progress-label {
-    font-weight: 600;
-    color: #2d3748;
+  font-weight: 600;
+  color: #2d3748;
 }
 
 .Content.ProjectPage .progress-percent {
-    font-weight: 700;
-    color: #315a95;
-    font-size: 1.2rem;
+  font-weight: 700;
+  color: #315a95;
+  font-size: 1.2rem;
 }
 
 .Content.ProjectPage .progress-bar {
-    width: 100%;
-    height: 12px;
-    background: #e2e8f0;
-    border-radius: 6px;
-    overflow: hidden;
+  width: 100%;
+  height: 12px;
+  background: #e2e8f0;
+  border-radius: 6px;
+  overflow: hidden;
 }
 
 .Content.ProjectPage .progress-fill {
-    height: 100%;
-    background: linear-gradient(90deg, #315a95, #4a7cc2);
-    border-radius: 6px;
-    transition: width 0.5s ease-in-out;
+  height: 100%;
+  background: #315a95;
+  border-radius: 6px;
 }
 
 .Content.ProjectPage .progress-stats {
-    display: flex;
-    gap: 2rem;
-    flex-wrap: wrap;
+  display: flex;
+  gap: 2rem;
+  flex-wrap: wrap;
 }
 
 .Content.ProjectPage .stat-item {
-    font-size: 0.9rem;
-    color: #64748b;
+  font-size: 0.9rem;
+  color: #64748b;
 }
 
 .Content.ProjectPage .stat-item strong {
-    color: #2d3748;
+  color: #2d3748;
 }
 
-/* Responsive Design */
 @media (max-width: 768px) {
-    .Content.ProjectPage .project-progress-section {
-        padding: 1rem;
-    }
-    
-    .Content.ProjectPage .progress-stats {
-        flex-direction: column;
-        gap: 0.5rem;
-    }
+  .Content.ProjectPage .project-progress-section {
+    padding: 1rem;
+  }
+  
+  .Content.ProjectPage .progress-stats {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
 }
 
-.scheduling-modal .modal-header h3{
-  color: white;
+/* ===== ACCESSIBILITY ===== */
+.Content.ProjectPage .action-buttons > div:focus {
+  outline: 2px solid rgba(255, 255, 255, 0.6);
+  outline-offset: 2px;
+}
+
+.Content.ProjectPage .form-row input:focus-visible,
+.Content.ProjectPage .form-row textarea:focus-visible,
+.Content.ProjectPage .form-row select:focus-visible {
+  outline: 2px solid #315a95;
+  outline-offset: 2px;
 }

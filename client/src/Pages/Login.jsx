@@ -78,7 +78,27 @@ const Login = () => {
                 });
                 
                 setTimeout(() => {
-                    navigate('/dashboard');
+                    const role = roles
+                    switch(role) {
+                        case 'PMS Coordinator':
+                            navigate('/PMS');
+                            break;
+                        case 'TNC Coordinator':
+                            navigate('/TNC');
+                            break;
+                        case 'QAQC Coordinator':
+                            navigate('/QAQC');
+                            break;
+                        case 'Project Manager':
+                            navigate('/dashboard');
+                            break;
+                        case 'Project Engineers':
+                            navigate('/dashboard');
+                            break;
+                        default:
+                         navigate('/projects');   
+                    }
+                    
                 }, 1000);
             }
         } catch (err) {
